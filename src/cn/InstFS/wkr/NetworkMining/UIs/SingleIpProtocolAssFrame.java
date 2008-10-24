@@ -4,12 +4,14 @@ package cn.InstFS.wkr.NetworkMining.UIs;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 
+import lineAssociation.Linear;
 import associationRules.ProtoclPair;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
@@ -40,10 +42,11 @@ public class SingleIpProtocolAssFrame extends JFrame {
 	MinerProtocolResults mProtocolResult = null;
 	TaskCombination taskCombination=null;
 	List<ProtoclPair> protocolPairList = null;
+	HashMap<String, List<TreeMap<Integer, Linear>>> allLiners = new HashMap<String, List<TreeMap<Integer,Linear>>>(); //string:ipname,list<>:协议列表	
 	PanelShowAllResults panelShow = new PanelShowAllResults();
 	ArrayList<JButton> buttons = new ArrayList<JButton>();
 	 ChangeCompositeToSwingPanel ccts=null;
-
+	 
 	public static DefaultListModel lmodel = new DefaultListModel();
 	JList listTasks;
 	//System.out.println("rtyuio");
@@ -55,7 +58,6 @@ public class SingleIpProtocolAssFrame extends JFrame {
 		this.taskCombination = taskCombination;
 		mProtocolResult = resultMaps.get(taskCombination);
 		protocolPairList=mProtocolResult.getRetFP().getProtocolPairList();
-		
 
 		// 按置信度排序显示列表
 /*		Collections.sort(mProtocolResult.getRetFP().protocolPairList,

@@ -62,6 +62,39 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 	public String yName;
 	public String ObName;
 	private JPanel granulartiyPanel;
+	//删除重复项
+	public static void delete(ArrayList<String> lists,int size){
+		if(lists == null || lists.size()<=1 || size<=1)
+			return;
+		for(int i= size - 1;i>=0;){
+			String b = lists.get(i);
+			ListIterator it = lists.listIterator(i);
+			int countdel = 0;
+			while(it.hasPrevious()){
+				String a = (String) it.previous();
+				if(b.contains(a)){
+					countdel++;
+					it.remove();
+				}
+			}
+//			System.out.println(lists+"\t"+i+"\t"+size);
+			if(countdel == 0){
+				i--;
+			}else{
+				i = i - countdel;
+			}
+
+//			if(i == size -1)
+//				i--;
+//			else{
+//				size = lists.size();
+//				i = size -1;
+//			}
+			if(i <= 0){
+				return;
+			}
+		}
+	}
 
 
 
@@ -125,7 +158,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 
 	@Override
 	public void setData(DataItems data) {
-		
+
 	}
 
 
@@ -164,26 +197,33 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		freqPatternsTemp=freqPatterns;
 		List<String>freqPatternsListTemp = freqPatternsTemp.getData();
 		int len=freqPatternsListTemp.size()-1;
-		for(int i=freqPatternsListTemp.size()-1;i>0;i--)
+		for(;len>0;len--)
 		{
 			String tempString=freqPatternsListTemp.get(len);
-			for(int j=0;j<freqPatternsListTemp.size()-1;j++)
+			for(int j=0;j<len;j++)
 			{
 				String tempStringDelete=freqPatternsListTemp.get(j);
 				if(tempString.contains(tempStringDelete))
 				{
-					if(!freqResult.getData().contains(tempString)) {
-						DataItem di = new DataItem();
-						di.setData(tempString);
-						freqResult.add1Data(di);
-					}
+//					if(!freqResult.getData().contains(tempString)) {
+//
+//					}
 					freqPatternsListTemp.remove(tempStringDelete);
 					len--;
 				}
 			}
+			DataItem di = new DataItem();
+			di.setData(tempString);
+			freqResult.add1Data(di);
 
 		}
-
+		freqPatterns=freqResult;
+//		ArrayList<String> test=new ArrayList<>();
+//		for(int i=0;i<freqPatterns.getLength();i++)
+//		{
+//			test.add(freqPatterns.getData().get(i));
+//		}
+//		delete(test,test.size());
 		if (rslt == null || rslt.getRetSM() == null ||
 				!rslt.getMiner().getClass().equals(NetworkMinerSM.class))
 			return;
@@ -362,10 +402,3 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		}
 	}
 }
-
-
-
-
-
-
-
