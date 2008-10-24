@@ -21,6 +21,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.ARIMATSA;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.NeuralNetwork;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm.SequencePatternsDontSplit;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
@@ -284,8 +285,12 @@ class NodeTimerTask extends TimerTask{
 			case MiningMethods_PredictionMining:
 				/*ARIMATSA forecast=new ARIMATSA(task, dataItems,
 						ParamsAPI.getInstance().getParamsPrediction().getAp());*/
-				ARIMATSA forecast=new ARIMATSA(task, dataItems,5);
+//				ARIMATSA forecast=new ARIMATSA(task, dataItems,5);
+				NeuralNetwork forecast=new NeuralNetwork(dataItems, task, 
+						ParamsAPI.getInstance().getParamsPrediction().getNnp());
+				System.out.println(task.getName()+" forecast start");
 				forecast.TimeSeriesAnalysis();
+				System.out.println(task.getName()+" forecast over");
 				setForecastResult(results, forecast);
 				break;
 			case MiningMethods_SequenceMining:
