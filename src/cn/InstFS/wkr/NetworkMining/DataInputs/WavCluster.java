@@ -42,6 +42,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
  */
 public class WavCluster {
 	
+	public static HashMap<String, SegPattern> clusterCentroids=new HashMap<String, SegPattern>();
 	/**
 	 * 得到所有结点对的通信数据
 	 * @param task
@@ -647,6 +648,7 @@ public class WavCluster {
 			{
 				//if(xlabels[i]==0)
 				//	System.out.print("label"+" "+i+" "+xlabels[i]+" "+ylabels[i]);
+				
 				DataItem dataItem =new DataItem();	
 				dataItem.setData(String.valueOf(xlabels[i]*6+ylabels[i]));
 				
