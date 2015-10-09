@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>将流量较大的收发方作为挖掘对象, 挖掘TSA模式</comment>
+<entry key="miningMethod">时间序列分析</entry>
+<entry key="discreteMethod">自定义端点</entry>
+<entry key="aggregateMethod">求和</entry>
+<entry key="miningParams">__	__amplitudeRatio:0.9__	__class:class cn.InstFS.wkr.NetworkMining.Params.ParamsTSA__	__expWindowSize:3__	__fftVarK:1.5__	__initWindowSize:10__	__maxWindowSize:30__	__outlierThreshold:0.95__	__periodThreshold:1.0__	__predictPeriod:5__	__windowVarK:3.0__	__</entry>
+<entry key="miningObject">流量</entry>
+<entry key="filterCondition">流量&gt;100</entry>
+<entry key="eventName">大流量TSA测试</entry>
+<entry key="comments">将流量较大的收发方作为挖掘对象, 挖掘TSA模式</entry>
+<entry key="dateStart">00010101000000</entry>
+<entry key="discreteDimsion">2</entry>
+<entry key="discreteEndNodes">2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,36,38,40,42,46,48,50</entry>
+<entry key="granularity">3600</entry>
+<entry key="dateEnd">00010101000000</entry>
+</properties>

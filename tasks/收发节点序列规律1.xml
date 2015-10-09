@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>说明1</comment>
+<entry key="miningMethod">序列模式挖掘</entry>
+<entry key="discreteMethod">无</entry>
+<entry key="aggregateMethod">求和</entry>
+<entry key="miningParams">__	__class:class cn.InstFS.wkr.NetworkMining.Params.ParamsSM__	__minSeqLen:4__	__minSupport:0.5__	__sizeWindow:15.0__	__stepWindow:6.0__	__</entry>
+<entry key="miningObject">发送节点编号,接收节点编号</entry>
+<entry key="filterCondition">流量&gt;10</entry>
+<entry key="eventName">收发节点序列规律1</entry>
+<entry key="comments">说明1</entry>
+<entry key="dateStart">00010101082818</entry>
+<entry key="discreteDimsion">2</entry>
+<entry key="discreteEndNodes">0,0,0,0</entry>
+<entry key="granularity">1</entry>
+<entry key="dateEnd">00010101000000</entry>
+<entry key="sqlStr">SELECT 事件发生时间,发送节点编号,接收节点编号 FROM 事件1 WHERE 流量&gt;10 AND to_date(substr(事件发生时间,0,14),'yyyyMMddHH24miss') between to_date('00010101082818','yyyyMMddHH24miss') AND to_date('00010101000000','yyyyMMddHH24miss') AND 1=1</entry>
+</properties>

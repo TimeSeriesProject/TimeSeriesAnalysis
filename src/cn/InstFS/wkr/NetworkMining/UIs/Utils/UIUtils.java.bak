@@ -1,0 +1,38 @@
+package cn.InstFS.wkr.NetworkMining.UIs.Utils;
+
+import java.awt.TrayIcon.MessageType;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.swing.JOptionPane;
+
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.UIs.MainFrame;
+
+public class UIUtils {
+	public static boolean autoChangeResultsPanel = false;
+	public static Date curTime;
+	
+	public static void InitFactories(){
+		NetworkMinerFactory.getInstance();
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			curTime = sdf.parse("2014-02-10 00:00:00");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	public static void getCurTime(){
+		return curTime;
+	}
+	
+	public static void showErrMsg(String msg){
+		JOptionPane.showMessageDialog(MainFrame.topFrame, msg, "´íÎó£¡", JOptionPane.ERROR_MESSAGE);
+	}
+	public static void appendOutput(String str){
+		if (MainFrame.topFrame != null)
+			MainFrame.topFrame.appendOutput(str);
+	}
+}

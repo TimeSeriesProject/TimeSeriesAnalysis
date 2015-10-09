@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="DB_USER">rdfusr</entry>
+<entry key="DB_DRIVER">oracle.jdbc.driver.OracleDriver</entry>
+<entry key="DB_PASS">wangshen</entry>
+<entry key="DB_TABLE">事件1</entry>
+<entry key="DB_URL">jdbc:oracle:thin:@128.0.0.103:1521/ORCL</entry>
+</properties>
