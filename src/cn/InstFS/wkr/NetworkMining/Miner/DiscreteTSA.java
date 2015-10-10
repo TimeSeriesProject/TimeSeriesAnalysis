@@ -152,7 +152,7 @@ public class DiscreteTSA{
 		discretePM.setDataItems(di);
 		discretePM.predictPeriod();
 		discretePM.getFirstPossiblePeriod();
-		hasPeriod=discretePM.getHasPeriod();
+		hasPeriod=discretePM.hasPeriod();
 		cycleSpan=discretePM.getPredictPeriod();
 		periodValues=discretePM.getPreidctValues();
 		lastNumIndexInPeriod=discretePM.getLastNumIndexInPeriod();
