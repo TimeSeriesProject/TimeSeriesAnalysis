@@ -19,7 +19,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 
-public class DiscretePM implements IMinerPM{
+public class DiscretePM {
 	
 	private final int dimension;//离散的维度
 	private TaskElement task;
@@ -106,7 +106,7 @@ public class DiscretePM implements IMinerPM{
 		return predictValues;
 	}
 	
-	public long getPredictPeriod(){
+	public int getPredictPeriod(){
 		if(hasPeriod){
 			return predictPeriod;
 		}else{
@@ -115,7 +115,7 @@ public class DiscretePM implements IMinerPM{
 		
 	}
 	
-	public Boolean getHasPeriod(){
+	public boolean hasPeriod(){
 		return hasPeriod;
 	}
 	
@@ -259,7 +259,6 @@ public class DiscretePM implements IMinerPM{
 	}
 	
 	
-	@Override
 	/**
 	 * 预测周期和该周期内各粒度中离散值的概率分布
 	 */
@@ -389,8 +388,9 @@ public class DiscretePM implements IMinerPM{
 		return entropies;
 	}
 
-	@Override
 	public void setDataItems(DataItems dataItems) {
 		this.di = dataItems;
 	}
+	
+	
 }
