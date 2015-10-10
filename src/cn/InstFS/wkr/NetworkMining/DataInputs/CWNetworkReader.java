@@ -126,6 +126,10 @@ public class CWNetworkReader  implements IReader{
     private ArrayList<Link> linkList = new ArrayList<Link> ();
     private TaskElement task = null;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+    private int start	=	0;
+	private int end		=	365*24*60*60-1;	
+	private int timeseg =   24*60*60;
+	private DataItems dataItems = new DataItems();
 	public static void main(String[] args) 
 	{
 		// TODO Auto-generated method stub
@@ -210,7 +214,7 @@ public class CWNetworkReader  implements IReader{
 		 Date date = cal.getTime();
 		 return date;
 	}
-	private DataItems readClusterByText(String condition)
+	private void getlinkList()
 	{
 		String path=task.getSourcePath();
 		DataItems dataItems=new DataItems();
@@ -226,7 +230,6 @@ public class CWNetworkReader  implements IReader{
 				
 				while((curLine=textReader.readLine())!=null)
 				{
-					
 					Map<Integer,Double>	map = new HashMap<Integer,Double>();  //记录结点平均跳数
 					//List<Map.Entry<Integer,Double>> mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet());
 					ArrayList<Map.Entry<Integer,Double>> mappingList = null; 
@@ -282,35 +285,39 @@ public class CWNetworkReader  implements IReader{
 				}
 			}
 			Collections.sort(linkList);
-			int timeseg = Integer.valueOf(condition);
-			int start	=	0;
-			int end		=	365*24*60*60-1;	
-			int presegnum=0;
-			int cursegnum;
-			Map<Pair,Integer> matrix =new TreeMap<Pair,Integer>();
-			/**
-			 * 每个时间段计算簇数，返回序列
-			 */
-			for(int i=0;i<linkList.size();i++)
-			{
-				 cursegnum = (linkList.get(i).time-start)/timeseg;
-				 if(cursegnum>presegnum)
-				 {
-					 presegnum=cursegnum;
-					 matrix = new TreeMap<Pair,Integer>();
-					 
-					 Date date = second2Date(timeseg*presegnum);
-					 dataItems.add1Data(date, String.valueOf(calCluster(matrix)));
-				 }
-				 matrix.put(new Pair(linkList.get(i).start,linkList.get(i).end), 1);
-			}
-			
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 			System.exit(0);
 		}
+	}
+	private DataItems readClusterByText()
+	{
+		
+		int presegnum=0;
+		int cursegnum;
+		Map<Pair,Integer> matrix =new TreeMap<Pair,Integer>();
+		
+		getlinkList();
+		
+		/**
+		 * 每个时间段计算簇数，返回序列
+		 */
+		for(int i=0;i<linkList.size();i++)
+		{
+			 cursegnum = (linkList.get(i).time-start)/timeseg;
+			 if(cursegnum>presegnum)
+			 {
+				 presegnum=cursegnum;
+				 matrix = new TreeMap<Pair,Integer>();
+				 
+				 Date date = second2Date(timeseg*presegnum);
+				 dataItems.add1Data(date, String.valueOf(calCluster(matrix)));
+			 }
+			 matrix.put(new Pair(linkList.get(i).start,linkList.get(i).end), 1);
+		}
+			
 		return dataItems;
 	}
 	@Override
