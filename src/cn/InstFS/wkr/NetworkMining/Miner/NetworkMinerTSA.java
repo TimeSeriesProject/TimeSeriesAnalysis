@@ -17,6 +17,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
@@ -138,14 +139,19 @@ class TSATimerTask extends TimerTask{
 		}
 
 		results.setInputData(dataItems);
+		IMinerTSA tsaMethod=null;
 		
-		int dimension=Math.max(task.getDiscreteDimension(),dataItems.getDiscretizedDimension());
-		DiscreteTSA discreteTSA=new DiscreteTSA(dimension, task,task.getDiscreteEndNodes(),
-				params.getPeriodThreshold(),params.getOutlierThreshold()
-				,params.getPredictPeriod(),dataItems);
-		discreteTSA.predictByAR();
-		results.getRetTSA().setOutlies(discreteTSA.getOutlies());            //查找异常
-		results.getRetTSA().setPredictItems(discreteTSA.getPredictItems());  //预测
+//		int dimension=Math.max(task.getDiscreteDimension(),dataItems.getDiscretizedDimension());
+		if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ARTSA)){
+			tsaMethod=new ARTSA(task, params.getPredictPeriod(),dataItems);
+		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistTSA)){
+			tsaMethod=new ERPDistTSA(task,params.getPredictPeriod(),dataItems);
+		}else{
+			throw new RuntimeException("方法不存在！");
+		}
+		tsaMethod.TimeSeriesAnalysis();
+		results.getRetTSA().setOutlies(tsaMethod.getOutlies());            //查找异常
+		results.getRetTSA().setPredictItems(tsaMethod.getPredictItems());  //预测
 		
 //		boolean isDiscrete = dataItems.isDiscrete();
 //		if (!isDiscrete){	// 连续值

@@ -15,6 +15,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsPM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
@@ -140,18 +141,31 @@ class PMTimerTask extends TimerTask{
 
 		int dimension = task.getDiscreteDimension();
 		dimension = Math.max(task.getDiscreteDimension(), dataItems.getDiscretizedDimension());
+		IMinerPM pmMethod=null;
+		if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_averageEntropyPM)){
+			pmMethod=new averageEntropyPM(task, dimension,paramsPM.getPeriodThreshold());
+		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
+			pmMethod=new ERPDistencePM(paramsPM.getPeriodThreshold());
+		}else{
+			throw new RuntimeException("方法不存在！");
+		}
+		pmMethod.setDataItems(dataItems);
+		pmMethod.predictPeriod();
+		results.setInputData(dataItems);
 		
-		DiscretePM discretePM=new DiscretePM(task,dimension, paramsPM.getPeriodThreshold());
-		discretePM.setDataItems(dataItems);
-		discretePM.predictBySeqSimility();//计算周期值
-		results.setInputData(discretePM.getDi());
 		MinerResultsPM retPM = results.getRetPM();
-		retPM.setHasPeriod(discretePM.getHasPeriod());
-		retPM.setPeriod(discretePM.getPredictPeriod());
-		retPM.setDistributePeriod(discretePM.getDistributeItems());
-		retPM.setFeatureValue(discretePM.getMinEntropy());
-		retPM.setFeatureValues(discretePM.getEntropies());
-		retPM.setFirstPossiblePeriod(discretePM.getFirstPossiblePeriod());//找出第一个呈现周期性的周期
+		retPM.setHasPeriod(pmMethod.hasPeriod());
+		retPM.setPeriod(pmMethod.getPredictPeriod());
+		retPM.setDistributePeriod(pmMethod.getItemsInPeriod());
+		retPM.setFeatureValue(pmMethod.getMinEntropy());
+		retPM.setFeatureValues(pmMethod.getEntropies());
+		retPM.setFirstPossiblePeriod(pmMethod.getFirstPossiblePeriod());//找出第一个呈现周期性的周期
+		
+		
+//		DiscretePM discretePM=new DiscretePM(task,dimension, paramsPM.getPeriodThreshold());
+//		discretePM.setDataItems(dataItems);
+//		discretePM.predictBySeqSimility();//计算周期值
+//		results.setInputData(discretePM.getDi());
 		
 		isRunning = false;
 		if (displayer != null)

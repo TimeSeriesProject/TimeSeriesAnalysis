@@ -19,7 +19,6 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		if (inst != null)
 			return inst;
 		inst = new NetworkMinerFactory();
-		//inst.onCreate();
 		return inst;
 	}
 	
@@ -34,9 +33,9 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		if(task.getTaskRange().equals(TaskRange.NodePairRange)){
 			reader=new nodePairReader(task, task.getRange().split(","));
 		}else if(task.getTaskRange().equals(TaskRange.SingleNodeRange)){
-			
+			//TODO　生成单节点读取数据Reader
 		}else if(task.getTaskRange().equals(TaskRange.WholeNetworkRange)){
-			
+			//TODO 生成整个网络读取数据Reader
 		}
 		if (task.getMiningMethod().equals(MiningMethod.MiningMethods_SequenceMining)){
 			miner = new NetworkMinerSM(task,reader);
@@ -98,7 +97,6 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	@Override
 	public void onTaskDeleted(TaskElement task) {
 		removeMiner(task);
-		
 	}
 	@Override
 	public void onTaskModified(TaskElement task, int modify_type) {
@@ -115,7 +113,6 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 				miner.start();
 			}
 		}
-		
 	}
 	@Override
 	public void onTaskToDisplay(TaskElement task) {

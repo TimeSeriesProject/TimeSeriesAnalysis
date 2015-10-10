@@ -69,6 +69,8 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 	private String filterCondition;
 	
 	private MiningMethod miningMethod;
+	private MiningAlgo miningAlgo;
+
 	private int granularity;
 	private IParamsNetworkMining miningParams;
 	private String sqlStr;
@@ -115,6 +117,7 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 		TSAExample.setFilterCondition("流量>100");
 		TSAExample.setGranularity(3600);
 		TSAExample.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+		TSAExample.setMiningAlgo(MiningAlgo.MiningAlgo_ARTSA);
 		TSAExample.setDataSource("File");
 		TSAExample.setSourcePath("./configs/sendTimesOfNet1.csv");
 		TSAExample.setDiscreteMethod(DiscreteMethod.自定义端点);
@@ -578,6 +581,14 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 
 	public void setRange(String range) {
 		this.range = range;
+	}
+	
+	public MiningAlgo getMiningAlgo() {
+		return miningAlgo;
+	}
+
+	public void setMiningAlgo(MiningAlgo miningAlgo) {
+		this.miningAlgo = miningAlgo;
 	}
 
 }

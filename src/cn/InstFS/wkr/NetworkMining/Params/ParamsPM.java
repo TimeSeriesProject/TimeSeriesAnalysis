@@ -55,7 +55,7 @@ public class ParamsPM extends IParamsNetworkMining {
 			}
 		} catch (Exception e) {
 			return param;
-		}		
+		}
 		return param;
 	}
 }
