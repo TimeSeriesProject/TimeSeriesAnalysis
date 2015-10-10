@@ -26,13 +26,6 @@ import org.jfree.data.gantt.Task;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 
-
-
-
-
-
-
-
 //import ec.tstoolkit.utilities.Comparator;
 import java.util.Comparator;
 
@@ -91,46 +84,46 @@ class Pair implements Comparable
 	}
 	
 }
-class folderReader
+class TextReader
 {
 	private String path="";
-	private File srcFiles=null;
-	private int index=0;
 	private InputStreamReader fr= null;//new InputStreamReader(new FileInputStream(path+"/"+fileName),encoding);
-	BufferedReader bfr=null;//new BufferedReader(fr);
-	public folderReader(String path)
+	private BufferedReader bfr=null;//new BufferedReader(fr);
+	private String curLine = null;
+	private String encoding = "UTF-8";
+	public TextReader(String path)
 	{
 		this.path = path;
-		this.srcFiles=new File(path);
-		this.index=0;
-	}
-	public String readline()
-	{
-		if
-	}
-	try
-	{
-		
-		for(int i=0;i<srcFiles.list().length;i++)
+		try
 		{
-			String fileName=srcFiles.list()[i];
-			String curLine="";
-			InputStreamReader fr= new InputStreamReader(new FileInputStream(path+"/"+fileName),encoding);
-			BufferedReader bfr=new BufferedReader(fr);
-			
-			while((curLine=bfr.readLine())!=null)
+			fr= new InputStreamReader(new FileInputStream(path),encoding);
+			bfr = new BufferedReader(fr);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
-	catch(Exception e)
+	public String readLine()
 	{
-		e.printStackTrace();
-		System.exit(0);
+		try
+		{
+			curLine=bfr.readLine();
+			if(curLine==null)
+				bfr.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			System.exit(0);
+		}
+		return curLine;
 	}
 }
-public class CWNetworkReader extends DataInputUtils implements IReader{
+public class CWNetworkReader  implements IReader{
    
-    private String encoding="UTF-8";
     private ArrayList<Link> linkList = new ArrayList<Link> ();
+    private TaskElement task = null;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 	public static void main(String[] args) 
 	{
@@ -138,14 +131,12 @@ public class CWNetworkReader extends DataInputUtils implements IReader{
 		TaskElement task = new TaskElement();
 		task.setSourcePath("");
 		CWNetworkReader reader = new CWNetworkReader(task);
-		reader.readInputByText("Cluser");
+		//reader.readInputByText("Cluser");
 		
-	}
+	 }
 	CWNetworkReader(TaskElement task)
 	{
-		super(task);
-		
-		
+		this.task=task;
 	}
 	public DataItems readInputByText()
 	{
@@ -214,7 +205,7 @@ public class CWNetworkReader extends DataInputUtils implements IReader{
 	{
 		 Calendar cal = Calendar.getInstance();
 		 cal.set(2015, 9, 1, 0, 0, 0);
-		 cal.add(cal.SECOND,second);
+		 cal.add(Calendar.SECOND,second);
 		 Date date = cal.getTime();
 		 return date;
 	}
@@ -222,29 +213,27 @@ public class CWNetworkReader extends DataInputUtils implements IReader{
 	{
 		String path=task.getSourcePath();
 		DataItems dataItems=new DataItems();
-		
+
 		File srcFiles=new File(path);
 		try
 		{
-			
 			for(int i=0;i<srcFiles.list().length;i++)
 			{
-				String fileName=srcFiles.list()[i];
-				String curLine="";
-				InputStreamReader fr= new InputStreamReader(new FileInputStream(path+"/"+fileName),encoding);
-				BufferedReader bfr=new BufferedReader(fr);
 				
-				while((curLine=bfr.readLine())!=null)
+				TextReader textReader = new TextReader(path+"/"+srcFiles.list()[i]);
+				String curLine="";
+				
+				while((curLine=textReader.readLine())!=null)
 				{
-					ArrayList<NodeandHops> list = new ArrayList<NodeandHops>();
-					Map<Integer,Double>	map = new HashMap<Integer,Double>();
+					
+					Map<Integer,Double>	map = new HashMap<Integer,Double>();  //记录结点平均跳数
 					//List<Map.Entry<Integer,Double>> mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet());
 					ArrayList<Map.Entry<Integer,Double>> mappingList = null; 
 				    mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet()); 
 					
 					String seg[]=curLine.split(",");
 					/**
-					 * 将结点跳数加入map排序，得到路径。
+					 * 记录结点平均跳数。
 					 */
 					for(int j=5;j<seg.length;j++)
 					{
@@ -260,6 +249,10 @@ public class CWNetworkReader extends DataInputUtils implements IReader{
 						
 
 					}
+					
+					/**
+					 * 结点排序
+					 */
 					mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet()); 
 //					ArrayList <Integer>tmpList =new ArrayList<Integer>();
 					Collections.sort(mappingList, new Comparator<Map.Entry<Integer,Double>>()
@@ -269,10 +262,11 @@ public class CWNetworkReader extends DataInputUtils implements IReader{
 							return mapping1.getValue().compareTo(mapping2.getValue());
 						}	
 					}); 
-					Iterator<Map.Entry<Integer,Double>> iter = mappingList.iterator();
+					
 					/**
 					 * 生成路径
 					 */
+					Iterator<Map.Entry<Integer,Double>> iter = mappingList.iterator();
 					if(mappingList.size() > 1)
 					{
 						int preNode = iter.next().getKey();
@@ -293,6 +287,9 @@ public class CWNetworkReader extends DataInputUtils implements IReader{
 			int presegnum=0;
 			int cursegnum;
 			Map<Pair,Integer> matrix =new TreeMap<Pair,Integer>();
+			/**
+			 * 每个时间段计算簇数，返回序列
+			 */
 			for(int i=0;i<linkList.size();i++)
 			{
 				 cursegnum = (linkList.get(i).time-start)/timeseg;
@@ -331,65 +328,6 @@ public class CWNetworkReader extends DataInputUtils implements IReader{
 		return null;
 	}
 	
-	
-	
-	
-	//读取数据库中的数据
-//	public DataItems readInputBySql()
-//	{
-//		
-//		return dataItems;
-//	}
-	
-	/**
-	 * 读取数据库中符合要求的数据  
-	 * @param condition 为sql语句形式的数据过滤条件 如 "sip=='10.0.1.1' and dip=='10.0.1.2'"
-	 * @return 符合要求的数据
-	 */
-//	public DataItems readInputBySql(String condition)
-//	{
-//		
-//		return dataItems;
-//	} 
-	/**
-	 * 读取文本文件中的符合要求的数据
-	 * @param condistions 是数组形式的数据过滤条件 
-	 * 如  conditions[0]为sip=='10.0.1.1'    conditions[1]为dip=='10.0.1.2'
-	 * @return
-	 */
-//	public DataItems readInputByText(String[] condistions)
-//	{
-//		 
-//		 File floder = new File(task.getSourcePath());
-//		 String[] filelist = floder.list();
-//         for (int i = 0; i < filelist.length; i++) 
-//         {
-//        	 File readfile = new File(task.getSourcePath() + "\\" + filelist[i]);
-//               
-//        	 System.out.println("path=" + readfile.getPath());
-//        	 FileInputStream is=new FileInputStream(readfile);
-//     		 BufferedReader reader=new BufferedReader(new InputStreamReader(is));
-//     		 reader.readLine();
-//     		 String line;
-//     		 while((line=reader.readLine())!=null)
-//     		 {
-//     			String[] values=line.split(",");
-//     			lastYear.add(Calendar.HOUR_OF_DAY, 1);
-//     			dataItems.add1Data(lastYear.getTime(), values[1]);            
-//     		 }
-//             
-//         }
-//         
-//         
-//		FileInputStream is=new FileInputStream(new File(textPath));
-//		BufferedReader reader=new BufferedReader(new InputStreamReader(is));
-//		reader.readLine();
-//		while((line=reader.readLine())!=null){
-//			String[] values=line.split(",");
-//			lastYear.add(Calendar.HOUR_OF_DAY, 1);
-//			dataItems.add1Data(lastYear.getTime(), values[1]);
-//		return dataItems;
-//	}
 	
 	
 }
