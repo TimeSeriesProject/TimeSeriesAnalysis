@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
 encoding//configs/DB_CONFIG.xml.bak=GBK
+encoding//src/cn/InstFS/wkr/NetworkMining/DataInputs/IReader.java=GBK
+encoding//src/cn/InstFS/wkr/NetworkMining/DataInputs/SingleNodeDataInputs.java=UTF-8
 encoding//src/cn/InstFS/wkr/NetworkMining/Miner/ContinuousPeriodDetection.java=UTF-8
 encoding//src/cn/InstFS/wkr/NetworkMining/Miner/NetworkMinerPM.java=GBK
