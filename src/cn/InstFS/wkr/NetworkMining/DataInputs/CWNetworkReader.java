@@ -19,12 +19,17 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 
  
+
+
 import org.jfree.data.gantt.Task;
 
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
+
+
 
 
 //import ec.tstoolkit.utilities.Comparator;
@@ -124,6 +129,7 @@ class TextReader
 public class CWNetworkReader  implements IReader{
    
     private ArrayList<Link> linkList = new ArrayList<Link> ();
+    //private Set<String> nodesSet	= new HashSet<String>();
     private TaskElement task = null;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     private int start	=	0;
@@ -147,64 +153,6 @@ public class CWNetworkReader  implements IReader{
 	{
 		DataItems dataItems=null;
 		return dataItems;
-	}
-	/**
-	 * 计算簇系数
-	 * @return
-	 */
-	private double calCluster(Map<Pair,Integer> matrix)
-	{
-		double result=0.0;
-		Map<Integer,Set<Integer>> neighbourMap= new HashMap<Integer,Set<Integer>> ();
-		/**
-		 * 获得结点所有邻居
-		 */
-		for(Map.Entry<Pair, Integer> entry:matrix.entrySet())
-		{
-			int st = entry.getKey().first;
-			int ed = entry.getKey().second;
-			if(!neighbourMap.containsKey(st))
-			{
-				Set<Integer> set = new HashSet<Integer> ();
-				neighbourMap.put(st, set);
-			}
-			if(!neighbourMap.containsKey(ed))
-			{
-				Set<Integer> set = new HashSet<Integer> ();
-				neighbourMap.put(ed, set);
-			}
-			neighbourMap.get(st).add(ed);
-			neighbourMap.get(ed).add(st);
-		}
-		/**
-		 * 计算结点簇系数
-		 */
-		for(Map.Entry<Integer,Set<Integer>> entry:neighbourMap.entrySet())
-		{
-			int k = entry.getValue().size();
-			int edgenum=0;
-			Iterator<Integer> iter = entry.getValue().iterator();
-			ArrayList<Integer> list = new ArrayList<Integer>();
-			while(iter.hasNext())
-			{
-				list.add(iter.next());
-			}
-			for(int i = 0;i<list.size();i++)
-			{
-				for( int j = 0;j<list.size();j++)
-				{
-					if(matrix.get(new Pair(i,j)) != null||matrix.get(new Pair(j,i))!=null)
-					{
-						edgenum++;
-					}
-					
-				}
-			}
-			result += 2.0*edgenum/(k*(k-1));
-		}
-		result/=neighbourMap.size();   //平均簇系数
-		return result;
-		
 	}
 	private Date second2Date(int second)
 	{
@@ -292,6 +240,109 @@ public class CWNetworkReader  implements IReader{
 			System.exit(0);
 		}
 	}
+	
+	/**
+	 * 计算簇系数
+	 * @return
+	 */
+	private double calCluster(Map<Pair,Integer> matrix)
+	{
+		double result=0.0;
+		Map<Integer,Set<Integer>> neighbourMap= new HashMap<Integer,Set<Integer>> ();
+		/**
+		 * 获得结点所有邻居
+		 */
+		for(Map.Entry<Pair, Integer> entry:matrix.entrySet())
+		{
+			int st = entry.getKey().first;
+			int ed = entry.getKey().second;
+			if(!neighbourMap.containsKey(st))
+			{
+				Set<Integer> set = new HashSet<Integer> ();
+				neighbourMap.put(st, set);
+			}
+			if(!neighbourMap.containsKey(ed))
+			{
+				Set<Integer> set = new HashSet<Integer> ();
+				neighbourMap.put(ed, set);
+			}
+			neighbourMap.get(st).add(ed);
+			neighbourMap.get(ed).add(st);
+		}
+		/**
+		 * 计算结点簇系数
+		 */
+		for(Map.Entry<Integer,Set<Integer>> entry:neighbourMap.entrySet())
+		{
+			int k = entry.getValue().size();
+			int edgenum=0;
+			Iterator<Integer> iter = entry.getValue().iterator();
+			ArrayList<Integer> list = new ArrayList<Integer>();
+			while(iter.hasNext())
+			{
+				list.add(iter.next());
+			}
+			for(int i = 0;i<list.size();i++)
+			{
+				for( int j = 0;j<list.size();j++)
+				{
+					if(matrix.get(new Pair(i,j)) != null||matrix.get(new Pair(j,i))!=null)
+					{
+						edgenum++;
+					}
+					
+				}
+			}
+			result += 2.0*edgenum/(k*(k-1));
+		}
+		result/=neighbourMap.size();   //平均簇系数
+		return result;
+		
+	}
+	/**
+	 * 计算网络直径
+	 * @param matrix
+	 * @return
+	 */
+	private int calDiameter(Map<Pair, Integer> matrix)
+	{
+		// TODO Auto-generated method stub
+		int result = 0;
+		
+		Set<Integer> nodesSet = new TreeSet<Integer>();
+		for(Map.Entry<Pair, Integer> entry:matrix.entrySet())
+		{
+			nodesSet.add(entry.getKey().first);
+			nodesSet.add(entry.getKey().second);
+		}
+		Integer [] p =nodesSet.toArray(new Integer [nodesSet.size()]);
+		int [][]dis = new int[p.length][p.length];
+		/**
+		 * floyd计算所有点对最近距离
+		 */
+		for(int i=0;i<p.length;i++)
+			for(int j=0;j<p.length;j++)
+			{
+				if(matrix.get(new Pair(p[i],p[j]))==null)
+				dis[i][j]=Integer.MAX_VALUE;
+				else
+					dis[i][j]=1;
+				if(i==j)
+					dis[i][j]=0;
+			}
+		for(int k=0;k<p.length;k++)
+			for(int i=0;i<p.length;i++)
+				for(int j=0;j<p.length;j++)
+				{
+					dis[i][j]=dis[i][k]+dis[k][j]<dis[i][j]?dis[i][k]+dis[k][j]:dis[i][j];
+				}
+		
+		for(int i=0;i<p.length;i++)
+			for(int j=0;j<p.length;j++)
+				result = dis[i][j]>result?dis[i][j]:result;
+		return result;
+	}
+	
 	private DataItems readClusterByText()
 	{
 		
@@ -316,10 +367,41 @@ public class CWNetworkReader  implements IReader{
 				 dataItems.add1Data(date, String.valueOf(calCluster(matrix)));
 			 }
 			 matrix.put(new Pair(linkList.get(i).start,linkList.get(i).end), 1);
+			 matrix.put(new Pair(linkList.get(i).end,linkList.get(i).start), 1);
 		}
 			
 		return dataItems;
 	}
+	private DataItems readDiameterByText()
+	{
+		int presegnum=0;
+		int cursegnum;
+		Map<Pair,Integer> matrix =new TreeMap<Pair,Integer>();
+	
+		getlinkList();
+		
+		/**
+		 * 每个时间段计算簇数，返回序列
+		 */
+		for(int i=0;i<linkList.size();i++)
+		{
+			 cursegnum = (linkList.get(i).time-start)/timeseg;
+			 if(cursegnum>presegnum)
+			 {
+				 presegnum=cursegnum;
+				 matrix = new TreeMap<Pair,Integer>();
+				 
+				 Date date = second2Date(timeseg*presegnum);
+				 dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));
+			 }
+			 matrix.put(new Pair(linkList.get(i).start,linkList.get(i).end), 1);
+			 matrix.put(new Pair(linkList.get(i).end,linkList.get(i).start), 1);
+			
+		}
+		
+		return dataItems;
+	}
+	
 	@Override
 	public DataItems readInputBySql() {
 		// TODO Auto-generated method stub
