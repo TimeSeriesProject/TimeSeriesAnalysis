@@ -134,26 +134,32 @@ public class CWNetworkReader  implements IReader{
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     private int start	=	0;
 	private int end		=	365*24*60*60-1;	
-	private int timeseg =   24*60*60;
+	private int timeseg =   1*24*60*60; //两天粒度
 	private DataItems dataItems = new DataItems();
+	
 	public static void main(String[] args) 
 	{
 		// TODO Auto-generated method stub
 		TaskElement task = new TaskElement();
-		task.setSourcePath("");
+		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\NetworkMiningSystem\\mergeNode");
+		
+		task.setMiningObject("簇系数");
 		CWNetworkReader reader = new CWNetworkReader(task);
-		//reader.readInputByText("Cluser");
+		System.out.println("簇系数");
+		System.out.println(reader.readClusterByText().getData());
+		
+	
+		task.setMiningObject("网络直径");
+		reader = new CWNetworkReader(task);
+		System.out.println("网络直径");
+		System.out.println(reader.readInputByText().getData());
 		
 	 }
 	CWNetworkReader(TaskElement task)
 	{
 		this.task=task;
 	}
-	public DataItems readInputByText()
-	{
-		DataItems dataItems=null;
-		return dataItems;
-	}
+	
 	private Date second2Date(int second)
 	{
 		 Calendar cal = Calendar.getInstance();
@@ -175,7 +181,7 @@ public class CWNetworkReader  implements IReader{
 				
 				TextReader textReader = new TextReader(path+"/"+srcFiles.list()[i]);
 				String curLine="";
-				
+				String header =textReader.readLine(); //文件头部
 				while((curLine=textReader.readLine())!=null)
 				{
 					Map<Integer,Double>	map = new HashMap<Integer,Double>();  //记录结点平均跳数
@@ -225,14 +231,19 @@ public class CWNetworkReader  implements IReader{
 						for(;iter.hasNext();)
 						{
 							int curNode =iter.next().getKey();
-							
-							preNode = curNode;
 							linkList.add(new Link(preNode,curNode,Integer.valueOf(seg[0])));
+							preNode = curNode;
+							
 						}
 					}
 				}
 			}
 			Collections.sort(linkList);
+			
+//			for(int i=0;i<linkList.size();i++)
+//			{
+//				System.out.println(linkList.get(i).start+" "+linkList.get(i).end+" "+linkList.get(i).time);
+//			}
 		}
 		catch(Exception e)
 		{
@@ -284,7 +295,7 @@ public class CWNetworkReader  implements IReader{
 			}
 			for(int i = 0;i<list.size();i++)
 			{
-				for( int j = 0;j<list.size();j++)
+				for( int j = i+1;j<list.size();j++)
 				{
 					if(matrix.get(new Pair(i,j)) != null||matrix.get(new Pair(j,i))!=null)
 					{
@@ -293,9 +304,14 @@ public class CWNetworkReader  implements IReader{
 					
 				}
 			}
-			result += 2.0*edgenum/(k*(k-1));
+//			System.out.println("cu "+2.0*edgenum/(k*(k-1))+"k "+k);
+			if(k<2)
+				result+=0;
+			else
+				result += 2.0*edgenum/(k*(k-1));
 		}
 		result/=neighbourMap.size();   //平均簇系数
+//		System.out.println("neighbourMap"+neighbourMap.size());
 		return result;
 		
 	}
@@ -324,17 +340,19 @@ public class CWNetworkReader  implements IReader{
 			for(int j=0;j<p.length;j++)
 			{
 				if(matrix.get(new Pair(p[i],p[j]))==null)
-				dis[i][j]=Integer.MAX_VALUE;
+					dis[i][j]=Integer.MAX_VALUE;
+				else if(i==j)
+					dis[i][j]=0;
 				else
 					dis[i][j]=1;
-				if(i==j)
-					dis[i][j]=0;
+//				System.out.println("i "+i+"j "+j+"dis "+dis[i][j]);
 			}
 		for(int k=0;k<p.length;k++)
 			for(int i=0;i<p.length;i++)
 				for(int j=0;j<p.length;j++)
 				{
-					dis[i][j]=dis[i][k]+dis[k][j]<dis[i][j]?dis[i][k]+dis[k][j]:dis[i][j];
+					if(dis[i][k]!=Integer.MAX_VALUE&&dis[k][j]!=Integer.MAX_VALUE)
+						dis[i][j]=(dis[i][k]+dis[k][j])<dis[i][j]?(dis[i][k]+dis[k][j]):dis[i][j];
 				}
 		
 		for(int i=0;i<p.length;i++)
@@ -358,13 +376,16 @@ public class CWNetworkReader  implements IReader{
 		for(int i=0;i<linkList.size();i++)
 		{
 			 cursegnum = (linkList.get(i).time-start)/timeseg;
+			// System.out.println("cursegnum "+cursegnum);
 			 if(cursegnum>presegnum)
 			 {
-				 presegnum=cursegnum;
-				 matrix = new TreeMap<Pair,Integer>();
 				 
+				 
+				// System.out.println("matrix "+matrix.size());
 				 Date date = second2Date(timeseg*presegnum);
 				 dataItems.add1Data(date, String.valueOf(calCluster(matrix)));
+				 matrix = new TreeMap<Pair,Integer>();
+				 presegnum=cursegnum;
 			 }
 			 matrix.put(new Pair(linkList.get(i).start,linkList.get(i).end), 1);
 			 matrix.put(new Pair(linkList.get(i).end,linkList.get(i).start), 1);
@@ -388,11 +409,13 @@ public class CWNetworkReader  implements IReader{
 			 cursegnum = (linkList.get(i).time-start)/timeseg;
 			 if(cursegnum>presegnum)
 			 {
-				 presegnum=cursegnum;
-				 matrix = new TreeMap<Pair,Integer>();
+				
 				 
 				 Date date = second2Date(timeseg*presegnum);
 				 dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));
+//				 System.out.println("matrix "+matrix.size());
+				 presegnum=cursegnum;
+				 matrix = new TreeMap<Pair,Integer>();
 			 }
 			 matrix.put(new Pair(linkList.get(i).start,linkList.get(i).end), 1);
 			 matrix.put(new Pair(linkList.get(i).end,linkList.get(i).start), 1);
@@ -413,9 +436,26 @@ public class CWNetworkReader  implements IReader{
 		return null;
 	}
 	@Override
+	public DataItems readInputByText()
+	{
+		switch(task.getMiningObject())
+		{
+		case "簇系数": return readClusterByText();
+		case "网络直径":return readDiameterByText();
+		default: return null;
+		}
+	}
+	@Override
 	public DataItems readInputByText(String[] condistions) {
 		// TODO Auto-generated method stub
-		return null;
+		
+		switch(task.getMiningObject())
+		{
+		case "簇系数": return readClusterByText();
+		case "网络直径":return readDiameterByText();
+		default: return null;
+		}
+		
 	}
 	
 	
