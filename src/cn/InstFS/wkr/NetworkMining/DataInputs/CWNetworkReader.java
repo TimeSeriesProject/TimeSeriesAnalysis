@@ -4,7 +4,6 @@ package cn.InstFS.wkr.NetworkMining.DataInputs;
 
 import java.awt.List;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -20,22 +19,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Vector;
-
- 
-
-
-import org.jfree.data.gantt.Task;
-
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-
-
-
-
-//import ec.tstoolkit.utilities.Comparator;
 import java.util.Comparator;
 
 
+
+
+
+/**
+ * 
+ * @author chenwei
+ *
+ */
 class NodeandHops implements Comparable
 {
 	int Node;
