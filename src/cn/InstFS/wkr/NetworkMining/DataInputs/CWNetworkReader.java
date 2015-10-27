@@ -141,13 +141,14 @@ public class CWNetworkReader  implements IReader{
 		task.setMiningObject("簇系数");
 		CWNetworkReader reader = new CWNetworkReader(task);
 		System.out.println("簇系数");
-		System.out.println(reader.readClusterByText().getData());
-		
+//		System.out.println(reader.readClusterByText().getData());
+		System.out.println(reader.readInputByText().getData());
 	
 		task.setMiningObject("网络直径");
 		reader = new CWNetworkReader(task);
 		System.out.println("网络直径");
 		System.out.println(reader.readInputByText().getData());
+//		System.out.println(reader.readInputByText().getData());
 		
 	 }
 	CWNetworkReader(TaskElement task)

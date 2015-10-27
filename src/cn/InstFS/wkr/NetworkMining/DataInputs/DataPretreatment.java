@@ -1,18 +1,45 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+//import org.hamcrest.Matcher;
 
+
+
+
+
+
+
+
+
+
+
+
+import weka.clusterers.SimpleKMeans;
+import weka.core.Instances;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import cn.InstFS.wkr.NetworkMining.UIs.MainFrame;
 
 public class DataPretreatment {
@@ -285,6 +312,286 @@ public class DataPretreatment {
 			return newDataItems;
 		}
 	}
+	public static DataItems toDiscreteNumbersAccordingToWaveform(DataItems dataItems,TaskElement task)
+	{
+		DataItems result = new DataItems(); 
+		ArrayList<ArrayList<Double>> clustersCenter = new ArrayList<ArrayList<Double>>();
+		int size =0;
+		String fileName= task.getTaskRange().toString();
+		Pattern p= Pattern.compile(".*协议\\s*=(\\d{3}).*");
+		Matcher match =p.matcher(task.getFilterCondition());
+		match.find();
+		fileName+=match.group(1)+task.getGranularity();
+		try
+		{
+			InputStreamReader ir = new InputStreamReader (new FileInputStream(fileName),"UTF-8");
+			BufferedReader br    = new BufferedReader ( ir);
+			String curLine =null;
+		    size = Integer.valueOf(br.readLine());
+			
+			while((curLine = br.readLine())!=null)
+			{
+				String []num = curLine.split(" ");
+				ArrayList<Double> center = new ArrayList<Double>();
+				for(int i = 0 ;i<num.length;i++)
+				{
+					center.add(Double.valueOf(num[i]));
+				}
+				clustersCenter.add(center);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		for(int i=0;i<dataItems.getLength()&&(i+size-1)<dataItems.getLength();i+=size)
+		{
+			ArrayList <Double> vector = new ArrayList<Double>();
+			DataItem dataItem = new DataItem();
+			dataItem.setTime(dataItems.getElementAt(i).getTime());
+			for(int j=i;j<i+size;j++)
+			{
+				vector.add(Double.valueOf(dataItems.getElementAt(j).getData()));
+			}
+			Double min = Double.MAX_VALUE;
+			int index  =0;
+			for(int j=0;j<clustersCenter.size();j++)
+			{
+				Double tmp = erpDistance(vector,clustersCenter.get(j));
+				if(tmp<min)
+				{
+					min = tmp;
+					index = j;
+				}
+			}
+			dataItem.setData(String.valueOf(index));
+			result.add1Data(dataItem);
+		}
+		return result;
+	}
+	public static void trainAll()
+	{
+		TaskElement task = new TaskElement();
+		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\NetworkMiningSystem\\mergeNode");
+		
+		for(TaskRange taskRange:TaskRange.values())
+		{
+//			System.out.println(taskRange);
+			task.setTaskRange(taskRange);
+			for(int procol=402;procol<=410;procol++)
+			{
+				task.setFilterCondition("协议="+procol);
+				task.setGranularity(3600);
+				train(task,10000);
+			}
+			
+//			task.setDateStart(dateStart);
+//			task.setDateEnd(dateEnd);
+//			task.set
+		}
+	}
+	public static void train(TaskElement task,double threshold)
+	{
+		String fileName= task.getTaskRange().toString();
+		Pattern p= Pattern.compile(".*协议\\s*=(\\d{3}).*");
+		Matcher match =p.matcher(task.getFilterCondition());
+		match.find();
+		fileName+=match.group(1)+task.getGranularity();
+		switch(task.getTaskRange())
+		{
+		case NodePairRange:
+		{
+			ArrayList<DataItems> list = new ArrayList<DataItems>();
+			ArrayList <String> ips = new ArrayList<String> ();
+			for(int i=1;i<=10;i++)
+				for(int j=1;j<=6;j++)
+					ips.add("10.0.0."+i+"."+j);
+			for(int i =0;i<ips.size();i++)
+				for(int j=i+1;j<ips.size();j++)
+				{
+					String ip[] = new String[]{ips.get(i),ips.get(j)};
+					IReader reader = new nodePairReader(task,ip);
+					list.add(reader.readInputByText());
+					
+				}
+			runTrain(list,fileName,threshold);
+			break;
+		}
+		case SingleNodeRange:break;
+		case WholeNetworkRange:break;
+		default: break;
+		}
+	}
+	private static void runTrain(ArrayList <DataItems> list,String fileName,double threshold)
+	{
+		int windowSizeMin = 6;
+		int windowSizeMax =  24;
+		ArrayList<Double> instance;
+		ArrayList<ArrayList<Double>>instances = new ArrayList<ArrayList<Double>>();
+		ArrayList<ArrayList<Double>> clusterCenter = null;
+		
+//		ArrayList<ArrayList<ArrayList<Double>>> cluserList = new ArrayList<ArrayList<ArrayList<Double>>>();
+		/**
+		 * 每个窗口训练一次得到最佳窗口
+		 */
+		int min= Integer.MAX_VALUE;
+		int optsize = windowSizeMin;
+		for(int size = windowSizeMin;size<=windowSizeMax;size++)
+		{
+			
+			for(int i=0;i<list.size();i++)
+			{
+				for(int j=0;j<list.get(i).getLength()&&(j+size-1)<list.get(i).getLength();j++)
+				{
+					instance = new ArrayList<Double>();
+					for(int k=j;k<j+size;k++)
+						instance.add(Double.valueOf(list.get(i).getElementAt(j).getData()));
+					instances.add(instance);
+				}
+			}
+			ArrayList<ArrayList<Double>> tmpclusterCenter = new ArrayList<ArrayList<Double>>();
+			int tmp = singlePathCluster(instances,tmpclusterCenter,threshold);
+			if(tmp<min)
+			{
+				min = tmp;
+				clusterCenter = tmpclusterCenter;
+				optsize = size;
+			}
+//			cluserList.add(clusterCenter);
+		}
+		/**
+		 * 将窗口大小与类中心写入文件
+		 * 首行为窗口大小，以下每行一个类中心向量
+		 */
+		try
+		{
+			OutputStreamWriter ow = new OutputStreamWriter(new FileOutputStream(fileName),"UTF-8");
+			BufferedWriter bw     = new BufferedWriter(ow);
+			bw.write(optsize);
+			for(int i =0 ;i<clusterCenter.size();i++)
+			{
+				bw.newLine();
+				StringBuilder sb = new StringBuilder(); 
+				for(int j = 0;j<clusterCenter.get(i).size();j++)
+				{
+					sb.append(clusterCenter.get(i).get(j)+" ");
+				}
+				sb =sb.deleteCharAt(sb.length()-1);
+				
+				bw.write(sb.toString());
+			}
+			
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	/**
+	 * singlepath聚类
+	 * @param instances       训练集
+	 * @param clustersCenter 类中心列表
+	 * @param threshold       阈值
+	 * @return
+	 */
+	private static int singlePathCluster(ArrayList<ArrayList<Double>>instances,ArrayList<ArrayList<Double>> clustersCenter,double threshold)
+	{
+		double num=0;
+		/**
+		 * 存储每个簇有哪些instacece，只存索引
+		 */
+		ArrayList<ArrayList<Integer>> clusersInstanceList = new ArrayList<ArrayList<Integer>>();
+		if(instances.size()>0)
+		{
+			clustersCenter.add(instances.get(0));
+			ArrayList <Integer> list = new ArrayList<Integer>();
+			list.add(0);
+			clusersInstanceList.add(list);
+		}
+		for(int i=1;i<instances.size();i++)
+		{
+			double mindis =Double.MAX_VALUE ;
+			double tmpdis=0.0;
+			int index = 0;
+			for(int j=0;j<clustersCenter.size();j++)
+			{
+				tmpdis = erpDistance(clustersCenter.get(j),instances.get(i));
+				if(tmpdis<mindis)
+				{
+					mindis = tmpdis;
+					index =j;
+				}
+				if(mindis>threshold)
+				{
+					/**
+					 * 加入新簇
+					 */
+					clustersCenter.add(instances.get(i));
+					ArrayList <Integer> list = new ArrayList<Integer>();
+					list.add(i);
+					clusersInstanceList.add(list);
+				}
+				else
+				{
+					/**
+					 * 重新计算center
+					 */
+					clusersInstanceList.get(index).add(i);	//将该结点加入到簇
+					double n = clusersInstanceList.get(index).size();
+					 
+					for(int k=0;k<clustersCenter.get(index).size();k++)
+					{
+						double tmp = (clustersCenter.get(index).get(k)*(n-1)+instances.get(i).get(k))/n;
+						clustersCenter.get(index).set(k,tmp);
+					}
+				}
+//				mindis = tmpdis<mindis?tmpdis:mindis;
+			}
+		}
+		return clustersCenter.size();
+	}
+	private static double erpDistance(List<Double>list1,List<Double>list2)
+	{
+		double dp[][] = new double[list1.size()+1][list2.size()+1];
+		dp[0][0]=0;
+		for(int i=0;i<list1.size();i++)
+			for(int j =0 ;j<list2.size();j++)
+			{
+				dp[i][j]=Double.MAX_VALUE;
+				double tmp;
+				if(i-1>=0&&j-1>=0)
+				{
+					tmp = dp[i-1][j-1]+Math.abs(list1.get(i)-list2.get(j));
+					dp[i][j] =tmp<dp[i][j]?tmp:dp[i][j];
+				}
+				else if(i-1>=0)
+				{
+					tmp = dp[i-1][j]+list1.get(i);
+					dp[i][j] = tmp<dp[i][j]?tmp:dp[i][j];
+				}
+				else if(j-1>=0)
+				{
+					tmp = dp[i][j-1]+list2.get(j);
+					dp[i][j] = tmp<dp[i][j]?tmp:dp[i][j];
+				}
+			}
+		
+		return dp[list1.size()][list2.size()];
+	}
 	
-	
+	public static void main(String args[])
+	{
+		TaskElement task = new TaskElement();
+		System.out.println(TaskRange.NodePairRange);
+		Pattern p= Pattern.compile(".*协议\\s*=(\\d{3}).*");
+		Matcher match = p.matcher("协议=402");
+		match.find();
+		System.out.println(match.group(1));
+//		NodePairReader.
+		trainAll();
+//		toDiscreteNumbersAccordingToWaveform
+	}
 }
