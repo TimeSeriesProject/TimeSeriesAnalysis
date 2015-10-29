@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -38,6 +39,7 @@ public class nodePairReader implements IReader {
 		}
 	}
 	
+	public nodePairReader(){}
 	
 	public DataItems readInputAfter(Date date){
 		Date dEnd;
@@ -66,9 +68,23 @@ public class nodePairReader implements IReader {
 		return readInputBetween(dStart, date);
 	}
 	
+	
+	/**
+	 * 读取两个时间段之间的数据
+	 * @param date1 起始时间
+	 * @param date2 结束时间
+	 * @return
+	 */
 	public DataItems readInputBetween(Date date1, Date date2){
 		if(textSource){
+			Calendar calendar=Calendar.getInstance();
+			calendar.set(2014, 9, 1, 0, 0, 0);
+			long startTime=(date1.getTime()-calendar.getTimeInMillis())/(1000*1000);
+			long endTime=(date2.getTime()-calendar.getTimeInMillis())/(1000*1000);
+			
 			String[] conditions=new String[2];
+			conditions[0]=("Time(S)>="+startTime);
+			conditions[1]=("Time(S)<="+endTime);
 			return readInputByText(conditions);
 		}else{
 			String filter = "事件发生时间>'" + sdf.format(date1) + "' and " +
@@ -172,22 +188,83 @@ public class nodePairReader implements IReader {
 	
 	@Override
 	public DataItems readInputByText() {
+		DataItems dataItems=new DataItems();
 		String minierObject=task.getMiningObject();
+		File sourceFile=new File(task.getSourcePath());
+		if(sourceFile.isFile()){
+			readFile(sourceFile.getAbsolutePath(), minierObject, dataItems);
+		}else{
+			File[] files=sourceFile.listFiles();
+			for(File file:files){
+				readFile(file.getAbsolutePath(), minierObject, dataItems);
+			}
+		}
+		return dataItems;
+		
+	}
+	
+	
+	
+	@Override
+	public DataItems readInputByText(String[] conditions) {
+		DataItems dataItems=new DataItems();
+		String minierObject=task.getMiningObject();
+		File sourceFile=new File(task.getSourcePath());
+		if(sourceFile.isFile()){
+			readFile(sourceFile.getAbsolutePath(), minierObject, dataItems,conditions);
+		}else{
+			File[] files=sourceFile.listFiles();
+			for(File file:files){
+				readFile(file.getAbsolutePath(), minierObject, dataItems,conditions);
+			}
+		}
+		return dataItems;
+	}
+	
+	private Date parseTime(String timeStr){
+		Calendar cal = Calendar.getInstance();
+		cal.set(2014, 9, 1, 0, 0, 0);
+		cal.add(Integer.parseInt(timeStr), Calendar.SECOND);
+		return cal.getTime();
+	}
+	
+	/**
+	 * 找到字符串数组中某个字符串的位置
+	 * @param name 字符串
+	 * @param names 字符串数组
+	 * @return 字符串在数组中的位置  -1代表没找到
+	 */
+	private int NameToIndex(String name,String[] names){
+		int length=names.length;
+		for(int i=0;i<length;i++){
+			if(names[i].equals(name)||names[i]==name){
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	/**
+	 * 读取文件
+	 * @param filePath 文件路径
+	 * @param minierObject 要读取的属性
+	 * @param dataItems 读到的序列
+	 */
+	private void readFile(String filePath,String minierObject,DataItems dataItems){
 		TextUtils textUtils=new TextUtils();
-		textUtils.setTextPath(task.getSourcePath());
+		textUtils.setTextPath(filePath);
 		String header=textUtils.readByrow();
 		String[] columns=header.split(",");
 		int minerObjectIndex=NameToIndex(minierObject, columns);
 		if(minerObjectIndex==-1){
 			throw new RuntimeException("未找到挖掘对象");
 		}
-		int TimeColIndex=NameToIndex("Time", columns);
-		int SIPColIndex=NameToIndex("SIP", columns);
-		int DIPColIndex=NameToIndex("DIP", columns);
+		int TimeColIndex=NameToIndex("Time(S)", columns);
+		int SIPColIndex=NameToIndex("srcIP", columns);
+		int DIPColIndex=NameToIndex("dstIP", columns);
 		if(TimeColIndex==-1||SIPColIndex==-1||DIPColIndex==-1){
 			throw new RuntimeException("Time SIP SIP 属性在文件中未找到");
 		}
-		DataItems dataItems=new DataItems();
 		String line=null;
 		while((line=textUtils.readByrow())!=null){
 			columns=line.split(",");
@@ -196,28 +273,25 @@ public class nodePairReader implements IReader {
 				dataItems.add1Data(parseTime(columns[TimeColIndex]), columns[minerObjectIndex]);
 			}
 		}
-		return dataItems;
 	}
 	
-	@Override
-	public DataItems readInputByText(String[] conditions) {
-		String minierObject=task.getMiningObject();
+	private void readFile(String filePath,String minierObject,DataItems dataItems,String[] conditions){
 		TextUtils textUtils=new TextUtils();
-		textUtils.setTextPath(task.getDataSource());
+		textUtils.setTextPath(filePath);
 		String header=textUtils.readByrow();
 		String[] columns=header.split(",");
 		int minerObjectIndex=NameToIndex(minierObject, columns);
 		if(minerObjectIndex==-1){
 			throw new RuntimeException("未找到挖掘对象");
 		}
-		int TimeColIndex=NameToIndex("Time", columns);
-		int SIPColIndex=NameToIndex("SIP", columns);
-		int DIPColIndex=NameToIndex("DIP", columns);
+		int TimeColIndex=NameToIndex("Time(S)", columns);
+		int SIPColIndex=NameToIndex("srcIP", columns);
+		int DIPColIndex=NameToIndex("dstIP", columns);
 		if(TimeColIndex==-1||SIPColIndex==-1||DIPColIndex==-1){
 			throw new RuntimeException("Time SIP SIP 属性在文件中未找到");
 		}
-		DataItems dataItems=new DataItems();
-		//解析条件
+		
+		//解析条件 conditions
 		for(int i=0;i<conditions.length;i++){
 			String condition=conditions[i];
 			String compareOper="";
@@ -263,6 +337,9 @@ public class nodePairReader implements IReader {
 				//检查条件
 				boolean fixCondition=true;
 				for(int i=0;i<conditions.length;i++){
+					if(!fixCondition){
+						break;
+					}
 					String[] conditionColumn=conditions[i].split(",");
 					String compareOper=conditionColumn[1];
 					int conditionIndex=Integer.parseInt(conditionColumn[0]);
@@ -310,38 +387,43 @@ public class nodePairReader implements IReader {
 				}
 			}
 		}
-		return dataItems;
 	}
 	
-	private Date parseTime(String timeStr){
-		int difLen = sdf.toPattern().length() - timeStr.length();
-		StringBuilder sb = new StringBuilder();
-		sb.append(timeStr);
-		for (int i = 0; i < difLen; i ++)
-			sb.append("0");
-		try {
-			return sdf.parse(sb.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;		
+	public TaskElement getTask() {
+		return task;
 	}
-	
-	/**
-	 * 找到字符串数组中某个字符串的位置
-	 * @param name 字符串
-	 * @param names 字符串数组
-	 * @return 字符串在数组中的位置  -1代表没找到
-	 */
-	private int NameToIndex(String name,String[] names){
-		int length=names.length;
-		for(int i=0;i<length;i++){
-			if(names[i].equals(name)||names[i]==name){
-				return i;
-			}
-		}
-		return -1;
+
+	public void setTask(TaskElement task) {
+		this.task = task;
 	}
+
+	public String[] getIpPair() {
+		return ipPair;
+	}
+
+	public void setIpPair(String[] ipPair) {
+		this.ipPair = ipPair;
+	}
+
+	public boolean isTextSource() {
+		return textSource;
+	}
+
+	public void setTextSource(boolean textSource) {
+		this.textSource = textSource;
+	}
+
 	
-	
+	public static void main(String[] args){
+		Calendar cal=Calendar.getInstance();
+		cal.set(2014, 9, 1, 0, 0, 0);
+		Date startDate=cal.getTime();
+		cal.add(100, Calendar.DAY_OF_YEAR);
+		Date endDate=cal.getTime();
+		
+		nodePairReader reader=new nodePairReader();
+		reader.readInputBetween(startDate, endDate);
+		
+		
+	}
 }
