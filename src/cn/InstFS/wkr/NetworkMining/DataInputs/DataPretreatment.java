@@ -373,7 +373,7 @@ public class DataPretreatment {
 	public static void trainAll()
 	{
 		TaskElement task = new TaskElement();
-		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\NetworkMiningSystem\\mergeNode");
+		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\HTTPPcap");
 		
 		for(TaskRange taskRange:TaskRange.values())
 		{
@@ -412,7 +412,15 @@ public class DataPretreatment {
 				{
 					String ip[] = new String[]{ips.get(i),ips.get(j)};
 					IReader reader = new nodePairReader(task,ip);
-					list.add(reader.readInputByText());
+					DataItems tmp = reader.readInputByText();
+					DataItems dataItems = reader.readInputByText();
+					for(int k=0;k<tmp.getLength();k++)
+					{
+						DataItem dataItem = tmp.getElementAt(k);
+						dataItem.setData(String.valueOf(Double.valueOf(dataItem.getData())/2));
+						dataItems.add1Data(dataItem);
+					}
+					list.add(dataItems);
 					
 				}
 			runTrain(list,fileName,threshold);
@@ -591,7 +599,15 @@ public class DataPretreatment {
 		match.find();
 		System.out.println(match.group(1));
 //		NodePairReader.
-		trainAll();
+//		TaskElement task = new TaskElement();
+		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\HTTPPcap");
+		task.setDataSource("Text");
+		task.setTaskRange(TaskRange.NodePairRange);
+		task.setFilterCondition("Ð­Òé="+"402");
+		task.setGranularity(3600);
+		train(task,10000);
+			
+//		trainAll();
 //		toDiscreteNumbersAccordingToWaveform
 	}
 }
