@@ -426,6 +426,7 @@ public class nodePairReader implements IReader {
 		
 		nodePairReader reader=new nodePairReader();
 		reader.readInputBetween(startDate, endDate);
+		System.out.println("over");
 		
 		
 	}
