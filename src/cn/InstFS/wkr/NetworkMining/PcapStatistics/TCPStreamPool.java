@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 
 import oracle.net.aso.k;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PcapData;
@@ -15,11 +16,14 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.PcapData;
 public class TCPStreamPool {
 	private Map<String, TCPStream> streams=new HashMap<String, TCPStream>();
 	private Map<String, TCPStream> aliveStreams=new HashMap<String, TCPStream>();
-	private String saveFile="./configs/";
+	private String saveFile="./configs/HTTPPcap/";
 	private FileWriter writer;
+	private Random rand;
 	public TCPStreamPool(String fileName){
 		try {
+			rand=new Random(150);
 			saveFile=saveFile+fileName+".csv";
+			
 			File file=new File(saveFile);
 			if(file.exists()){
 				file.delete();
@@ -30,7 +34,7 @@ public class TCPStreamPool {
 			if(writer==null){
 				writer=new FileWriter(new File(saveFile));
 			}
-			writer.write("Time(S),srcIP,dstIP,traffic,hops\r\n");
+			writer.write("Time(S),srcIP,dstIP,SPort,DPort,traffic,protocol,hops\r\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -148,7 +152,10 @@ public class TCPStreamPool {
 			sb.append((stream.getTime())/1000).append(",");
 			sb.append(stream.getSrcIp()).append(",");
 			sb.append(stream.getDstIP()).append(",");
-			sb.append(stream.getTraffic()).append(",");
+			sb.append(stream.getSrcPort()).append(",");
+			sb.append(stream.getDstPort()).append(",");
+			sb.append(stream.getTraffic()+rand.nextInt(100)).append(",");
+			sb.append(stream.getProtoType()).append(",");
 			sb.append(stream.getHops()).append("\r\n");//append("\r\n")
 			writer.write(sb.toString());
 		}catch(IOException e){

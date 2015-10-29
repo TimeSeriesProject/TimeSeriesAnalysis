@@ -408,6 +408,7 @@ public class nodePairReader implements IReader {
 	public boolean isTextSource() {
 		return textSource;
 	}
+	
 
 	public void setTextSource(boolean textSource) {
 		this.textSource = textSource;
