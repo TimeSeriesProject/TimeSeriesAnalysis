@@ -121,6 +121,5 @@ class FPTimerTask extends TimerTask{
 				MainFrame.topFrame.getSelectedTask() == task||
 				MainFrame.topFrame.getSelectedTask() == null)
 			TaskElement.display1Task(task, ITaskDisplayer.DISPLAY_RESULTS);
-			
 	}		
 }

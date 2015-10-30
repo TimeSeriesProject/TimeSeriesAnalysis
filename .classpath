@@ -91,5 +91,6 @@
 	<classpathentry kind="lib" path="lib/jnetpcap.jar" sourcepath="lib_src/jnetpcap.src.zip"/>
 	<classpathentry kind="lib" path="E:/57/NetworkMiningSystem_toUESTC/lib/REngine.jar"/>
 	<classpathentry kind="lib" path="E:/57/NetworkMiningSystem_toUESTC/lib/RserveEngine.jar"/>
+	<classpathentry kind="lib" path="lib/weka.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

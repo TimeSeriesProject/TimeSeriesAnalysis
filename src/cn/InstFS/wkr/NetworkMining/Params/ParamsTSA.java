@@ -128,5 +128,4 @@ public class ParamsTSA extends IParamsNetworkMining {
 	public void setAmplitudeRatio(double amplitudeRatio) {
 		this.amplitudeRatio = amplitudeRatio;
 	}
-
 }
