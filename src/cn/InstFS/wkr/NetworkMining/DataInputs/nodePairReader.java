@@ -196,11 +196,19 @@ public class nodePairReader implements IReader {
 		String minierObject=task.getMiningObject();
 		File sourceFile=new File(task.getSourcePath());
 		if(sourceFile.isFile()){
-			readFile(sourceFile.getAbsolutePath(), minierObject, dataItems);
+			for(String ip:ipPair){
+				if(isFileContainsIp(ip, sourceFile.getName())){
+					readFile(sourceFile.getAbsolutePath(), minierObject, dataItems);
+				}
+			}
 		}else{
 			File[] files=sourceFile.listFiles();
 			for(File file:files){
-				readFile(file.getAbsolutePath(), minierObject, dataItems);
+				for(String ip:ipPair){
+					if(isFileContainsIp(ip, file.getName())){
+						readFile(file.getAbsolutePath(), minierObject, dataItems);
+					}
+				}
 			}
 		}
 		return dataItems;
@@ -215,11 +223,30 @@ public class nodePairReader implements IReader {
 		String minierObject=task.getMiningObject();
 		File sourceFile=new File(task.getSourcePath());
 		if(sourceFile.isFile()){
-			readFile(sourceFile.getAbsolutePath(), minierObject, dataItems,conditions);
+			boolean isExist=false;
+			for(String ip:ipPair){
+				if(isFileContainsIp(ip, sourceFile.getName())){
+					isExist=true;
+					break;
+				}
+			}
+			if(isExist){
+				readFile(sourceFile.getAbsolutePath(), minierObject, dataItems);
+			}
 		}else{
 			File[] files=sourceFile.listFiles();
 			for(File file:files){
-				readFile(file.getAbsolutePath(), minierObject, dataItems,conditions);
+				boolean isExist=false;
+				for(String ip:ipPair){
+					if(isFileContainsIp(ip, file.getName())){
+						System.out.println("read file "+file.getName());
+						isExist=true;
+						break;
+					}
+				}
+				if(isExist){
+			    	readFile(file.getAbsolutePath(), minierObject, dataItems);
+				}
 			}
 		}
 		return dataItems;
@@ -419,6 +446,22 @@ public class nodePairReader implements IReader {
 	public void setTextSource(boolean textSource) {
 		this.textSource = textSource;
 	}
+	
+	/**
+	 * 判断指定IP通信是否在相应的文件中
+	 * @param ip 
+	 * @param fileName 文件路径
+	 * @return 
+	 */
+	private boolean isFileContainsIp(String ip,String fileName){
+		int fileIndex=Integer.parseInt(fileName.split("-")[1]);
+		int LANIndex=Integer.parseInt(ip.split("\\.")[2]);
+		if((fileIndex/6+1)==LANIndex){
+			return true;
+		}else{
+			return false;
+		}
+	}
 
 	
 	
@@ -434,12 +477,10 @@ public class nodePairReader implements IReader {
 		task.setSourcePath("./configs/smtpPcap");
 		task.setMiningObject("traffic");
 		String[] ips=new String[2];
-		ips[0]="10.0.1.1";
-		ips[1]="10.0.1.2";
+		ips[0]="10.0.1.2";
+		ips[1]="10.0.1.1";
 		nodePairReader reader=new nodePairReader(task,ips);
-		reader.readInputBetween(startDate, endDate);
-		System.out.println("over");
-		
-		
+		DataItems dataItems=reader.readInputBetween(startDate, endDate);
+		System.out.println("over "+dataItems.getLength());
 	}
 }
