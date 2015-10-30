@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cn.InstFS.wkr.NetworkMining.PcapStatistics.IPStreamPool;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 
@@ -79,9 +80,12 @@ public class nodePairReader implements IReader {
 		if(textSource){
 			Calendar calendar=Calendar.getInstance();
 			calendar.set(2014, 9, 1, 0, 0, 0);
-			long startTime=(date1.getTime()-calendar.getTimeInMillis())/(1000*1000);
-			long endTime=(date2.getTime()-calendar.getTimeInMillis())/(1000*1000);
-			
+			Calendar start=Calendar.getInstance();
+			Calendar end=Calendar.getInstance();
+			start.setTime(date1);
+			end.setTime(date2);
+			long startTime=(start.getTimeInMillis()-calendar.getTimeInMillis())/1000;
+			long endTime=(end.getTimeInMillis()-calendar.getTimeInMillis())/1000;
 			String[] conditions=new String[2];
 			conditions[0]=("Time(S)>="+startTime);
 			conditions[1]=("Time(S)<="+endTime);
@@ -421,10 +425,16 @@ public class nodePairReader implements IReader {
 		Calendar cal=Calendar.getInstance();
 		cal.set(2014, 9, 1, 0, 0, 0);
 		Date startDate=cal.getTime();
-		cal.add(100, Calendar.DAY_OF_YEAR);
+		cal.add(Calendar.DAY_OF_MONTH,100);
 		Date endDate=cal.getTime();
-		
-		nodePairReader reader=new nodePairReader();
+		TaskElement task=new TaskElement();
+		task.setDataSource("text");
+		task.setSourcePath("./configs/smtpPcap");
+		task.setMiningObject("traffic");
+		String[] ips=new String[2];
+		ips[0]="10.0.1.1";
+		ips[1]="10.0.1.2";
+		nodePairReader reader=new nodePairReader(task,ips);
 		reader.readInputBetween(startDate, endDate);
 		System.out.println("over");
 		

@@ -37,7 +37,7 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 public class PcapUtils {
 	private boolean SessionLevel=true;   //判断读取的数据是否是业务层数据
 	public static void main(String [] args){
-		String fpath = "./configs/pcap";
+		String fpath = "F:\\pcap";
 		PcapUtils pcapUtils = new PcapUtils();
 		pcapUtils.readInput(fpath,0);
 	}
@@ -64,6 +64,9 @@ public class PcapUtils {
 			File []files = ff.listFiles();
 			for(File f : files){
 				String path=f.getPath();
+				if(f.getName().startsWith("trunk")){
+					continue;
+				}
 				if(path.endsWith("pcap"))
 				{
 					if (f.isFile()){
@@ -180,7 +183,8 @@ public class PcapUtils {
 				event.setTraffic(ip4.length());
 				event.setSrcPort(tcp.source()+"");
 				event.setDstPort(tcp.destination()+"");
-				event.setProtoType("tcp");
+				int protoType=(tcp.source()<tcp.destination())?tcp.source():tcp.destination();
+				event.setProtoType(protoType+"");
 				if(tcp.flags_FIN()){
 					isTcpFIN=true;
 				}	
@@ -188,19 +192,20 @@ public class PcapUtils {
 			if (smtp){
 				//大于80B的包视为数据包
 				if(event.getTraffic()>=62){
-					num ++;
-					
-					int type=(int)packet.getByte(76)+(int)packet.getByte(77)+(int)packet.getByte(78);
-					if(type==0){
-						System.out.println("row:"+num);
-						TCPStream stream = streamPool.getOrCreateStream(event);
-						streamPool.updateTraffic(stream, event, isTcpFIN);
-					}
-					else if(type==3) {
-						System.out.println("reply");
-					}else{
-						System.out.println("anything wrong?");
-					}
+					TCPStream stream = streamPool.getOrCreateStream(event);
+					streamPool.updateTraffic(stream, event, isTcpFIN);
+//					num ++;
+//					int type=(int)packet.getByte(76)+(int)packet.getByte(77)+(int)packet.getByte(78);
+//					if(type==0){
+//						System.out.println("row:"+num);
+//						TCPStream stream = streamPool.getOrCreateStream(event);
+//						streamPool.updateTraffic(stream, event, isTcpFIN);
+//					}
+//					else if(type==3) {
+//						System.out.println("reply");
+//					}else{
+//						System.out.println("anything wrong?");
+//					}
 				}
 			}
 		}

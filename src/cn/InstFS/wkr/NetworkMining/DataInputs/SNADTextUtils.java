@@ -1,5 +1,4 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,6 +6,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Calendar;
 
+/**
+ * 
+ * @author aichangqing
+ *
+ */
 public class SNADTextUtils {
 
 	private String textPath="./data/mergeNode/net-1.csv";
@@ -71,7 +75,7 @@ public class SNADTextUtils {
 					while((line = reader.readLine()) != null)
 					{
 						String[] values = line.split(","); 
-						String srcIP = values[1];   //只考虑源IP的数据
+						String srcIP = values[1];
 						if(srcIP.compareTo(whichNode) == 0)
 						{
 							lastYear.add(Calendar.HOUR_OF_DAY, 1);
