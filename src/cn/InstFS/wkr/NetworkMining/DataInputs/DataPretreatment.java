@@ -107,7 +107,7 @@ public class DataPretreatment {
 		int len = di.getLength();
 		if (di == null || di.getTime() == null || di.getData() == null || len == 0)
 			return dataOut;
-		
+		System.out.println(di.getTime());
 		List<Date> times = di.getTime();
 		List<String> datas = di.getData();
 		Date t1 = times.get(0);
@@ -373,7 +373,7 @@ public class DataPretreatment {
 	public static void trainAll()
 	{
 		TaskElement task = new TaskElement();
-		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\HTTPPcap");
+		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\smtpPcap");
 		
 		for(TaskRange taskRange:TaskRange.values())
 		{
@@ -394,19 +394,20 @@ public class DataPretreatment {
 	public static void train(TaskElement task,double threshold)
 	{
 		String fileName= task.getTaskRange().toString();
-		Pattern p= Pattern.compile(".*协议\\s*=(\\d{3}).*");
+		Pattern p= Pattern.compile(".*protocol\\s*=(\\d{3}).*");
 		Matcher match =p.matcher(task.getFilterCondition());
 		match.find();
-		fileName+=match.group(1)+task.getGranularity();
+		fileName+=match.group(1)+task.getGranularity()+".txt";
 		switch(task.getTaskRange())
 		{
 		case NodePairRange:
 		{
+			System.out.println("开始获取训练集...");
 			ArrayList<DataItems> list = new ArrayList<DataItems>();
 			ArrayList <String> ips = new ArrayList<String> ();
-			for(int i=1;i<=10;i++)
-				for(int j=1;j<=6;j++)
-					ips.add("10.0.0."+i+"."+j);
+			for(int i=1;i<=1;i++)
+				for(int j=1;j<=3;j++)
+					ips.add("10.0."+i+"."+j);
 			for(int i =0;i<ips.size();i++)
 				for(int j=i+1;j<ips.size();j++)
 				{
@@ -420,9 +421,11 @@ public class DataPretreatment {
 						dataItem.setData(String.valueOf(Double.valueOf(dataItem.getData())/2));
 						dataItems.add1Data(dataItem);
 					}
+					DataPretreatment.aggregateData(dataItems, task.getGranularity(),AggregateMethod.Aggregate_MEAN, false);
 					list.add(dataItems);
-					
+					System.out.println(dataItems.getLength());
 				}
+			
 			runTrain(list,fileName,threshold);
 			break;
 		}
@@ -438,16 +441,17 @@ public class DataPretreatment {
 		ArrayList<Double> instance;
 		ArrayList<ArrayList<Double>>instances = new ArrayList<ArrayList<Double>>();
 		ArrayList<ArrayList<Double>> clusterCenter = null;
-		
+//		System.out.println(list.size());
 //		ArrayList<ArrayList<ArrayList<Double>>> cluserList = new ArrayList<ArrayList<ArrayList<Double>>>();
 		/**
 		 * 每个窗口训练一次得到最佳窗口
 		 */
+		
 		int min= Integer.MAX_VALUE;
 		int optsize = windowSizeMin;
 		for(int size = windowSizeMin;size<=windowSizeMax;size++)
 		{
-			
+			System.out.println("窗口 "+size);
 			for(int i=0;i<list.size();i++)
 			{
 				for(int j=0;j<list.get(i).getLength()&&(j+size-1)<list.get(i).getLength();j++)
@@ -458,6 +462,7 @@ public class DataPretreatment {
 					instances.add(instance);
 				}
 			}
+			System.out.println("ins "+instances.size());
 			ArrayList<ArrayList<Double>> tmpclusterCenter = new ArrayList<ArrayList<Double>>();
 			int tmp = singlePathCluster(instances,tmpclusterCenter,threshold);
 			if(tmp<min)
@@ -474,6 +479,7 @@ public class DataPretreatment {
 		 */
 		try
 		{
+//			System.out.println("")
 			OutputStreamWriter ow = new OutputStreamWriter(new FileOutputStream(fileName),"UTF-8");
 			BufferedWriter bw     = new BufferedWriter(ow);
 			bw.write(optsize);
@@ -593,20 +599,23 @@ public class DataPretreatment {
 	public static void main(String args[])
 	{
 		TaskElement task = new TaskElement();
-		System.out.println(TaskRange.NodePairRange);
-		Pattern p= Pattern.compile(".*协议\\s*=(\\d{3}).*");
-		Matcher match = p.matcher("协议=402");
-		match.find();
-		System.out.println(match.group(1));
+//		System.out.println(TaskRange.NodePairRange);
+//		Pattern p= Pattern.compile(".*协议\\s*=(\\d{3}).*");
+//		Matcher match = p.matcher("protocol=402");
+//		match.find();
+//		System.out.println(match.group(1));
 //		NodePairReader.
 //		TaskElement task = new TaskElement();
-		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\HTTPPcap");
+		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\smtpPcap");
 		task.setDataSource("Text");
 		task.setTaskRange(TaskRange.NodePairRange);
-		task.setFilterCondition("协议="+"402");
+		task.setFilterCondition("protocol="+"402");
+		task.setMiningObject("traffic");
 		task.setGranularity(3600);
+		
 		train(task,10000);
-			
+		System.out.println("Over");
+		
 //		trainAll();
 //		toDiscreteNumbersAccordingToWaveform
 	}
