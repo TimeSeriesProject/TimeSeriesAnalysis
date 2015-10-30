@@ -228,7 +228,7 @@ public class nodePairReader implements IReader {
 	private Date parseTime(String timeStr){
 		Calendar cal = Calendar.getInstance();
 		cal.set(2014, 9, 1, 0, 0, 0);
-		cal.add(Integer.parseInt(timeStr), Calendar.SECOND);
+		cal.add(Calendar.SECOND,Integer.parseInt(timeStr));
 		return cal.getTime();
 	}
 	
@@ -295,6 +295,8 @@ public class nodePairReader implements IReader {
 			throw new RuntimeException("Time SIP SIP 属性在文件中未找到");
 		}
 		
+		String[] parseCondition=new String[conditions.length];
+		
 		//解析条件 conditions
 		for(int i=0;i<conditions.length;i++){
 			String condition=conditions[i];
@@ -302,7 +304,7 @@ public class nodePairReader implements IReader {
 			Pattern pattern=Pattern.compile("[><=]+");
 			Matcher matcher=pattern.matcher(condition);
 			if(matcher.find()){
-				compareOper=matcher.group(1);
+				compareOper=matcher.group(0);
 			}
 			String[] conditionColumns=condition.split("[><=]+");
 			int conditionIndex=NameToIndex(conditionColumns[0], columns);
@@ -331,20 +333,20 @@ public class nodePairReader implements IReader {
 			default:
 				throw new RuntimeException("查询条件无法确认");
 			}
-			conditions[i]=condition;
+			parseCondition[i]=condition;
 		}
 		String line=null;
 		while((line=textUtils.readByrow())!=null){
 			columns=line.split(",");
-			if((columns[SIPColIndex]==ipPair[0]||columns[SIPColIndex]==ipPair[1])&&
-				(columns[DIPColIndex]==ipPair[0]||columns[DIPColIndex]==ipPair[1])){
+			if((columns[SIPColIndex].equals(ipPair[0])||columns[SIPColIndex].equals(ipPair[1]))&&
+				(columns[DIPColIndex].equals(ipPair[0])||columns[DIPColIndex].equals(ipPair[1]))){
 				//检查条件
 				boolean fixCondition=true;
-				for(int i=0;i<conditions.length;i++){
+				for(int i=0;i<parseCondition.length;i++){
 					if(!fixCondition){
 						break;
 					}
-					String[] conditionColumn=conditions[i].split(",");
+					String[] conditionColumn=parseCondition[i].split(",");
 					String compareOper=conditionColumn[1];
 					int conditionIndex=Integer.parseInt(conditionColumn[0]);
 					switch (compareOper) {
