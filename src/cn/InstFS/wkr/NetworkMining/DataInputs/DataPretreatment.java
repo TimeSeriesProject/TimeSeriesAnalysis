@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.security.acl.Owner;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,6 +23,7 @@ import javax.swing.JOptionPane;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 //import org.hamcrest.Matcher;
+
 
 
 
@@ -394,7 +396,7 @@ public class DataPretreatment {
 	public static void train(TaskElement task,double threshold)
 	{
 		String fileName= task.getTaskRange().toString();
-		Pattern p= Pattern.compile(".*协议\\s*=(\\d{3}).*");
+		Pattern p= Pattern.compile(".*protocol\\s*=(\\d{3}).*");
 		Matcher match =p.matcher(task.getFilterCondition());
 		match.find();
 		fileName+=match.group(1)+task.getGranularity();
@@ -404,16 +406,20 @@ public class DataPretreatment {
 		{
 			ArrayList<DataItems> list = new ArrayList<DataItems>();
 			ArrayList <String> ips = new ArrayList<String> ();
-			for(int i=1;i<=10;i++)
+			for(int i=1;i<=1;i++)
 				for(int j=1;j<=6;j++)
-					ips.add("10.0.0."+i+"."+j);
+					ips.add("10.0."+i+"."+j);
 			for(int i =0;i<ips.size();i++)
 				for(int j=i+1;j<ips.size();j++)
 				{
 					String ip[] = new String[]{ips.get(i),ips.get(j)};
 					IReader reader = new nodePairReader(task,ip);
 					DataItems tmp = reader.readInputByText();
-					DataItems dataItems = reader.readInputByText();
+					DataItems dataItems=new DataItems();
+					for(int index=0;index<tmp.getLength();index++){
+						dataItems.add1Data(tmp.getElementAt(index));
+					}
+					//DataItems dataItems = reader.readInputByText();
 					for(int k=0;k<tmp.getLength();k++)
 					{
 						DataItem dataItem = tmp.getElementAt(k);
@@ -421,7 +427,7 @@ public class DataPretreatment {
 						dataItems.add1Data(dataItem);
 					}
 					list.add(dataItems);
-					
+					System.out.println("list add "+dataItems.getLength());
 				}
 			runTrain(list,fileName,threshold);
 			break;
@@ -454,7 +460,7 @@ public class DataPretreatment {
 				{
 					instance = new ArrayList<Double>();
 					for(int k=j;k<j+size;k++)
-						instance.add(Double.valueOf(list.get(i).getElementAt(j).getData()));
+						instance.add(Double.valueOf(list.get(i).getElementAt(k).getData()));
 					instances.add(instance);
 				}
 			}
@@ -489,10 +495,11 @@ public class DataPretreatment {
 				
 				bw.write(sb.toString());
 			}
-			
-			
-		}
-		catch(Exception e)
+			ow.flush();
+			bw.flush();
+			ow.close();
+			bw.close();
+		}catch(Exception e)
 		{
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -507,7 +514,6 @@ public class DataPretreatment {
 	 */
 	private static int singlePathCluster(ArrayList<ArrayList<Double>>instances,ArrayList<ArrayList<Double>> clustersCenter,double threshold)
 	{
-		double num=0;
 		/**
 		 * 存储每个簇有哪些instacece，只存索引
 		 */
@@ -532,31 +538,30 @@ public class DataPretreatment {
 					mindis = tmpdis;
 					index =j;
 				}
-				if(mindis>threshold)
+			}
+			if(mindis>threshold)
+			{
+				/**
+				 * 加入新簇
+				 */
+				clustersCenter.add(instances.get(i));
+				ArrayList <Integer> list = new ArrayList<Integer>();
+				list.add(i);
+				clusersInstanceList.add(list);
+			}
+			else
+			{
+				/**
+				 * 重新计算center
+				 */
+				clusersInstanceList.get(index).add(i);	//将该结点加入到簇
+				double n = clusersInstanceList.get(index).size();
+				 
+				for(int k=0;k<clustersCenter.get(index).size();k++)
 				{
-					/**
-					 * 加入新簇
-					 */
-					clustersCenter.add(instances.get(i));
-					ArrayList <Integer> list = new ArrayList<Integer>();
-					list.add(i);
-					clusersInstanceList.add(list);
+					double tmp = (clustersCenter.get(index).get(k)*(n-1)+instances.get(i).get(k))/n;
+					clustersCenter.get(index).set(k,tmp);
 				}
-				else
-				{
-					/**
-					 * 重新计算center
-					 */
-					clusersInstanceList.get(index).add(i);	//将该结点加入到簇
-					double n = clusersInstanceList.get(index).size();
-					 
-					for(int k=0;k<clustersCenter.get(index).size();k++)
-					{
-						double tmp = (clustersCenter.get(index).get(k)*(n-1)+instances.get(i).get(k))/n;
-						clustersCenter.get(index).set(k,tmp);
-					}
-				}
-//				mindis = tmpdis<mindis?tmpdis:mindis;
 			}
 		}
 		return clustersCenter.size();
@@ -594,17 +599,18 @@ public class DataPretreatment {
 	{
 		TaskElement task = new TaskElement();
 		System.out.println(TaskRange.NodePairRange);
-		Pattern p= Pattern.compile(".*协议\\s*=(\\d{3}).*");
-		Matcher match = p.matcher("协议=402");
+		Pattern p= Pattern.compile(".*protocol\\s*=(\\d{3}).*");
+		Matcher match = p.matcher("protocol=402");
 		match.find();
 		System.out.println(match.group(1));
 //		NodePairReader.
 //		TaskElement task = new TaskElement();
-		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\HTTPPcap");
+		task.setSourcePath("./configs/smtpPcap");
 		task.setDataSource("Text");
 		task.setTaskRange(TaskRange.NodePairRange);
-		task.setFilterCondition("协议="+"402");
+		task.setFilterCondition("protocol="+"402");
 		task.setGranularity(3600);
+		task.setMiningObject("traffic");
 		train(task,10000);
 			
 //		trainAll();

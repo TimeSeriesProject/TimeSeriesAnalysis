@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Random;
 
 import oracle.net.aso.k;
-import cn.InstFS.wkr.NetworkMining.DataInputs.PcapData;
 
 public class TCPStreamPool {
 	private Map<String, TCPStream> streams=new HashMap<String, TCPStream>();
