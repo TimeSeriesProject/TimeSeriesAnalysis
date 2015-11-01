@@ -105,8 +105,7 @@ public class nodePairReader implements IReader {
 		if(task.getFilterCondition().length()>0){
 			sqlsb.append(task.getFilterCondition()).append(" and ");
 		}
-		sqlsb.append("SIP in('").append(ipPair[0]).append("','").append(ipPair[1]).append("') and ").
-		append("DIP in('").append(ipPair[0]).append("','").append(ipPair[1]).append("') and ");
+		sqlsb.append(generateFilterSql(ipPair));
 		sqlsb.append("1=1 order by 事件发生时间 asc");
 		if(!conn.isOpen()){
 			conn.openConn();
@@ -140,7 +139,7 @@ public class nodePairReader implements IReader {
 		System.out.println("共" + numRecords + "条记录！");
 		System.out.println("读取完毕:" + data.getLength() + "条记录！");
 		conn.closeConn();
-		return data;
+		return DataItems.sortByTimeValue(data);
 	}
 	
 	@Override
@@ -152,8 +151,7 @@ public class nodePairReader implements IReader {
 		if(task.getFilterCondition().length()>0){
 			sqlsb.append(task.getFilterCondition()).append(" and ");
 		}
-		sqlsb.append("SIP in('").append(ipPair[0]).append("','").append(ipPair[1]).append("') and ").
-		append("DIP in('").append(ipPair[0]).append("','").append(ipPair[1]).append("') and ");
+		sqlsb.append(generateFilterSql(ipPair));
 		sqlsb.append("1=1 order by 事件发生时间 asc");
 		if(!conn.isOpen()){
 			conn.openConn();
@@ -187,7 +185,7 @@ public class nodePairReader implements IReader {
 		System.out.println("共" + numRecords + "条记录！");
 		System.out.println("读取完毕:" + data.getLength() + "条记录！");
 		conn.closeConn();
-		return data;
+		return DataItems.sortByTimeValue(data);
 	}
 	
 	@Override
@@ -211,7 +209,7 @@ public class nodePairReader implements IReader {
 				}
 			}
 		}
-		return dataItems;
+		return DataItems.sortByTimeValue(dataItems);
 		
 	}
 	
@@ -231,7 +229,7 @@ public class nodePairReader implements IReader {
 				}
 			}
 			if(isExist){
-				readFile(sourceFile.getAbsolutePath(), minierObject, dataItems);
+				readFile(sourceFile.getAbsolutePath(), minierObject, dataItems,conditions);
 			}
 		}else{
 			File[] files=sourceFile.listFiles();
@@ -245,11 +243,11 @@ public class nodePairReader implements IReader {
 					}
 				}
 				if(isExist){
-			    	readFile(file.getAbsolutePath(), minierObject, dataItems);
+			    	readFile(file.getAbsolutePath(), minierObject, dataItems,conditions);
 				}
 			}
 		}
-		return dataItems;
+		return DataItems.sortByTimeValue(dataItems);
 	}
 	
 	private Date parseTime(String timeStr){
@@ -297,10 +295,17 @@ public class nodePairReader implements IReader {
 			throw new RuntimeException("Time SIP SIP 属性在文件中未找到");
 		}
 		String line=null;
+		boolean fixCondition=true;
 		while((line=textUtils.readByrow())!=null){
 			columns=line.split(",");
-			if((columns[SIPColIndex].equals(ipPair[0])||columns[SIPColIndex].equals(ipPair[1]))&&
-				(columns[DIPColIndex].equals(ipPair[0])||columns[DIPColIndex].equals(ipPair[1]))){
+			fixCondition=true;
+			for(String ip:ipPair){
+				if(!(columns[SIPColIndex].equals(ip)||columns[DIPColIndex].equals(ip))){
+					fixCondition=false;
+					break;
+				}
+			}
+			if(fixCondition){
 				dataItems.add1Data(parseTime(columns[TimeColIndex]), columns[minerObjectIndex]);
 			}
 		}
@@ -363,61 +368,68 @@ public class nodePairReader implements IReader {
 			parseCondition[i]=condition;
 		}
 		String line=null;
+		boolean fixCondition;
 		while((line=textUtils.readByrow())!=null){
 			columns=line.split(",");
-			if((columns[SIPColIndex].equals(ipPair[0])||columns[SIPColIndex].equals(ipPair[1]))&&
-				(columns[DIPColIndex].equals(ipPair[0])||columns[DIPColIndex].equals(ipPair[1]))){
-				//检查条件
-				boolean fixCondition=true;
-				for(int i=0;i<parseCondition.length;i++){
-					if(!fixCondition){
-						break;
-					}
-					String[] conditionColumn=parseCondition[i].split(",");
-					String compareOper=conditionColumn[1];
-					int conditionIndex=Integer.parseInt(conditionColumn[0]);
-					switch (compareOper) {
-					case "<":
-						if(!(Double.parseDouble(columns[conditionIndex])<
-								Double.parseDouble(conditionColumn[2]))){
-							fixCondition=false;
-						}
-						break;
-					case "<=":
-						if(!(Double.parseDouble(columns[conditionIndex])<=
-								Double.parseDouble(conditionColumn[2]))){
-							fixCondition=false;
-						}
-						break;
-					case ">":
-						if(!(Double.parseDouble(columns[conditionIndex])>
-								Double.parseDouble(conditionColumn[2]))){
-							fixCondition=false;
-						}
-						break;
-					case ">=":
-						if(!(Double.parseDouble(columns[conditionIndex])>=
-								Double.parseDouble(conditionColumn[2]))){
-							fixCondition=false;
-						}
-						break;
-					case "==":
-						if(!(columns[conditionIndex]==conditionColumn[2])){
-							fixCondition=false;
-						}
-						break;
-					case "!=":
-						if(!(columns[conditionIndex]!=conditionColumn[2])){
-							fixCondition=false;
-						}
-						break;
-					default:
-						break;
-					}
+			fixCondition=true;
+			for(String ip:ipPair){
+				if(!(columns[SIPColIndex].equals(ip)||columns[DIPColIndex].equals(ip))){
+					fixCondition=false;
+					break;
 				}
-				if(fixCondition){
-					dataItems.add1Data(parseTime(columns[TimeColIndex]), columns[minerObjectIndex]);
+			}
+			if(!fixCondition){
+				continue;
+			}
+			fixCondition=true;
+			for(int i=0;i<parseCondition.length;i++){
+				if(!fixCondition){
+					break;
 				}
+				String[] conditionColumn=parseCondition[i].split(",");
+				String compareOper=conditionColumn[1];
+				int conditionIndex=Integer.parseInt(conditionColumn[0]);
+				switch (compareOper) {
+				case "<":
+					if(!(Double.parseDouble(columns[conditionIndex])<
+							Double.parseDouble(conditionColumn[2]))){
+						fixCondition=false;
+					}
+					break;
+				case "<=":
+					if(!(Double.parseDouble(columns[conditionIndex])<=
+							Double.parseDouble(conditionColumn[2]))){
+						fixCondition=false;
+					}
+					break;
+				case ">":
+					if(!(Double.parseDouble(columns[conditionIndex])>
+							Double.parseDouble(conditionColumn[2]))){
+						fixCondition=false;
+					}
+					break;
+				case ">=":
+					if(!(Double.parseDouble(columns[conditionIndex])>=
+							Double.parseDouble(conditionColumn[2]))){
+						fixCondition=false;
+					}
+					break;
+				case "==":
+					if(!(columns[conditionIndex]==conditionColumn[2])){
+						fixCondition=false;
+					}
+					break;
+				case "!=":
+					if(!(columns[conditionIndex]!=conditionColumn[2])){
+						fixCondition=false;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+			if(fixCondition){
+				dataItems.add1Data(parseTime(columns[TimeColIndex]), columns[minerObjectIndex]);
 			}
 		}
 	}
@@ -460,6 +472,20 @@ public class nodePairReader implements IReader {
 			return true;
 		}else{
 			return false;
+		}
+	}
+	
+	private String generateFilterSql(String[] ips){
+		StringBuilder sb=new StringBuilder();
+		if(ips.length==2){
+			sb.append("srcIP in('").append(ips[0]).append("','").append(ips[1]).append("') and ").
+			append("dstIP in('").append(ips[0]).append("','").append(ips[1]).append("') and ");
+			return sb.toString();
+		}else if(ips.length==1){
+			sb.append("srcIP='").append(ips[0]).append("' or dstIP='").append(ips[0]).append("' and ");
+			return sb.toString();
+		}else{
+			throw new RuntimeException("ip 参数数量不符合要求");
 		}
 	}
 

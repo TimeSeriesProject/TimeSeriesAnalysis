@@ -422,3 +422,32 @@ class ItemDouble implements Comparable<ItemDouble>{
 	}
 	
 }
+
+class ItemTime implements Comparable<ItemTime>{
+	private Date time;
+	private String data;
+	@Override
+	public int compareTo(ItemTime o) {
+		return this.getTimeInMill().compareTo(o.getTimeInMill());
+	}
+	
+	public Date getTime(){
+		return time;
+	}
+	
+	public void setTime(Date time){
+		this.time=time;
+	}
+	
+	public String getData(){
+		return data;
+	}
+	
+	public void setData(String data){
+		this.data=data;
+	}
+	
+	public Long getTimeInMill(){
+		return time.getTime();
+	}
+}

@@ -453,6 +453,24 @@ public class DataItems {
 		return output;
 	}
 	
+	public static DataItems sortByTimeValue(DataItems input){
+		DataItems output = new DataItems();
+		int len = input.getLength();
+		ItemTime []items = new ItemTime[len];	
+		List<Date>times = input.getTime();
+		List<String>vals = input.getData();
+		for (int i = 0; i < len; i ++){
+			items[i] = new ItemTime();
+			items[i].setTime(times.get(i));
+			items[i].setData(vals.get(i));
+		}
+		Arrays.sort(items);
+		for (int i = 0; i < len; i ++){
+			output.add1Data(items[i].getTime(), items[i].getData());
+		}
+		return output;
+	}
+	
 	public Double[] getDiscreteNodes() {
 		return discreteNodes;
 	}
