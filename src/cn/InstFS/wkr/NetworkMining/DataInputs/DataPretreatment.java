@@ -36,8 +36,8 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 
 
-import weka.clusterers.SimpleKMeans;
-import weka.core.Instances;
+//import weka.clusterers.SimpleKMeans;
+//import weka.core.Instances;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
@@ -116,30 +116,15 @@ public class DataPretreatment {
 		Date t2 = getDateAfter(t1, granularity * 1000);
 		TreeSet<String> valsStr = new TreeSet<String>();// 字符串的聚合结果
 		List<Double> vals = new ArrayList<Double>(); 	// 数值的聚合结果
-		Date t = t1;									// 聚合后的时间点
-		for (int i = 0; i < len; i++){
-			Date time = times.get(i);
-			if (time.equals(t2) || time.after(t2)){	// 若一个时间粒度内的值读完了，则建立新的值
-				if(isDiscreteOrNonDouble){
-					StringBuilder sb = new StringBuilder();
-					for (String valStr : valsStr)
-						sb.append(valStr+" ");
-					if (sb.length() > 0)
-						dataOut.add1Data(t, sb.toString().trim());
-					valsStr.clear();
-				}else{
-					Double[] valsArray = vals.toArray(new Double[0]);
-					if (valsArray.length > 0){
-						Double val = aggregateDoubleVals(valsArray, method);
-						dataOut.add1Data(t, val.toString());
-					}
-					vals.clear();
-				}
-				t1 = t2;
-				t2 = getDateAfter(t2, granularity * 1000);
-				t = time;
-			}			
-			if (!time.before(t1)){
+//		Date t = t1;									// 聚合后的时间点
+		int i=0;
+		for(;!t1.after(times.get(times.size()-1));t1=t2,t2 = getDateAfter(t2, granularity * 1000))
+		{
+			
+			while(i<times.size()&&times.get(i).before(t2))
+			{
+				if(i>0&&times.get(i).before(times.get(i-1)))
+					JOptionPane.showMessageDialog(MainFrame.topFrame, "序列未排序");
 				if (isDiscreteOrNonDouble)	// 离散值或字符串
 					valsStr.add(datas.get(i));
 				else{			// 若为连续值，则加至vals中，后续一起聚合
@@ -148,25 +133,33 @@ public class DataPretreatment {
 						vals.add(data);
 					}catch(Exception e){}					
 				}
-			}else if (time.before(t1))	// 这个不可能出现的，因为前期是按照时间顺序取的数据
-				JOptionPane.showMessageDialog(MainFrame.topFrame, "哇，按时间先后顺序取数据有问题！");
-		}	
-		// 把最后一个时间段内的数据加进去
-		if (isDiscreteOrNonDouble && valsStr.size() > 0){
-			StringBuilder sb = new StringBuilder();
-			for (String valStr : valsStr)
-				sb.append(valStr + " ");
-			if (sb.length() > 0)
-				dataOut.add1Data(t, sb.toString().trim());
-			valsStr.clear();
-		}else if (!isDiscreteOrNonDouble && vals.size() > 0){
-			Double[] valsArray = vals.toArray(new Double[0]);
-			if (valsArray.length > 0){
-				Double val = aggregateDoubleVals(valsArray, method);
-				dataOut.add1Data(t, val.toString());
-			}					
-			vals.clear();
-		}
+				i++;
+			}
+			//一个时间粒度内的值读完了，则建立新的值
+			if(isDiscreteOrNonDouble){
+				StringBuilder sb = new StringBuilder();
+				for (String valStr : valsStr)
+					sb.append(valStr+" ");
+				if (sb.length() > 0)
+					dataOut.add1Data(t1, sb.toString().trim());
+				else
+					dataOut.add1Data(t1, "");
+				valsStr.clear();
+			}else{
+				Double[] valsArray = vals.toArray(new Double[0]);
+				if (valsArray.length > 0){
+					Double val = aggregateDoubleVals(valsArray, method);
+					dataOut.add1Data(t1, val.toString());
+				}
+				else
+				{
+					dataOut.add1Data(t1,String.valueOf(0.0));
+				}
+				vals.clear();
+			}
+				
+		}			
+	
 		return dataOut;
 	}
 	
@@ -407,7 +400,7 @@ public class DataPretreatment {
 			ArrayList<DataItems> list = new ArrayList<DataItems>();
 			ArrayList <String> ips = new ArrayList<String> ();
 			for(int i=1;i<=1;i++)
-				for(int j=1;j<=6;j++)
+				for(int j=1;j<=2;j++)
 					ips.add("10.0."+i+"."+j);
 			for(int i =0;i<ips.size();i++)
 				for(int j=i+1;j<ips.size();j++)
@@ -416,10 +409,6 @@ public class DataPretreatment {
 					IReader reader = new nodePairReader(task,ip);
 					DataItems tmp = reader.readInputByText();
 					DataItems dataItems=new DataItems();
-					for(int index=0;index<tmp.getLength();index++){
-						dataItems.add1Data(tmp.getElementAt(index));
-					}
-					//DataItems dataItems = reader.readInputByText();
 					for(int k=0;k<tmp.getLength();k++)
 					{
 						DataItem dataItem = tmp.getElementAt(k);
@@ -427,6 +416,8 @@ public class DataPretreatment {
 						dataItems.add1Data(dataItem);
 					}
 					list.add(dataItems);
+					dataItems=DataPretreatment.aggregateData(dataItems,3600,AggregateMethod.Aggregate_MEAN,false);
+					System.out.println(dataItems.toString());
 					System.out.println("list add "+dataItems.getLength());
 				}
 			runTrain(list,fileName,threshold);
@@ -570,24 +561,29 @@ public class DataPretreatment {
 	{
 		double dp[][] = new double[list1.size()+1][list2.size()+1];
 		dp[0][0]=0;
-		for(int i=0;i<list1.size();i++)
-			for(int j =0 ;j<list2.size();j++)
+		/*
+		 * i,j对应前i,j个字符的erp距离，这里的i,j从1开始。dp[0][0]是还没有字符匹配的情况
+		 */
+		for(int i=0;i<list1.size()+1;i++)
+			for(int j =0 ;j<list2.size()+1;j++)
 			{
+				if(i==0&&j==0)
+					continue;
 				dp[i][j]=Double.MAX_VALUE;
 				double tmp;
 				if(i-1>=0&&j-1>=0)
 				{
-					tmp = dp[i-1][j-1]+Math.abs(list1.get(i)-list2.get(j));
+					tmp = dp[i-1][j-1]+Math.abs(list1.get(i-1)-list2.get(j-1));
 					dp[i][j] =tmp<dp[i][j]?tmp:dp[i][j];
 				}
 				else if(i-1>=0)
 				{
-					tmp = dp[i-1][j]+list1.get(i);
+					tmp = dp[i-1][j]+list1.get(i-1);
 					dp[i][j] = tmp<dp[i][j]?tmp:dp[i][j];
 				}
 				else if(j-1>=0)
 				{
-					tmp = dp[i][j-1]+list2.get(j);
+					tmp = dp[i][j-1]+list2.get(j-1);
 					dp[i][j] = tmp<dp[i][j]?tmp:dp[i][j];
 				}
 			}
@@ -605,14 +601,14 @@ public class DataPretreatment {
 		System.out.println(match.group(1));
 //		NodePairReader.
 //		TaskElement task = new TaskElement();
-		task.setSourcePath("./configs/smtpPcap");
+		task.setSourcePath("E:/javaproject/NetworkMiningSystem/smtpPcap");
 		task.setDataSource("Text");
 		task.setTaskRange(TaskRange.NodePairRange);
 		task.setFilterCondition("protocol="+"402");
 		task.setGranularity(3600);
 		task.setMiningObject("traffic");
 		train(task,10000);
-			
+		System.out.println("over");
 //		trainAll();
 //		toDiscreteNumbersAccordingToWaveform
 	}
