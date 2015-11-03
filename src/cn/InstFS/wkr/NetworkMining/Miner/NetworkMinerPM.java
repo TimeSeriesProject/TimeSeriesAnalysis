@@ -12,11 +12,13 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataInputUtils;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
+import cn.InstFS.wkr.NetworkMining.DataInputs.TextUtils;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsPM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
+import cn.InstFS.wkr.NetworkMining.UIs.test1;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
@@ -130,13 +132,17 @@ class PMTimerTask extends TimerTask{
 		DataItems dataItems = null;
 		dataItems=reader.readInputByText();
 		if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
-			DataPretreatment.aggregateData(dataItems, task.getGranularity(), task.getAggregateMethod(),
-					dataItems.isAllDataIsDouble());
+			dataItems=DataPretreatment.aggregateData(dataItems, task.getGranularity(), task.getAggregateMethod(),
+					!dataItems.isAllDataIsDouble());
 		}
+		TextUtils textUtils=new TextUtils();
+		textUtils.setTextPath("./configs/traffic.csv");
+		textUtils.writeOutput(dataItems);
 		if(!task.getDiscreteMethod().equals(DiscreteMethod.None)){
 			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 					task.getDiscreteEndNodes());
 		}
+		
 		results.setInputData(dataItems);
 
 		int dimension = task.getDiscreteDimension();
@@ -160,7 +166,10 @@ class PMTimerTask extends TimerTask{
 		retPM.setFeatureValue(pmMethod.getMinEntropy());
 		retPM.setFeatureValues(pmMethod.getEntropies());
 		retPM.setFirstPossiblePeriod(pmMethod.getFirstPossiblePeriod());//找出第一个呈现周期性的周期
-		
+		System.out.println("是否存在周期："+pmMethod.hasPeriod());
+		if(pmMethod.hasPeriod()){
+			System.out.println("周期值 "+pmMethod.getPredictPeriod());
+		}
 		
 //		DiscretePM discretePM=new DiscretePM(task,dimension, paramsPM.getPeriodThreshold());
 //		discretePM.setDataItems(dataItems);

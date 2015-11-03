@@ -1,10 +1,14 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -83,5 +87,34 @@ public class TextUtils{
 			e.printStackTrace();
 		}
 		return line;
+	}
+	
+	public void writeOutput(DataItems dataItems){
+		File file=new File(textPath);
+		try {
+			if(file.exists()){
+				file.delete();
+				file.createNewFile();
+			}else{
+				file.createNewFile();
+			}
+			FileOutputStream fos=new FileOutputStream(file);
+			BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(fos));
+			writer.write("time,data\r\n");
+			StringBuilder sb=new StringBuilder();
+			for(int i=0;i<dataItems.getLength();i++){
+				DataItem item=dataItems.getElementAt(i);
+				sb.append(item.getTime()).append(",").append(item.getData()).append("\r\n");
+				writer.write(sb.toString());
+				sb.delete(0, sb.length());
+			}
+			fos.flush();
+			writer.flush();
+			fos.close();
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

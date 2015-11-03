@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.DataInputs.TextUtils;
 import cn.InstFS.wkr.NetworkMining.Exception.NotFoundDicreseValueException;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
@@ -53,6 +55,7 @@ public class averageEntropyPM implements IMinerPM{
 	 */
 	private int getValueIndex(String value) throws NotFoundDicreseValueException {
 		String endNodes=task.getDiscreteEndNodes();
+		value=value.split("\\.")[0];
 		String[] nodes=endNodes.split(",");
 		for(int i=0;i<nodes.length;i++){
 			if(nodes[i].equals(value)){
@@ -83,6 +86,9 @@ public class averageEntropyPM implements IMinerPM{
 		int numItems=di.getLength();
 		if (numItems == 0)
 			return;
+//		TextUtils textUtils=new TextUtils();
+//		textUtils.setTextPath("./configs/traffic.csv");
+//		textUtils.writeOutput(di);
 		List<Date> times = di.getTime();
 		List<String> values=di.getData();
 		startTime = times.get(0);
@@ -90,7 +96,7 @@ public class averageEntropyPM implements IMinerPM{
 		int period=1;
 		int maxPeriod = Math.min(numItems/2, 100);
 		entropies = new Double[maxPeriod];
-		while((period+1)< maxPeriod){
+		while((period+1)<= maxPeriod){
 			period++;	//周期递加
 			double entropy=0.0;
 			double[][] data=new double[period+1][dimension];
@@ -135,17 +141,14 @@ public class averageEntropyPM implements IMinerPM{
 	 * @param maxPeriod 尝试的周期个数
 	 */
 	private void isPeriodExist(int maxPeriod){
-		int minPeriod=0;
-		Double maxEntropy=Double.MAX_VALUE;
 		for(int i=1;i<maxPeriod;i++){
-			if(entropies[i]<threshold){
-				if(entropies[i]<maxEntropy){
-					minPeriod=(i+1);
-					maxEntropy=entropies[i];
-				}
+			if(isPeriod(entropies, i+1)){
 				hasPeriod=true;
 				existPeriod.add(i+1);
 				Integer[] predictValues=new Integer[i+1];
+				for(int index=0;index<=i;index++){
+					predictValues[index]=0;
+				}
 				for(int j=0;j<di.getLength();j++){
 					predictValues[j%(i+1)]+=(int)Double.parseDouble(di.getData().get(j));
 				}
@@ -155,6 +158,14 @@ public class averageEntropyPM implements IMinerPM{
 				predictValuesMap.put((i+1), predictValues);
 			}
 		}
+		int Period=maxPeriod;
+		Set<Integer> keyset=predictValuesMap.keySet();
+		for(Integer key:keyset){
+			if(key<=Period){
+				Period=key;
+			}
+		}
+		predictPeriod=Period;
 		for(int i=1;i<maxPeriod;i++){
 			if(entropies[i]<minEntropy){
 				minEntropy=entropies[i];
@@ -162,11 +173,40 @@ public class averageEntropyPM implements IMinerPM{
 		}
 		if(hasPeriod){
 			itemsInPeriod=new DataItems();
-			Integer[] predictValues=predictValuesMap.get(minPeriod);
-			for(int i=0;i<minPeriod;i++){
+			Integer[] predictValues=predictValuesMap.get(Period);
+			for(int i=0;i<Period;i++){
 				itemsInPeriod.add1Data(di.getTime().get(i),predictValues[i]+"");
+				System.out.print(predictValues[i]+" ");
 			}
+		}else{
+			itemsInPeriod=null;
+			predictPeriod=-1;
 		}
+	}
+	
+	private boolean isPeriod(Double[] Entropies,int index){
+		boolean period=true;
+		int i=index;
+		while(i<=Entropies.length){
+			if(i==2){
+				if(Entropies[i-1]-Entropies[i]>=-0.05){
+					period=false;
+					break;
+				}
+			}else if(i==(Entropies.length)){
+				if(Entropies[i-1]-Entropies[i-2]>=-0.05){
+					period=false;
+					break;
+				}
+			}else{
+				if(Entropies[i-1]-Entropies[i-2]>=-0.05||Entropies[i-1]-Entropies[i]>=-0.05){
+					period=false;
+					break;
+				}
+			}
+			i+=index;
+		}
+		return period;
 	}
 	
 	@Override
