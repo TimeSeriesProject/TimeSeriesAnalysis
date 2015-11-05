@@ -363,13 +363,16 @@ public class DataPretreatment {
 			}
 			Double min = Double.MAX_VALUE;
 			int index  =0;
-			for(int j=0;j<clustersCenter.size();j++)
+			if(manhattanDistance(vector,clustersCenter.get(0))>0.1)
 			{
-				Double tmp = manhattanDistance(vector,clustersCenter.get(j));
-				if(tmp<min)
+				for(int j=0;j<clustersCenter.size();j++)
 				{
-					min = tmp;
-					index = j;
+					Double tmp = manhattanDistance(vector,clustersCenter.get(j));
+					if(tmp<min)
+					{
+						min = tmp;
+						index = j;
+					}
 				}
 			}
 			dataItem.setData(String.valueOf(index));
@@ -534,6 +537,38 @@ public class DataPretreatment {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+		
+		
+		try
+		{
+			OutputStreamWriter ow = new OutputStreamWriter(new FileOutputStream(fileName),"UTF-8");
+			BufferedWriter bw     = new BufferedWriter(ow);
+			bw.write(String.valueOf(optsize));
+			for(int i =0 ;i<clusterCenter.size();i++)
+			{
+				bw.newLine();
+				StringBuilder sb = new StringBuilder(); 
+				for(int j = 0;j<clusterCenter.get(i).size();j++)
+				{
+					sb.append(String.format("%.0f ", clusterCenter.get(i).get(j)));
+					
+				}
+//				sb.append("num "+clusersInstanceList.get(i).size());
+				sb =sb.deleteCharAt(sb.length()-1);
+				
+				bw.write(sb.toString());
+			}
+			ow.flush();
+			bw.flush();
+			ow.close();
+			bw.close();
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		
+		
 	}
 	/**
 	 * singlepath¾ÛÀà
@@ -696,7 +731,7 @@ public class DataPretreatment {
 		task.setFilterCondition("protocol="+"402");
 		task.setGranularity(3600);
 		task.setMiningObject("traffic");
-		train(task,600,12);
+//		train(task,200,6);
 		ArrayList <String> ips = new ArrayList<String> ();
 		for(int i=1;i<=1;i++)
 			for(int j=1;j<=2;j++)
