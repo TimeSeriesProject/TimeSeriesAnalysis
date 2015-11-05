@@ -197,6 +197,7 @@ public class nodePairReader implements IReader {
 			for(String ip:ipPair){
 				if(isFileContainsIp(ip, sourceFile.getName())){
 					readFile(sourceFile.getAbsolutePath(), minierObject, dataItems);
+					break;
 				}
 			}
 		}else{
@@ -205,6 +206,8 @@ public class nodePairReader implements IReader {
 				for(String ip:ipPair){
 					if(isFileContainsIp(ip, file.getName())){
 						readFile(file.getAbsolutePath(), minierObject, dataItems);
+						System.out.println("read file "+file.getName());
+						break;
 					}
 				}
 			}
