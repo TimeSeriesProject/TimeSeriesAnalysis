@@ -35,7 +35,8 @@ import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
 /**
- * 棰勫鐞嗙被锛屽寘鎷細 1銆佽鍙栨暟鎹�2銆侀澶勭悊锛堝鐢ㄤ簬搴忓垪妯″紡鎸栨帢鐨勨�绂绘暎鍖栤�澶勭悊锛� */
+ * 预处理类，包括： 1、读取数据 2、预处理（如用于序列模式挖掘的“离散化”处理）
+ */
 public class SingleNodeTrafficInputs implements IReader {
 
 	TaskElement task;
@@ -50,8 +51,8 @@ public class SingleNodeTrafficInputs implements IReader {
 		if (task.getDataSource().equals("DataBase")) {
 			conn = new OracleUtils();
 			if (!conn.tryConnect())
-				System.out.println("鏁版嵁搴撴棤娉曡繛鎺ワ紒");
-			// UtilsUI.showErrMsg("閿熸枻鎷疯彉閿熸枻鎷疯柟閿熸枻鎷烽敓鏂ゆ嫹妯遍敓锟�;
+				System.out.println("数据库无法连接！");
+			// UtilsUI.showErrMsg("锟斤拷菘锟斤拷薹锟斤拷锟斤拷樱锟�);
 		}
 
 	}
@@ -61,7 +62,7 @@ public class SingleNodeTrafficInputs implements IReader {
 	public String getWhichIp(){
 		return whichIp;
 	}
-	@Override  //娌℃湁鍙傛暟锛屽垯瀵规墍鏈夌殑缁撴灉杩涜棰勬祴
+	@Override  //没有参数，则对所有的结果进行预测
 	public DataItems readInputByText() {
 
 		DataItems dataItems = new DataItems();
@@ -97,7 +98,7 @@ public class SingleNodeTrafficInputs implements IReader {
 	@Override
 	public DataItems readInputByText(String[] conditions) {
 
-		String whichNode = conditions[0];   //寰楀埌闇�棰勬祴鐨刬P
+		String whichNode = conditions[0];   //得到需要预测的iP
 		DataItems dataItems = new DataItems();
 		Calendar lastYear = Calendar.getInstance();
 		lastYear.set(2014, 9, 1, 0, 0, 0);
@@ -128,19 +129,20 @@ public class SingleNodeTrafficInputs implements IReader {
 
 	@Override
 	public DataItems readInputBySql() {
-		String sqlStr = "";   // 閺嶈宓佹导鐘插棘閺夆�娆㈡潻娑滎攽鐠囪褰囬弫鐗堝祦鎼存挷鑵戦惃鍕殶閹癸拷
+		String sqlStr = "";   // 鏍规嵁浼犲弬鏉′欢杩涜璇诲彇鏁版嵁搴撲腑鐨勬暟鎹�
 		// String whichNode = condition;
 		DataItems dataItems = new DataItems();
 		Calendar lastYear = Calendar.getInstance();
 		lastYear.set(2014, 9, 1, 0, 0, 0);
 		conn.closeConn();
-		ResultSet rs = conn.sqlQuery(sqlStr); // 闇�鏍规嵁鏁版嵁搴撶殑琛ㄦ牸寮忕粰鍑鸿鍙栬鍙�		if (rs == null) {
+		ResultSet rs = conn.sqlQuery(sqlStr); // 需要根据数据库的表格式给出读取语句
+		if (rs == null) {
 			System.out.println("no data satisfied data ,please check...");
 			return null;
 		}
 		ResultSetMetaData meta = null;
 		int numRecords = 0;
-		int condition_num=0;
+		int condition_num = 0;
 		try {
 
 			meta = rs.getMetaData();
@@ -150,7 +152,7 @@ public class SingleNodeTrafficInputs implements IReader {
 				numRecords++;
 
 				String time = rs.getString(1).trim();
-				Date d = parseTime(time); // 灏嗘暟鍊兼椂闂磋浆鍖栦负鏍囧噯鏃堕棿鏍煎紡
+				Date d = parseTime(time); // 将数值时间转化为标准时间格式
 
 				String srcIp = rs.getString(2); // source IP
 				String destIp = rs.getString(3); // destination IP
@@ -166,9 +168,9 @@ public class SingleNodeTrafficInputs implements IReader {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println("璇ヨ〃鎬昏褰曟暟锛� + numRecords + " 婊¤冻鏉′欢鐨勮褰曟暟鏈夛細"
+		System.out.println("该表总记录数：" + numRecords + " 满足条件的记录数有："
 				+ condition_num);
-		// System.out.println("閿熸枻鎷峰彇閿熸枻鎷烽敓锟� + data.getLength() + "閿熸枻鎷烽敓鏂ゆ嫹褰曢敓鏂ゆ嫹");
+		// System.out.println("锟斤拷取锟斤拷锟�" + data.getLength() + "锟斤拷锟斤拷录锟斤拷");
 
 		return data;
 	}
@@ -176,7 +178,7 @@ public class SingleNodeTrafficInputs implements IReader {
 	@Override
 	public DataItems readInputBySql(String condition) {
 
-		String sqlStr = condition; // sql璇彞闇�鏍规嵁瀹為檯鎯呭喌鐨勮〃杩涜涔﹀啓
+		String sqlStr = condition; // sql语句需要根据实际情况的表进行书写
 		String whichNode = condition;
 		DataItems dataItems = new DataItems();
 		Calendar lastYear = Calendar.getInstance();
@@ -199,7 +201,7 @@ public class SingleNodeTrafficInputs implements IReader {
 				numRecords++;
 
 				String time = rs.getString(1).trim();
-				Date d = parseTime(time); // 灏嗘暟鍊兼椂闂磋浆鍖栦负鏍囧噯鏃堕棿鏍煎紡
+				Date d = parseTime(time); // 将数值时间转化为标准时间格式
 
 				String srcIp = rs.getString(2); // source IP
 				String destIp = rs.getString(3); // destination IP
@@ -215,9 +217,9 @@ public class SingleNodeTrafficInputs implements IReader {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println("璇ヨ〃鎬昏褰曟暟锛� + numRecords + " 婊¤冻鏉′欢鐨勮褰曟暟鏈夛細"
+		System.out.println("该表总记录数：" + numRecords + " 满足条件的记录数有："
 				+ condition_num);
-		// System.out.println("閿熸枻鎷峰彇閿熸枻鎷烽敓锟� + data.getLength() + "閿熸枻鎷烽敓鏂ゆ嫹褰曢敓鏂ゆ嫹");
+		// System.out.println("锟斤拷取锟斤拷锟�" + data.getLength() + "锟斤拷锟斤拷录锟斤拷");
 
 		return data;
 	}
@@ -236,4 +238,3 @@ public class SingleNodeTrafficInputs implements IReader {
 	}
 
 }
-	
