@@ -216,7 +216,7 @@ public class nodePairReader implements IReader {
 		return DataItems.sortByTimeValue(dataItems);
 		
 	}
-	public Map<String,DataItems > readAllByText(String[] conditions)
+	public Map<String,DataItems > readAllPairByText(String[] conditions)
 	{
 		Map<String,DataItems> ipPairItems = new HashMap<String,DataItems>();
 		String minierObject=task.getMiningObject();
@@ -238,7 +238,22 @@ public class nodePairReader implements IReader {
 		}
 		return tmpipPairItems;
 	}
-	
+	public Map<String,DataItems > readAllPairBetween(Date date1, Date date2){
+		
+			Calendar calendar=Calendar.getInstance();
+			calendar.set(2014, 9, 1, 0, 0, 0);
+			Calendar start=Calendar.getInstance();
+			Calendar end=Calendar.getInstance();
+			start.setTime(date1);
+			end.setTime(date2);
+			long startTime=(start.getTimeInMillis()-calendar.getTimeInMillis())/1000;
+			long endTime=(end.getTimeInMillis()-calendar.getTimeInMillis())/1000;
+			String[] conditions=new String[2];
+			conditions[0]=("Time(S)>="+startTime);
+			conditions[1]=("Time(S)<="+endTime);
+			return readAllPairByText(conditions);
+		
+	}
 	@Override
 	public DataItems readInputByText(String[] conditions) {
 		DataItems dataItems=new DataItems();
@@ -261,7 +276,7 @@ public class nodePairReader implements IReader {
 				boolean isExist=false;
 				for(String ip:ipPair){
 					if(isFileContainsIp(ip, file.getName())){
-						System.out.println("read file "+file.getName());
+//						System.out.println("read file "+file.getName());
 						isExist=true;
 						break;
 					}

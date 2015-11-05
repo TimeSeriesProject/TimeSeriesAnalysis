@@ -383,17 +383,18 @@ public class DataPretreatment {
 	public static void trainAll()
 	{
 		TaskElement task = new TaskElement();
-		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\HTTPPcap");
-		
+		task.setSourcePath("E:/javaproject/NetworkMiningSystem/smtpPcap");
+		task.setDataSource("Text");
+		task.setMiningObject("traffic");
 		for(TaskRange taskRange:TaskRange.values())
 		{
 //			System.out.println(taskRange);
 			task.setTaskRange(taskRange);
 			for(int procol=402;procol<=410;procol++)
 			{
-				task.setFilterCondition("Ð­Òé="+procol);
+				task.setFilterCondition("protocol="+procol);
 				task.setGranularity(3600);
-				train(task,300,6);
+				train(task,200,6);
 			}
 			
 //			task.setDateStart(dateStart);
@@ -408,6 +409,12 @@ public class DataPretreatment {
 		Matcher match =p.matcher(task.getFilterCondition());
 		match.find();
 		fileName+=match.group(1)+task.getGranularity()+".txt";
+		
+		Calendar cal=Calendar.getInstance();
+		cal.set(2014, 9, 1, 0, 0, 0);
+		Date startDate=cal.getTime();
+		cal.add(Calendar.DAY_OF_YEAR,100);
+		Date endDate=cal.getTime();
 		switch(task.getTaskRange())
 		{
 		case NodePairRange:
@@ -439,7 +446,8 @@ public class DataPretreatment {
 			nodePairReader reader= new nodePairReader(task,new String[2]);
 			String condition[]=new String[0];
 			Map<String,DataItems> ipPairItems = new HashMap<String,DataItems>();
-			ipPairItems=reader.readAllByText(condition);
+			
+			ipPairItems=reader.readAllPairBetween(startDate,endDate);
 			for(Map.Entry<String, DataItems> entry:ipPairItems.entrySet())
 			{
 				
@@ -455,20 +463,49 @@ public class DataPretreatment {
 				list.add(dataItems);
 			}
 			System.out.println("listsize "+list.size());
-			runTrain(list,fileName,threshold,size);
+			ArrayList<ArrayList<Double>>instances=null;
+			runTrain(list,instances,fileName,200,size);
 			break;
 		}
-		case SingleNodeRange:break;
+		
+		case SingleNodeRange:
+		{
+			ArrayList<DataItems> list = new ArrayList<DataItems>();
+			ArrayList <String> ips = new ArrayList<String> ();
+			for(int i=1;i<=10;i++)
+				for(int j=1;j<=6;j++)
+					ips.add("10.0."+i+"."+j);
+			for(int i =0;i<ips.size();i++)
+				{
+					String ip[] = new String[]{ips.get(i)};
+					nodePairReader reader = new nodePairReader(task,ip);
+					DataItems tmp = reader.readInputBetween(startDate,endDate);
+					DataItems dataItems=new DataItems();
+					for(int k=0;k<tmp.getLength();k++)
+					{
+						DataItem dataItem = tmp.getElementAt(k);
+						
+						dataItems.add1Data(dataItem);
+					}
+					
+					dataItems=DataPretreatment.aggregateData(dataItems,3600,AggregateMethod.Aggregate_MEAN,false);
+					System.out.println("i "+i);
+					System.out.println("list add "+dataItems.getLength());
+					list.add(dataItems);
+				}
+			ArrayList<ArrayList<Double>>instances=null;
+			runTrain(list,instances,fileName,400,size);
+		}
 		case WholeNetworkRange:break;
 		default: break;
 		}
 	}
-	private static void runTrain(ArrayList <DataItems> list,String fileName,double threshold,int windowSize)
+	private static void runTrain(ArrayList <DataItems> list,ArrayList<ArrayList<Double>>instances,String fileName,double threshold,int windowSize)
 	{
 		int windowSizeMin = windowSize;
 		int windowSizeMax =  windowSize;
 		ArrayList<Double> instance;
-		ArrayList<ArrayList<Double>>instances = new ArrayList<ArrayList<Double>>();
+		instances = new ArrayList<ArrayList<Double>>();
 		ArrayList<ArrayList<Double>> clusterCenter = null;
 		ArrayList<ArrayList<Integer>> clusersInstanceList=null ;
 		
@@ -511,22 +548,28 @@ public class DataPretreatment {
 		 */
 		try
 		{
-			OutputStreamWriter ow = new OutputStreamWriter(new FileOutputStream(fileName),"UTF-8");
+			OutputStreamWriter ow = new OutputStreamWriter(new FileOutputStream(fileName+"result"),"UTF-8");
 			BufferedWriter bw     = new BufferedWriter(ow);
 			bw.write(String.valueOf(optsize));
-			for(int i =0 ;i<clusterCenter.size();i++)
+			for(int i =1 ;i<clusterCenter.size();i++)
 			{
-				bw.newLine();
-				StringBuilder sb = new StringBuilder(); 
-				for(int j = 0;j<clusterCenter.get(i).size();j++)
+			
+				for(int j = 0;j<clusersInstanceList.get(i).size();j++)
 				{
-					sb.append(String.format("%.0f ", clusterCenter.get(i).get(j)));
-					
+					bw.newLine();
+					StringBuilder sb = new StringBuilder(); 
+					int index = clusersInstanceList.get(i).get(j);
+					for(int k =0;k<instances.get(index).size();k++)
+					{
+						sb.append(instances.get(index).get(k)+" ");
+					}
+					sb.append(i);
+//					sb =sb.deleteCharAt(sb.length()-1);
+					bw.write(sb.toString());
 				}
 //				sb.append("num "+clusersInstanceList.get(i).size());
-				sb =sb.deleteCharAt(sb.length()-1);
 				
-				bw.write(sb.toString());
+				
 			}
 			ow.flush();
 			bw.flush();
@@ -594,13 +637,15 @@ public class DataPretreatment {
 				if(list.get(i)>0.0)
 				{
 					allzero =false;
+					break;
 				}
 			if(!allzero)
 			{
 				tmpinstances.add(list);
 			}
 		}
-		instances = tmpinstances;
+		instances.clear();
+		instances.addAll(tmpinstances);
 		ArrayList <Double > tmplist = new ArrayList<Double> ();
 		for(int i =0;i<size;i++)
 			tmplist.add(0.0);
@@ -717,46 +762,46 @@ public class DataPretreatment {
 	
 	public static void main(String args[])
 	{
-		TaskElement task = new TaskElement();
-		System.out.println(TaskRange.NodePairRange);
-		Pattern p= Pattern.compile(".*protocol\\s*=(\\d{3}).*");
-		Matcher match = p.matcher("protocol=402");
-		match.find();
-		System.out.println(match.group(1));
-//		NodePairReader.
 //		TaskElement task = new TaskElement();
-		task.setSourcePath("E:/javaproject/NetworkMiningSystem/smtpPcap");
-		task.setDataSource("Text");
-		task.setTaskRange(TaskRange.NodePairRange);
-		task.setFilterCondition("protocol="+"402");
-		task.setGranularity(3600);
-		task.setMiningObject("traffic");
-//		train(task,200,6);
-		ArrayList <String> ips = new ArrayList<String> ();
-		for(int i=1;i<=1;i++)
-			for(int j=1;j<=2;j++)
-				ips.add("10.0."+i+"."+j);
-		for(int i =0;i<ips.size();i++)
-			for(int j=i+1;j<ips.size();j++)
-			{
-				String ip[] = new String[]{ips.get(i),ips.get(j)};
-				IReader reader = new nodePairReader(task,ip);
-				DataItems tmp = reader.readInputByText();
-				DataItems dataItems=new DataItems();
-				for(int k=0;k<tmp.getLength();k++)
-				{
-					DataItem dataItem = tmp.getElementAt(k);
-					dataItem.setData(String.valueOf(Double.valueOf(dataItem.getData())/2));
-					dataItems.add1Data(dataItem);
-				}
-				
-				dataItems=DataPretreatment.aggregateData(dataItems,3600,AggregateMethod.Aggregate_MEAN,false);
-				System.out.println("i "+i+" j "+j);
-				System.out.println("list add "+dataItems.getLength());
-				toDiscreteNumbersAccordingToWaveform(dataItems, task);
-//				list.add(dataItems);
-			
-			}
+//		System.out.println(TaskRange.NodePairRange);
+//		Pattern p= Pattern.compile(".*protocol\\s*=(\\d{3}).*");
+//		Matcher match = p.matcher("protocol=402");
+//		match.find();
+//		System.out.println(match.group(1));
+////		NodePairReader.
+////		TaskElement task = new TaskElement();
+//		task.setSourcePath("E:/javaproject/NetworkMiningSystem/smtpPcap");
+//		task.setDataSource("Text");
+//		task.setTaskRange(TaskRange.NodePairRange);
+//		task.setFilterCondition("protocol="+"402");
+//		task.setGranularity(3600);
+//		task.setMiningObject("traffic");
+////		train(task,200,6);
+//		ArrayList <String> ips = new ArrayList<String> ();
+//		for(int i=1;i<=1;i++)
+//			for(int j=1;j<=2;j++)
+//				ips.add("10.0."+i+"."+j);
+//		for(int i =0;i<ips.size();i++)
+//			for(int j=i+1;j<ips.size();j++)
+//			{
+//				String ip[] = new String[]{ips.get(i),ips.get(j)};
+//				IReader reader = new nodePairReader(task,ip);
+//				DataItems tmp = reader.readInputByText();
+//				DataItems dataItems=new DataItems();
+//				for(int k=0;k<tmp.getLength();k++)
+//				{
+//					DataItem dataItem = tmp.getElementAt(k);
+//					dataItem.setData(String.valueOf(Double.valueOf(dataItem.getData())/2));
+//					dataItems.add1Data(dataItem);
+//				}
+//				
+//				dataItems=DataPretreatment.aggregateData(dataItems,3600,AggregateMethod.Aggregate_MEAN,false);
+//				System.out.println("i "+i+" j "+j);
+//				System.out.println("list add "+dataItems.getLength());
+//				toDiscreteNumbersAccordingToWaveform(dataItems, task);
+////				list.add(dataItems);
+//			
+//			}
 //		System.out.println("over");
 //		nodePairReader reader= new nodePairReader(task,new String[2]);
 //		String condition[]=new String[0];
@@ -765,6 +810,7 @@ public class DataPretreatment {
 //		
 //		
 //		System.out.println("ippair "+ipPairItems.size());
+		trainAll();
 		System.out.println("over");
 //		
 //		Double array1[] = new Double[] {0.0,0.0,0.0,368.0,339.0,0.0,0.0,0.0,550.0,0.0,333.0,350.0,0.0,0.0,363.0,0.0,0.0,0.0,0.0,0.0,357.0,341.0,341.0,0.0};
