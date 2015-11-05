@@ -26,7 +26,6 @@ import org.apache.commons.math3.stat.StatUtils;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.OracleUtils;
-import cn.InstFS.wkr.NetworkMining.DataInputs.SNADTextUtils;
 import cn.InstFS.wkr.NetworkMining.DataInputs.TextUtils;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
