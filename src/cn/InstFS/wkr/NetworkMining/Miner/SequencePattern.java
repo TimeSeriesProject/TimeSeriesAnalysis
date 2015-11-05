@@ -17,7 +17,7 @@ public class SequencePattern {
 	private DataItems dataItems;
 	private TaskElement task;
 	private List<ArrayList<String>> patterns;
-	private long winSize = 0; //单位没秒
+	private long winSize = 0; //单位为秒
 	private int clusterNum = 0;
 	public static void main(String[] args)
 	{
