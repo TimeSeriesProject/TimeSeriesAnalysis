@@ -492,7 +492,7 @@ public class nodePairReader implements IReader {
 		String header=textUtils.readByrow();
 		String[] columns=header.split(",");
 		int minerObjectIndex=NameToIndex(minierObject, columns);
-		if(minerObjectIndex==-1){
+		if(minerObjectIndex==-1&&!task.getMiningObject().equals("sendTimes")){
 			throw new RuntimeException("Î´ÕÒµ½ÍÚ¾ò¶ÔÏó");
 		}
 		int TimeColIndex=NameToIndex("Time(S)", columns);
@@ -604,7 +604,12 @@ public class nodePairReader implements IReader {
 				}
 			}
 			if(fixCondition){
-				dataItems.add1Data(parseTime(columns[TimeColIndex]), columns[minerObjectIndex]);
+				if(task.getMiningObject().equals("sendTimes"))
+				{
+					dataItems.add1Data(parseTime(columns[TimeColIndex]),"1.0");
+				}
+				else
+					dataItems.add1Data(parseTime(columns[TimeColIndex]), columns[minerObjectIndex]);
 			}
 		}
 	}
