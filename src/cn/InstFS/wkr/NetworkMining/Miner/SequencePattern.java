@@ -10,6 +10,7 @@ import java.util.List;
 //import org.apache.commons.math3.util.MultidimensionalCounter.Iterator;
 
 
+
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
@@ -33,7 +34,7 @@ public class SequencePattern {
 		task.setSourcePath("D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\data\\smtpPcap");
 		task.setDataSource("Text");
 		task.setTaskRange(TaskRange.NodePairRange);
-		task.setFilterCondition("protocol=" + "402");
+		task.setFilterCondition("protocol=" + "402");  //402 --- 410都可以
 		task.setGranularity(3600);
 		task.setMiningObject("traffic");
 
@@ -105,7 +106,6 @@ public class SequencePattern {
 
 		HashMap<String, ArrayList<ArrayList<Integer>>> position = getItemSamplePosition(
 				sliceSequence, sequenceProb);
-		// System.out.println("position:"+position);
 		ArrayList<ArrayList<String>> sequenceResult = new ArrayList<ArrayList<String>>();
 
 		while (true) {
@@ -115,100 +115,42 @@ public class SequencePattern {
 //			System.out.println(sequenceProb.size());
 			if(sequenceProb != null && sequenceProb.size() > 0)
 				uniqueItem(sequenceProb,sequenceResult);
-			System.out.println("删除后：" + sequenceProb.size());
+			System.out.println("有效的频繁项为：" + sequenceProb.size());
 			if (sequenceProb.size() == 0)
 				break;
-			else {
-				sequenceResult.addAll(sequenceProb);
-				noRepeaedItem(sequenceResult);
-			}
-			sequenceProb = getNewFrequentItems(sequenceResult);
-
+			
+			ArrayList<ArrayList<String>> new_sequence = getNewFrequentItems(sequenceProb,sequenceResult);
+			System.out.println("new_sequence:"+new_sequence.size());
+			sequenceResult.addAll(sequenceProb);
+			noRepeaedItem(sequenceResult);
+			sequenceProb = new_sequence;
 		}
 		return sequenceResult;
 	}
 
-	private void uniqueItem(ArrayList<ArrayList<String>> sequenceProb,
-			ArrayList<ArrayList<String>> sequenceResult) {
-		
-		for(int i = 0;i < sequenceProb.size();i++)
-		{
-			for(int  j = 0;j < sequenceResult.size();j++)
-			{
-				int a = sequenceProb.get(i).size();
-				a = sequenceResult.get(j).size();
-				if(sequenceProb.get(i).size() == sequenceResult.get(j).size())
-				{
-					boolean isSame = true;
-					for(int k = 0;k < sequenceProb.get(i).size();k++)
-					{
-						if(sequenceProb.get(i).get(k).compareTo(sequenceResult.get(j).get(k)) != 0)
-						{
-							isSame = false;
-							break;
-						}
-					}
-					if(isSame)
-					{
-						sequenceProb.remove(i);
-						i--;
-						break;
-					}
-					
-				}
-			}
-		}
-		
-	}
-
-	private void noRepeaedItem(ArrayList<ArrayList<String>> sequenceResult) {
-
-		// 去重相同的频繁项
-		for (int i = 0; i < sequenceResult.size(); i++) {
-			for (int j = i + 1; j < sequenceResult.size(); j++) {
-				if (sequenceResult.get(i).size() == sequenceResult.get(j)
-						.size()) {
-					boolean isSame = true;
-					for (int k = 0; k < sequenceResult.get(i).size(); k++) {
-						if (sequenceResult.get(i).get(k)
-								.compareTo(sequenceResult.get(j).get(k)) == 0)
-							continue;
-						else {
-							isSame = false;
-							break;
-						}
-					}
-					if (isSame) {
-						sequenceResult.remove(j);
-						j--;
-					}
-
-				}
-			}
-		}
-	}
+	
 
 	private ArrayList<ArrayList<String>> getNewFrequentItems(
-			ArrayList<ArrayList<String>> sequenceProb) {
+			ArrayList<ArrayList<String>> sequenceProb, ArrayList<ArrayList<String>> sequenceResult) {
 		System.out.println("getNewFrequentItems .....   sequenceProb:"
-				+ sequenceProb.size());
+				+ sequenceProb.size() +"  sequenceResult:"+sequenceResult.size());
 		ArrayList<ArrayList<String>> tmp_sequence = new ArrayList<ArrayList<String>>();
 		for (int i = 0; i < sequenceProb.size(); i++) {
-			for (int j = 0; j < sequenceProb.size(); j++) {
+			for (int j = 0; j < sequenceResult.size(); j++) {
 				// 顺序
 				ArrayList<String> tmp_ = new ArrayList<String>();
 				for (int k = 0; k < sequenceProb.get(i).size(); k++) {
 					String t = sequenceProb.get(i).get(k);
 					tmp_.add(t);
 				}
-				for (int k = 0; k < sequenceProb.get(j).size(); k++) {
-					String t = sequenceProb.get(j).get(k);
+				for (int k = 0; k < sequenceResult.get(j).size(); k++) {
+					String t = sequenceResult.get(j).get(k);
 					tmp_.add(t);
 				}
 				// 逆序
 				ArrayList<String> tmp_inverse = new ArrayList<String>();
-				for (int k = 0; k < sequenceProb.get(j).size(); k++) {
-					String t = sequenceProb.get(j).get(k);
+				for (int k = 0; k < sequenceResult.get(j).size(); k++) {
+					String t = sequenceResult.get(j).get(k);
 					tmp_inverse.add(t);
 				}
 				for (int k = 0; k < sequenceProb.get(i).size(); k++) {
@@ -223,26 +165,35 @@ public class SequencePattern {
 					tmp_sequence.add(tmp_inverse);
 			}
 		}
-		// 去重相同的频繁项
-		for (int i = 0; i < tmp_sequence.size(); i++) {
-			for (int j = i + 1; j < tmp_sequence.size(); j++) {
-				if (tmp_sequence.get(i).size() == tmp_sequence.get(j).size()) {
-					boolean isSame = true;
-					for (int k = 0; k < tmp_sequence.get(i).size(); k++) {
-						if (tmp_sequence.get(i).get(k)
-								.compareTo(tmp_sequence.get(j).get(k)) == 0)
-							continue;
-						else {
-							isSame = false;
-							break;
-						}
-					}
-					if (isSame) {
-						tmp_sequence.remove(j);
-						j--;
-					}
-
+		for(int i = 0;i < sequenceProb.size();i++)
+		{
+			for(int j = 0;j < sequenceProb.size();j++)
+			{
+				ArrayList<String> tmp_ = new ArrayList<String>();
+				
+				for(int k = 0;k < sequenceProb.get(i).size();k++)
+				{
+					String str = sequenceProb.get(i).get(k);
+					tmp_.add(str);
 				}
+				for(int k = 0;k < sequenceProb.get(j).size();k++)
+				{
+					String str = sequenceProb.get(j).get(k);
+					tmp_.add(str);
+				}
+				ArrayList<String> tmp_inverse = new ArrayList<String>();
+				for(int k = 0;k < sequenceProb.get(j).size();k++)
+				{
+					String str = sequenceProb.get(j).get(k);
+					tmp_inverse.add(str);
+				}
+				for(int k = 0;k < sequenceProb.get(i).size();k++)
+				{
+					String str = sequenceProb.get(i).get(k);
+					tmp_inverse.add(str);
+				}
+				tmp_sequence.add(tmp_);
+				tmp_sequence.add(tmp_inverse);
 			}
 		}
 		return tmp_sequence;
@@ -253,6 +204,34 @@ public class SequencePattern {
 			ArrayList<ArrayList<String>> sliceSequence,
 			HashMap<String, ArrayList<ArrayList<Integer>>> position,
 			double thresh) {
+		
+		System.out.println("removeNoItems.....");
+		System.out.println("去重.....");
+		for(int i = 0;i < sequenceProb.size();i++)
+		{
+			for(int j = i+1;j < sequenceProb.size();j++)
+			{
+				if(sequenceProb.get(i).size() == sequenceProb.get(j).size())
+				{
+					boolean isSame = true;
+					for(int k = 0;k < sequenceProb.get(i).size();k++)
+					{
+						if(sequenceProb.get(i).get(k).compareTo(sequenceProb.get(j).get(k)) != 0)
+						{
+							isSame = false;
+							break;
+						}
+					}
+					if(isSame)
+					{
+						sequenceProb.remove(j);
+						j--;
+						break;
+					}
+				}
+			}
+		}
+		System.out.println("搜索频繁项.....");
 		for (int i = 0; i < sequenceProb.size(); i++) {
 			ArrayList<String> item = sequenceProb.get(i);
 			if (isExceedThresh(item, sliceSequence, position, thresh))
@@ -393,7 +372,65 @@ public class SequencePattern {
 		}
 		return set;
 	}
+	private void uniqueItem(ArrayList<ArrayList<String>> sequenceProb,
+			ArrayList<ArrayList<String>> sequenceResult) {
+		
+		for(int i = 0;i < sequenceProb.size();i++)
+		{
+			for(int  j = 0;j < sequenceResult.size();j++)
+			{
+				int a = sequenceProb.get(i).size();
+				a = sequenceResult.get(j).size();
+				if(sequenceProb.get(i).size() == sequenceResult.get(j).size())
+				{
+					boolean isSame = true;
+					for(int k = 0;k < sequenceProb.get(i).size();k++)
+					{
+						if(sequenceProb.get(i).get(k).compareTo(sequenceResult.get(j).get(k)) != 0)
+						{
+							isSame = false;
+							break;
+						}
+					}
+					if(isSame)
+					{
+						sequenceProb.remove(i);
+						i--;
+						break;
+					}
+					
+				}
+			}
+		}
+		
+	}
 
+	private void noRepeaedItem(ArrayList<ArrayList<String>> sequenceResult) {
+
+		// 去重相同的频繁项
+		for (int i = 0; i < sequenceResult.size(); i++) {
+			for (int j = i + 1; j < sequenceResult.size(); j++) {
+				if (sequenceResult.get(i).size() == sequenceResult.get(j)
+						.size()) {
+					boolean isSame = true;
+					for (int k = 0; k < sequenceResult.get(i).size(); k++) {
+						if (sequenceResult.get(i).get(k)
+								.compareTo(sequenceResult.get(j).get(k)) == 0)
+							continue;
+						else {
+							isSame = false;
+							break;
+						}
+					}
+					if (isSame) {
+						sequenceResult.remove(j);
+						j--;
+					}
+
+				}
+			}
+		}
+	}
 	private ArrayList<ArrayList<String>> getSliceSequence(int sample_num) {
 
 		ArrayList<ArrayList<String>> sliceSequence = new ArrayList<ArrayList<String>>();
