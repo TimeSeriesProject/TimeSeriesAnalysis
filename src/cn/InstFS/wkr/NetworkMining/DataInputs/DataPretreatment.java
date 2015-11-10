@@ -29,25 +29,6 @@ import javax.swing.JOptionPane;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 //import org.hamcrest.Matcher;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //import weka.clusterers.SimpleKMeans;
 //import weka.core.Instances;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
@@ -143,8 +124,7 @@ public class DataPretreatment {
 					try{
 						double data= Double.parseDouble(datas.get(i));
 						vals.add(data);
-						if(dataOut.getLength()>1835&&dataOut.getLength()<1839)
-							System.out.println("gid "+times.get(i).getTime());
+					
 					}catch(Exception e){}					
 				}
 				i++;
@@ -161,15 +141,7 @@ public class DataPretreatment {
 				valsStr.clear();
 			}else{
 				Double[] valsArray = vals.toArray(new Double[0]);
-				if(dataOut.getLength()>1835&&dataOut.getLength()<1839)
-				{
-					System.out.println("kkkk "+vals);
-					if(dataOut.getLength()==1837)
-					{
-						System.out.println(times.get(i));
-						System.out.println(t1+" "+t2);
-					}
-				}
+				
 				if (valsArray.length > 0){
 					Double val = aggregateDoubleVals(valsArray, method);
 					dataOut.add1Data(t1, val.toString());
