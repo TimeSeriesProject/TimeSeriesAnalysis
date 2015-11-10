@@ -143,6 +143,7 @@ public class DataPretreatment {
 					try{
 						double data= Double.parseDouble(datas.get(i));
 						vals.add(data);
+					
 					}catch(Exception e){}					
 				}
 				i++;
@@ -159,6 +160,7 @@ public class DataPretreatment {
 				valsStr.clear();
 			}else{
 				Double[] valsArray = vals.toArray(new Double[0]);
+				
 				if (valsArray.length > 0){
 					Double val = aggregateDoubleVals(valsArray, method);
 					dataOut.add1Data(t1, val.toString());
@@ -352,6 +354,7 @@ public class DataPretreatment {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+		
 		for(int i=0;i<dataItems.getLength()&&(i+size-1)<dataItems.getLength();i+=size)
 		{
 			ArrayList <Double> vector = new ArrayList<Double>();
@@ -363,7 +366,7 @@ public class DataPretreatment {
 			}
 			Double min = Double.MAX_VALUE;
 			int index  =0;
-			if(manhattanDistance(vector,clustersCenter.get(0))>6)
+			if(manhattanDistance(vector,clustersCenter.get(0))>0.1)
 			{
 				for(int j=0;j<clustersCenter.size();j++)
 				{
@@ -375,6 +378,8 @@ public class DataPretreatment {
 					}
 				}
 			}
+			
+//				System.out.println(i+" "+vector);
 			dataItem.setData(String.valueOf(index));
 			result.add1Data(dataItem);
 		}
