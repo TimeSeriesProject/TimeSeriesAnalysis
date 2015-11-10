@@ -11,6 +11,10 @@ import java.util.List;
 
 
 
+
+
+
+
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
@@ -20,7 +24,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
-public class SequencePattern {
+public class SequencePattern_m {
 
 	private DataItems dataItems;
 	private TaskElement task;
@@ -55,7 +59,7 @@ public class SequencePattern {
 		// System.out.println("data.size:"+dataItems.data.size());
 
 		List<ArrayList<String>> patternsResult = new ArrayList<ArrayList<String>>();
-		SequencePattern sp = new SequencePattern(dataItems, task,
+		SequencePattern_m sp = new SequencePattern_m(dataItems, task,
 				patternsResult);
 		sp.patternMining();
 		sp.displayResult();
@@ -66,7 +70,7 @@ public class SequencePattern {
 		System.out.println(date);
 	}
 
-	public SequencePattern(DataItems dataItems, TaskElement task,
+	public SequencePattern_m(DataItems dataItems, TaskElement task,
 			List<ArrayList<String>> patterns) {
 
 		this.dataItems = dataItems;
@@ -75,6 +79,7 @@ public class SequencePattern {
 	}
 
 	public void patternMining() {
+		
 		Date max_date = getMaxDate();
 		Date min_date = getMinDate();
 		minDate = min_date;
@@ -88,10 +93,11 @@ public class SequencePattern {
 		winSize = 100;
 		int sample_num = (int) Math.ceil(dataItems.data.size() * 1.0 / winSize);
 		System.out.println("sample_num:" + sample_num);
-		ArrayList<ArrayList<String>> sliceSequence = getSliceSequence(sample_num); // 将一个样例以字符串形式给出
+		ArrayList<String> sliceSequence = getSliceSequence(sample_num); // 将一个样例以字符串形式给出
 
-		int length = sliceSequence.get(0).size();
-		ArrayList<ArrayList<String>> sequenceProb = convertHashSetToArray(clusterLabel); // 初始化长度串
+		String[] strSequence = sliceSequence.get(0).split(",");
+		int length = strSequence.length;
+		ArrayList<String> sequenceProb = convertHashSetToArray(clusterLabel); // 初始化长度串
 
 		System.out.println("sequenceProb:" + sequenceProb.size());
 
@@ -99,14 +105,14 @@ public class SequencePattern {
 	}
 
 	private ArrayList<ArrayList<String>> getFrequentItemSet(
-			ArrayList<ArrayList<String>> sliceSequence,
-			ArrayList<ArrayList<String>> sequenceProb, double thresh) {
+			ArrayList<String> sliceSequence,
+			ArrayList<String> sequenceProb, double thresh) {
 
-		ArrayList<ArrayList<String>> FrequentItemSet = new ArrayList<ArrayList<String>>();
+		ArrayList<String> FrequentItemSet = new ArrayList<String>();
 
 		HashMap<String, ArrayList<ArrayList<Integer>>> position = getItemSamplePosition(
 				sliceSequence, sequenceProb);
-		ArrayList<ArrayList<String>> sequenceResult = new ArrayList<ArrayList<String>>();
+		ArrayList<String> sequenceResult = new ArrayList<String>();
 
 		while (true) {
 			
@@ -119,89 +125,54 @@ public class SequencePattern {
 			if (sequenceProb.size() == 0)
 				break;
 			
-			ArrayList<ArrayList<String>> new_sequence = getNewFrequentItems(sequenceProb,sequenceResult);
+			ArrayList<String> new_sequence = getNewFrequentItems(sequenceProb,sequenceResult);
 			System.out.println("new_sequence:"+new_sequence.size());
 			sequenceResult.addAll(sequenceProb);
 			noRepeaedItem(sequenceResult);
 			sequenceProb = new_sequence;
 		}
-		return sequenceResult;
+		ArrayList<ArrayList<String>> result = convertToArrArr(sequenceResult);
+		return result;
 	}
 
 	
 
-	private ArrayList<ArrayList<String>> getNewFrequentItems(
-			ArrayList<ArrayList<String>> sequenceProb, ArrayList<ArrayList<String>> sequenceResult) {
+	
+
+	private ArrayList<String> getNewFrequentItems(
+			ArrayList<String> sequenceProb, ArrayList<String> sequenceResult) {
 		System.out.println("getNewFrequentItems .....   sequenceProb:"
 				+ sequenceProb.size() +"  sequenceResult:"+sequenceResult.size());
-		ArrayList<ArrayList<String>> tmp_sequence = new ArrayList<ArrayList<String>>();
+		ArrayList<String> tmp_sequence = new ArrayList<String>();
+		
 		for (int i = 0; i < sequenceProb.size(); i++) {
 			for (int j = 0; j < sequenceResult.size(); j++) {
-				// 顺序
-				ArrayList<String> tmp_ = new ArrayList<String>();
-				for (int k = 0; k < sequenceProb.get(i).size(); k++) {
-					String t = sequenceProb.get(i).get(k);
-					tmp_.add(t);
-				}
-				for (int k = 0; k < sequenceResult.get(j).size(); k++) {
-					String t = sequenceResult.get(j).get(k);
-					tmp_.add(t);
-				}
-				// 逆序
-				ArrayList<String> tmp_inverse = new ArrayList<String>();
-				for (int k = 0; k < sequenceResult.get(j).size(); k++) {
-					String t = sequenceResult.get(j).get(k);
-					tmp_inverse.add(t);
-				}
-				for (int k = 0; k < sequenceProb.get(i).size(); k++) {
-					String t = sequenceProb.get(i).get(k);
-					tmp_inverse.add(t);
-				}
-				if (tmp_.size() <= winSize) {
-
-					tmp_sequence.add(tmp_);
-				}
-				if (tmp_inverse.size() <= winSize)
-					tmp_sequence.add(tmp_inverse);
+				
+				String tmp_ = "";
+				tmp_ = sequenceProb.get(i)+","+sequenceResult.get(j);
+				tmp_sequence.add(tmp_);
+				
+				tmp_ = sequenceResult.get(j)+","+sequenceProb.get(i);
+				tmp_sequence.add(tmp_);
 			}
 		}
 		for(int i = 0;i < sequenceProb.size();i++)
 		{
 			for(int j = 0;j < sequenceProb.size();j++)
 			{
-				ArrayList<String> tmp_ = new ArrayList<String>();
-				
-				for(int k = 0;k < sequenceProb.get(i).size();k++)
-				{
-					String str = sequenceProb.get(i).get(k);
-					tmp_.add(str);
-				}
-				for(int k = 0;k < sequenceProb.get(j).size();k++)
-				{
-					String str = sequenceProb.get(j).get(k);
-					tmp_.add(str);
-				}
-				ArrayList<String> tmp_inverse = new ArrayList<String>();
-				for(int k = 0;k < sequenceProb.get(j).size();k++)
-				{
-					String str = sequenceProb.get(j).get(k);
-					tmp_inverse.add(str);
-				}
-				for(int k = 0;k < sequenceProb.get(i).size();k++)
-				{
-					String str = sequenceProb.get(i).get(k);
-					tmp_inverse.add(str);
-				}
+				String tmp_ = "";
+				tmp_ = sequenceProb.get(i)+","+sequenceProb.get(j);
 				tmp_sequence.add(tmp_);
-				tmp_sequence.add(tmp_inverse);
+				
+				tmp_ = sequenceProb.get(j)+","+sequenceProb.get(i);
+				tmp_sequence.add(tmp_);
 			}
 		}
 		return tmp_sequence;
 	}
 
-	private ArrayList<ArrayList<String>> removeNoItems(
-			ArrayList<ArrayList<String>> sequenceProb,
-			ArrayList<ArrayList<String>> sliceSequence,
+	private ArrayList<String> removeNoItems(
+			ArrayList<String> sequenceProb,ArrayList<String> sliceSequence,
 			HashMap<String, ArrayList<ArrayList<Integer>>> position,
 			double thresh) {
 		
@@ -211,29 +182,18 @@ public class SequencePattern {
 		{
 			for(int j = i+1;j < sequenceProb.size();j++)
 			{
-				if(sequenceProb.get(i).size() == sequenceProb.get(j).size())
+				if(sequenceProb.get(i).compareTo(sequenceProb.get(j)) == 0)
 				{
-					boolean isSame = true;
-					for(int k = 0;k < sequenceProb.get(i).size();k++)
-					{
-						if(sequenceProb.get(i).get(k).compareTo(sequenceProb.get(j).get(k)) != 0)
-						{
-							isSame = false;
-							break;
-						}
-					}
-					if(isSame)
-					{
-						sequenceProb.remove(j);
-						j--;
-						break;
-					}
+					sequenceProb.remove(j);
+					j--;
 				}
 			}
 		}
+		System.out.println("去重之后剩余量为："+sequenceProb.size());
 		System.out.println("搜索频繁项.....");
 		for (int i = 0; i < sequenceProb.size(); i++) {
-			ArrayList<String> item = sequenceProb.get(i);
+			String item = sequenceProb.get(i);
+			System.out.println("item:"+item);
 			if (isExceedThresh(item, sliceSequence, position, thresh))
 				continue;
 			else {
@@ -245,32 +205,34 @@ public class SequencePattern {
 
 	}
 
-	private boolean isExceedThresh(ArrayList<String> item,
-			ArrayList<ArrayList<String>> sliceSequence,
+	private boolean isExceedThresh(String item,
+			ArrayList<String> sliceSequence,
 			HashMap<String, ArrayList<ArrayList<Integer>>> position,
 			double thresh) {
 
 		int count = 0;
-		String label = item.get(0);
-		if (position.containsKey(label)) {
-			ArrayList<ArrayList<Integer>> sample_p = position.get(label);
-			for (int i = 0; i < sample_p.size(); i++) {
-				for (int j = 0; j < sample_p.get(i).size(); j++) {
-					int p = sample_p.get(i).get(j);
-					if (isContain(p, item, sliceSequence.get(i))) {
-
-						count++;
-						break;
-					}
-				}
-			}
-			if (count * 1.0 / sample_p.size() > thresh) {
-				System.out.println("满足条件频繁项：" + item.toString());
-				System.out.format("count:%d  sample:%d  value:%f\n", count,
-						sample_p.size(), count * 1.0 / sample_p.size());
-				return true;
-			}
+		for(int i = 0;i < sliceSequence.size();i++)
+		{
+			if(sliceSequence.get(i).contains(item))
+				count++;
 		}
+		if (count * 1.0 / sliceSequence.size() > thresh) 
+			return true;
+			
+//		if (position.containsKey(item)) {
+//			ArrayList<ArrayList<Integer>> sample_p = position.get(item);
+//			for (int i = 0; i < sample_p.size(); i++) {
+//				
+//				if(sample_p.contains(item))
+//					count++;
+//			}
+//			if (count * 1.0 / sample_p.size() > thresh) {
+//				System.out.println("满足条件频繁项：" + item.toString());
+//				System.out.format("count:%d  sample:%d  value:%f\n", count,
+//						sample_p.size(), count * 1.0 / sample_p.size());
+//				return true;
+//			}
+//		}
 
 		return false;
 	}
@@ -291,48 +253,46 @@ public class SequencePattern {
 	}
 
 	private HashMap<String, ArrayList<ArrayList<Integer>>> getItemSamplePosition(
-			ArrayList<ArrayList<String>> sliceSequence,
-			ArrayList<ArrayList<String>> sequenceProb) {
+			ArrayList<String> sliceSequence,
+			ArrayList<String> sequenceProb) {
 
-		int length = sliceSequence.get(0).size();
 
 		HashMap<String, ArrayList<ArrayList<Integer>>> position = new HashMap<String, ArrayList<ArrayList<Integer>>>();
 		for (int i = 0; i < sequenceProb.size(); i++) // 遍历频繁项
 		{
-			ArrayList<String> item = sequenceProb.get(i);
-			// System.out.println(item.get(0));
+			String item = sequenceProb.get(i);
 			ArrayList<ArrayList<Integer>> labelPosition = new ArrayList<ArrayList<Integer>>();
 
 			for (int j = 0; j < sliceSequence.size(); j++) // 遍历样本
 			{
 				ArrayList<Integer> CP = new ArrayList<Integer>();
-
-				for (int k = 0; k < sliceSequence.get(j).size(); k++) // 遍历每个样本的序列
+				int len = 0;
+//				System.out.println("len:"+sliceSequence.get(j).length());
+				while(len < sliceSequence.get(j).length())
 				{
-					if (item.get(0).compareTo(sliceSequence.get(j).get(k)) == 0) {
-						CP.add(k);
-
-					}
+					int index = sliceSequence.get(j).indexOf(item, len);
+					if(index == -1)
+						break;
+					CP.add(index);
+					len = index+item.length();
 				}
 				labelPosition.add(CP);
 			}
 
-			position.put(item.get(0), labelPosition);
-
+			position.put(item, labelPosition);
 		}
 		return position;
 	}
 
-	private ArrayList<ArrayList<String>> convertHashSetToArray(
+	private ArrayList<String> convertHashSetToArray(
 			HashSet<String> clusterLabel) {
 
-		ArrayList<ArrayList<String>> sequenceProb = new ArrayList<ArrayList<String>>();
+		ArrayList<String> sequenceProb = new ArrayList<String>();
 		java.util.Iterator<String> it = clusterLabel.iterator();
 		while (it.hasNext()) {
 			ArrayList<String> item = new ArrayList<String>();
 			String str = it.next();
-			item.add(str);
-			sequenceProb.add(item);
+			sequenceProb.add(str);
 		}
 		return sequenceProb;
 	}
@@ -372,70 +332,42 @@ public class SequencePattern {
 		}
 		return set;
 	}
-	private void uniqueItem(ArrayList<ArrayList<String>> sequenceProb,
-			ArrayList<ArrayList<String>> sequenceResult) {
+	private void uniqueItem(ArrayList<String> sequenceProb,
+			ArrayList<String> sequenceResult) {
 		
 		for(int i = 0;i < sequenceProb.size();i++)
 		{
 			for(int  j = 0;j < sequenceResult.size();j++)
 			{
-				int a = sequenceProb.get(i).size();
-				a = sequenceResult.get(j).size();
-				if(sequenceProb.get(i).size() == sequenceResult.get(j).size())
+				if(sequenceResult.get(j).contains(sequenceProb.get(i)))
 				{
-					boolean isSame = true;
-					for(int k = 0;k < sequenceProb.get(i).size();k++)
-					{
-						if(sequenceProb.get(i).get(k).compareTo(sequenceResult.get(j).get(k)) != 0)
-						{
-							isSame = false;
-							break;
-						}
-					}
-					if(isSame)
-					{
-						sequenceProb.remove(i);
-						i--;
-						break;
-					}
-					
+					sequenceProb.remove(i);
+					i--;
+					break;
 				}
 			}
 		}
 		
 	}
 
-	private void noRepeaedItem(ArrayList<ArrayList<String>> sequenceResult) {
+	private void noRepeaedItem(ArrayList<String> sequenceResult) {
 
 		// 去重相同的频繁项
 		for (int i = 0; i < sequenceResult.size(); i++) {
 			for (int j = i + 1; j < sequenceResult.size(); j++) {
-				if (sequenceResult.get(i).size() == sequenceResult.get(j)
-						.size()) {
-					boolean isSame = true;
-					for (int k = 0; k < sequenceResult.get(i).size(); k++) {
-						if (sequenceResult.get(i).get(k)
-								.compareTo(sequenceResult.get(j).get(k)) == 0)
-							continue;
-						else {
-							isSame = false;
-							break;
-						}
-					}
-					if (isSame) {
-						sequenceResult.remove(j);
-						j--;
-					}
-
+				if (sequenceResult.get(i).compareTo(sequenceResult.get(j)) == 0)
+				{
+					sequenceResult.remove(j);
+					j--;
+					break;
 				}
 			}
 		}
 	}
-	private ArrayList<ArrayList<String>> getSliceSequence(int sample_num) {
+	private ArrayList<String> getSliceSequence(int sample_num) {
 
-		ArrayList<ArrayList<String>> sliceSequence = new ArrayList<ArrayList<String>>();
+		ArrayList<String> sliceSequence = new ArrayList<String>();
 
-		// System.out.println("dataItemsP:"+dataItems.getLength());
 		for (int i = 0; i < dataItems.getLength(); i++) {
 			Date date = dataItems.time.get(i);
 			String data = dataItems.data.get(i);
@@ -443,25 +375,33 @@ public class SequencePattern {
 			Long time = sparseTime(date);
 			int index = (int) (i / winSize);
 			if (index >= sliceSequence.size()) {
-				ArrayList<String> sequence = new ArrayList<String>();
-				sequence.add(dataItems.data.get(i));
+				String sequence = dataItems.data.get(i);
 				sliceSequence.add(sequence);
 			} else {
-				sliceSequence.get(index).add(dataItems.data.get(i));
+				
+				sliceSequence.set(index,sliceSequence.get(index)+","+dataItems.data.get(i));
 			}
 		}
-		// for(int i = 0 ;i < sliceSequence.size();i++)
-		// {
-		// // System.out.println();
-		// for(int j = 0;j < sliceSequence.get(i).size();j++)
-		// {
-		// System.out.print(sliceSequence.get(i).get(j)+",");
-		// }
-		// System.out.println();
-		// }
+		for(int i = 0;i < sliceSequence.size();i++)
+			System.out.println(sliceSequence.get(i));
 		return sliceSequence;
 	}
-
+	private ArrayList<ArrayList<String>> convertToArrArr(
+			ArrayList<String> sequenceResult) {
+		ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+		
+		for(int i = 0;i < sequenceResult.size();i++)
+		{
+			String[] str = sequenceResult.get(i).split(",");
+			ArrayList<String> tmp = new ArrayList<String>();
+			for(int j = 0;j < str.length;j++)
+			{
+				tmp.add(str[j]);
+			}
+			result.add(tmp);
+		}
+		return result;
+	}
 	private Long sparseTime(Date date) {
 
 		long dis = (date.getTime() - minDate.getTime()) / 1000;
