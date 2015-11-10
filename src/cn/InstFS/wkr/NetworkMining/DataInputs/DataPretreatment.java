@@ -363,7 +363,7 @@ public class DataPretreatment {
 			}
 			Double min = Double.MAX_VALUE;
 			int index  =0;
-			if(manhattanDistance(vector,clustersCenter.get(0))>0.1)
+			if(manhattanDistance(vector,clustersCenter.get(0))>6)
 			{
 				for(int j=0;j<clustersCenter.size();j++)
 				{
@@ -561,7 +561,7 @@ public class DataPretreatment {
 					int index = clusersInstanceList.get(i).get(j);
 					for(int k =0;k<instances.get(index).size();k++)
 					{
-						sb.append(instances.get(index).get(k)+" ");
+						sb.append(String.format("%.0f ", instances.get(index).get(k)));
 					}
 					sb.append(i);
 //					sb =sb.deleteCharAt(sb.length()-1);
@@ -581,6 +581,44 @@ public class DataPretreatment {
 			throw new RuntimeException(e);
 		}
 		
+		try
+		{
+			OutputStreamWriter ow = new OutputStreamWriter(new FileOutputStream(fileName+"avgindis"),"UTF-8");
+			BufferedWriter bw     = new BufferedWriter(ow);
+			bw.write(String.valueOf("size "+optsize));
+			
+			for(int i =1 ;i<clusterCenter.size();i++)
+			{
+			    double dis =0;
+			    bw.newLine();
+				for(int j = 0;j<clusersInstanceList.get(i).size();j++)
+				{
+					
+					StringBuilder sb = new StringBuilder(); 
+					int index = clusersInstanceList.get(i).get(j);
+					for(int k =0;k<instances.get(index).size();k++)
+					{
+						dis+=Math.abs(instances.get(index).get(k)-clusterCenter.get(i).get(k));
+					}
+					
+//					sb =sb.deleteCharAt(sb.length()-1);
+					
+				}
+				dis/=clusersInstanceList.get(i).size();
+				bw.write(String.format("%.0f",dis));
+//				sb.append("num "+clusersInstanceList.get(i).size());
+				
+				
+			}
+			ow.flush();
+			bw.flush();
+			ow.close();
+			bw.close();
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 		
 		try
 		{
@@ -703,11 +741,11 @@ public class DataPretreatment {
 				clusersInstanceList.get(index).add(i);	//将该结点加入到簇
 				double n = clusersInstanceList.get(index).size();
 				 
-//				for(int k=0;k<clustersCenter.get(index).size();k++)
-//				{
-//					double tmp = (clustersCenter.get(index).get(k)*(n-1)+instances.get(i).get(k))/n;
-//					clustersCenter.get(index).set(k,tmp);
-//				}
+				for(int k=0;k<clustersCenter.get(index).size();k++)
+				{
+					double tmp = (clustersCenter.get(index).get(k)*(n-1)+instances.get(i).get(k))/n;
+					clustersCenter.get(index).set(k,tmp);
+				}
 			}
 		}
 		return clustersCenter.size();
