@@ -15,7 +15,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
-
+import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;;
 /**
  * 
  * @author 艾长青 
@@ -73,6 +73,8 @@ public class SequencePatterns_new {
 		this.dataItems = dataItems;
 		this.task = task;
 		this.patterns = patterns;
+		ParamsSM psm = (ParamsSM)task.getMiningParams();
+		winSize = (int)psm.getSizeWindow();
 	}
 	public void setWindSize(int size)
 	{
