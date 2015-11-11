@@ -84,6 +84,7 @@ public class nodePairReader implements IReader {
 		if(textSource){
 			Calendar calendar=Calendar.getInstance();
 			calendar.set(2014, 9, 1, 0, 0, 0);
+			calendar.set(Calendar.MILLISECOND, 0);
 			Calendar start=Calendar.getInstance();
 			Calendar end=Calendar.getInstance();
 			start.setTime(date1);
@@ -245,6 +246,7 @@ public class nodePairReader implements IReader {
 		
 			Calendar calendar=Calendar.getInstance();
 			calendar.set(2014, 9, 1, 0, 0, 0);
+			calendar.set(Calendar.MILLISECOND, 0);
 			Calendar start=Calendar.getInstance();
 			Calendar end=Calendar.getInstance();
 			start.setTime(date1);
@@ -295,6 +297,7 @@ public class nodePairReader implements IReader {
 	private Date parseTime(String timeStr){
 		Calendar cal = Calendar.getInstance();
 		cal.set(2014, 9, 1, 0, 0, 0);
+		cal.set(Calendar.MILLISECOND, 0);
 		cal.add(Calendar.SECOND,Integer.parseInt(timeStr));
 		return cal.getTime();
 	}
@@ -675,6 +678,7 @@ public class nodePairReader implements IReader {
 	public static void main(String[] args){
 		Calendar cal=Calendar.getInstance();
 		cal.set(2014, 9, 1, 0, 0, 0);
+		cal.set(Calendar.MILLISECOND, 0);
 		Date startDate=cal.getTime();
 		cal.add(Calendar.DAY_OF_MONTH,100);
 		Date endDate=cal.getTime();
