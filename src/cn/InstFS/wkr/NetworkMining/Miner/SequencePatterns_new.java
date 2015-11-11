@@ -16,6 +16,12 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
+/**
+ * 
+ * @author 艾长青 
+ * @time 2015/11/11
+ *
+ */
 public class SequencePatterns_new {
 
 	private DataItems dataItems;
@@ -68,8 +74,17 @@ public class SequencePatterns_new {
 		this.task = task;
 		this.patterns = patterns;
 	}
-
-	public void patternMining() {
+	public void setWindSize(int size)
+	{
+		winSize = size;
+	}
+	/**
+	 * 外部使用本类的功能事，需要根据构造函数传递对应的参数，然后代用该函数,即可返回频繁项的结果
+	 * 注意1：在划分序列时，我们采用默认windSize = 100，若需改变其大小，请在调用本函数之前调用setWindSize(int)函数
+	 * 注意2：在调用本方法之前通过构造函数传递的参数DataItems，需要根据date从小到大排序
+	 * @return 
+	 */
+	public List<ArrayList<String>> patternMining() {
 		Date max_date = getMaxDate();
 		Date min_date = getMinDate();
 		minDate = min_date;
@@ -79,7 +94,7 @@ public class SequencePatterns_new {
 //		long timeSpan = (max_date.getTime() - min_date.getTime()) / 1000; // 相减结果是毫秒
 		System.out.println("clusterNum:" + clusterNum);
 		System.out.println("dataItems.data.size():" + dataItems.data.size());
-		winSize = 100;
+//		winSize = 100;
 		int sample_num = (int) Math.ceil(dataItems.data.size() * 1.0 / winSize);
 		System.out.println("sample_num:" + sample_num);
 		ArrayList<String> sliceSequence = getSliceSequence(winSize); // 将一个样例以字符串形式给出
@@ -91,8 +106,15 @@ public class SequencePatterns_new {
 		System.out.println("sequenceProb:" + basicSequence.size());
 
 		patterns = getFrequentItemSet(sliceSequence, basicSequence, 0.25);
+		return patterns;
 	}
-
+	/**
+	 * 该函数功能是找频繁项
+	 * @param sliceSequence
+	 * @param BasicSequence
+	 * @param thresh
+	 * @return
+	 */
 	private ArrayList<ArrayList<String>> getFrequentItemSet(
 			ArrayList<String> sliceSequence,
 			ArrayList<String> BasicSequence, double thresh) {
@@ -117,6 +139,11 @@ public class SequencePatterns_new {
 		ArrayList<ArrayList<String>> patternResult = convertToStandard(sequenceResult);
 		return patternResult;
 	}
+	/**
+	 * 该函数功能是将找出的频繁项转化为用户需要的格式（返回值格式）
+	 * @param sequenceResult
+	 * @return
+	 */
 	private ArrayList<ArrayList<String>> convertToStandard(
 			ArrayList<String> sequenceResult) {
 		
@@ -133,7 +160,15 @@ public class SequencePatterns_new {
 		}
 		return patternResult;
 	}
-
+	/**
+	 * 产生新的序列，并判断是否为频繁项，返回的结果为满足条件的频繁项
+	 * @param basicSequence
+	 * @param newestSequence
+	 * @param sliceSequence
+	 * @param position
+	 * @param thresh
+	 * @return
+	 */
 	private ArrayList<String> getNewFrequentItemsAndJudge(
 			ArrayList<String> basicSequence,
 			ArrayList<String> newestSequence,
@@ -156,7 +191,15 @@ public class SequencePatterns_new {
 		}
 		return new_sequence;
 	}
-
+	/**
+	 * 判断某个具体的序列是否为频繁项，是返回true，否则返回false
+	 * @param first_item
+	 * @param last_item
+	 * @param sliceSequence
+	 * @param position
+	 * @param thresh
+	 * @return
+	 */
 	private boolean isSatisfied(String first_item, String last_item,
 			ArrayList<String> sliceSequence,
 			HashMap<String, ArrayList<SampleIndex>> position, double thresh) {
@@ -200,6 +243,13 @@ public class SequencePatterns_new {
 		}
 		return false;
 	}
+	/**
+	 * 得到起始频繁项（单个类）在样本中出现的位置，并返回
+	 * @param sliceSequence
+	 * @param basicSequence
+	 * @param thresh
+	 * @return
+	 */
 	private HashMap<String, ArrayList<SampleIndex>> getItemSamplePosition(
 			ArrayList<String> sliceSequence,
 			ArrayList<String> basicSequence,double thresh) {
@@ -252,7 +302,11 @@ public class SequencePatterns_new {
 		}
 		return position;
 	}
-
+	/**
+	 * 为了计算的方便，将基本的频繁项由Set格式转化为ArrayList格式
+	 * @param clusterLabel
+	 * @return
+	 */
 	private ArrayList<String> convertHashSetToArray(
 			HashSet<String> clusterLabel) {
 
@@ -265,7 +319,10 @@ public class SequencePatterns_new {
 		}
 		return sequenceProb;
 	}
-
+	/**
+	 * 找出待找频繁项样例的最小时间
+	 * @return
+	 */
 	private Date getMinDate() {
 
 		Date min_date = dataItems.time.get(0);
@@ -277,7 +334,9 @@ public class SequencePatterns_new {
 		}
 		return min_date;
 	}
-
+	/**
+	 *找出待找频繁项样例的最大时间 
+	 */
 	private Date getMaxDate() {
 
 		Date max_date = dataItems.time.get(0);
@@ -289,7 +348,10 @@ public class SequencePatterns_new {
 		}
 		return max_date;
 	}
-
+	/**
+	 * 得到给出样例中包含多少个类
+	 * @return
+	 */
 	private HashSet<String> getClusterNum() {
 
 		HashSet<String> set = new HashSet<String>();
@@ -301,7 +363,11 @@ public class SequencePatterns_new {
 		return set;
 	}
 
-	//转化为字符串处理
+	/**
+	 * 为了计算的方便，将每个样例转化为字符串处理
+	 * @param sample_num
+	 * @return
+	 */
 	private ArrayList<String> getSliceSequence(int sample_num) {
 
 		ArrayList<String> sliceSequence = new ArrayList<String>();
@@ -328,13 +394,19 @@ public class SequencePatterns_new {
 		}
 		return sliceSequence;
 	}
-
+	/**
+	 * 计算当前产生该类的时间与所有样例中最小时间的差
+	 * @param date
+	 * @return
+	 */
 	private Long sparseTime(Date date) {
 
 		long dis = (date.getTime() - minDate.getTime()) / 1000;
 		return dis;
 	}
-
+	/**
+	 * 打印返回的结果
+	 */
 	private void displayResult() {
 		System.out.println("displayResult....   频繁项数据量为：" + patterns.size());
 		for (int i = 0; i < patterns.size(); i++) {
