@@ -1,12 +1,16 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.ITaskDisplayer;
 import cn.InstFS.wkr.NetworkMining.UIs.MainFrame;
@@ -17,6 +21,7 @@ public class NetworkMinerSM implements INetworkMiner {
 
 	TaskElement task;
 	MinerResults results;
+	IResultsDisplayer displayer;
 
 	Timer timer;
 	SMTimerTask timerTask;
@@ -39,7 +44,7 @@ public class NetworkMinerSM implements INetworkMiner {
 		}
 		timer = new Timer();
 		results = new MinerResults(this);
-		timerTask = new SMTimerTask(task, results);
+		timerTask = new SMTimerTask(task, results,displayer,reader);
 		timer.scheduleAtFixedRate(timerTask, 0, (int)(((ParamsSM)task.getMiningParams()).getStepWindow()) * 1000);
 		isStarted = true;
 		task.setRunning(true);
@@ -80,8 +85,7 @@ public class NetworkMinerSM implements INetworkMiner {
 
 	@Override
 	public void setResultsDisplayer(IResultsDisplayer displayer) {
-		// TODO Auto-generated method stub
-
+		this.displayer=displayer;
 	}
 
 }
@@ -91,16 +95,20 @@ class SMTimerTask extends TimerTask {
 	private boolean lastTimeStoped = true;
 	private MinerResults results;
 	private TaskElement task;
-	private static DataItems data = new DataItems();
+	private IResultsDisplayer displayer;
+	private IReader reader;
+	private boolean isRunning = false;
 	
 	/**
 	 * 本次处理数据的时间
 	 */
 	private Date lastRunTime;	
 
-	SMTimerTask(TaskElement task, MinerResults results) {
+	SMTimerTask(TaskElement task, MinerResults results,IResultsDisplayer displayer,IReader reader) {
 		this.task = task;
 		this.results = results;
+		this.displayer=displayer;
+		this.reader=reader;
 	}
 
 	public void setLastTimeStoped(boolean lastTimeStoped) {
@@ -116,10 +124,31 @@ class SMTimerTask extends TimerTask {
 		if (UtilsSimulation.instance.isPaused())
 			return;
 		lastTimeStoped = false;
-		Date curTime1 = UtilsSimulation.instance.getCurTime();
-		results.setDateProcess(curTime1);
+		results.setDateProcess(UtilsSimulation.instance.getCurTime());
+		ParamsSM paramsSM=(ParamsSM)task.getMiningParams();
+		isRunning=true;
+		DataItems dataItems=reader.readInputByText();
+		if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
+			dataItems=DataPretreatment.aggregateData(dataItems, task.getGranularity(), 
+					task.getAggregateMethod(), !dataItems.isAllDataIsDouble());
+		}
 		
+		dataItems=DataPretreatment.toDiscreteNumbersAccordingToWaveform(dataItems, task);
+		
+		results.setInputData(dataItems);
+		
+		SequencePatterns_new sequencePattern=new SequencePatterns_new();
+		sequencePattern.setDataItems(dataItems);
+		sequencePattern.setTask(task);
+		sequencePattern.setWinSize(paramsSM.getSizeWindow());
+		sequencePattern.setThreshold(paramsSM.getMinSupport());
+		sequencePattern.patternMining();
+
+		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
+		results.getRetSM().setPatters(patterns);
 		lastTimeStoped = true;
+		isRunning=false;
+		displayer.displayMinerResults(results);
 		if (MainFrame.topFrame == null || UtilsUI.autoChangeResultsPanel
 				|| MainFrame.topFrame.getSelectedTask() == task
 				|| MainFrame.topFrame.getSelectedTask() == null)

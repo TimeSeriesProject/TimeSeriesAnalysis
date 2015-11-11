@@ -48,6 +48,20 @@ public class MinerResultsSM {
 	public void setPatterns(DataItems patterns) {
 		this.patterns = patterns;
 	}
+	
+	public void setPatters(List<ArrayList<String>> items){
+		patterns=new DataItems();
+		List<String> data=new ArrayList<String>();
+		StringBuilder sb=new StringBuilder();
+		for(List<String> itemList:items){
+			for(String item:itemList){
+				sb.append(item);
+			}
+			data.add(sb.toString());
+			sb.delete(0, sb.length());
+		}
+		patterns.setData(data);
+	}
 
 	public double getRecallRatio() {
 		if (recallRatio == -1)

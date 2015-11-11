@@ -92,5 +92,6 @@
 	<classpathentry kind="lib" path="E:/57/NetworkMiningSystem_toUESTC/lib/REngine.jar"/>
 	<classpathentry kind="lib" path="E:/57/NetworkMiningSystem_toUESTC/lib/RserveEngine.jar"/>
 	<classpathentry kind="lib" path="lib/weka.jar"/>
+	<classpathentry kind="lib" path="lib/mybatis-3.2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

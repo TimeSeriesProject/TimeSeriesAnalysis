@@ -93,12 +93,13 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 		example1.setGranularity(3600);
 		example1.setMiningMethod(MiningMethod.MiningMethods_PeriodicityMining);
 		example1.setDataSource("File");
-		example1.setSourcePath("./configs/sendTimesOfNet1.csv");
+		example1.setSourcePath("./configs/smtpPcap");
 		example1.setDiscreteMethod(DiscreteMethod.自定义端点);
-		example1.setDiscreteEndNodes("500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,"
-				+ "2200,2300,2400,2500,2600,2700,2800,2900,3000,3100,3200,3300");
+		example1.setDiscreteEndNodes("1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000,12000,13000,14000,15000,16000,17000,18000,19000,20000,21000,"
+				+ "22000,23000,24000,25000,26000,27000,28000,29000,30000,31000,32000,33000");
 		example1.setTaskRange(TaskRange.NodePairRange);
-		example1.setRange("10.0.1.1,10.0.1.2");
+		example1.setRange("10.0.2.4,10.0.3.4");
+		example1.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
 	}
 	
 	public TaskRange getTaskRange() {

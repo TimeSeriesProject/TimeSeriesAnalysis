@@ -7,8 +7,8 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 public class ParamsSM extends IParamsNetworkMining{
 	
 	private double minSupport;	// 最小支持度
-	private double sizeWindow;	// 时间窗长	（单位为秒）
-	private double stepWindow;	// 步长
+	private int sizeWindow;	// 时间窗长	（单位为秒）
+	private int stepWindow;	// 步长
 	private int minSeqLen;	// 最短序列模式长度
 	
 	public ParamsSM() {
@@ -53,16 +53,16 @@ public class ParamsSM extends IParamsNetworkMining{
 	public void setMinSupport(double minSupport) {
 		this.minSupport = minSupport;
 	}
-	public double getSizeWindow() {
+	public int getSizeWindow() {
 		return sizeWindow;
 	}
-	public void setSizeWindow(double sizeWindow) {
+	public void setSizeWindow(int sizeWindow) {
 		this.sizeWindow = sizeWindow;
 	}
-	public double getStepWindow() {
+	public int getStepWindow() {
 		return stepWindow;
 	}
-	public void setStepWindow(double stepWindow) {
+	public void setStepWindow(int stepWindow) {
 		this.stepWindow = stepWindow;
 	}
 	public int getMinSeqLen() {

@@ -127,7 +127,6 @@ class PMTimerTask extends TimerTask{
 		
 		ParamsPM paramsPM= (ParamsPM) task.getMiningParams();	// 获取PARAMSPM内容
 		isRunning = true;
-		
 		// 读取数据
 		DataItems dataItems = null;
 		dataItems=reader.readInputByText();
@@ -135,9 +134,7 @@ class PMTimerTask extends TimerTask{
 			dataItems=DataPretreatment.aggregateData(dataItems, task.getGranularity(), task.getAggregateMethod(),
 					!dataItems.isAllDataIsDouble());
 		}
-		TextUtils textUtils=new TextUtils();
-		textUtils.setTextPath("./configs/traffic.csv");
-		textUtils.writeOutput(dataItems);
+		
 		if(!task.getDiscreteMethod().equals(DiscreteMethod.None)){
 			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 					task.getDiscreteEndNodes());

@@ -30,6 +30,7 @@ public class SequencePatterns_new {
 	private int winSize = 100; // 单位为秒
 	private int clusterNum = 0;
 	private Date minDate = null;
+	private double threshold;
 
 	public static void main(String[] args) {
 		TaskElement task = new TaskElement();
@@ -54,32 +55,26 @@ public class SequencePatterns_new {
 				AggregateMethod.Aggregate_MEAN, false);
 		dataItems = DataPretreatment.toDiscreteNumbersAccordingToWaveform(
 				dataItems, task);
-		
-		List<ArrayList<String>> patternsResult = new ArrayList<ArrayList<String>>();
-		SequencePatterns_new sp = new SequencePatterns_new(dataItems, task,
-				patternsResult);
+		SequencePatterns_new sp = new SequencePatterns_new(dataItems, task,100,0.25);
 		sp.patternMining();
 		sp.displayResult();
-
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 		Date date = new Date();
 		System.out.println(date);
 	}
 
-	public SequencePatterns_new(DataItems dataItems, TaskElement task,
-			List<ArrayList<String>> patterns) {
+	public SequencePatterns_new(DataItems dataItems, TaskElement task,int winSize,
+			double threshold) {
 
 		this.dataItems = dataItems;
 		this.task = task;
-		this.patterns = patterns;
-		ParamsSM psm = (ParamsSM)task.getMiningParams();
-		winSize = (int)psm.getSizeWindow();
+		patterns = new ArrayList<ArrayList<String>>();
+		this.threshold=threshold;
+		this.winSize = winSize;
 	}
-	public void setWindSize(int size)
-	{
-		winSize = size;
-	}
+	
+	public SequencePatterns_new(){}
+
 	/**
 	 * 外部使用本类的功能事，需要根据构造函数传递对应的参数，然后代用该函数,即可返回频繁项的结果
 	 * 注意1：在划分序列时，我们采用默认windSize = 100，若需改变其大小，请在调用本函数之前调用setWindSize(int)函数
@@ -418,6 +413,46 @@ public class SequencePatterns_new {
 			}
 			System.out.println();
 		}
+	}
+	
+	public DataItems getDataItems() {
+		return dataItems;
+	}
+
+	public void setDataItems(DataItems dataItems) {
+		this.dataItems = dataItems;
+	}
+
+	public TaskElement getTask() {
+		return task;
+	}
+
+	public void setTask(TaskElement task) {
+		this.task = task;
+	}
+
+	public List<ArrayList<String>> getPatterns() {
+		return patterns;
+	}
+
+	public void setPatterns(List<ArrayList<String>> patterns) {
+		this.patterns = patterns;
+	}
+
+	public int getWinSize() {
+		return winSize;
+	}
+
+	public void setWinSize(int winSize) {
+		this.winSize = winSize;
+	}
+	
+	public double getThreshold() {
+		return threshold;
+	}
+
+	public void setThreshold(double threshold) {
+		this.threshold = threshold;
 	}
 	
 }
