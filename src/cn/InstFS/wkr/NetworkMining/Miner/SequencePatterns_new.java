@@ -27,7 +27,8 @@ public class SequencePatterns_new {
 	private DataItems dataItems;
 	private TaskElement task;
 	private List<ArrayList<String>> patterns;
-	private int winSize = 100; // 单位为秒
+	private int winSize; // 单位为秒
+	private int stepSize;
 	private int clusterNum = 0;
 	private Date minDate = null;
 	private double threshold;
@@ -92,9 +93,9 @@ public class SequencePatterns_new {
 		System.out.println("clusterNum:" + clusterNum);
 		System.out.println("dataItems.data.size():" + dataItems.data.size());
 //		winSize = 100;
-		int sample_num = (int) Math.ceil(dataItems.data.size() * 1.0 / winSize);
-		System.out.println("sample_num:" + sample_num);
-		ArrayList<String> sliceSequence = getSliceSequence(winSize); // 将一个样例以字符串形式给出
+//		int sample_num = (int) Math.ceil(dataItems.data.size() * 1.0 / winSize);
+//		System.out.println("sample_num:" + sample_num);
+		ArrayList<String> sliceSequence = getSliceSequence(winSize,stepSize); // 将一个样例以字符串形式给出
 
 		System.out.println("样本大小："+sliceSequence.size());
 		int length = sliceSequence.get(0).length();
@@ -102,7 +103,7 @@ public class SequencePatterns_new {
 
 		System.out.println("sequenceProb:" + basicSequence.size());
 
-		patterns = getFrequentItemSet(sliceSequence, basicSequence, 0.25);
+		patterns = getFrequentItemSet(sliceSequence, basicSequence, threshold);
 		return patterns;
 	}
 	/**
@@ -365,24 +366,22 @@ public class SequencePatterns_new {
 	 * @param sample_num
 	 * @return
 	 */
-	private ArrayList<String> getSliceSequence(int sample_num) {
+	private ArrayList<String> getSliceSequence(int winsize
+			,int stepSize) {
 
 		ArrayList<String> sliceSequence = new ArrayList<String>();
-
-		for (int i = 0; i < dataItems.getLength(); i++) {
-			Date date = dataItems.time.get(i);
-			String data = dataItems.data.get(i);
-
-			Long time = sparseTime(date);
-			int index = (int) (i / winSize);
-			if (index >= sliceSequence.size()) {
-				
-				sliceSequence.add(data);
-				
-			} else {
-				String tmp = sliceSequence.get(index);
-				sliceSequence.set(index, tmp+","+data);
+		int dataLen=dataItems.getLength();
+		StringBuilder sb=new StringBuilder();
+		for (int i = 0; i < dataLen; i+=stepSize) {
+			for(int j=0;j<winSize;j++){
+				if(i+j>=dataLen){
+					break;
+				}
+				sb.append(dataItems.data.get(i+j)).append(",");
 			}
+			sb.deleteCharAt(sb.length()-1);
+			sliceSequence.add(sb.toString());
+			sb.delete(0, sb.length());
 		}
 		
 		for(int i = 0;i < sliceSequence.size();i++)
@@ -453,6 +452,14 @@ public class SequencePatterns_new {
 
 	public void setThreshold(double threshold) {
 		this.threshold = threshold;
+	}
+
+	public int getStepSize() {
+		return stepSize;
+	}
+
+	public void setStepSize(int stepSize) {
+		this.stepSize = stepSize;
 	}
 	
 }

@@ -121,8 +121,8 @@ class SMTimerTask extends TimerTask {
 			System.out.println(task.getTaskName() + " --> Still Running");
 			return;
 		}
-		if (UtilsSimulation.instance.isPaused())
-			return;
+//		if (UtilsSimulation.instance.isPaused())
+//			return;
 		lastTimeStoped = false;
 		results.setDateProcess(UtilsSimulation.instance.getCurTime());
 		ParamsSM paramsSM=(ParamsSM)task.getMiningParams();
@@ -142,6 +142,7 @@ class SMTimerTask extends TimerTask {
 		sequencePattern.setTask(task);
 		sequencePattern.setWinSize(paramsSM.getSizeWindow());
 		sequencePattern.setThreshold(paramsSM.getMinSupport());
+		sequencePattern.setStepSize(paramsSM.getStepWindow());
 		sequencePattern.patternMining();
 
 		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
