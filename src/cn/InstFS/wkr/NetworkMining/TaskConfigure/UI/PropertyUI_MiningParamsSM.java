@@ -83,13 +83,13 @@ public class PropertyUI_MiningParamsSM implements IObjectDescriptor<ParamsSM>{
 	public double getSizeWindow() {
 		return core.getSizeWindow();
 	}
-	public void setSizeWindow(double sizeWindow) {
+	public void setSizeWindow(int sizeWindow) {
 		core.setSizeWindow(sizeWindow);
 	}
 	public double getStepWindow() {
 		return core.getStepWindow();
 	}
-	public void setStepWindow(double stepWindow) {
+	public void setStepWindow(int stepWindow) {
 		core.setStepWindow(stepWindow);
 	}
 	public int getMinSeqLen() {
