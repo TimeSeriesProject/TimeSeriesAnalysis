@@ -53,7 +53,7 @@ public class ARTSA implements IMinerTSA{
 			double mean=statistics.getMean();
 			double standardDeviation=statistics.getStandardDeviation();
 			statistics.clear();
-			if(e>(mean+3.0*standardDeviation)||mean<(mean-3.0*standardDeviation)){
+			if(e>(mean+5.0*standardDeviation)||mean<(mean-5.0*standardDeviation)){
 				System.out.print(i+window+",");
 				e=mean;
 				//保存异常点
@@ -114,7 +114,7 @@ public class ARTSA implements IMinerTSA{
 		System.out.println("平稳序列");
 		for(int i=0;i<seqSize;i++){
 			seq[i]=(seq[i]-seqMean-offset[i%recordsOfDay]);
-			int snumber=(int)seq[i]*100;
+			int snumber=(int)(seq[i]*100);
 			double dnumber=snumber+0.0;
 			System.out.print(dnumber/100.0+",");
 			statistics.addValue(seq[i]);
