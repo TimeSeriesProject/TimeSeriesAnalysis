@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import WaveletUtil.TEOPartern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataInputUtils;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
@@ -146,6 +147,9 @@ class TSATimerTask extends TimerTask{
 			tsaMethod=new ARTSA(task, params.getPredictPeriod(),dataItems);
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistTSA)){
 			tsaMethod=new ERPDistTSA(task,params.getPredictPeriod(),dataItems);
+		}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
+			tsaMethod=new TEOPartern(dataItems, 4, 4, 50);
+			
 		}else{
 			throw new RuntimeException("方法不存在！");
 		}

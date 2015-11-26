@@ -137,16 +137,16 @@ class SMTimerTask extends TimerTask {
 		
 		results.setInputData(dataItems);
 		
-		SequencePatterns_new sequencePattern=new SequencePatterns_new();
-		sequencePattern.setDataItems(dataItems);
-		sequencePattern.setTask(task);
-		sequencePattern.setWinSize(paramsSM.getSizeWindow());
-		sequencePattern.setThreshold(paramsSM.getMinSupport());
-		sequencePattern.setStepSize(paramsSM.getStepWindow());
-		sequencePattern.patternMining();
-
-		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
-		results.getRetSM().setPatters(patterns);
+//		SequencePatterns_new sequencePattern=new SequencePatterns_new();
+//		sequencePattern.setDataItems(dataItems);
+//		sequencePattern.setTask(task);
+//		sequencePattern.setWinSize(paramsSM.getSizeWindow());
+//		sequencePattern.setThreshold(paramsSM.getMinSupport());
+//		sequencePattern.setStepSize(paramsSM.getStepWindow());
+//		sequencePattern.patternMining();
+//
+//		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
+//		results.getRetSM().setPatters(patterns);
 		lastTimeStoped = true;
 		isRunning=false;
 		displayer.displayMinerResults(results);
