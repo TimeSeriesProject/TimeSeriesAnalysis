@@ -22,16 +22,17 @@ import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;;
  * @time 2015/11/11
  *
  */
-public class SequencePatterns_new {
+public class SequencePatterns {
+
 
 	private DataItems dataItems;
 	private TaskElement task;
 	private List<ArrayList<String>> patterns;
-	private int winSize; // 单位为秒
-	private int stepSize;
-	private int clusterNum = 0;
+	private int winSize = 100; // 单位为秒
+	private int stepSize = 50;
+	private int clusterNum = 10;
 	private Date minDate = null;
-	private double threshold;
+	private double threshold = 0.25;
 
 	public static void main(String[] args) {
 		TaskElement task = new TaskElement();
@@ -56,26 +57,31 @@ public class SequencePatterns_new {
 				AggregateMethod.Aggregate_MEAN, false);
 		dataItems = DataPretreatment.toDiscreteNumbersAccordingToWaveform(
 				dataItems, task);
-		SequencePatterns_new sp = new SequencePatterns_new(dataItems, task,100,0.25);
+		
+		List<ArrayList<String>> patternsResult = new ArrayList<ArrayList<String>>();
+		SequencePatterns sp = new SequencePatterns(dataItems, task,
+				patternsResult);
 		sp.patternMining();
 		sp.displayResult();
+
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 		Date date = new Date();
 		System.out.println(date);
 	}
 
-	public SequencePatterns_new(DataItems dataItems, TaskElement task,int winSize,
-			double threshold) {
+	public SequencePatterns(DataItems dataItems, TaskElement task,
+			List<ArrayList<String>> patterns) {
 
 		this.dataItems = dataItems;
 		this.task = task;
-		patterns = new ArrayList<ArrayList<String>>();
-		this.threshold=threshold;
-		this.winSize = winSize;
+		this.patterns = patterns;
+		ParamsSM psm = (ParamsSM)task.getMiningParams();
+		winSize = (int)psm.getSizeWindow();
+	}
+	public SequencePatterns() {
 	}
 	
-	public SequencePatterns_new(){}
-
 	/**
 	 * 外部使用本类的功能事，需要根据构造函数传递对应的参数，然后代用该函数,即可返回频繁项的结果
 	 * 注意1：在划分序列时，我们采用默认windSize = 100，若需改变其大小，请在调用本函数之前调用setWindSize(int)函数
@@ -93,8 +99,8 @@ public class SequencePatterns_new {
 		System.out.println("clusterNum:" + clusterNum);
 		System.out.println("dataItems.data.size():" + dataItems.data.size());
 //		winSize = 100;
-//		int sample_num = (int) Math.ceil(dataItems.data.size() * 1.0 / winSize);
-//		System.out.println("sample_num:" + sample_num);
+		int sample_num = (int) Math.ceil(dataItems.data.size() * 1.0 / winSize);
+		System.out.println("sample_num:" + sample_num);
 		ArrayList<String> sliceSequence = getSliceSequence(winSize,stepSize); // 将一个样例以字符串形式给出
 
 		System.out.println("样本大小："+sliceSequence.size());
@@ -274,9 +280,8 @@ public class SequencePatterns_new {
 //					System.out.println(index);
 					if(index == -1)
 						break;
-					if(index == 0)
-						index += 1;
-					len += index;
+
+					len += item.length();
 					si.sample_position.add(index);
 					
 				}
@@ -364,10 +369,10 @@ public class SequencePatterns_new {
 	/**
 	 * 为了计算的方便，将每个样例转化为字符串处理
 	 * @param sample_num
+	 * @param stepSize 
 	 * @return
 	 */
-	private ArrayList<String> getSliceSequence(int winsize
-			,int stepSize) {
+	private ArrayList<String> getSliceSequence(int sample_num, int stepSize) {
 
 		ArrayList<String> sliceSequence = new ArrayList<String>();
 		int dataLen=dataItems.getLength();
@@ -389,6 +394,7 @@ public class SequencePatterns_new {
 			System.out.println(sliceSequence.get(i));
 		}
 		return sliceSequence;
+
 	}
 	/**
 	 * 计算当前产生该类的时间与所有样例中最小时间的差
@@ -413,7 +419,6 @@ public class SequencePatterns_new {
 			System.out.println();
 		}
 	}
-	
 	public DataItems getDataItems() {
 		return dataItems;
 	}
@@ -441,7 +446,6 @@ public class SequencePatterns_new {
 	public int getWinSize() {
 		return winSize;
 	}
-
 	public void setWinSize(int winSize) {
 		this.winSize = winSize;
 	}
