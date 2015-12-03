@@ -5,7 +5,8 @@ public enum MiningAlgo {
 	MiningAlgo_ERPDistencePM("ERP距离周期检测算法"),
 	MiningAlgo_ARTSA("AR模型序列分析"),
 	MiningAlgo_ERPDistTSA("ERP模型序列分析"),
-	MiningAlgo_TEOTSA("TEO线段模式分许"),
+	MiningAlgo_TEOTSA("TEO线段异常检测"),
+	MiningAlgo_NeuralNetworkTSA("神经网络预测"),
 	MiningAlgo_NULL("无");
 	
 	private String value;

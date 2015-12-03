@@ -15,6 +15,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataInputUtils;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
+import cn.InstFS.wkr.NetworkMining.DataInputs.TextUtils;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
@@ -148,8 +149,11 @@ class TSATimerTask extends TimerTask{
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistTSA)){
 			tsaMethod=new ERPDistTSA(task,params.getPredictPeriod(),dataItems);
 		}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
-			tsaMethod=new TEOPartern(dataItems, 4, 4, 50);
-			
+			tsaMethod=new TEOPartern(dataItems, 4, 4, 50);	
+		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_NeuralNetworkTSA)){
+			TextUtils textUtils=new TextUtils();
+			textUtils.setTextPath(task.getDataSource()+task.getMiningObject());
+			tsaMethod=new NeuralNetwork(task.getDataSource()+task.getMiningObject(), dataItems.getLastTime(), task);
 		}else{
 			throw new RuntimeException("方法不存在！");
 		}

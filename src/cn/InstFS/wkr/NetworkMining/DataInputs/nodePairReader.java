@@ -1,6 +1,5 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
-import java.awt.List;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -10,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -294,6 +294,20 @@ public class nodePairReader implements IReader {
 		return DataItems.sortByTimeValue(dataItems);
 	}
 	
+	public List<String> directlyRead(String miningObject,String filePath) {
+		File sourceFile=new File(task.getSourcePath());
+		List<String> items=new ArrayList<String>();
+		if(sourceFile.isFile()){
+			readFile(sourceFile.getAbsolutePath(), miningObject,items);
+		}else{
+			File[] files=sourceFile.listFiles();
+			for(File file:files){
+				readFile(file.getAbsolutePath(),miningObject,items);
+			}
+		}
+		return items;
+	}
+	
 	private Date parseTime(String timeStr){
 		Calendar cal = Calendar.getInstance();
 		cal.set(2014, 9, 1, 0, 0, 0);
@@ -316,6 +330,22 @@ public class nodePairReader implements IReader {
 			}
 		}
 		return -1;
+	}
+	
+	private void readFile(String filePath,String miningObejct,List<String> items){
+		TextUtils textUtils=new TextUtils();
+		textUtils.setTextPath(filePath);
+		String header=textUtils.readByrow();
+		String[] columns=header.split(",");
+		int minerObjectIndex=NameToIndex(miningObejct, columns);
+		if(minerObjectIndex==-1){
+			throw new RuntimeException("Î´ÕÒµ½ÍÚ¾ò¶ÔÏó");
+		}
+		String line=null;
+		while((line=textUtils.readByrow())!=null){
+			columns=line.split(",");
+			items.add(columns[minerObjectIndex]);
+		}
 	}
 	
 	/**
@@ -351,7 +381,8 @@ public class nodePairReader implements IReader {
 				}
 			}
 			if(fixCondition){
-				dataItems.add1Data(parseTime(columns[TimeColIndex]), columns[minerObjectIndex]);
+				int time=Integer.parseInt(columns[TimeColIndex])*3600;
+				dataItems.add1Data(parseTime(time+""), columns[minerObjectIndex]);
 			}
 		}
 	}

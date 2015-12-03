@@ -1,5 +1,9 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
+import java.util.List;
+
+
+
 public interface IReader {	
 	//读取文本文件中的数据
 	public DataItems readInputByText();

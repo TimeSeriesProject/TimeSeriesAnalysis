@@ -117,4 +117,68 @@ public class TextUtils{
 		}
 		
 	}
+	
+	public void writeOutput(List<String> outList ,String testFilePath,String trainFilePath){
+		File trianFile=new File(trainFilePath);
+		File testFile=new File(testFilePath);
+		try {
+			if(trianFile.exists()){
+				trianFile.delete();
+				trianFile.createNewFile();
+			}else{
+				trianFile.createNewFile();
+			}
+			if(testFile.exists()){
+				testFile.delete();
+				testFile.createNewFile();
+			}else{
+				testFile.createNewFile();
+			}
+			
+			int length=outList.size();
+			int trainLen=(int)(length*0.9);
+			
+			FileOutputStream fos=new FileOutputStream(trianFile);
+			BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(fos));
+			int attrLength=outList.get(0).split(",").length-1;
+			StringBuilder sb=new StringBuilder();
+			for(int i=0;i<attrLength;i++){
+				sb.append("attr").append(i).append(",");
+			}
+			sb.append("value").append("\r\n");
+			writer.write(sb.toString());
+			sb.delete(0, sb.length());
+			for(int i=0;i<trainLen;i++){
+				sb.append(outList.get(i)).append("\r\n");
+				writer.write(sb.toString());
+				sb.delete(0, sb.length());
+			}
+			fos.flush();
+			writer.flush();
+			fos.close();
+			writer.close();
+			
+			
+			fos=new FileOutputStream(testFile);
+			writer=new BufferedWriter(new OutputStreamWriter(fos));
+			for(int i=0;i<attrLength;i++){
+				sb.append("attr").append(i).append(",");
+			}
+			sb.append("value").append("\r\n");
+			writer.write(sb.toString());
+			sb.delete(0, sb.length());
+			for(int i=trainLen;i<length;i++){
+				sb.append(outList.get(i)).append("\r\n");
+				writer.write(sb.toString());
+				sb.delete(0, sb.length());
+			}
+			fos.flush();
+			writer.flush();
+			fos.close();
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
 }
