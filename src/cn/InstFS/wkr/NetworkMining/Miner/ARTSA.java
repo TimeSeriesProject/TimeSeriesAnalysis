@@ -53,13 +53,15 @@ public class ARTSA implements IMinerTSA{
 			double mean=statistics.getMean();
 			double standardDeviation=statistics.getStandardDeviation();
 			statistics.clear();
-			if(e>(mean+5.0*standardDeviation)||mean<(mean-5.0*standardDeviation)){
+			if(e>(mean+3.5*standardDeviation)||mean<(mean-3.5*standardDeviation)){
 				System.out.print(i+window+",");
 				e=mean;
 				//保存异常点
 				outlies.add1Data(di.getTime().get(i+window),di.getData().get(i+window)); 
 				//修复异常值使得程序可以预测下一个值是否异常
-				seq[i+window]=paramsφ[0]*seq[i+window-1]+paramsφ[1]*seq[i+window-2]+e;  
+				//seq[i+window]=paramsφ[0]*seq[i+window-1]+paramsφ[1]*seq[i+window-2]+e;
+				seq[i+window]=seq[i+window-1];
+				
 			}
 		}
 		endDate=di.getLastTime();

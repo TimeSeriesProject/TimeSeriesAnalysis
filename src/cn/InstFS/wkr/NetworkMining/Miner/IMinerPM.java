@@ -1,5 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
+import java.util.List;
+import java.util.Map;
+
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
 
@@ -13,4 +16,11 @@ public interface IMinerPM {
 	public Double getMinEntropy();
 	public Double[] getEntropies();
 	public int getLastNumberIndexInperiod();
+	
+	public Map<String, List<Integer>> getExistPeriodOfNonNumDataItems();
+	public Map<String, Boolean> getHasPeriodOfNonNumDataItms();
+	public Map<String, Integer> getPredictPeriodOfNonNumDataItems() ;
+	public Map<String, Map<Integer, Integer[]>> getPredictValuesMapOfNonNumDataItems() ;
+	public Map<String, DataItems> getItemsInperiodMapOfNonNumDataitems();
+
 }

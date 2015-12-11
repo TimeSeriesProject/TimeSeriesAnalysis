@@ -17,9 +17,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,6 +30,8 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+
+
 //import org.hamcrest.Matcher;
 //import weka.clusterers.SimpleKMeans;
 //import weka.core.Instances;
@@ -99,6 +103,7 @@ public class DataPretreatment {
 			AggregateMethod method,boolean isDiscreteOrNonDouble){	
 		
 		DataItems dataOut = new DataItems();
+		dataOut.setIsAllDataDouble(di.getIsAllDataDouble());
 		int len = di.getLength();
 		if (di == null || di.getTime() == null || di.getData() == null || len == 0)
 			return dataOut;
@@ -107,8 +112,10 @@ public class DataPretreatment {
 		List<String> datas = di.getData();
 		Date t1 = times.get(0);
 		Date t2 = getDateAfter(t1, granularity * 1000);
-		TreeSet<String> valsStr = new TreeSet<String>();// 字符串的聚合结果
+		Map<String,Integer> valsStr = new HashMap<String, Integer>(); // 字符串的聚合结果
+		Set<String> varSet=new HashSet<String>();                     //字符串的集合
 		List<Double> vals = new ArrayList<Double>(); 	// 数值的聚合结果
+		
 //		Date t = t1;									// 聚合后的时间点
 		int i=0;
 		for(;!t1.after(times.get(times.size()-1));t1=t2,t2 = getDateAfter(t2, granularity * 1000))
@@ -118,26 +125,35 @@ public class DataPretreatment {
 			{
 				if(i>0&&times.get(i).before(times.get(i-1)))
 					JOptionPane.showMessageDialog(MainFrame.topFrame, "序列未排序");
-				if (isDiscreteOrNonDouble)	// 离散值或字符串
-					valsStr.add(datas.get(i));
+				if (isDiscreteOrNonDouble){	// 离散值或字符串
+					if(valsStr.containsKey(datas.get(i))){
+						int originValue=valsStr.get(datas.get(i));
+						valsStr.remove(datas.get(i));
+						int newValue=originValue+1;
+						valsStr.put(datas.get(i), newValue);
+					}else{
+						valsStr.put(datas.get(i), 1);
+					}
+					varSet.add(datas.get(i));
+				}
 				else{			// 若为连续值，则加至vals中，后续一起聚合
 					try{
 						double data= Double.parseDouble(datas.get(i));
 						vals.add(data);
-					
 					}catch(Exception e){}					
 				}
 				i++;
 			}
 			//一个时间粒度内的值读完了，则建立新的值
 			if(isDiscreteOrNonDouble){
-				StringBuilder sb = new StringBuilder();
-				for (String valStr : valsStr)
-					sb.append(valStr+" ");
-				if (sb.length() > 0)
-					dataOut.add1Data(t1, sb.toString().trim());
-				else
-					dataOut.add1Data(t1, "");
+//				StringBuilder sb = new StringBuilder();
+//				for (String valStr : valsStr)
+//					sb.append(valStr+" ");
+//				if (sb.length() > 0)
+//					dataOut.add1Data(t1, sb.toString().trim());
+//				else
+//					dataOut.add1Data(t1, "");
+				dataOut.add1Data(t1, valsStr);
 				valsStr.clear();
 			}else{
 				Double[] valsArray = vals.toArray(new Double[0]);
@@ -152,9 +168,10 @@ public class DataPretreatment {
 				}
 				vals.clear();
 			}
-				
 		}			
-	
+		if(varSet.size()!=0){
+			dataOut.setVarSet(varSet);
+		}
 		return dataOut;
 	}
 	
@@ -192,6 +209,8 @@ public class DataPretreatment {
 	 */
 	private static DataItems toDiscreteNumbersAccordingToCustomNodes(DataItems dataItems,String endNodes){
 		DataItems newDataItems = new DataItems();
+		newDataItems.setIsAllDataDouble(dataItems.getIsAllDataDouble());
+		newDataItems.setVarSet(dataItems.getVarSet());
 		if (endNodes == null || endNodes.length() == 0)
 			return newDataItems;
 		String []nodesStr = endNodes.split(",");
@@ -200,11 +219,25 @@ public class DataPretreatment {
 		for (int i = 0; i < numDims; i ++)
 			discreteNodes[i] = Double.parseDouble(nodesStr[i]);
 		newDataItems.setDiscreteNodes(discreteNodes);
-		List<String> datas = dataItems.getData();
-		int len = datas.size();
-		for (int i = 0; i < len; i ++){				
-			newDataItems.add1Data(dataItems.getTime().get(i),
-		    getIndexOfData(numDims,Double.parseDouble(datas.get(i)),newDataItems.getDiscreteNodes()));
+		int len = dataItems.getLength();
+		for (int i = 0; i < len; i ++){		
+			if(i==220){
+				System.out.println("here");
+			}
+			if(dataItems.isAllDataIsDouble()){
+		    	newDataItems.add1Data(dataItems.getTime().get(i),
+		        getIndexOfData(numDims,Double.parseDouble(dataItems.getData().get(i)),newDataItems.getDiscreteNodes()));
+			}else{
+				Map<String, Integer> map=dataItems.getNonNumData().get(i);
+				Map<String, Integer> discreMap=new HashMap<String, Integer>();
+				Iterator<Map.Entry<String, Integer>> iter=map.entrySet().iterator();
+				while(iter.hasNext()){
+					Map.Entry<String, Integer>entry=iter.next();
+					discreMap.put(entry.getKey(),
+					(int) Double.parseDouble(getIndexOfData(numDims,entry.getValue(),newDataItems.getDiscreteNodes())));
+				}
+				newDataItems.add1Data(dataItems.getTime().get(i), discreMap);
+			}
 		}
 		return newDataItems;
 	}
@@ -215,6 +248,7 @@ public class DataPretreatment {
 	 */
 	private static DataItems toDiscreteNumbersAccordingToMean3Sigma(DataItems dataItems,int numDims){
 		DataItems newDataItems=new DataItems();
+		newDataItems.setIsAllDataDouble(dataItems.getIsAllDataDouble());
 		Double minVal = Double.MAX_VALUE;
 		Double maxVal = Double.MIN_VALUE;
 		

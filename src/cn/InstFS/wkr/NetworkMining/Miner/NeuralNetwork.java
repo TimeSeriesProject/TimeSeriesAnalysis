@@ -43,13 +43,12 @@ public class NeuralNetwork implements IMinerTSA{
 	
 	public void TimeSeriesAnalysis(){
 		try {
-			generateFeatures features=new generateFeatures();
-			features.setInputFile(inputFilePath);
-			features.setOutputFilePrefix(inputFilePath.split("\\.")[0]);
+			File inputFile=new File(inputFilePath);
+			generateFeatures features=new generateFeatures(inputFilePath,inputFile.getName().split("\\.")[0],task.getMiningObject());
 			features.generateItems();
 			MultilayerPerceptron classifier=new MultilayerPerceptron();
-			File trainFile=new File("./configs/trian"+features.getOutputFilePrefix());
-			File testFile=new File("./configs/test"+features.getOutputFilePrefix());
+			File trainFile=new File(features.getTrainOutputFilePath());
+			File testFile=new File(features.getTestOutputFilePath());
 			classifier.setAutoBuild(true);
 			classifier.setGUI(false);
 			CSVLoader loader=new CSVLoader();
@@ -134,8 +133,8 @@ public class NeuralNetwork implements IMinerTSA{
 				instances.delete(0);
 			}
 			List<String> data=new ArrayList<String>();
-			for(double value:items){
-				data.add(value+"");
+			for(int i=(trianInstancesNum+testInstanceNum);i<(trianInstancesNum+testInstanceNum+predictPeriod);i++){
+				data.add(items[i]+"");
 			}
 			DataItems dataItems=new DataItems();
 			dataItems.setData(data);

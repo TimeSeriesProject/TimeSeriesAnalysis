@@ -1,11 +1,20 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
 import java.util.Date;
+import java.util.Map;
 
 public class DataItem implements Comparable<DataItem>{
 	private Date time;
 	private String data;
 	private Double prob;
+	private Map<String, Integer> NonNumData;
+	
+	public Map<String, Integer> getNonNumData() {
+		return NonNumData;
+	}
+	public void setNonNumData(Map<String, Integer> nonNumData) {
+		NonNumData = nonNumData;
+	}
 	public String getData() {
 		return data;
 	}

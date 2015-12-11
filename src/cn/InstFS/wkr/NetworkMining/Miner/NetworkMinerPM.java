@@ -5,6 +5,9 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -118,6 +121,8 @@ class PMTimerTask extends TimerTask{
 	public void run() {
 		if (isRunning){
 			System.out.println(task.getTaskName() + " --> Still Running");
+			
+			
 			return;
 		}
 //		if (UtilsSimulation.instance.isPaused())
@@ -148,7 +153,7 @@ class PMTimerTask extends TimerTask{
 		if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_averageEntropyPM)){
 			pmMethod=new averageEntropyPM(task, dimension,paramsPM.getPeriodThreshold());
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
-			pmMethod=new ERPDistencePM(paramsPM.getPeriodThreshold());
+			pmMethod=new ERPDistencePM();
 		}else{
 			throw new RuntimeException("方法不存在！");
 		}
@@ -156,17 +161,36 @@ class PMTimerTask extends TimerTask{
 		pmMethod.predictPeriod();
 		results.setInputData(dataItems);
 		
-		MinerResultsPM retPM = results.getRetPM();
-		retPM.setHasPeriod(pmMethod.hasPeriod());
-		retPM.setPeriod(pmMethod.getPredictPeriod());
-		retPM.setDistributePeriod(pmMethod.getItemsInPeriod());
-		retPM.setFeatureValue(pmMethod.getMinEntropy());
-		retPM.setFeatureValues(pmMethod.getEntropies());
-		retPM.setFirstPossiblePeriod(pmMethod.getFirstPossiblePeriod());//找出第一个呈现周期性的周期
-		System.out.println("是否存在周期："+pmMethod.hasPeriod());
-		if(pmMethod.hasPeriod()){
-			System.out.println("周期值 "+pmMethod.getPredictPeriod());
+		if(dataItems.isAllDataIsDouble()){
+			MinerResultsPM retPM = results.getRetPM();
+			retPM.setHasPeriod(pmMethod.hasPeriod());
+			retPM.setPeriod(pmMethod.getPredictPeriod());
+			retPM.setDistributePeriod(pmMethod.getItemsInPeriod());
+			retPM.setFeatureValue(pmMethod.getMinEntropy());
+			retPM.setFeatureValues(pmMethod.getEntropies());
+			retPM.setFirstPossiblePeriod(pmMethod.getFirstPossiblePeriod());//找出第一个呈现周期性的周期
+			System.out.println("是否存在周期："+pmMethod.hasPeriod());
+			if(pmMethod.hasPeriod()){
+				System.out.println("周期值 "+pmMethod.getPredictPeriod());
+			}
+		}else{
+			Map<String, MinerResultsPM> retPmMap=new HashMap<String, MinerResultsPM>();
+			Set<String>itemSet=dataItems.getVarSet();
+			for(String item:itemSet){
+				System.out.println(item);
+				System.out.println("是否存在周期："+pmMethod.getHasPeriodOfNonNumDataItms().get(item));
+				if(pmMethod.hasPeriod()){
+					System.out.println("周期值 "+pmMethod.getPredictPeriodOfNonNumDataItems().get(item));
+				}
+				MinerResultsPM retPM=new MinerResultsPM();
+				retPM.setHasPeriod(pmMethod.getHasPeriodOfNonNumDataItms().get(item));
+				retPM.setPeriod(pmMethod.getPredictPeriodOfNonNumDataItems().get(item));
+				retPM.setDistributePeriod(pmMethod.getItemsInperiodMapOfNonNumDataitems().get(item));
+				retPmMap.put(item, retPM);
+			}
 		}
+		
+		
 		
 //		DiscretePM discretePM=new DiscretePM(task,dimension, paramsPM.getPeriodThreshold());
 //		discretePM.setDataItems(dataItems);

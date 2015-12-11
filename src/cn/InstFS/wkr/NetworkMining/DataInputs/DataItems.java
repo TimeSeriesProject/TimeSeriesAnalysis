@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.math3.stat.StatUtils;
 import org.jfree.data.time.Day;
@@ -29,9 +30,15 @@ import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 public class DataItems {
 	public List<Date> time;
 	public List<String> data;
+	public List<Map<String, Integer>> NonNumData; //非数值型DataItems 各时间粒度的items出现次数
+	public Set<String> varSet;                    //非数值型DataItems items集合
+
 	public List<Double> prob;
 	private int granularity;
+	
+
 	private boolean isDiscrete=false;
+	private int isAllDataDouble=0;
 	
 	private Double []discreteNodes;
 	private Map<String, String>discreteStrings;
@@ -105,7 +112,11 @@ public class DataItems {
 	
 	public void add1Data(DataItem di) {
 		this.time.add(di.getTime());
-		this.data.add(di.getData());
+		if(isAllDataIsDouble()){
+			this.data.add(di.getData());
+		}else{
+	    	this.NonNumData.add(di.getNonNumData());
+		}
 		this.prob.add(di.getProb());
 	}
 	
@@ -115,14 +126,53 @@ public class DataItems {
 		this.getProb().add(0.0);
 	}
 	
+	public void add1Data(Date time, Map<String, Integer> data){
+		if(this.NonNumData==null){
+			NonNumData=new ArrayList<Map<String,Integer>>();
+		}
+		if(!isAllDataIsDouble()){
+			this.time.add(time);
+			Map<String,Integer> map=new HashMap<String, Integer>();
+			map.putAll(data);
+			this.NonNumData.add(map);
+			this.getProb().add(0.0);
+		}else{
+			throw new RuntimeException("数值型dataItem");
+		}
+		
+	}
+	
+	public int getIsAllDataDouble() {
+		if(isAllDataDouble==0){
+			isAllDataIsDouble();
+		}
+		return isAllDataDouble;
+	}
+
+	public void setIsAllDataDouble(int isAllDataDouble) {
+		this.isAllDataDouble = isAllDataDouble;
+	}
+
 	public int getLength(){
-		return Math.min(Math.min(time.size(), data.size()), prob.size());
+		if(isAllDataIsDouble()){
+	    	return Math.min(Math.min(time.size(), data.size()), prob.size());
+		}else{
+			if(NonNumData==null||NonNumData.size()==0){
+		    	return Math.min(Math.min(time.size(), data.size()), prob.size());
+			}else{
+		    	return Math.min(time.size(),NonNumData.size());
+			}
+		}
 	}
 	
 	public DataItem getElementAt(int i ){
 		DataItem ii = new DataItem();
 		ii.setData(data.get(i));
-		ii.setTime(time.get(i));
+		if(isAllDataIsDouble()){
+	    	ii.setTime(time.get(i));
+		}else{
+			ii.setNonNumData(NonNumData.get(i));
+		}
 		ii.setProb(prob.get(i));
 		return ii;
 	}	
@@ -152,11 +202,20 @@ public class DataItems {
 		time.clear();
 		data.clear();
 		prob.clear();
-		for (DataItem item :items){
-			time.add(item.getTime());
-			data.add(item.getData());
-			prob.add(item.getProb());
+		if(isAllDataIsDouble()){
+			for (DataItem item :items){
+				time.add(item.getTime());
+				data.add(item.getData());
+				prob.add(item.getProb());
+			}
+		}else{
+			for (DataItem item :items){
+				time.add(item.getTime());
+				NonNumData.add(item.getNonNumData());
+				prob.add(item.getProb());
+			}
 		}
+		
 	}
 	
 	public Date getLastTime(){
@@ -170,14 +229,19 @@ public class DataItems {
 	
 	
 	public boolean isAllDataIsDouble(){
-		List<String>datas = getData();
-		for(String data: datas)
-			try{
-				Double.parseDouble(data);
-			}catch(Exception e){
-				return false;
-			}
-		return true;
+		if(isAllDataDouble==0){
+			List<String>datas = getData();
+			for(String data: datas)
+				try{
+					Double.parseDouble(data);
+				}catch(Exception e){
+					isAllDataDouble=-1;
+					return false;
+				}
+			isAllDataDouble=1;
+			return true;
+		}
+		return (isAllDataDouble>0)?true:false;	
 	}
 	
 	/**
@@ -455,6 +519,7 @@ public class DataItems {
 	
 	public static DataItems sortByTimeValue(DataItems input){
 		DataItems output = new DataItems();
+		output.setIsAllDataDouble(input.getIsAllDataDouble());
 		int len = input.getLength();
 		ItemTime []items = new ItemTime[len];	
 		List<Date>times = input.getTime();
@@ -493,5 +558,20 @@ public class DataItems {
 
 	public void setGranularity(int granularity) {
 		this.granularity = granularity;
+	}
+	
+	public List<Map<String, Integer>> getNonNumData() {
+		return NonNumData;
+	}
+
+	public void setNonNumData(List<Map<String, Integer>> nonNumData) {
+		NonNumData = nonNumData;
+	}
+	public Set<String> getVarSet() {
+		return varSet;
+	}
+
+	public void setVarSet(Set<String> varSet) {
+		this.varSet = varSet;
 	}
 }

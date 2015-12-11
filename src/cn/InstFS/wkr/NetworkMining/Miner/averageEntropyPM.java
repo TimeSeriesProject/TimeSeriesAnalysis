@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import oracle.net.aso.d;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.TextUtils;
 import cn.InstFS.wkr.NetworkMining.Exception.NotFoundDicreseValueException;
@@ -25,6 +27,12 @@ public class averageEntropyPM implements IMinerPM{
     private HashMap<Integer, Integer[]> predictValuesMap;
 	private double threshold;  //是否具有周期的阈值
 	private int lastNumIndexInPeriod;//最后一个数在周期中的位置
+	
+	private Map<String, List<Integer>> existPeriodOfNonNumDataItems;
+	private Map<String, Boolean> hasPeriodOfNonNumDataItms;
+	private Map<String, Integer> predictPeriodOfNonNumDataItems;
+	private Map<String, Map<Integer, Integer[]>> predictValuesMapOfNonNumDataItems;
+	private Map<String, DataItems> itemsInperiodMapOfNonNumDataitems;
 	
 	public averageEntropyPM(TaskElement taskElement,int dimension){
 		this.dimension=dimension;
@@ -84,17 +92,41 @@ public class averageEntropyPM implements IMinerPM{
 			throw new RuntimeException("平均熵算法要求数据离散化");
 		}
 		int numItems=di.getLength();
+		int maxPeriod = (numItems/2>300)?300:numItems/2;
 		if (numItems == 0)
 			return;
-//		TextUtils textUtils=new TextUtils();
-//		textUtils.setTextPath("./configs/traffic.csv");
-//		textUtils.writeOutput(di);
+		if(di.isAllDataIsDouble()){
+			generateEntroy(di.getTime(),di.getData(),numItems);
+			isPeriodExist(maxPeriod,null,di.getData());
+		}else{
+			List<Map<String, Integer>> nonnumData=di.getNonNumData();
+			Set<String> itemSet=di.getVarSet();
+			for(String item:itemSet){
+				List<String> seq=new ArrayList<String>();
+				for(Map<String, Integer>map:nonnumData){
+					if(map.containsKey(item)){
+						int value=map.get(item);
+						seq.add(value+"");
+					}else{
+						seq.add("0");
+					}
+				}
+				System.out.println(item);
+				generateEntroy(di.getTime(),seq, numItems);
+				isPeriodExist(maxPeriod,item,seq);
+			}
+		}
 		List<Date> times = di.getTime();
 		List<String> values=di.getData();
-		startTime = times.get(0);
 		
+		
+	}
+	
+	private void generateEntroy(List<Date> times,List<String> values,int numItems){
+		
+        startTime = times.get(0);
 		int period=1;
-		int maxPeriod = Math.min(numItems/2, 100);
+		int maxPeriod = Math.min(numItems/2, 300);
 		entropies = new Double[maxPeriod];
 		while((period+1)<= maxPeriod){
 			period++;	//周期递加
@@ -132,7 +164,6 @@ public class averageEntropyPM implements IMinerPM{
 			System.out.println("周期:"+period+" 平均熵:"+(entropy/period)+" 熵："+entropy);
 			entropies[period - 1] = (entropy/period);
 		}
-		isPeriodExist(maxPeriod);
 	}
 	
 	/**
@@ -140,7 +171,10 @@ public class averageEntropyPM implements IMinerPM{
 	 * 确定最小熵
 	 * @param maxPeriod 尝试的周期个数
 	 */
-	private void isPeriodExist(int maxPeriod){
+	private void isPeriodExist(int maxPeriod,String item,List<String>seq){
+		itemsInPeriod=new DataItems();
+		existPeriod=new ArrayList<Integer>();
+		predictValuesMap=new HashMap<Integer, Integer[]>();
 		for(int i=1;i<maxPeriod;i++){
 			if(isPeriod(entropies, i+1)){
 				hasPeriod=true;
@@ -150,7 +184,7 @@ public class averageEntropyPM implements IMinerPM{
 					predictValues[index]=0;
 				}
 				for(int j=0;j<di.getLength();j++){
-					predictValues[j%(i+1)]+=(int)Double.parseDouble(di.getData().get(j));
+					predictValues[j%(i+1)]+=(int)Double.parseDouble(seq.get(j));
 				}
 				for(int j=0;j<(i+1);j++){
 					predictValues[j]/=(di.getLength()/(i+1));
@@ -176,11 +210,19 @@ public class averageEntropyPM implements IMinerPM{
 			Integer[] predictValues=predictValuesMap.get(Period);
 			for(int i=0;i<Period;i++){
 				itemsInPeriod.add1Data(di.getTime().get(i),predictValues[i]+"");
-				System.out.print(predictValues[i]+" ");
 			}
 		}else{
 			itemsInPeriod=null;
 			predictPeriod=-1;
+			existPeriod=null;
+			predictValuesMap=null;
+		}
+		if(item!=null){
+			hasPeriodOfNonNumDataItms.put(item, hasPeriod);
+			itemsInperiodMapOfNonNumDataitems.put(item, itemsInPeriod);
+			existPeriodOfNonNumDataItems.put(item, existPeriod);
+			predictPeriodOfNonNumDataItems.put(item, predictPeriod);
+			predictValuesMapOfNonNumDataItems.put(item, predictValuesMap);
 		}
 	}
 	
@@ -217,6 +259,11 @@ public class averageEntropyPM implements IMinerPM{
 	@Override
 	public void setDataItems(DataItems dataItems) {
 		this.di=dataItems;
+		existPeriodOfNonNumDataItems=new HashMap<String, List<Integer>>();
+		hasPeriodOfNonNumDataItms=new HashMap<String, Boolean>();
+		predictPeriodOfNonNumDataItems=new HashMap<String, Integer>();
+		predictValuesMapOfNonNumDataItems=new HashMap<String, Map<Integer,Integer[]>>();
+		itemsInperiodMapOfNonNumDataitems=new HashMap<String, DataItems>();
 	}
 	
 	@Override
@@ -274,5 +321,45 @@ public class averageEntropyPM implements IMinerPM{
 	public TaskElement getTask(){
 		return task;
 	}
+	
+	public Map<String, List<Integer>> getExistPeriodOfNonNumDataItems() {
+		return existPeriodOfNonNumDataItems;
+	}
+	public void setExistPeriodOfNonNumDataItems(
+			Map<String, List<Integer>> existPeriodOfNonNumDataItems) {
+		this.existPeriodOfNonNumDataItems = existPeriodOfNonNumDataItems;
+	}
+	public Map<String, Boolean> getHasPeriodOfNonNumDataItms() {
+		return hasPeriodOfNonNumDataItms;
+	}
+	public void setHasPeriodOfNonNumDataItms(
+			Map<String, Boolean> hasPeriodOfNonNumDataItms) {
+		this.hasPeriodOfNonNumDataItms = hasPeriodOfNonNumDataItms;
+	}
+	public Map<String, Integer> getPredictPeriodOfNonNumDataItems() {
+		return predictPeriodOfNonNumDataItems;
+	}
+	public void setPredictPeriodOfNonNumDataItems(
+			Map<String, Integer> predictPeriodOfNonNumDataItems) {
+		this.predictPeriodOfNonNumDataItems = predictPeriodOfNonNumDataItems;
+	}
+	public Map<String, Map<Integer, Integer[]>> getPredictValuesMapOfNonNumDataItems() {
+		return predictValuesMapOfNonNumDataItems;
+	}
+	public void setPredictValuesMapOfNonNumDataItems(
+			Map<String, Map<Integer, Integer[]>> predictValuesMapOfNonNumDataItems) {
+		this.predictValuesMapOfNonNumDataItems = predictValuesMapOfNonNumDataItems;
+	}
+
+	public Map<String, DataItems> getItemsInperiodMapOfNonNumDataitems() {
+		return itemsInperiodMapOfNonNumDataitems;
+	}
+
+	public void setItemsInperiodMapOfNonNumDataitems(
+			Map<String, DataItems> itemsInperiodMapOfNonNumDataitems) {
+		this.itemsInperiodMapOfNonNumDataitems = itemsInperiodMapOfNonNumDataitems;
+	}
+	
+	
 	
 }

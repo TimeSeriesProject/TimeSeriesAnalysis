@@ -7,10 +7,14 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -295,7 +299,7 @@ public class nodePairReader implements IReader {
 	}
 	
 	public List<String> directlyRead(String miningObject,String filePath) {
-		File sourceFile=new File(task.getSourcePath());
+		File sourceFile=new File(filePath);
 		List<String> items=new ArrayList<String>();
 		if(sourceFile.isFile()){
 			readFile(sourceFile.getAbsolutePath(), miningObject,items);
@@ -306,6 +310,13 @@ public class nodePairReader implements IReader {
 			}
 		}
 		return items;
+	}
+	
+	private Date parseTime(int timeStr){
+		Calendar cal = Calendar.getInstance();
+		cal.set(2014, 9, 1, 0, 0, 0);
+		cal.add(Calendar.MILLISECOND,timeStr);
+		return cal.getTime();
 	}
 	
 	private Date parseTime(String timeStr){
@@ -371,20 +382,68 @@ public class nodePairReader implements IReader {
 		}
 		String line=null;
 		boolean fixCondition=true;
-		while((line=textUtils.readByrow())!=null){
-			columns=line.split(",");
-			fixCondition=true;
-			for(String ip:ipPair){
-				if(!(columns[SIPColIndex].equals(ip)||columns[DIPColIndex].equals(ip))){
-					fixCondition=false;
-					break;
+		if(minierObject.equals("path")||minierObject.equals("PATH")||minierObject.equals("Path")){
+			dataItems.setIsAllDataDouble(-1);
+			Map<Integer, Integer> map=new HashMap<Integer, Integer>();
+			List<Map.Entry<Integer, Integer>> mapList=new ArrayList<Map.Entry<Integer,Integer>>();
+			StringBuilder sb=new StringBuilder();
+			while((line=textUtils.readByrow())!=null){
+				columns=line.split(",");
+				fixCondition=true;
+				for(String ip:ipPair){
+					if(!(columns[SIPColIndex].equals(ip)||columns[DIPColIndex].equals(ip))){
+						fixCondition=false;
+						break;
+					}
+				}
+				if(fixCondition){
+					int time=Integer.parseInt(columns[TimeColIndex])*3600;
+					//String[] pathNodes=columns[minerObjectIndex].split(" ");
+					for(int j=5;j<columns.length;j++)
+					{
+						String str[] = columns[j].split(":");
+						int node = Integer.valueOf(str[0]);
+						int hops = Integer.valueOf(str[1]);
+						map.put(node, hops);
+					}
+					mapList.addAll(map.entrySet());
+					Collections.sort(mapList,new Comparator<Map.Entry<Integer, Integer>>() {
+						@Override
+						public int compare(Entry<Integer, Integer> o1,
+								Entry<Integer, Integer> o2) {
+							
+							return o1.getValue().compareTo(o2.getValue());
+						}
+					});
+					sb.append(columns[SIPColIndex]).append(",");
+					for(Map.Entry<Integer, Integer> entry:mapList){
+						sb.append(entry.getKey()).append(",");
+					}
+					sb.append(columns[DIPColIndex]);
+					dataItems.add1Data(parseTime(time), sb.toString());
+					sb.delete(0, sb.length());
+					mapList.clear();
+					map.clear();
 				}
 			}
-			if(fixCondition){
-				int time=Integer.parseInt(columns[TimeColIndex])*3600;
-				dataItems.add1Data(parseTime(time+""), columns[minerObjectIndex]);
+		}else{
+			dataItems.setIsAllDataDouble(1);
+			while((line=textUtils.readByrow())!=null){
+				columns=line.split(",");
+				fixCondition=true;
+				for(String ip:ipPair){
+					if(!(columns[SIPColIndex].equals(ip)||columns[DIPColIndex].equals(ip))){
+						fixCondition=false;
+						break;
+					}
+				}
+				if(fixCondition){
+					int time=Integer.parseInt(columns[TimeColIndex])*3600;
+					dataItems.add1Data(parseTime(time), columns[minerObjectIndex]);
+				}
 			}
 		}
+		
 	}
 	private void readFile(String filePath,String minierObject,Map<String,DataItems> ipPairItems,String[] conditions){
 		TextUtils textUtils=new TextUtils();

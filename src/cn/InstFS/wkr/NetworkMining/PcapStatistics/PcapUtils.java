@@ -1,6 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.PcapStatistics;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -34,8 +36,8 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
  */
 public class PcapUtils {
 	private boolean SessionLevel=true;   //判断读取的数据是否是业务层数据
-	public static void main(String [] args){
-		String fpath = "F:\\pcap";
+	public static void main(String [] args) throws FileNotFoundException{
+		String fpath = "E:\\57Data";
 		PcapUtils pcapUtils = new PcapUtils();
 		pcapUtils.readInput(fpath,0);
 	}
@@ -43,8 +45,9 @@ public class PcapUtils {
 	 * parse given file 
 	 * @param fpath file path
 	 * @param type stand for file properties,1 means trunkFiles and 0 means others  
+	 * @throws FileNotFoundException 
 	 */
-	private void readInput(String fpath,int type){
+	private void readInput(String fpath,int type) throws FileNotFoundException{
 		File ff = new File(fpath);
 		if(ff.isFile()){
 			System.out.println(new Date() +"\t开始读取:" + ff.getName());
@@ -168,8 +171,8 @@ public class PcapUtils {
 			boolean smtp = false;
 			boolean isTcpFIN = false;
 			Ip4 ip4 = new Ip4();
-			Tcp tcp = new Tcp();
-			if (packet.hasHeader(ip4)&&packet.hasHeader(tcp)){	
+			Udp udp = new Udp();
+			if (packet.hasHeader(ip4)&&packet.hasHeader(udp)){	
 				smtp = true;
 				int TTL=ip4.ttl();
 				int hops=64-TTL;
@@ -179,17 +182,14 @@ public class PcapUtils {
 				event.setSrcIp(ipBytes2Str(ip4.source()));
 				event.setDstIP(ipBytes2Str(ip4.destination()));
 				event.setTraffic(ip4.length());
-				event.setSrcPort(tcp.source()+"");
-				event.setDstPort(tcp.destination()+"");
-				int protoType=(tcp.source()<tcp.destination())?tcp.source():tcp.destination();
-				event.setProtoType(protoType+"");
-				if(tcp.flags_FIN()){
-					isTcpFIN=true;
-				}	
+				event.setSrcPort(udp.source()+"");
+				event.setDstPort(udp.destination()+"");
+				int protoType=(udp.source()<udp.destination())?udp.source():udp.destination();
+				event.setProtoType(protoType+"");	
 			}
 			if (smtp){
 				//大于80B的包视为数据包
-				if(event.getTraffic()>=62){
+				if(event.getTraffic()>=30){
 					TCPStream stream = streamPool.getOrCreateStream(event);
 					streamPool.updateTraffic(stream, event, isTcpFIN);
 //					num ++;
@@ -212,11 +212,12 @@ public class PcapUtils {
 		System.out.println(fpath + " --> 共" + num + "个包！");
 	}
 	
-	private void directRead2File(String path,String name){
+	private void directRead2File(String path,String name) throws FileNotFoundException{
 		String title=name.split("\\.")[0];
 		TCPStreamPool streamPool=new TCPStreamPool(title);
-		String file="trunkPcap/"+name;
-		InputStream is=this.getClass().getResourceAsStream(file);
+		//String file="trunkPcap/"+name;
+		InputStream is=new FileInputStream(new File(path));
+		//InputStream is=this.getClass().getResourceAsStream(path);
 		try {
 			PcapParser.unpack(is, streamPool);
 		} catch (IOException e) {

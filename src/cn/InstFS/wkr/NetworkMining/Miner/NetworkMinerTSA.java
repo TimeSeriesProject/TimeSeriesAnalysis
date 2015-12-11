@@ -152,8 +152,9 @@ class TSATimerTask extends TimerTask{
 			tsaMethod=new TEOPartern(dataItems, 4, 4, 50);	
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_NeuralNetworkTSA)){
 			TextUtils textUtils=new TextUtils();
-			textUtils.setTextPath(task.getDataSource()+task.getMiningObject());
-			tsaMethod=new NeuralNetwork(task.getDataSource()+task.getMiningObject(), dataItems.getLastTime(), task);
+			textUtils.setTextPath(task.getSourcePath()+task.getMiningObject());
+			textUtils.writeOutput(dataItems);
+			tsaMethod=new NeuralNetwork(task.getSourcePath()+task.getMiningObject(), dataItems.getLastTime(), task);
 		}else{
 			throw new RuntimeException("方法不存在！");
 		}

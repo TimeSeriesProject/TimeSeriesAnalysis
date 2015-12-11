@@ -151,7 +151,7 @@ public class CWNetworkReader  implements IReader{
 //		System.out.println(reader.readInputByText().getData());
 		
 	 }
-	CWNetworkReader(TaskElement task)
+	public CWNetworkReader(TaskElement task)
 	{
 		this.task=task;
 	}

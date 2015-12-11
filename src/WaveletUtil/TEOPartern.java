@@ -1,5 +1,6 @@
 package WaveletUtil;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -512,6 +513,35 @@ public class TEOPartern implements IMinerTSA{
 		//计算每个模式的K最近邻
 		
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
+		//DecimalFormat df=new DecimalFormat("0.00");
+		double spanMax=0;double spanMin=Double.MAX_VALUE;
+		double slopeMin=Double.MAX_VALUE;double slopeMax=0;
+		double averageMin=Double.MAX_VALUE;double averageMax=0;
+		for(int i=0;i<patterns.size();i++){
+			if(spanMax<patterns.get(i).getSpan()){
+				spanMax=patterns.get(i).getSpan();
+			}
+			if(spanMin>patterns.get(i).getSpan()){
+				spanMin=patterns.get(i).getSpan();
+			}
+			if(slopeMax<patterns.get(i).getSlope()){
+				slopeMax=patterns.get(i).getSlope();
+			}
+			if(slopeMin>patterns.get(i).getSlope()){
+				slopeMin=patterns.get(i).getSlope();
+			}
+			if(averageMax<patterns.get(i).getAverage()){
+				averageMax=patterns.get(i).getAverage();
+			}
+			if(averageMin>patterns.get(i).getAverage()){
+				averageMin=patterns.get(i).getAverage();
+			}
+		}
+		for(int i=0;i<patterns.size();i++){
+			patterns.get(i).setSpan((patterns.get(i).getSpan()-spanMin)/(spanMax-spanMin));
+			patterns.get(i).setSlope((patterns.get(i).getSlope()-slopeMin)/(slopeMax-slopeMin));
+			patterns.get(i).setAverage((patterns.get(i).getAverage()-averageMin)/(averageMax-averageMin));
+		}
 		for(int i=0;i<patterns.size();i++){
 			List<Integer> pos=new ArrayList<Integer>();
 			List<Double> dist=new ArrayList<Double>();
@@ -523,13 +553,20 @@ public class TEOPartern implements IMinerTSA{
 					addNeighbor(pos, dist, distance, j);
 				}
 			}
-			System.out.print(patterns.get(i).getStart()+"-"+patterns.get(i).getEnd()+":");
+			//System.out.print(patterns.get(i).getStart()+"-"+patterns.get(i).getEnd()+":");
 			statistics.clear();
 			for(Double dis:dist){
 				statistics.addValue(dis);
 			}
+//			for(int k=patterns.get(i).getStart();k<patterns.get(i).getEnd();k++){
+//				if(statistics.getMean()>20){
+//					System.out.print(20+",");
+//				}else{
+//					System.out.print((int)statistics.getMean()+",");
+//				}
+//				
+//			}
 			
-			System.out.println(statistics.getMean());
 			List<Patterns> patternList=new ArrayList<Patterns>();
 			for(Integer position:pos){
 				patternList.add(patterns.get(position));
@@ -574,8 +611,12 @@ public class TEOPartern implements IMinerTSA{
 				}
 				pof/=size;
 				patternOutliesMap.put(pattern, Math.max(1-pof, 0));
+				for(int i=pattern.getStart();i<pattern.getEnd();i++){
+					System.out.print((int)(10*Math.max(1-pof, 0))+",");
+				}
+				//System.out.println(pattern.getStart()+"-"+pattern.getEnd()+" "+Math.max(1-pof, 0));
 //				if(Math.max(1-pof, 0)>0.6){
-//					//System.out.println(pattern.getStart()+"-"+pattern.getEnd()+" "+Math.max(1-pof, 0));
+//					System.out.println(pattern.getStart()+"-"+pattern.getEnd()+" "+Math.max(1-pof, 0));
 //					for(int j=pattern.getStart();j<=pattern.getEnd();j++){
 //						System.out.print(j+",");
 //					}
@@ -633,35 +674,38 @@ public class TEOPartern implements IMinerTSA{
 	 * @return 模式间的距离
 	 */
 	private double distanceOfPatterns(Patterns patternsA,Patterns patternsB){
-		double spanDist=Math.abs(patternsA.getSpan()-patternsB.getSpan())/
-				Math.min(Math.abs(patternsA.getSpan()), Math.abs(patternsB.getSpan()));
-		if(Math.min(Math.abs(patternsA.getSpan()),Math.abs(patternsB.getSpan()))==0){
-        	if(Math.abs(patternsA.getSpan()-patternsB.getSpan())==0){
-        		spanDist=0;
-        	}else{
-        		spanDist=10000;
-        	}
-        	
-		}
-		double slopeDist=Math.abs(patternsA.getSlope()-patternsB.getSlope())/
-				Math.min(Math.abs(patternsA.getSlope()),Math.abs(patternsB.getSlope()));
-        if(Math.min(Math.abs(patternsA.getSlope()),Math.abs(patternsB.getSlope()))==0){
-        	if(Math.abs(patternsA.getSlope()-patternsB.getSlope())==0){
-        		slopeDist=0;
-        	}else{
-        		slopeDist=10000;
-        	}
-        	
-		}
-		double averageDist=Math.abs(patternsA.getAverage()-patternsB.getAverage())/
-				Math.min(Math.abs(patternsA.getAverage()), Math.abs(patternsB.getAverage()));
-		if(Math.min(Math.abs(patternsA.getAverage()), Math.abs(patternsB.getAverage()))==0){
-			if(Math.abs(patternsA.getAverage()-patternsB.getAverage())==0){
-				averageDist=0;
-			}else{
-		    	averageDist=100000;
-			}
-		}
+//		double spanDist=Math.abs(patternsA.getSpan()-patternsB.getSpan())/
+//				Math.min(Math.abs(patternsA.getSpan()), Math.abs(patternsB.getSpan()));
+//		if(Math.min(Math.abs(patternsA.getSpan()),Math.abs(patternsB.getSpan()))==0){
+//        	if(Math.abs(patternsA.getSpan()-patternsB.getSpan())==0){
+//        		spanDist=0;
+//        	}else{
+//        		spanDist=10000;
+//        	}
+//        	
+//		}
+//		double slopeDist=Math.abs(patternsA.getSlope()-patternsB.getSlope())/
+//				Math.min(Math.abs(patternsA.getSlope()),Math.abs(patternsB.getSlope()));
+//        if(Math.min(Math.abs(patternsA.getSlope()),Math.abs(patternsB.getSlope()))==0){
+//        	if(Math.abs(patternsA.getSlope()-patternsB.getSlope())==0){
+//        		slopeDist=0;
+//        	}else{
+//        		slopeDist=10000;
+//        	}
+//        	
+//		}
+//		double averageDist=Math.abs(patternsA.getAverage()-patternsB.getAverage())/
+//				Math.min(Math.abs(patternsA.getAverage()), Math.abs(patternsB.getAverage()));
+//		if(Math.min(Math.abs(patternsA.getAverage()), Math.abs(patternsB.getAverage()))==0){
+//			if(Math.abs(patternsA.getAverage()-patternsB.getAverage())==0){
+//				averageDist=0;
+//			}else{
+//		    	averageDist=100000;
+//			}
+//		}
+		double slopeDist=Math.abs(patternsA.getSlope()-patternsB.getSlope());
+		double averageDist=Math.abs(patternsA.getAverage()-patternsB.getAverage());
+		double spanDist=Math.abs(patternsA.getSpan()-patternsB.getSpan());
 		return slopeDist+averageDist+spanDist;
 	}
 	
@@ -759,11 +803,11 @@ public class TEOPartern implements IMinerTSA{
 	private class Patterns{
 		private int start;
 		private int end;
-		private int span;
-		public int getSpan() {
+		private double span;
+		public double getSpan() {
 			return span;
 		}
-		public void setSpan(int span) {
+		public void setSpan(double span) {
 			this.span = span;
 		}
 		public int getStart() {

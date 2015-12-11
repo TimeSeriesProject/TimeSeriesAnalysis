@@ -15,6 +15,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 /**
@@ -33,27 +34,36 @@ public class RandomMarkovModel {
 	int size = 6;
 	public static void main(String[] args) {
 		TaskElement task = new TaskElement();
-		task.setSourcePath("D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\data\\smtpPcap");
+		task.setSourcePath("./configs/real-1-65.csv");
 		task.setDataSource("Text");
 		task.setTaskRange(TaskRange.NodePairRange);
-		task.setFilterCondition("protocol=" + "402");  //402 --- 410都可以
+		//task.setFilterCondition("protocol=" + "402");  //402 --- 410都可以
 		task.setGranularity(3600);
 		task.setMiningObject("traffic");
+		task.setDiscreteMethod(DiscreteMethod.自定义端点);
+		task.setDiscreteEndNodes("200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400,3500,3600,3700,3800"
+				+ ",3900,4000,4100,4200,4300,4400,4500,4600,4700,4800,4900,5000,5100,5200,5300,5400,5500,5600,5700,5800,5900,6000,6100,6200,6300,6400,6500,6600,6700,6800,6900,7000");
 
-		String ip[] = new String[] { "10.0.1.1", "10.0.1.5" };
+		String ip[] = new String[] { "10.0.1.1" };
 		IReader reader = new nodePairReader(task, ip);
 		DataItems tmp = reader.readInputByText();
 		DataItems dataItems = new DataItems();
-		for (int k = 0; k < tmp.getLength(); k++) {
-			DataItem dataItem = tmp.getElementAt(k);
-			dataItem.setData(String.valueOf(Double.valueOf(dataItem.getData()) / 2));
+//		for (int k = 0; k < tmp.getLength(); k++) {
+//			DataItem dataItem = tmp.getElementAt(k);
+//			dataItem.setData(String.valueOf(Double.valueOf(dataItem.getData()) / 2));
+//			dataItems.add1Data(dataItem);
+//		}
+		
+		for(int k=0;k<1000;k++){
+			DataItem dataItem=tmp.getElementAt(k);
 			dataItems.add1Data(dataItem);
 		}
 
 		dataItems = DataPretreatment.aggregateData(dataItems, 3600,
 				AggregateMethod.Aggregate_MEAN, false);
-		dataItems = DataPretreatment.toDiscreteNumbersAccordingToWaveform(
-				dataItems, task);
+//		dataItems = DataPretreatment.toDiscreteNumbersAccordingToWaveform(
+//				dataItems, task);
+		dataItems=DataPretreatment.toDiscreteNumbers(dataItems, DiscreteMethod.自定义端点, 2, task.getDiscreteEndNodes());
 		RandomMarkovModel rmm = new RandomMarkovModel(dataItems,task);
 		rmm.predictSequence();
 		rmm.display();

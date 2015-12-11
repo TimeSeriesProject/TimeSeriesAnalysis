@@ -100,7 +100,7 @@ public class TextUtils{
 			}
 			FileOutputStream fos=new FileOutputStream(file);
 			BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(fos));
-			writer.write("time,data\r\n");
+			writer.write("time,traffic\r\n");
 			StringBuilder sb=new StringBuilder();
 			for(int i=0;i<dataItems.getLength();i++){
 				DataItem item=dataItems.getElementAt(i);
@@ -136,7 +136,7 @@ public class TextUtils{
 			}
 			
 			int length=outList.size();
-			int trainLen=(int)(length*0.9);
+			int trainLen=(int)(length*0.8);
 			
 			FileOutputStream fos=new FileOutputStream(trianFile);
 			BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(fos));
@@ -167,7 +167,7 @@ public class TextUtils{
 			sb.append("value").append("\r\n");
 			writer.write(sb.toString());
 			sb.delete(0, sb.length());
-			for(int i=trainLen;i<length;i++){
+			for(int i=trainLen;i<length-100;i++){
 				sb.append(outList.get(i)).append("\r\n");
 				writer.write(sb.toString());
 				sb.delete(0, sb.length());

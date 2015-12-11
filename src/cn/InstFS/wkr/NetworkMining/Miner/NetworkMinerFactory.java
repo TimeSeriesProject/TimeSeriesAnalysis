@@ -3,6 +3,7 @@ package cn.InstFS.wkr.NetworkMining.Miner;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.InstFS.wkr.NetworkMining.DataInputs.CWNetworkReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
@@ -35,7 +36,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		}else if(task.getTaskRange().equals(TaskRange.SingleNodeRange)){
 			//TODO　生成单节点读取数据Reader
 		}else if(task.getTaskRange().equals(TaskRange.WholeNetworkRange)){
-			//TODO 生成整个网络读取数据Reader
+			reader=new CWNetworkReader(task);
 		}
 		if (task.getMiningMethod().equals(MiningMethod.MiningMethods_SequenceMining)){
 			miner = new NetworkMinerSM(task,reader);

@@ -17,6 +17,10 @@ public class generateFeatures {
 	private String miningObject;
 	private String inputFile;
 	private String outputFilePrefix;
+	private String trainOutputFilePath;
+	
+
+	private String testOutputFilePath;
 	private int[] autoCorrelation;
 	private double[] items;
 	public generateFeatures(){}
@@ -28,10 +32,13 @@ public class generateFeatures {
 	public void generateItems()throws Exception{
 		nodePairReader reader=new nodePairReader();
 		List<String> items=reader.directlyRead(miningObject, inputFile);
+		setItems(items);
 		autoCorrelation=atuoCorrelation(items,100);
 		List<String> features=geneFeatures(items);
 		TextUtils utils=new TextUtils();
-		utils.writeOutput(features, "./configs/test"+outputFilePrefix, "./configs/train"+outputFilePrefix);
+		setTestOutputFilePath("./configs/test"+outputFilePrefix+".csv");
+		setTrainOutputFilePath("./configs/train"+outputFilePrefix+".csv");
+		utils.writeOutput(features, testOutputFilePath, trainOutputFilePath);
 	}
 	public String getInputFile() {
 		return inputFile;
@@ -57,6 +64,12 @@ public class generateFeatures {
 	public void setItems(double[] items) {
 		this.items = items;
 	}
+	public void setItems(List<String> items){
+		this.items=new double[items.size()];
+		for(int i=0;i<items.size();i++){
+			this.items[i]=Double.parseDouble(items.get(i));
+		}
+	}
 	public int[] atuoCorrelation(List<String> stringItems,int length) throws Exception{
 		double items[]=new double[stringItems.size()];
 		for(int i=0;i<stringItems.size();i++){
@@ -69,7 +82,7 @@ public class generateFeatures {
 		double[] acf=connection.eval("atuoCorrelation$acf").asDoubles();
 		List<Integer> correlationIndex=new ArrayList<Integer>();
 		for(int i=0;i<acf.length;i++){
-			if(acf[i]>0.20&&acf[i]<1.0){
+			if(acf[i]>0.50&&acf[i]<1.0){
 				correlationIndex.add(i);
 			}
 		}
@@ -116,5 +129,19 @@ public class generateFeatures {
 			sb.delete(0, sb.length());
 		}
 		return featureList;
+	}
+	
+	
+	public String getTrainOutputFilePath() {
+		return trainOutputFilePath;
+	}
+	public void setTrainOutputFilePath(String trainOutputFilePath) {
+		this.trainOutputFilePath = trainOutputFilePath;
+	}
+	public String getTestOutputFilePath() {
+		return testOutputFilePath;
+	}
+	public void setTestOutputFilePath(String testOutputFilePath) {
+		this.testOutputFilePath = testOutputFilePath;
 	}
 }

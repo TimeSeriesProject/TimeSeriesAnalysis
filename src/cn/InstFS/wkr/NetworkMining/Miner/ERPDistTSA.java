@@ -29,7 +29,7 @@ public class ERPDistTSA implements IMinerTSA {
 	}
 	
 	public void TimeSeriesAnalysis(){
-		ERPDistencePM pm=new ERPDistencePM(periodThreshold);
+		ERPDistencePM pm=new ERPDistencePM();
 		pm.setDataItems(di);
 		pm.predictPeriod();
 		pm.getFirstPossiblePeriod();
