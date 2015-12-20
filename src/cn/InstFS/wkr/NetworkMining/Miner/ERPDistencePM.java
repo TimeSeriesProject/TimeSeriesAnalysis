@@ -67,26 +67,58 @@ public class ERPDistencePM implements IMinerPM {
 		if(di.isAllDataIsDouble()){
 			List<String> seq=new ArrayList<String>();
 			for(int i=0;i<numItems;i++){
-				seq.add((int)Double.parseDouble(di.getData().get(i))+"");
+				seq.add((int)(Double.parseDouble(di.getData().get(i))*100)+"");
 			}
+			for(String i:seq){
+				System.out.println(i);
+			}
+			//System.out.println();
 			generateEntroy(seq,numItems);
 			isPeriodExist(maxPeriod,null,seq);
 		}else{
 			List<Map<String, Integer>> nonnumData=di.getNonNumData();
+			List<Map<String, Double>> probMapList=di.getProbMap();
 			Set<String> itemSet=di.getVarSet();
+			int  total=0;
 			for(String item:itemSet){
+				total=0;
 				List<String> seq=new ArrayList<String>();
-				for(Map<String, Integer>map:nonnumData){
-					if(map.containsKey(item)){
-						int value=map.get(item);
-						seq.add(value+"");
-					}else{
-						seq.add("0");
+				if(nonnumData.size()>0){
+					for(Map<String, Integer>map:nonnumData){
+						if(map.containsKey(item)){
+							int value=map.get(item);
+							total+=value;
+							seq.add(value+"");
+						}else{
+							seq.add("0");
+						}
 					}
+					if(total<200)
+						continue;
+					System.out.println(item+":"+total);
+					generateEntroy(seq, numItems);
+					isPeriodExist(maxPeriod,item,seq);
+				}else if(probMapList.size()>0){
+					for(Map<String, Double>map:probMapList){
+						if(map.containsKey(item)){
+							int value=(int)(map.get(item)*1000);
+							total+=value;
+							seq.add(value+"");
+						}else{
+							seq.add("0");
+						}
+					}
+					if(total<200)
+						continue;
+					
+					System.out.println(item+":"+total);
+					for(String se:seq){
+						System.out.println(se);
+					}
+//					generateEntroy(seq, numItems);
+//					isPeriodExist(maxPeriod,item,seq);
 				}
-				System.out.println(item);
-				generateEntroy(seq, numItems);
-				isPeriodExist(maxPeriod,item,seq);
+				
 			}
 		}
 	}
@@ -121,7 +153,7 @@ public class ERPDistencePM implements IMinerPM {
 				}
 				Entropy+=ERPDistance(standardList, seqList, period-1,period-1, ErpDistMatrix);
 			}
-			double diff=Entropy/period;
+			double diff=Entropy;
 			entropies[period-1]=diff;
 			System.out.println("period "+period+"'s diff is "+diff);
 		}
@@ -276,6 +308,7 @@ public class ERPDistencePM implements IMinerPM {
 		itemsInPeriod=new DataItems();
 		existPeriod=new ArrayList<Integer>();
 		predictValuesMap=new HashMap<Integer, Integer[]>();
+		hasPeriod=false;
 		for(int i=1;i<maxPeriod;i++){
 			if(isPeriod(entropies, i+1)){
 				hasPeriod=true;

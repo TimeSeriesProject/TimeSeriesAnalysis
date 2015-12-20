@@ -31,6 +31,7 @@ public class DataItems {
 	public List<Date> time;
 	public List<String> data;
 	public List<Map<String, Integer>> NonNumData; //非数值型DataItems 各时间粒度的items出现次数
+	public List<Map<String, Double>>  probMap;
 	public Set<String> varSet;                    //非数值型DataItems items集合
 
 	public List<Double> prob;
@@ -45,6 +46,8 @@ public class DataItems {
 	public DataItems() {
 		time = new ArrayList<Date>();
 		data = new ArrayList<String>();	
+		NonNumData=new ArrayList<Map<String,Integer>>();
+		probMap=new ArrayList<Map<String,Double>>();
 		setProb(new ArrayList<Double>());
 		setGranularity(0);
 	}
@@ -112,10 +115,14 @@ public class DataItems {
 	
 	public void add1Data(DataItem di) {
 		this.time.add(di.getTime());
-		if(isAllDataIsDouble()){
+		if(di.getData()!=null){
 			this.data.add(di.getData());
-		}else{
+		}else if(di.getNonNumData()!=null){
 	    	this.NonNumData.add(di.getNonNumData());
+		}else if(di.getProbData()!=null){
+			this.probMap.add(di.getProbData());
+		}else{
+			throw new RuntimeException("di和dataItems不匹配");
 		}
 		this.prob.add(di.getProb());
 	}
@@ -126,20 +133,21 @@ public class DataItems {
 		this.getProb().add(0.0);
 	}
 	
+	
 	public void add1Data(Date time, Map<String, Integer> data){
-		if(this.NonNumData==null){
-			NonNumData=new ArrayList<Map<String,Integer>>();
-		}
-		if(!isAllDataIsDouble()){
-			this.time.add(time);
-			Map<String,Integer> map=new HashMap<String, Integer>();
-			map.putAll(data);
-			this.NonNumData.add(map);
-			this.getProb().add(0.0);
-		}else{
-			throw new RuntimeException("数值型dataItem");
-		}
-		
+		this.time.add(time);
+		Map<String,Integer> map=new HashMap<String, Integer>();
+		map.putAll(data);
+		this.NonNumData.add(map);
+		this.getProb().add(0.0);
+	}
+	
+	public void add1Data(Map<String, Double> data,Date time){
+		this.time.add(time);
+		Map<String, Double> map=new HashMap<String, Double>();
+		map.putAll(data);
+		this.probMap.add(map);
+		this.getProb().add(0.0);
 	}
 	
 	public int getIsAllDataDouble() {
@@ -154,24 +162,20 @@ public class DataItems {
 	}
 
 	public int getLength(){
-		if(isAllDataIsDouble()){
-	    	return Math.min(Math.min(time.size(), data.size()), prob.size());
-		}else{
-			if(NonNumData==null||NonNumData.size()==0){
-		    	return Math.min(Math.min(time.size(), data.size()), prob.size());
-			}else{
-		    	return Math.min(time.size(),NonNumData.size());
-			}
-		}
+		return Math.min(Math.min(time.size(), Math.max(Math.max(data.size(), NonNumData.size()),probMap.size())),prob.size());
 	}
 	
 	public DataItem getElementAt(int i ){
 		DataItem ii = new DataItem();
-		ii.setData(data.get(i));
-		if(isAllDataIsDouble()){
-	    	ii.setTime(time.get(i));
-		}else{
+		ii.setTime(time.get(i));
+		if(data.size()>i){
+	    	ii.setData(data.get(i));
+		}else if(NonNumData.size()>i){
 			ii.setNonNumData(NonNumData.get(i));
+		}else if(probMap.size()>i){
+			ii.setProbData(probMap.get(i));
+		}else{
+			throw new RuntimeException("get element at index i,i超出dataite界限");
 		}
 		ii.setProb(prob.get(i));
 		return ii;
@@ -199,23 +203,32 @@ public class DataItems {
 	 * @param items
 	 */
 	public void setItems(DataItem []items){
+		if(items.length<=0){
+			return;
+		}
 		time.clear();
 		data.clear();
 		prob.clear();
-		if(isAllDataIsDouble()){
+		
+		if(items[0].getData()!=null){
 			for (DataItem item :items){
 				time.add(item.getTime());
 				data.add(item.getData());
 				prob.add(item.getProb());
 			}
-		}else{
+		}else if(items[0].getNonNumData()!=null){
 			for (DataItem item :items){
 				time.add(item.getTime());
 				NonNumData.add(item.getNonNumData());
 				prob.add(item.getProb());
 			}
+		}else if(items[0].getProbData()!=null){
+			for (DataItem item :items){
+				time.add(item.getTime());
+				probMap.add(item.getProbData());
+				prob.add(item.getProb());
+			}
 		}
-		
 	}
 	
 	public Date getLastTime(){
@@ -231,6 +244,10 @@ public class DataItems {
 	public boolean isAllDataIsDouble(){
 		if(isAllDataDouble==0){
 			List<String>datas = getData();
+			if(datas.size()==0&&(getNonNumData().size()>0||getProbMap().size()>0)){
+				isAllDataDouble=-1;
+				return false;
+			}
 			for(String data: datas)
 				try{
 					Double.parseDouble(data);
@@ -562,6 +579,15 @@ public class DataItems {
 	
 	public List<Map<String, Integer>> getNonNumData() {
 		return NonNumData;
+	}
+	
+
+	public List<Map<String, Double>> getProbMap() {
+		return probMap;
+	}
+
+	public void setProbMap(List<Map<String, Double>> probMap) {
+		this.probMap = probMap;
 	}
 
 	public void setNonNumData(List<Map<String, Integer>> nonNumData) {

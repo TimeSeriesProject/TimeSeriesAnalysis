@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -30,6 +31,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+
 
 
 //import org.hamcrest.Matcher;
@@ -96,6 +98,116 @@ public class DataPretreatment {
 			if (val >= discreteNodes[i] && val < discreteNodes[i+1])
 				return discreteNodes[i]+"";
 		return discreteNodes[len-1]+"";
+	}
+	
+	/**
+	 * 将路径信息转换为路径概率信息  即每个时间段中每条路径经过的概率
+	 * @param dataItems
+	 * @return
+	 */
+	public static DataItems changeDataToProb(DataItems dataItems){
+		DataItems dataOut=new DataItems();
+		dataOut.setIsAllDataDouble(dataItems.getIsAllDataDouble());
+		int len = dataItems.getLength();
+		if (dataItems == null ||  len == 0)
+			return dataOut;
+		List<Date> times = dataItems.getTime();
+		List<Map<String, Integer>> datas=dataItems.getNonNumData();
+		Iterator<Map.Entry<String, Integer>> mapIter=null;
+		for(Map<String, Integer> map:datas){
+			Map<String, Double> probMap=new HashMap<String, Double>();
+			mapIter=map.entrySet().iterator();
+			while(mapIter.hasNext()){
+				Entry<String,Integer> entry=mapIter.next();
+				double pathPossi=getPathProb(map,entry.getKey());
+				probMap.put(entry.getKey(), pathPossi);
+			}
+			dataOut.getProbMap().add(probMap);
+		}
+		dataOut.setTime(times);
+		dataOut.setProb(dataItems.getProb());
+		dataOut.setVarSet(dataItems.getVarSet());
+		return dataOut;
+	}
+	
+	/**
+	 * 根据历史路径信息，计算给定路径出现的概率
+	 * @param map 路径的hashMap 历史路径
+	 * @param path 要计算出现概率的路径
+	 * @return 该路径的概率
+	 */
+	private static double getPathProb(Map<String, Integer> map,String path){
+		int sum=sumMap(map);
+		String[] pathNodes=path.split(","); //路径上的节点
+		double possiblity=1.0;              //这条路径的概率
+		double[] eachNodePossi=new double[pathNodes.length-1];   //路径每个节点出现概率  即先验概率P(X)
+		double[] neighborNodePossi=new double[pathNodes.length-1];  //相邻节点出现概率  即联合概率P(X,Y)
+		double[] conditionalPossi=new double[pathNodes.length-1];  //条件概率 即P(Y|X)
+		for(int i=0;i<pathNodes.length-1;i++){
+			int nodeNum=containsNodesPathNum(map,pathNodes[i]);
+			eachNodePossi[i]=(nodeNum*1.0)/sum;
+		}
+		possiblity*=eachNodePossi[0];
+		//路径概率计算服从一阶Markov模型 所以 P(A,B,C,D,E)=P(A)*P(B|A)*P(C|B)*P(D|C)*P(E|D)
+		for(int i=0;i<pathNodes.length-1;i++){
+			int nodeNum=containsNodesPathNum(map,pathNodes[i]+","+pathNodes[i+1]);
+			neighborNodePossi[i]=(nodeNum*1.0)/sum;
+			conditionalPossi[i]=neighborNodePossi[i]/eachNodePossi[i];
+			possiblity*=conditionalPossi[i];
+		}
+		return possiblity;
+	}
+	
+	/**
+	 * 判断指定路径节点在所有路径中出现的次数
+	 * @param map 路径 map
+	 * @param node 指定的路径节点
+	 * @return 节点在路径中出现
+	 */
+	private static int containsNodesPathNum(Map<String, Integer>map,String node){
+		int pathsNum=0;
+		String[] nodes=node.split(",");
+		boolean isContain=false;
+		Iterator<Map.Entry<String, Integer>> iterator=map.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<String, Integer>entry=iterator.next();
+			String key=entry.getKey();  //路径
+			int value=entry.getValue();
+			String[] pathNodes=key.split(",");   
+			
+			//测试路径key中是否包含给定的节点@node
+			isContain=false;
+			for(int i=0;i<pathNodes.length-nodes.length+1;i++){
+				for(int j=0;j<nodes.length;j++){
+					if(!pathNodes[i+j].equals(nodes[j])){
+						isContain=false;
+						break;
+					}
+					isContain=true;
+				}
+				if(isContain){
+					break;
+				}
+			}
+			if(isContain){
+				pathsNum+=value;
+			}
+		}
+		return pathsNum;
+	}
+	
+	/**
+	 * 判断所有路径的条数
+	 * @param map 存储路径的hashMap
+	 * @return 路径总条数
+	 */
+	private static int sumMap(Map<String, Integer> map){
+		Iterator<Map.Entry<String, Integer>> iter=map.entrySet().iterator();
+		int sum=0;
+		while (iter.hasNext()) {
+			sum+=iter.next().getValue();
+		}
+		return sum;
 	}
 	
 	//datItems在相同的时间粒度上的聚合

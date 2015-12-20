@@ -104,9 +104,7 @@ public class PcapParser {
 		    for(int i=0;i<OneNum;i++){
 		    	is.read(buffer_1);
 		    }
-		    if(data.getTraffic()>70){
-		    	num++;
-		    	System.out.println("row:"+num);
+		    if(data.getTraffic()>30){
 		    	TCPStream event=streamPool.dataToTcpStream(data);
 		    	TCPStream stream=streamPool.getOrCreateStream(data);
 		    	streamPool.updateTraffic(stream,event,false);

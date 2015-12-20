@@ -92,7 +92,7 @@ public class averageEntropyPM implements IMinerPM{
 			throw new RuntimeException("平均熵算法要求数据离散化");
 		}
 		int numItems=di.getLength();
-		int maxPeriod = (numItems/2>300)?300:numItems/2;
+		int maxPeriod = (numItems/2>100)?100:numItems/2;
 		if (numItems == 0)
 			return;
 		if(di.isAllDataIsDouble()){
@@ -126,7 +126,7 @@ public class averageEntropyPM implements IMinerPM{
 		
         startTime = times.get(0);
 		int period=1;
-		int maxPeriod = Math.min(numItems/2, 300);
+		int maxPeriod = Math.min(numItems/2, 100);
 		entropies = new Double[maxPeriod];
 		while((period+1)<= maxPeriod){
 			period++;	//周期递加
@@ -175,6 +175,7 @@ public class averageEntropyPM implements IMinerPM{
 		itemsInPeriod=new DataItems();
 		existPeriod=new ArrayList<Integer>();
 		predictValuesMap=new HashMap<Integer, Integer[]>();
+		hasPeriod=false;
 		for(int i=1;i<maxPeriod;i++){
 			if(isPeriod(entropies, i+1)){
 				hasPeriod=true;

@@ -315,7 +315,7 @@ public class nodePairReader implements IReader {
 	private Date parseTime(int timeStr){
 		Calendar cal = Calendar.getInstance();
 		cal.set(2014, 9, 1, 0, 0, 0);
-		cal.add(Calendar.MILLISECOND,timeStr);
+		cal.add(Calendar.SECOND,timeStr);
 		return cal.getTime();
 	}
 	
@@ -382,6 +382,7 @@ public class nodePairReader implements IReader {
 		}
 		String line=null;
 		boolean fixCondition=true;
+
 		if(minierObject.equals("path")||minierObject.equals("PATH")||minierObject.equals("Path")){
 			dataItems.setIsAllDataDouble(-1);
 			Map<Integer, Integer> map=new HashMap<Integer, Integer>();
@@ -391,20 +392,35 @@ public class nodePairReader implements IReader {
 				columns=line.split(",");
 				fixCondition=true;
 				for(String ip:ipPair){
-					if(!(columns[SIPColIndex].equals(ip)||columns[DIPColIndex].equals(ip))){
-						fixCondition=false;
-						break;
+					if(ip.endsWith("0")){//针对局域网IP
+						if(!(columns[SIPColIndex].substring(0, columns[SIPColIndex].lastIndexOf(".")+1).equals(ip.substring(0,ip.lastIndexOf(".")+1))||
+								columns[DIPColIndex].substring(0, columns[DIPColIndex].lastIndexOf(".")+1).equals(ip.substring(0,ip.lastIndexOf(".")+1)))){
+							fixCondition=false;
+							break;
+						}
+					}else{                  //针对单节点IP
+						if(!(columns[SIPColIndex].equals(ip)||columns[DIPColIndex].equals(ip))){
+							fixCondition=false;
+							break;
+						}
 					}
 				}
 				if(fixCondition){
-					int time=Integer.parseInt(columns[TimeColIndex])*3600;
+					int time=Integer.parseInt(columns[TimeColIndex]);
 					//String[] pathNodes=columns[minerObjectIndex].split(" ");
-					for(int j=5;j<columns.length;j++)
+					for(int j=minerObjectIndex;j<columns.length;j++)
 					{
 						String str[] = columns[j].split(":");
 						int node = Integer.valueOf(str[0]);
 						int hops = Integer.valueOf(str[1]);
-						map.put(node, hops);
+						if(map.containsKey(node)){//去掉一个路由器节点在路径在出现两次的情况
+							if(hops>map.get(node)){
+								map.put(node, hops);
+							}
+						}else{
+							map.put(node, hops);
+						}
+						
 					}
 					mapList.addAll(map.entrySet());
 					Collections.sort(mapList,new Comparator<Map.Entry<Integer, Integer>>() {
@@ -415,11 +431,35 @@ public class nodePairReader implements IReader {
 							return o1.getValue().compareTo(o2.getValue());
 						}
 					});
-					sb.append(columns[SIPColIndex]).append(",");
+					for(String ip:ipPair){
+						if(ip.endsWith("0")){
+							if(ip.substring(0, ip.lastIndexOf(".")+1).equals(columns[SIPColIndex].substring(0, columns[SIPColIndex].lastIndexOf(".")+1))){
+								sb.append(ip).append(",");
+								break;
+							}
+						}else{
+							if(ip.equals(columns[SIPColIndex])){
+								sb.append(ip).append(",");
+								break;
+							}
+						}
+					}
 					for(Map.Entry<Integer, Integer> entry:mapList){
 						sb.append(entry.getKey()).append(",");
 					}
-					sb.append(columns[DIPColIndex]);
+					for(String ip:ipPair){
+						if(ip.endsWith("0")){
+							if(ip.substring(0, ip.lastIndexOf(".")+1).equals(columns[DIPColIndex].substring(0, columns[DIPColIndex].lastIndexOf(".")+1))){
+								sb.append(ip);
+								break;
+							}
+						}else{
+							if(ip.equals(columns[DIPColIndex])){
+								sb.append(ip);
+								break;
+							}
+						}
+					}
 					dataItems.add1Data(parseTime(time), sb.toString());
 					sb.delete(0, sb.length());
 					mapList.clear();

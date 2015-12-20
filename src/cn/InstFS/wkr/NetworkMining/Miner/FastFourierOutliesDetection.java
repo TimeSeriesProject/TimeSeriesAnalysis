@@ -18,13 +18,25 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.TextUtils;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 
-public class ContinuousPeriodDetection {
+public class FastFourierOutliesDetection implements IMinerTSA {
 
     private static FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
     private static double[] original; // 未变换之前的数据
     private static double[] denoisedslicezz;//变换之后的数据
     private static double varK = 1.5;
     private static double amplitudeRatio = 0.9;
+    private DataItems di;
+    private DataItems outlies;
+    
+    public FastFourierOutliesDetection(DataItems di){
+    	this.di=di;
+    	outlies=new DataItems();
+    }
+    
+    public FastFourierOutliesDetection(){
+    	outlies=new DataItems();
+    }
+    
 
     public Complex[] FFT(List<String> data) {
     	int size = data.size();
@@ -44,11 +56,7 @@ public class ContinuousPeriodDetection {
         return denoised;
     }
 
-    public DataItems AnomalyDetection(MinerResults results) {
-    	DataItems dataItem = new DataItems();
-    	dataItem.setTime(results.getInputData().time);
-    	List<String> data = new ArrayList<String>();
-    	boolean status = false;
+    public void AnomalyDetection(DataItems dataItems) {
         double[] result = new double[original.length];
 
         for(int i=0;i < result.length;i++)
@@ -57,24 +65,12 @@ public class ContinuousPeriodDetection {
         }
 
         NormalDistributionTest nbt = new NormalDistributionTest(result,varK);
-        List<Double> probs = new ArrayList<Double>();
         for(int i=0;i < result.length;i++)
         {
             if(!nbt.isDawnToThisDistri(result[i]))
             {
-            	data.add(String.valueOf(result[i]));
-            	status=true;
-            }else{
-            	data.add("0");
+            	outlies.add1Data(di.getTime().get(i), di.getData().get(i));
             }
-            probs.add(0.0);
-        }
-        dataItem.setData(data);
-        dataItem.setProb(probs);
-        if(status==true){
-        	return dataItem;
-        }else{
-        	return null;
         }
     }
     
@@ -87,7 +83,6 @@ public class ContinuousPeriodDetection {
      */
     public List<String> FFTfilter(List<String> silce,int k) {
         Complex[] result = FFT(silce);
-        double all = 0,sum=0,p=0;
 
         ArrayList<Complex> denoisedcomplex = new ArrayList<Complex>();
         for (int index = 0; index < result.length; index++){
@@ -113,6 +108,16 @@ public class ContinuousPeriodDetection {
             denoisedslice.add(String.valueOf(denoised[index].getReal()));
         }
         return denoisedslice;
+    }
+    
+    @Override
+    public DataItems getOutlies() {
+    	return outlies;
+    }
+    @Override
+    public DataItems getPredictItems() {
+    	// TODO Auto-generated method stub
+    	return null;
     }
 
     /**
@@ -175,49 +180,23 @@ public class ContinuousPeriodDetection {
         return denoisedsilce;
     }
    
-    
-    public void Detection(MinerResults results) {
+    @Override
+    public void TimeSeriesAnalysis() {
 
-    	DataItems dataItems = results.getInputData();
-		if(results==null||results.getInputData()==null){
+		if(di==null){
 			return;
 		}
 
-		List<String> data = results.getInputData().getData();
+		List<String> data = di.getData();
 		List<String>  curData = null;
-		List<Date> time = results.getInputData().getTime();
+		List<Date> time = di.getTime();
 		int size = data.size();
 		DataItems prediction_curTime = null;
 		curData= FFTfilter(data,amplitudeRatio);
 		prediction_curTime = new DataItems();
-		prediction_curTime.setTime(results.getInputData().getTime());
+		prediction_curTime.setTime(time);
 		prediction_curTime.setData(curData);
-		//results.getRetTSA().setOutlies(AnomalyDetection(results));//TODO
-		Calendar curstart =Calendar.getInstance();
-		curstart.setTime(UtilsSimulation.instance.getCurrentStart());
-		Calendar curend =Calendar.getInstance();
-		curend.setTime(UtilsSimulation.instance.getCurrentEnd());
-		List<Date> newTime = new ArrayList<Date>();
-		List<Double>newProb = new ArrayList<Double>();
-		long span = curend.getTimeInMillis()-curstart.getTimeInMillis();
-		for(int i=0;i<size;i++){
-			Date date = time.get(i);
-			Calendar cur = Calendar.getInstance();
-			cur.setTime(date);
-			Long curLong = cur.getTimeInMillis()+span;
-			Calendar newCur = Calendar.getInstance();
-			newCur.setTimeInMillis(curLong);
-			Date newDate = newCur.getTime();
-			newTime.add(newDate);
-			newProb.add(0.0);
-		}
-		DataItems newdataItem = new DataItems();
-		newdataItem.setTime(newTime);
-		newdataItem.setData(curData);	// TODO 这个明显有问题？？？
-		newdataItem.setProb(newProb);
-		//results.getRetTSA().forcasts_futureTime=newdataItem;
-		results.setAbnormal((AnomalyDetection(results)!=null));
-
+		AnomalyDetection(prediction_curTime);
 	}
 
 	public static double getAmplitudeRatio() {
@@ -225,7 +204,7 @@ public class ContinuousPeriodDetection {
 	}
 
 	public static void setAmplitudeRatio(double amplitudeRatio) {
-		ContinuousPeriodDetection.amplitudeRatio = amplitudeRatio;
+		FastFourierOutliesDetection.amplitudeRatio = amplitudeRatio;
 	}
 
 	public static double getVarK() {
@@ -233,6 +212,16 @@ public class ContinuousPeriodDetection {
 	}
 
 	public static void setVarK(double varK) {
-		ContinuousPeriodDetection.varK = varK;
+		FastFourierOutliesDetection.varK = varK;
 	}
+
+	public DataItems getDi() {
+		return di;
+	}
+
+	public void setDi(DataItems di) {
+		this.di = di;
+	}
+	
+	
 }

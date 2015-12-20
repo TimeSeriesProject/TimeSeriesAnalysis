@@ -67,22 +67,22 @@ public class WaveletOutlierDetection implements IMinerTSA{
 	}
 	
 	
-	private List<Integer> checkOutliesByGuass(double[] values){
-		DescriptiveStatistics statistics=new DescriptiveStatistics();
-		ArrayList<Integer> outliesIndex=new ArrayList<Integer>();
-		for(double value:values){
-			statistics.addValue(value);
-		}
-		double mean=statistics.getMean();
-		double std=statistics.getStandardDeviation();
-		
-		for(int i=0;i<values.length;i++){
-			if(Math.abs((values[i]-mean)/std)>2.5){
-				outliesIndex.add(i);
-			}
-		}
-		return outliesIndex;
-	}
+//	private List<Integer> checkOutliesByGuass(double[] values){
+//		DescriptiveStatistics statistics=new DescriptiveStatistics();
+//		ArrayList<Integer> outliesIndex=new ArrayList<Integer>();
+//		for(double value:values){
+//			statistics.addValue(value);
+//		}
+//		double mean=statistics.getMean();
+//		double std=statistics.getStandardDeviation();
+//		
+//		for(int i=0;i<values.length;i++){
+//			if(Math.abs((values[i]-mean)/std)>2.5){
+//				outliesIndex.add(i);
+//			}
+//		}
+//		return outliesIndex;
+//	}
 	
 	
 	
@@ -108,30 +108,30 @@ public class WaveletOutlierDetection implements IMinerTSA{
 		this.di = di;
 	}
 	
-	private double getHurst(double[] n,double[] s){
-		int length=n.length;
-		double jsn=0.0,js=0,sn=0,j=0.0,j2s=0.0,js2=0.0;
-		for(int i=1;i<=length;i++){
-			jsn+=(i*s[i-1]*n[i-1]);
-			js+=(i*s[i-1]);
-			sn+=(s[i-1]*n[i-1]);
-			j+=(s[i-1]);
-			j2s+=(Math.pow(i, 2)*s[i-1]);
-			js2+=Math.pow(i*s[i-1], 2);
-		}
-		
-		return ((jsn-js*sn)/(j*j2s-js2)+1)*0.5;
-	}
-	
-	private double getN(double[] Djk,int j,int N){
-		int n=(int)(N/Math.pow(2, j));
-		int len=Djk.length;
-		double total=0.0;
-		for(int k=0;k<len;k++){
-			total+=Math.pow(Math.abs(Djk[k]),2);
-		}
-		return Math.log((total/n))/Math.log(2);
-	}
+//	private double getHurst(double[] n,double[] s){
+//		int length=n.length;
+//		double jsn=0.0,js=0,sn=0,j=0.0,j2s=0.0,js2=0.0;
+//		for(int i=1;i<=length;i++){
+//			jsn+=(i*s[i-1]*n[i-1]);
+//			js+=(i*s[i-1]);
+//			sn+=(s[i-1]*n[i-1]);
+//			j+=(s[i-1]);
+//			j2s+=(Math.pow(i, 2)*s[i-1]);
+//			js2+=Math.pow(i*s[i-1], 2);
+//		}
+//		
+//		return ((jsn-js*sn)/(j*j2s-js2)+1)*0.5;
+//	}
+//	
+//	private double getN(double[] Djk,int j,int N){
+//		int n=(int)(N/Math.pow(2, j));
+//		int len=Djk.length;
+//		double total=0.0;
+//		for(int k=0;k<len;k++){
+//			total+=Math.pow(Math.abs(Djk[k]),2);
+//		}
+//		return Math.log((total/n))/Math.log(2);
+//	}
 	
 	public static void main(String[] args){
 		DataItems di=new DataItems();

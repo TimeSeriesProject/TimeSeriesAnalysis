@@ -7,6 +7,7 @@ public enum MiningAlgo {
 	MiningAlgo_ERPDistTSA("ERP模型序列分析"),
 	MiningAlgo_TEOTSA("TEO线段异常检测"),
 	MiningAlgo_NeuralNetworkTSA("神经网络预测"),
+	MiningAlgo_ARIMATSA("ARIMA模型预测"),
 	MiningAlgo_NULL("无");
 	
 	private String value;

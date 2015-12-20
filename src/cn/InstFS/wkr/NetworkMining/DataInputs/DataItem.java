@@ -8,7 +8,14 @@ public class DataItem implements Comparable<DataItem>{
 	private String data;
 	private Double prob;
 	private Map<String, Integer> NonNumData;
+	private Map<String, Double> probData;
 	
+	public Map<String, Double> getProbData() {
+		return probData;
+	}
+	public void setProbData(Map<String, Double> probData) {
+		this.probData = probData;
+	}
 	public Map<String, Integer> getNonNumData() {
 		return NonNumData;
 	}

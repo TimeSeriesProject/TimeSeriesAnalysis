@@ -37,7 +37,7 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 public class PcapUtils {
 	private boolean SessionLevel=true;   //判断读取的数据是否是业务层数据
 	public static void main(String [] args) throws FileNotFoundException{
-		String fpath = "E:\\57Data";
+		String fpath = "F:\\smtp";
 		PcapUtils pcapUtils = new PcapUtils();
 		pcapUtils.readInput(fpath,0);
 	}

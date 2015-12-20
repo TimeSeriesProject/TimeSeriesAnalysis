@@ -129,7 +129,7 @@ public class CWNetworkReader  implements IReader{
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     private int start	=	0;
 	private int end		=	365*24*60*60-1;	
-	private int timeseg =   1*24*60*60; //两天粒度
+	private int timeseg =   2*60*60; //两天粒度
 	private DataItems dataItems = new DataItems();
 	
 	public static void main(String[] args) 
@@ -189,7 +189,7 @@ public class CWNetworkReader  implements IReader{
 					/**
 					 * 记录结点平均跳数。
 					 */
-					for(int j=5;j<seg.length;j++)
+					for(int j=8;j<seg.length;j++)
 					{
 						String str[] = seg[j].split(":");
 						int node = Integer.valueOf(str[0]);
@@ -293,7 +293,7 @@ public class CWNetworkReader  implements IReader{
 			{
 				for( int j = i+1;j<list.size();j++)
 				{
-					if(matrix.get(new Pair(i,j)) != null||matrix.get(new Pair(j,i))!=null)
+					if(matrix.get(new Pair(list.get(i),list.get(j))) != null||matrix.get(new Pair(list.get(j),list.get(i)))!=null)
 					{
 						edgenum++;
 					}

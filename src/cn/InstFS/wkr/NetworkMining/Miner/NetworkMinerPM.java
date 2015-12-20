@@ -144,6 +144,7 @@ class PMTimerTask extends TimerTask{
 			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 					task.getDiscreteEndNodes());
 		}
+		dataItems=DataPretreatment.changeDataToProb(dataItems);
 		
 		results.setInputData(dataItems);
 
@@ -177,9 +178,13 @@ class PMTimerTask extends TimerTask{
 			Map<String, MinerResultsPM> retPmMap=new HashMap<String, MinerResultsPM>();
 			Set<String>itemSet=dataItems.getVarSet();
 			for(String item:itemSet){
+				if(pmMethod.getHasPeriodOfNonNumDataItms().get(item)==null){
+					continue;
+				}
 				System.out.println(item);
 				System.out.println("是否存在周期："+pmMethod.getHasPeriodOfNonNumDataItms().get(item));
-				if(pmMethod.hasPeriod()){
+
+				if(pmMethod.getHasPeriodOfNonNumDataItms().get(item)){
 					System.out.println("周期值 "+pmMethod.getPredictPeriodOfNonNumDataItems().get(item));
 				}
 				MinerResultsPM retPM=new MinerResultsPM();
