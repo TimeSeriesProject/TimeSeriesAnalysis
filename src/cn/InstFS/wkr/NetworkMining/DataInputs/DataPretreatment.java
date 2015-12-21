@@ -650,6 +650,7 @@ public class DataPretreatment {
 	}
 	private static void runTrain(ArrayList <DataItems> list,ArrayList<ArrayList<Double>>instances,String fileName,double threshold,int windowSize)
 	{
+		
 		int windowSizeMin = windowSize;
 		int windowSizeMax =  windowSize;
 		ArrayList<Double> instance;
