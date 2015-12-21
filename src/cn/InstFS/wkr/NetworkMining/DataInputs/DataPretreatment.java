@@ -2,6 +2,7 @@ package cn.InstFS.wkr.NetworkMining.DataInputs;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -34,6 +35,21 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 
 
+
+
+
+
+
+
+
+
+import weka.clusterers.SimpleKMeans;
+import weka.core.DistanceFunction;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.ManhattanDistance;
+import weka.core.SerializationHelper;
+import weka.core.converters.ArffLoader;
 //import org.hamcrest.Matcher;
 //import weka.clusterers.SimpleKMeans;
 //import weka.core.Instances;
@@ -882,16 +898,6 @@ public class DataPretreatment {
 		}
 		return clustersCenter.size();
 	}
-	private static double 
-	manhattanDistance(List<Double>list1,List<Double>list2)
-	{
-		double ans=0;
-		for(int i=0;i<list1.size();i++)
-		{
-			ans+=Math.abs(list1.get(i)-list2.get(i));
-		}
-		return ans;
-	}
 	private static double erpDistance(List<Double>list1,List<Double>list2)
 	{
 		double dp[][] = new double[list1.size()+1][list2.size()+1];
@@ -928,6 +934,479 @@ public class DataPretreatment {
 			}
 		
 		return dp[list1.size()][list2.size()];
+	}
+	
+	private static double manhattanDistance(List<Double>list1,List<Double>list2)
+	{
+		double ans=0;
+		for(int i=0;i<list1.size();i++)
+		{
+			ans+=Math.abs(list1.get(i)-list2.get(i));
+		}
+		return ans;
+	}
+	
+	
+	
+	public static DataItems toDiscreteNumbersAccordingToSegment(DataItems dataItems,TaskElement task)
+	{
+		DataItems result = new DataItems(); 
+		ArrayList<ArrayList<Double>> clustersCenter = new ArrayList<ArrayList<Double>>();
+		int size =6;
+		String fileName="segment";
+		fileName+= task.getTaskRange().toString();
+		Pattern p= Pattern.compile(".*protocol\\s*=(\\d{3}).*");
+		Matcher match =p.matcher(task.getFilterCondition());
+		match.find();
+		fileName+=match.group(1)+task.getGranularity();
+		SimpleKMeans  kMeans= new SimpleKMeans(); 
+		try
+		{
+			ArrayList<ArrayList<Double>> tmpInstances =new ArrayList<ArrayList<Double>>();
+			
+			
+			ArrayList<Segment> seglist = new ArrayList<Segment>();
+			
+			seglist=getSegmentList(dataItems,0.3);
+			for(int j=0;j<seglist.size();j++)
+			{
+				ArrayList<Double>  instance = new ArrayList<Double>();
+				instance.add(seglist.get(j).getCentery());
+				instance.add(seglist.get(j).getLength());
+				instance.add(seglist.get(j).getSlope());
+				tmpInstances.add(instance);
+			}
+			
+			if(tmpInstances.size()==0)
+				return result;
+			System.out.println("why");
+			changesample2arff(tmpInstances,"segmenttestwave.arff");
+			ArffLoader arffloader	=	new	ArffLoader();
+			arffloader.setFile(new File("segmenttestwave.arff"));
+			Instances testInstances = arffloader.getDataSet();
+			DataItem[] dataItemArray = new DataItem[testInstances.size()];
+			Instance ins =testInstances.get(0);
+			for(int i=0;i<ins.numAttributes();i++)
+				ins.setValue(i, 0);
+//			ins.setValue(0,);
+			DistanceFunction disFan=new ManhattanDistance();
+			disFan.setInstances(testInstances);
+			for(int i=0;i<testInstances.size();i++)
+			{
+//				disFan.
+//				System.out.println(testInstances.get(0));
+//				System.out.println(testInstances.get(i));
+				dataItemArray[i]=new DataItem();
+				if(disFan.distance(testInstances.get(0), testInstances.get(i))<0.1)
+					dataItemArray[i].setData("0");
+				else
+					dataItemArray[i].setData(String.valueOf(kMeans.clusterInstance(testInstances.get(i))+1));
+//					System.out.println(kMeans.clusterInstance(testInstances.get(i)));
+				System.out.println(dataItemArray[i]+",");
+			}
+//			System.out.println(dataItemArray[i]+",");
+			for(int i=0;i<testInstances.size();i++)
+				result.add1Data(dataItemArray[i]);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+//			throw new RuntimeException(e);
+			System.exit(0);
+		}
+		return result;
+	}
+	public static void segmentTrainAll()
+	{
+		TaskElement task = new TaskElement();
+		task.setSourcePath("E:/javaproject/NetworkMiningSystem/smtpPcap");
+		task.setDataSource("Text");
+		task.setMiningObject("traffic");
+		for(TaskRange taskRange:TaskRange.values())
+		{
+//			System.out.println(taskRange);
+			task.setTaskRange(taskRange);
+			for(int procol=402;procol<=410;procol++)
+			{
+				task.setFilterCondition("protocol="+procol);
+				task.setGranularity(3600);
+				segmentTrain(task,200,6);
+			}
+			
+		}
+	}
+	public static void segmentTrain(TaskElement task,double threshold,int size)
+	{
+		
+		String fileName="segment";
+		fileName +=	task.getTaskRange().toString();
+		Pattern p= Pattern.compile(".*protocol\\s*=(\\d{3}).*");
+		Matcher match =p.matcher(task.getFilterCondition());
+		match.find();
+		fileName+=match.group(1)+task.getGranularity();
+		
+		Calendar cal=Calendar.getInstance();
+		cal.set(2014, 9, 1, 0, 0, 0);
+		Date startDate=cal.getTime();
+		cal.add(Calendar.DAY_OF_YEAR,100);
+		Date endDate=cal.getTime();
+		switch(task.getTaskRange())
+		{
+		case NodePairRange:
+		{
+//			ArrayList<DataItems> list = new ArrayList<DataItems>();
+//			nodePairReader reader= new nodePairReader(task,new String[2]);
+//			String condition[]=new String[0];
+//			Map<String,DataItems> ipPairItems = new HashMap<String,DataItems>();
+//			
+//			ipPairItems=reader.readAllPairBetween(startDate,endDate);
+//			for(Map.Entry<String, DataItems> entry:ipPairItems.entrySet())
+//			{
+//				
+//				DataItems tmp = entry.getValue();
+//				DataItems dataItems=new DataItems();
+//				for(int k=0;k<tmp.getLength();k++)
+//				{
+//					DataItem dataItem = tmp.getElementAt(k);
+//					dataItem.setData(String.valueOf(Double.valueOf(dataItem.getData())/2));
+//					dataItems.add1Data(dataItem);
+//				}
+//				dataItems=DataPretreatment.aggregateData(dataItems,3600,AggregateMethod.Aggregate_SUM,false);
+//				list.add(dataItems);
+//			}
+//			
+//			System.out.println("listsize "+list.size());
+//			ArrayList<ArrayList<Double>>instances=null;
+//			segmentRunTrain(list,instances,fileName,0.3);
+			break;
+		}
+		
+		case SingleNodeRange:
+		{
+			ArrayList<DataItems> list = new ArrayList<DataItems>();
+			ArrayList <String> ips = new ArrayList<String> ();
+			for(int i=1;i<=10;i++)
+				for(int j=1;j<=6;j++)
+					ips.add("10.0."+i+"."+j);
+			for(int i =0;i<ips.size();i++)
+				{
+					String ip[] = new String[]{ips.get(i)};
+					nodePairReader reader = new nodePairReader(task,ip);
+					DataItems tmp = reader.readInputBetween(startDate,endDate);
+					DataItems dataItems=new DataItems();
+					for(int k=0;k<tmp.getLength();k++)
+					{
+						DataItem dataItem = tmp.getElementAt(k);
+						
+						dataItems.add1Data(dataItem);
+					}
+					
+					dataItems=DataPretreatment.aggregateData(dataItems,3600,AggregateMethod.Aggregate_SUM,false);
+					System.out.println("i "+i);
+					System.out.println("list add "+dataItems.getLength());
+					list.add(dataItems);
+				}
+			ArrayList<ArrayList<Double>>instances=new ArrayList<ArrayList<Double>>();
+			segmentRunTrain(list,instances,fileName,0.3);
+		}
+		case WholeNetworkRange:break;
+		default: break;
+		}
+	}
+//	public static void trainAll()
+//	{
+//		TaskElement task = new TaskElement();
+//		task.setSourcePath("E:/javaproject/NetworkMiningSystem/smtpPcap");
+//		task.setDataSource("Text");
+//		task.setMiningObject("traffic");
+//		for(TaskRange taskRange:TaskRange.values())
+//		{
+////			System.out.println(taskRange);
+//			task.setTaskRange(taskRange);
+//			for(int procol=402;procol<=410;procol++)
+//			{
+//				task.setFilterCondition("protocol="+procol);
+//				task.setGranularity(3600);
+//				train(task,200,6);
+//			}
+//			
+////			task.setDateStart(dateStart);
+////			task.setDateEnd(dateEnd);
+////			task.set
+//		}
+//	}
+//	public static void train(TaskElement task,double threshold,int size)
+//	{
+//		String fileName= task.getTaskRange().toString();
+//		Pattern p= Pattern.compile(".*protocol\\s*=(\\d{3}).*");
+//		Matcher match =p.matcher(task.getFilterCondition());
+//		match.find();
+//		fileName+=match.group(1)+task.getGranularity();
+//		
+//		Calendar cal=Calendar.getInstance();
+//		cal.set(2014, 9, 1, 0, 0, 0);
+//		Date startDate=cal.getTime();
+//		cal.add(Calendar.DAY_OF_YEAR,100);
+//		Date endDate=cal.getTime();
+//		switch(task.getTaskRange())
+//		{
+//		case NodePairRange:
+//		{
+//			ArrayList<DataItems> list = new ArrayList<DataItems>();
+////			ArrayList <String> ips = new ArrayList<String> ();
+////			for(int i=1;i<=2;i++)
+////				for(int j=1;j<=1;j++)
+////					ips.add("10.0."+i+"."+j);
+////			for(int i =0;i<ips.size();i++)
+////				for(int j=i+1;j<ips.size();j++)
+////				{
+////					String ip[] = new String[]{ips.get(i),ips.get(j)};
+////					IReader reader = new nodePairReader(task,ip);
+////					DataItems tmp = reader.readInputByText();
+////					DataItems dataItems=new DataItems();
+////					for(int k=0;k<tmp.getLength();k++)
+////					{
+////						DataItem dataItem = tmp.getElementAt(k);
+////						dataItem.setData(String.valueOf(Double.valueOf(dataItem.getData())/2));
+////						dataItems.add1Data(dataItem);
+////					}
+////					
+////					dataItems=DataPretreatment.aggregateData(dataItems,3600,AggregateMethod.Aggregate_SUM,false);
+////					System.out.println("i "+i+" j "+j);
+////					System.out.println("list add "+dataItems.getLength());
+////					list.add(dataItems);
+////				}
+////			
+//			nodePairReader reader= new nodePairReader(task,new String[2]);
+//			String condition[]=new String[0];
+//			Map<String,DataItems> ipPairItems = new HashMap<String,DataItems>();
+//			
+//			ipPairItems=reader.readAllPairBetween(startDate,endDate);
+//			for(Map.Entry<String, DataItems> entry:ipPairItems.entrySet())
+//			{
+//				
+//				DataItems tmp = entry.getValue();
+//				DataItems dataItems=new DataItems();
+//				for(int k=0;k<tmp.getLength();k++)
+//				{
+//					DataItem dataItem = tmp.getElementAt(k);
+//					dataItem.setData(String.valueOf(Double.valueOf(dataItem.getData())/2));
+//					dataItems.add1Data(dataItem);
+//				}
+//				dataItems=DataPretreatment.aggregateData(dataItems,3600,AggregateMethod.Aggregate_SUM,false);
+//				list.add(dataItems);
+//			}
+//			System.out.println("listsize "+list.size());
+//			ArrayList<ArrayList<Double>>instances=null;
+//			runTrain(list,instances,fileName,50000,size);
+//			break;
+//		}
+//		
+//		case SingleNodeRange:
+//		{
+//			ArrayList<DataItems> list = new ArrayList<DataItems>();
+//			ArrayList <String> ips = new ArrayList<String> ();
+//			for(int i=1;i<=10;i++)
+//				for(int j=1;j<=6;j++)
+//					ips.add("10.0."+i+"."+j);
+//			for(int i =0;i<ips.size();i++)
+//				{
+//					String ip[] = new String[]{ips.get(i)};
+//					nodePairReader reader = new nodePairReader(task,ip);
+//					DataItems tmp = reader.readInputBetween(startDate,endDate);
+//					DataItems dataItems=new DataItems();
+//					for(int k=0;k<tmp.getLength();k++)
+//					{
+//						DataItem dataItem = tmp.getElementAt(k);
+//						
+//						dataItems.add1Data(dataItem);
+//					}
+//					
+//					dataItems=DataPretreatment.aggregateData(dataItems,3600,AggregateMethod.Aggregate_SUM,false);
+//					System.out.println("i "+i);
+//					System.out.println("list add "+dataItems.getLength());
+//					list.add(dataItems);
+//				}
+//			ArrayList<ArrayList<Double>>instances=null;
+//			runTrain(list,instances,fileName,100000,size);
+//		}
+//		case WholeNetworkRange:break;
+//		default: break;
+//		}
+//	}
+	private static void segmentRunTrain(ArrayList <DataItems> list,ArrayList<ArrayList<Double>>instances,String fileName,double rate)
+	{
+		ArrayList<ArrayList<Integer>> clusersInstanceList=null ;
+		for(int i=0;i<list.size();i++)
+		{
+			DataItems dataItems = list.get(i);
+			ArrayList<Segment> seglist = new ArrayList<Segment>();
+			
+			seglist=getSegmentList(dataItems,rate);
+			for(int j=0;j<seglist.size();j++)
+			{
+				ArrayList<Double>  instance = new ArrayList<Double>();
+				instance.add(seglist.get(j).getCentery());
+				instance.add(seglist.get(j).getLength());
+				instance.add(seglist.get(j).getSlope());
+				instances.add(instance);
+			}
+		}
+		Collections.shuffle(instances);
+//		changesample2arff(instances,fileName+windowSize+".arff");
+		
+//		System.out.println("ins "+instances.size());
+		ArrayList<ArrayList<Double>> tmpclusterCenter = new ArrayList<ArrayList<Double>>();
+		clusersInstanceList = new ArrayList<ArrayList<Integer>>();
+		int tmp = Kmeans(instances,tmpclusterCenter,clusersInstanceList,fileName);
+		
+//		cluserList.add(clusterCenter);
+	}
+	
+	public static ArrayList<Segment> getSegmentList(DataItems dataItems,double rate)
+	{
+		MergeSegment ms = new MergeSegment(dataItems,rate);
+		return ms.getSegmentList();
+	}
+	
+	private static int Kmeans(ArrayList<ArrayList<Double>>instances,
+			ArrayList<ArrayList<Double>> clustersCenter,
+			ArrayList<ArrayList<Integer>> clusersInstanceList,String fileName)
+	{
+		changesample2arff(instances,fileName+".arff");
+		System.out.println(instances.size());
+		SimpleKMeans  kMeans= new SimpleKMeans(); 
+		try
+		{
+			ArffLoader arffloader	=	new	ArffLoader();
+			arffloader.setFile(new File(fileName+".arff"));
+			Instances dataset	=	arffloader.getDataSet();
+//			DistanceFunction disFun = new	ManhattanDistance();
+			kMeans.setDistanceFunction(new ManhattanDistance());
+			kMeans.setNumClusters(100);
+			kMeans.setMaxIterations(100);
+			kMeans.buildClusterer(dataset);
+			kMeans.clusterInstance(dataset.get(0));
+			SerializationHelper.write(fileName+".model", kMeans);
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			System.exit(0);
+		}
+//		changesample2arff(instances,fileName+".arff");
+		return 0;
+	}
+	
+//	private static void runTrain(ArrayList <DataItems> list,ArrayList<ArrayList<Double>>instances,String fileName,double threshold,int windowSize)
+//	{
+//		int windowSizeMin = windowSize;
+//		int windowSizeMax =  windowSize;
+//		ArrayList<Double> instance;
+//		instances = new ArrayList<ArrayList<Double>>();
+//		ArrayList<ArrayList<Double>> clusterCenter = null;
+//		ArrayList<ArrayList<Integer>> clusersInstanceList=null ;
+//		
+////		ArrayList<ArrayList<ArrayList<Double>>> cluserList = new ArrayList<ArrayList<ArrayList<Double>>>();
+//		/**
+//		 * 每个窗口训练一次得到最佳窗口
+//		 */
+//		int min= Integer.MAX_VALUE;
+//		int optsize = windowSizeMin;
+//		for(int size = windowSizeMin;size<=windowSizeMax;size++)
+//		{
+//			System.out.println("windowsize "+size);
+//			instances.clear();
+//			for(int i=0;i<list.size();i++)
+//			{
+//				for(int j=0;j<list.get(i).getLength()&&(j+size-1)<list.get(i).getLength();j++)
+//				{
+//					instance = new ArrayList<Double>();
+//					for(int k=j;k<j+size;k++)
+//						instance.add(Double.valueOf(list.get(i).getElementAt(k).getData()));
+//					instances.add(instance);
+//				}
+//			}
+//			ArrayList<ArrayList<Double>>tmpinstances = new ArrayList<ArrayList<Double>>();
+//			Iterator<ArrayList<Double>> it = instances.iterator();
+//			
+//			
+//			while(it.hasNext())
+//			{
+//				boolean allzero =true;
+//				ArrayList <Double > tmplist = it.next();
+//				for(int i=0;i<tmplist.size();i++)
+//					if(tmplist.get(i)>0.0)
+//					{
+//						allzero =false;
+//						break;
+//					}
+//				if(!allzero)
+//				{
+//					tmpinstances.add(tmplist);
+//				}
+//			}
+//			instances.clear();
+//			instances.addAll(tmpinstances);
+//			Collections.shuffle(instances);
+////			changesample2arff(instances,fileName+windowSize+".arff");
+//			
+////			System.out.println("ins "+instances.size());
+//			ArrayList<ArrayList<Double>> tmpclusterCenter = new ArrayList<ArrayList<Double>>();
+//			clusersInstanceList = new ArrayList<ArrayList<Integer>>();
+//			int tmp = Kmeans(instances,tmpclusterCenter,clusersInstanceList,fileName);
+//			if(tmp<min)
+//			{
+//				min = tmp;
+//				clusterCenter = tmpclusterCenter;
+//				optsize = size;
+//			}
+////			cluserList.add(clusterCenter);
+//		}
+	
+	public static void changesample2arff(ArrayList<ArrayList<Double>> instances,String path)
+	{
+		try
+		{
+			OutputStreamWriter ow = new OutputStreamWriter(
+					new FileOutputStream(path), "UTF-8");
+	
+			BufferedWriter bw = new BufferedWriter(ow);
+	
+			bw.write("@relation "+path);
+			bw.newLine();
+			if(instances.size()>0)
+			{
+				for(int i =0;i<instances.get(0).size();i++)
+				{
+					bw.write("@attribute " + i + " numeric");
+					bw.newLine();
+				}
+			}
+			bw.write("@DATA");
+			bw.newLine();
+			for(int i=0;i<instances.size();i++)
+			{
+				StringBuilder sb=new StringBuilder();
+//				sb.append("{");
+				List<Double> instance = instances.get(i);
+				for(int j=0;j<instance.size();j++)
+				{
+					sb.append(instance.get(j)+",");
+				}
+				sb.deleteCharAt(sb.length()-1);
+//				sb.append("}");
+				bw.write(sb.toString());
+				bw.newLine();
+			}
+			
+			bw.flush();
+			bw.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void main(String args[])
@@ -993,5 +1472,241 @@ public class DataPretreatment {
 //		list1.add(e)
 //		trainAll();
 //		toDiscreteNumbersAccordingToWaveform
+	}
+}
+class MergeSegment
+{
+	
+	class MergeSegmentNode
+	{
+		int index=0;
+		int ptindex[] = new int[3];
+		MergeSegmentNode left =null;
+		MergeSegmentNode right =null;
+		double error =0.0;
+	}
+	class TmpSeg
+	{
+		double x,y;
+		double centery;
+	}
+	double rate =1;
+	int size=0;
+	MergeSegmentNode[] nodes;
+	DataItem[] dataItemArray;
+	void buildHeap()
+	{
+		size= dataItemArray.length-2;
+		nodes= new MergeSegmentNode[size+1];
+		for(int i=1;i<=size;i++)
+			nodes[i] = new MergeSegmentNode();
+		for(int i=1;i<=size;i++)
+		{
+			for(int j=0;j<3;j++)
+			{
+//				System.out.println("j"+nodes[i].ptindex.length);
+				nodes[i].ptindex[j]=i-1+j;
+				
+			}
+			updateerror(nodes[i]);
+			nodes[i].index=i;
+			if(i>1)
+				nodes[i].left=nodes[i-1];
+			if(i<size)
+				nodes[i].right=nodes[i+1];
+		}
+		for(int i= size/2;i>=1;i--)
+			fixdown(nodes[i]);
+	}
+	MergeSegmentNode extractMin()
+	{
+		if(size<=0)
+			return null;
+		MergeSegmentNode x =nodes[1];
+		nodes[1]=nodes[size];
+		nodes[1].index=1;
+		size--;
+		fixdown(nodes[1]);
+		return x;
+		
+	}
+	void fixup(MergeSegmentNode x)
+	{
+		int index =x.index;
+		while(index/2>=1&&nodes[index/2].error>nodes[index].error)
+		{
+			/**
+			 * 和父亲结点交互位置，同时index属性要和下标一致
+			 */
+			MergeSegmentNode t=nodes[index/2];
+			nodes[index/2]=nodes[index];
+			nodes[index]=t;
+			nodes[index/2].index=index/2;
+			nodes[index].index=index;
+			index/=2;
+		}
+	}
+	void fixdown(MergeSegmentNode x)
+	{
+		int index=x.index;
+		while((index*2<=size&&nodes[index].error>nodes[2*index].error)||(index*2+1<=size&&nodes[index].error>nodes[2*index+1].error))
+		{
+			int cindex=2*index;
+			if(index*2<=size&&nodes[index].error>nodes[2*index].error) //可省略
+				cindex=2*index;
+			if(index*2+1<=size&&nodes[2*index+1].error<nodes[2*index].error)
+				cindex=2*index+1;
+			MergeSegmentNode t=nodes[index];
+			nodes[index]=nodes[cindex];
+			nodes[cindex]=t;
+			nodes[index].index=index;
+			nodes[cindex].index=cindex;
+			index=cindex;
+		}
+	}
+	void updateerror(MergeSegmentNode node)
+	{
+		double x[] =new double[3];
+		double y[] =new double[3];
+		for(int i=0;i<3;i++)
+		{
+//			System.out.println("try"+node.ptindex[i]);
+			y[i]=Double.valueOf(dataItemArray[node.ptindex[i]].getData());
+			x[i]=dataItemArray[node.ptindex[i]].getTime().getTime();
+//			System.out.println("try"+node.ptindex[i]);
+		}
+		
+		node.error= Math.abs( y[1] - ( (x[1]-x[0])/(x[2]-x[0])*(y[2]-y[0]) + y[0]) );
+	}
+	void update(MergeSegmentNode node)
+	{ 
+		double perror=node.error;
+		updateerror(node);
+		if(node.error<perror)
+			fixup(node);
+		else if(node.error>perror)
+			fixdown(node);
+		
+	}
+	MergeSegment(DataItems dataItems,double rate)
+	{
+		dataItemArray= new DataItem[dataItems.getLength()];
+		this.rate=rate;
+		System.out.println("orgin");
+		
+		for(int i=0;i<dataItems.getLength();i++)
+		{
+			dataItemArray[i]=dataItems.getElementAt(i);
+			System.out.print(dataItemArray[i].getData());
+			if(i<dataItems.getLength()-1)
+				System.out.print(",");
+		}
+		System.out.println();
+		for(int i=0;i<dataItems.getLength();i++)
+		{
+			dataItemArray[i]=dataItems.getElementAt(i);
+			System.out.print(dataItemArray[i].getTime().getTime()/1000/3600);
+			if(i<dataItems.getLength()-1)
+				System.out.print(",");
+		}
+		System.out.println();
+	}
+	public ArrayList<Segment> getSegmentList()
+	{
+		ArrayList<Segment> segList = new ArrayList<Segment>();
+		if(dataItemArray.length==0)
+			return segList;
+		buildHeap();
+		while(size>dataItemArray.length*rate)
+		{
+			MergeSegmentNode x=extractMin();
+			MergeSegmentNode left =x.left;
+			MergeSegmentNode right =x.right;
+			if(left!=null)
+			{
+				left.ptindex[2]=x.ptindex[2];
+				left.right=x.right;
+//				System.out.println("god"+x.index);
+//				System.out.println("godend"+dataItemArray[left.ptindex[1]]);
+				update(left);
+				
+				
+			}
+			if(right!=null)
+			{
+				right.ptindex[0]=x.ptindex[0];
+				right.left=x.left;
+				update(right);
+			}
+			dataItemArray[x.ptindex[1]]=null;
+		}
+		int pre = -1;
+		double maxx=0,maxy=0,maxcentery=0;  //存储最大时间间隔，最大流量变化的绝对值
+		ArrayList<TmpSeg> tmpSegList = new ArrayList<TmpSeg>();
+		System.out.println("result");
+		for(int i=0;i<dataItemArray.length;i++)
+		{
+			
+			
+			if(dataItemArray[i]!=null)
+			{
+				System.out.print(dataItemArray[i].getData()+",");
+				if(pre!=-1)
+				{
+					double x1,x2,y1,y2;
+					x1=dataItemArray[pre].getTime().getTime();
+					y1=Double.valueOf(dataItemArray[pre].getData());
+					x2=dataItemArray[i].getTime().getTime();
+					y2=Double.valueOf(dataItemArray[i].getData());
+					TmpSeg seg = new TmpSeg();
+					seg.x=x2-x1;
+					seg.y=y2-y1;
+					seg.centery=(y1+y2)/2;
+					tmpSegList.add(seg);
+					if(seg.x>maxx)
+						maxx=seg.x;
+					if(Math.abs(seg.y)>maxy)
+						maxy=Math.abs(seg.y);
+					if(seg.centery>maxcentery)
+						maxcentery =seg.centery;
+				}
+				pre= i;
+			}
+		}
+		System.out.println();
+		for(int i=0;i<dataItemArray.length;i++)
+		{
+			if(dataItemArray[i]!=null)
+			{
+				System.out.print(dataItemArray[i].getTime().getTime()/3600/1000+",");
+			}
+		}
+		System.out.println();
+		double maxLen=0;
+		double maxSlope=0;
+		for(int i=0;i<tmpSegList.size();i++)
+		{
+			Segment seg = new Segment();
+			TmpSeg tmpSeg = tmpSegList.get(i);
+			tmpSeg.centery/=maxcentery;
+			tmpSeg.x/=maxx;
+			tmpSeg.y/=maxy;
+			seg.setCentery(tmpSeg.centery);
+			seg.setLength(Math.sqrt((tmpSeg.x*tmpSeg.x+tmpSeg.y*tmpSeg.y)));
+			seg.setSlope(tmpSeg.y/tmpSeg.x);
+			if(seg.getLength()>maxLen)
+				maxLen=seg.getLength();
+			if(seg.getSlope()>maxSlope)
+				maxSlope=seg.getSlope();
+			segList.add(seg);
+		}
+		for(int i=0;i<segList.size();i++)
+		{
+			Segment seg = segList.get(i);
+			seg.setLength(seg.getLength()/maxLen);
+			seg.setSlope(seg.getSlope()/maxSlope);
+			segList.set(i, seg);
+		}
+		return segList;
 	}
 }
