@@ -650,7 +650,6 @@ public class DataPretreatment {
 	}
 	private static void runTrain(ArrayList <DataItems> list,ArrayList<ArrayList<Double>>instances,String fileName,double threshold,int windowSize)
 	{
-		
 		int windowSizeMin = windowSize;
 		int windowSizeMax =  windowSize;
 		ArrayList<Double> instance;
@@ -963,6 +962,25 @@ public class DataPretreatment {
 		SimpleKMeans  kMeans= new SimpleKMeans(); 
 		try
 		{
+//			InputStreamReader ir = new InputStreamReader (new FileInputStream(fileName),"UTF-8");
+//			BufferedReader br    = new BufferedReader ( ir);
+//			String curLine =null;
+//		    size = Integer.valueOf(br.readLine());
+//			
+//			while((curLine = br.readLine())!=null)
+//			{
+//				String []num = curLine.split(" ");
+//				ArrayList<Double> center = new ArrayList<Double>();
+//				for(int i = 0 ;i<num.length;i++)
+//				{
+//					center.add(Double.valueOf(num[i]));
+//				}
+//				clustersCenter.add(center);
+//			}
+			kMeans =(SimpleKMeans) SerializationHelper.read(fileName+".model");
+//		    kMeans.get
+		
+//			System.out.println("god");
 			ArrayList<ArrayList<Double>> tmpInstances =new ArrayList<ArrayList<Double>>();
 			
 			
