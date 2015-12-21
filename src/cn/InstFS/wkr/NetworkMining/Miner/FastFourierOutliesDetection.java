@@ -57,7 +57,7 @@ public class FastFourierOutliesDetection implements IMinerTSA {
     }
 
     public void AnomalyDetection(DataItems dataItems) {
-        double[] result = new double[original.length];
+        double[] result = new double[dataItems.getLength()];
 
         for(int i=0;i < result.length;i++)
         {
@@ -69,7 +69,8 @@ public class FastFourierOutliesDetection implements IMinerTSA {
         {
             if(!nbt.isDawnToThisDistri(result[i]))
             {
-            	outlies.add1Data(di.getTime().get(i), di.getData().get(i));
+            	outlies.add1Data(dataItems.getTime().get(i), original[i]+"");
+            	System.out.println(original[i]);
             }
         }
     }
@@ -182,21 +183,45 @@ public class FastFourierOutliesDetection implements IMinerTSA {
    
     @Override
     public void TimeSeriesAnalysis() {
-
 		if(di==null){
 			return;
 		}
 
 		List<String> data = di.getData();
+		List<String> dataSlice=new ArrayList<String>();
 		List<String>  curData = null;
 		List<Date> time = di.getTime();
+		List<Date> timeSlice = new ArrayList<Date>();
 		int size = data.size();
-		DataItems prediction_curTime = null;
-		curData= FFTfilter(data,amplitudeRatio);
-		prediction_curTime = new DataItems();
-		prediction_curTime.setTime(time);
-		prediction_curTime.setData(curData);
-		AnomalyDetection(prediction_curTime);
+		for(int i=0;i<((int)(size/Math.pow(2, 8)));i++){
+			dataSlice.clear();
+			timeSlice.clear();
+			for(int j=0;j<Math.pow(2, 8);j++){
+				dataSlice.add(data.get(i*(int)Math.pow(2, 8)+j));
+				timeSlice.add(time.get(i*(int)Math.pow(2, 8)+j));
+			}
+			DataItems prediction_curTime = null;
+			curData= FFTfilter(dataSlice,amplitudeRatio);
+			prediction_curTime = new DataItems();
+			prediction_curTime.setTime(timeSlice);
+			prediction_curTime.setData(curData);
+			AnomalyDetection(prediction_curTime);
+		}
+		
+		
+		for(int i=(int)(size-Math.pow(2, 8)-1);i<size;i++){
+			dataSlice.clear();
+			timeSlice.clear();
+			dataSlice.add(data.get(i));
+			timeSlice.add(time.get(i));
+			DataItems prediction_curTime = null;
+			curData= FFTfilter(dataSlice,amplitudeRatio);
+			prediction_curTime = new DataItems();
+			prediction_curTime.setTime(timeSlice);
+			prediction_curTime.setData(curData);
+			AnomalyDetection(prediction_curTime);
+		}
+		
 	}
 
 	public static double getAmplitudeRatio() {

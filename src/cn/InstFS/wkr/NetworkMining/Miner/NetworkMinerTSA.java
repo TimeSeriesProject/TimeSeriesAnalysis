@@ -146,6 +146,12 @@ class TSATimerTask extends TimerTask{
 //		int dimension=Math.max(task.getDiscreteDimension(),dataItems.getDiscretizedDimension());
 		if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ARTSA)){
 			tsaMethod=new ARTSA(task, params.getPredictPeriod(),dataItems);
+		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
+			tsaMethod=new FastFourierOutliesDetection(dataItems);
+			((FastFourierOutliesDetection)tsaMethod).setAmplitudeRatio(0.7);
+			((FastFourierOutliesDetection)tsaMethod).setVarK(2.5);
+		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_GaussDetection)){
+			tsaMethod=new AnormalyDetection(dataItems);
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistTSA)){
 			tsaMethod=new ERPDistTSA(task,params.getPredictPeriod(),dataItems);
 		}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {

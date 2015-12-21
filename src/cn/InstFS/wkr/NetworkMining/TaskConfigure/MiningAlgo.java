@@ -5,6 +5,8 @@ public enum MiningAlgo {
 	MiningAlgo_ERPDistencePM("ERP距离周期检测算法"),
 	MiningAlgo_ARTSA("AR模型序列分析"),
 	MiningAlgo_ERPDistTSA("ERP模型序列分析"),
+	MiningAlgo_FastFourier("FFT异常检测"),
+	MiningAlgo_GaussDetection("高斯滑动窗口异常检测"),
 	MiningAlgo_TEOTSA("TEO线段异常检测"),
 	MiningAlgo_NeuralNetworkTSA("神经网络预测"),
 	MiningAlgo_ARIMATSA("ARIMA模型预测"),

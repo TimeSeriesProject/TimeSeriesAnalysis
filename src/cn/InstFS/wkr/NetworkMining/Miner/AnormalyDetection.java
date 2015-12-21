@@ -14,8 +14,8 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
  * Created by xzbang on 2015/3/24.
  */
 public class AnormalyDetection implements IMinerTSA {
-    private int initWindowSize = 10;
-    private int maxWindowSize = 30;
+    private int initWindowSize = 30;
+    private int maxWindowSize = 60;
     private int expWindowSize = 3;
     private double k=3.0;
     private DataItems di;
@@ -54,6 +54,7 @@ public class AnormalyDetection implements IMinerTSA {
 		}
      	for(int i=0;i < size;i++){
     		if(result.containsKey((long)i)){
+    			System.out.println(i+1);
     			outlies.add1Data(time.get(i), data.get(i));
     		}
     	}
