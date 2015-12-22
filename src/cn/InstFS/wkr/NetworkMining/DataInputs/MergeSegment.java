@@ -140,7 +140,7 @@ public class MergeSegment
 	 * @param dataItems
 	 * @param rate
 	 */
-	MergeSegment(DataItems dataItems,double rate)
+	public MergeSegment(DataItems dataItems,double rate)
 	{
 		dataItemArray= new DataItem[dataItems.getLength()];
 		this.rate=rate;

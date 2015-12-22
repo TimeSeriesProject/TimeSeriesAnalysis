@@ -37,7 +37,7 @@ public class WavCluster {
 	 * @param endDate
 	 * @return
 	 */
-	private static ArrayList<DataItems> getNodepairSamples(TaskElement task,Date startDate,Date endDate)
+	public static ArrayList<DataItems> getNodepairSamples(TaskElement task,Date startDate,Date endDate)
 	{
 		ArrayList<DataItems> list = new ArrayList<DataItems>();
 		nodePairReader reader= new nodePairReader(task,new String[2]);
@@ -68,7 +68,7 @@ public class WavCluster {
 	 * @param endDate
 	 * @return
 	 */
-	private static ArrayList<DataItems>  getSingleNodeSamples(TaskElement task,Date startDate,Date endDate)
+	public static ArrayList<DataItems>  getSingleNodeSamples(TaskElement task,Date startDate,Date endDate)
 	{
 		ArrayList<DataItems> list = new ArrayList<DataItems>();
 		ArrayList <String> ips = new ArrayList<String> ();
@@ -286,7 +286,7 @@ public class WavCluster {
 	 * @param preserveOrder
 	 * @return kmeans∂‘œÛ
 	 */
-	private static SimpleKMeans Kmeans(ArrayList<ArrayList<Double>>instances,int clusternum,String fileName,boolean preserveOrder)
+	public static SimpleKMeans Kmeans(ArrayList<ArrayList<Double>>instances,int clusternum,String fileName,boolean preserveOrder)
 	{
 		changesample2arff(instances,fileName+".arff");
 		System.out.println(instances.size());
