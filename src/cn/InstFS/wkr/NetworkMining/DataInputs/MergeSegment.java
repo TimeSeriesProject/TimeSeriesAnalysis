@@ -1,0 +1,225 @@
+package cn.InstFS.wkr.NetworkMining.DataInputs;
+
+import java.util.ArrayList;
+
+
+public class MergeSegment
+{
+	
+	class MergeSegmentNode
+	{
+		int index=0;
+		int ptindex[] = new int[3];
+		MergeSegmentNode left =null;
+		MergeSegmentNode right =null;
+		double error =0.0;
+	}
+	double rate =1;
+	int size=0;
+	MergeSegmentNode[] nodes;
+	DataItem[] dataItemArray;
+	void buildHeap()
+	{
+		size= dataItemArray.length-2;
+		nodes= new MergeSegmentNode[size+1];
+		for(int i=1;i<=size;i++)
+			nodes[i] = new MergeSegmentNode();
+		for(int i=1;i<=size;i++)
+		{
+			for(int j=0;j<3;j++)
+			{
+//				System.out.println("j"+nodes[i].ptindex.length);
+				nodes[i].ptindex[j]=i-1+j;
+				
+			}
+			updateerror(nodes[i]);
+			nodes[i].index=i;
+			if(i>1)
+				nodes[i].left=nodes[i-1];
+			if(i<size)
+				nodes[i].right=nodes[i+1];
+		}
+		for(int i= size/2;i>=1;i--)
+			fixdown(nodes[i]);
+	}
+	void extractMin()
+	{
+		if(size<=0)
+			return ;
+		MergeSegmentNode x =nodes[1];
+		nodes[1]=nodes[size];
+		nodes[1].index=1;
+		size--;
+		fixdown(nodes[1]);
+		MergeSegmentNode left =x.left;
+		MergeSegmentNode right =x.right;
+		if(left!=null)
+		{
+			left.ptindex[2]=x.ptindex[2];
+			left.right=x.right;
+//			System.out.println("god"+x.index);
+//			System.out.println("godend"+dataItemArray[left.ptindex[1]]);
+			update(left);
+			
+			
+		}
+		if(right!=null)
+		{
+			right.ptindex[0]=x.ptindex[0];
+			right.left=x.left;
+			update(right);
+		}
+		dataItemArray[x.ptindex[1]]=null;
+		
+	}
+	void fixup(MergeSegmentNode x)
+	{
+		int index =x.index;
+		while(index/2>=1&&nodes[index/2].error>nodes[index].error)
+		{
+			/**
+			 * 和父亲结点交互位置，同时index属性要和下标一致
+			 */
+			MergeSegmentNode t=nodes[index/2];
+			nodes[index/2]=nodes[index];
+			nodes[index]=t;
+			nodes[index/2].index=index/2;
+			nodes[index].index=index;
+			index/=2;
+		}
+	}
+	void fixdown(MergeSegmentNode x)
+	{
+		int index=x.index;
+		while((index*2<=size&&nodes[index].error>nodes[2*index].error)||(index*2+1<=size&&nodes[index].error>nodes[2*index+1].error))
+		{
+			int cindex=2*index;
+			if(index*2<=size&&nodes[index].error>nodes[2*index].error) //可省略
+				cindex=2*index;
+			if(index*2+1<=size&&nodes[2*index+1].error<nodes[2*index].error)
+				cindex=2*index+1;
+			MergeSegmentNode t=nodes[index];
+			nodes[index]=nodes[cindex];
+			nodes[cindex]=t;
+			nodes[index].index=index;
+			nodes[cindex].index=cindex;
+			index=cindex;
+		}
+	}
+	void updateerror(MergeSegmentNode node)
+	{
+		double x[] =new double[3];
+		double y[] =new double[3];
+		for(int i=0;i<3;i++)
+		{
+//			System.out.println("try"+node.ptindex[i]);
+			y[i]=Double.valueOf(dataItemArray[node.ptindex[i]].getData());
+			x[i]=dataItemArray[node.ptindex[i]].getTime().getTime();
+//			System.out.println("try"+node.ptindex[i]);
+		}
+		
+		node.error= Math.abs( y[1] - ( (x[1]-x[0])/(x[2]-x[0])*(y[2]-y[0]) + y[0]) );
+	}
+	void update(MergeSegmentNode node)
+	{ 
+		double perror=node.error;
+		updateerror(node);
+		if(node.error<perror)
+			fixup(node);
+		else if(node.error>perror)
+			fixdown(node);
+		
+	}
+	MergeSegment(DataItems dataItems,double rate)
+	{
+		dataItemArray= new DataItem[dataItems.getLength()];
+		this.rate=rate;
+		System.out.println("orgin");
+		
+		for(int i=0;i<dataItems.getLength();i++)
+		{
+			dataItemArray[i]=dataItems.getElementAt(i);
+			System.out.print(dataItemArray[i].getData());
+			if(i<dataItems.getLength()-1)
+				System.out.print(",");
+		}
+		System.out.println();
+		for(int i=0;i<dataItems.getLength();i++)
+		{
+			dataItemArray[i]=dataItems.getElementAt(i);
+			System.out.print(dataItemArray[i].getTime().getTime()/1000/3600);
+			if(i<dataItems.getLength()-1)
+				System.out.print(",");
+		}
+		System.out.println();
+	}
+	public ArrayList<Segment> getSegmentList()
+	{
+		ArrayList<Segment> segList = new ArrayList<Segment>();
+		if(dataItemArray.length==0)
+			return segList;
+		buildHeap();
+		while(size>dataItemArray.length*rate)
+		{
+			extractMin();
+		}
+		int pre = -1;
+		double maxLength=Double.MIN_VALUE,maxSlope=Double.MIN_VALUE,maxCentery=Double.MIN_VALUE;  //存储最大时间间隔，最大流量变化的绝对值
+		double minLength=Double.MAX_VALUE,minSlope=Double.MAX_VALUE,minCentery=Double.MAX_VALUE;
+		System.out.println("result");
+		for(int i=0;i<dataItemArray.length;i++)
+		{
+			if(dataItemArray[i]!=null)
+			{
+				System.out.print(dataItemArray[i].getData()+",");
+				if(pre!=-1)
+				{
+					double x1,x2,y1,y2;
+					x1=dataItemArray[pre].getTime().getTime()/1000;
+					y1=Double.valueOf(dataItemArray[pre].getData());
+					x2=dataItemArray[i].getTime().getTime()/1000;
+					y2=Double.valueOf(dataItemArray[i].getData());
+					
+					Segment seg =new Segment();
+					seg.setCentery((y1+y2)/2);
+					seg.setLength(Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)));
+					seg.setSlope((y2-y1)/(x2-x1));
+					segList.add(seg);
+					if(seg.centery>maxCentery)
+						maxCentery =seg.centery;
+					if(seg.centery<minCentery)
+						minCentery =seg.centery;
+					if(seg.length>maxLength)
+						maxLength = seg.length;
+					if(seg.length<minLength)
+						minLength = seg.length;
+					if(seg.slope>maxSlope)
+						maxSlope =seg.slope;
+					if(seg.slope<minSlope)
+						minSlope =seg.slope;
+				}
+				pre= i;
+			}
+		}
+		System.out.println();
+		for(int i=0;i<dataItemArray.length;i++)
+		{
+			if(dataItemArray[i]!=null)
+			{
+				System.out.print(dataItemArray[i].getTime().getTime()/3600/1000+",");
+			}
+		}
+		System.out.println();
+		
+		for(int i=0;i<segList.size();i++)
+		{
+			Segment seg = segList.get(i);
+			seg.setCentery((seg.getCentery()-minCentery)/(maxCentery-minCentery));
+			seg.setSlope((seg.getSlope()-minSlope)/(maxSlope-minSlope));
+			seg.setLength((seg.getLength()-minLength)/(maxLength-minLength));
+			segList.set(i,seg);
+		}
+		return segList;
+	}
+	
+}
