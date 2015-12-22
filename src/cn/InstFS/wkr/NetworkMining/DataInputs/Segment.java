@@ -1,4 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
+
+import java.util.Date;
+
 /**
  * 
  * @author chenwei
@@ -25,9 +28,23 @@ public class Segment {
 	public void setLength(double length) {
 		this.length = length;
 	}
+	public Date getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+	public Date getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}
 	double centery;
 	double  slope;
 	double length;
+	Date startTime;
+	Date endTime;
 	Segment(double centery,double slope,double length)
 	{
 		this.centery = centery;
