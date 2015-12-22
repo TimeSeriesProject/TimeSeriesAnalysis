@@ -501,7 +501,7 @@ public class WavCluster {
 	 * @param task
 	 * @return
 	 */
-	public static DataItems waveSelfCluster(DataItems dataItems,TaskElement task)
+	public static DataItems waveSelfCluster(DataItems dataItems)
 	{
 		DataItems result = new DataItems(); 
 		ArrayList<ArrayList<Double>> instances =new ArrayList<ArrayList<Double>>();
@@ -634,7 +634,7 @@ public class WavCluster {
 				dataItems=DataPretreatment.aggregateData(dataItems,3600,AggregateMethod.Aggregate_SUM,false);
 				System.out.println("i "+i);
 				System.out.println("list add "+dataItems.getLength());
-				waveSelfCluster(dataItems,task);
+				segmentSelfCluster(dataItems);
 				
 		
 //				list.add(dataItems);
