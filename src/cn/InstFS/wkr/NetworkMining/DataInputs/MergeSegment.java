@@ -1,8 +1,13 @@
+
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
 import java.util.ArrayList;
 
-
+/**
+ * 
+ * @author chenwei
+ *
+ */
 public class MergeSegment
 {
 	

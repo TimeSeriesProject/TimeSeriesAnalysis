@@ -1,5 +1,9 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
-
+/**
+ * 
+ * @author chenwei
+ *
+ */
 public class Segment {
 
 	

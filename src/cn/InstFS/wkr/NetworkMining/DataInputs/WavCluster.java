@@ -25,7 +25,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
 /**
  * ≤®–Œæ€¿‡
- * @author Aite
+ * @author chenwei
  *
  */
 public class WavCluster {
