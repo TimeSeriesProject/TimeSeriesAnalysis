@@ -455,7 +455,7 @@ public class WavCluster {
 	 * @param task
 	 * @return
 	 */
-	public static DataItems segmentSelfCluster(DataItems dataItems,TaskElement task)
+	public static DataItems segmentSelfCluster(DataItems dataItems)
 	{
 		DataItems result = new DataItems(); 
 		ArrayList<ArrayList<Double>> instances =new ArrayList<ArrayList<Double>>();
@@ -480,9 +480,10 @@ public class WavCluster {
 			
 			for(int i=0;i<labels.length;i++)
 			{
-	
+				
 				DataItem dataItem =new DataItem();	
 				dataItem.setData(String.valueOf(labels[i]));
+				dataItem.setTime(seglist.get(i).getStartTime());
 				result.add1Data(dataItem);
 			}
 		}
