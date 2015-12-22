@@ -23,8 +23,20 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
+/**
+ * 波形聚类
+ * @author Aite
+ *
+ */
 public class WavCluster {
 	
+	/**
+	 * 得到所有结点对的通信数据
+	 * @param task
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
 	private static ArrayList<DataItems> getNodepairSamples(TaskElement task,Date startDate,Date endDate)
 	{
 		ArrayList<DataItems> list = new ArrayList<DataItems>();
@@ -49,6 +61,13 @@ public class WavCluster {
 		}
 		return list;
 	}
+	/**
+	 * 得到所有单结点的通信数据
+	 * @param task
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
 	private static ArrayList<DataItems>  getSingleNodeSamples(TaskElement task,Date startDate,Date endDate)
 	{
 		ArrayList<DataItems> list = new ArrayList<DataItems>();
@@ -77,7 +96,9 @@ public class WavCluster {
 		}
 		return list;
 	}
-	
+	/**
+	 * 对单结点以及结点对所有协议分别进行线段聚类训练
+	 */
 	public static void segmentTrainAll()
 	{
 		TaskElement task = new TaskElement();
@@ -106,6 +127,9 @@ public class WavCluster {
 			
 		}
 	}
+	/*
+	 * 对某个数据集进行线段聚类训练
+	 */
 	public static void segmentTrain(TaskElement task,double compratio,int clusternum,Date startDate,Date endDate)
 	{
 		
@@ -172,6 +196,9 @@ public class WavCluster {
 		default: break;
 		}
 	}
+	/*
+	 * 对单结点以及结点对所有协议分别进行波形聚类训练
+	 */
 	public static void waveTrainAll()
 	{
 		TaskElement task = new TaskElement();
@@ -200,6 +227,14 @@ public class WavCluster {
 			
 		}
 	}
+	/**
+	 * 对某个数据集进行波形聚类训练
+	 * @param task
+	 * @param windowsize
+	 * @param clusternum
+	 * @param startDate
+	 * @param endDate
+	 */
 	public static void waveTrain(TaskElement task,int windowsize,int clusternum,Date startDate,Date endDate)
 	{
 		String fileName= task.getTaskRange().toString();
@@ -243,6 +278,14 @@ public class WavCluster {
 		}
 		Kmeans(instances,clusternum,fileName,false);
 	}
+	/**
+	 * kmeans训练
+	 * @param instances
+	 * @param clusternum
+	 * @param fileName
+	 * @param preserveOrder
+	 * @return kmeans对象
+	 */
 	private static SimpleKMeans Kmeans(ArrayList<ArrayList<Double>>instances,int clusternum,String fileName,boolean preserveOrder)
 	{
 		changesample2arff(instances,fileName+".arff");
@@ -273,6 +316,12 @@ public class WavCluster {
 //		changesample2arff(instances,fileName+".arff");
 		return kMeans;
 	}
+	/**
+	 * 对于某个时间序列用训练好的线段聚类模型测试
+	 * @param dataItems
+	 * @param task
+	 * @return
+	 */
 	public static DataItems segmentTest(DataItems dataItems,TaskElement task)
 	{
 		DataItems result = new DataItems(); 
@@ -335,6 +384,12 @@ public class WavCluster {
 		}
 		return result;
 	}
+	/**
+	 * 对某个时间序列，用对应的训练好的波形聚类模型测试
+	 * @param dataItems
+	 * @param task
+	 * @return
+	 */
 	public static DataItems waveTest(DataItems dataItems,TaskElement task)
 	{
 		DataItems result = new DataItems(); 
@@ -394,6 +449,12 @@ public class WavCluster {
 		}
 		return result;
 	}
+	/**
+	 * 对某个时间序列进行线段聚类，并返回聚类结果
+	 * @param dataItems
+	 * @param task
+	 * @return
+	 */
 	public static DataItems segmentSelfCluster(DataItems dataItems,TaskElement task)
 	{
 		DataItems result = new DataItems(); 
@@ -433,6 +494,12 @@ public class WavCluster {
 		}
 		return result;
 	}
+	/**
+	 * 对某个时间序列进行波形聚类，并返回聚类结果
+	 * @param dataItems
+	 * @param task
+	 * @return
+	 */
 	public static DataItems waveSelfCluster(DataItems dataItems,TaskElement task)
 	{
 		DataItems result = new DataItems(); 
@@ -474,6 +541,11 @@ public class WavCluster {
 		}
 		return result;
 	}
+	/**
+	 * 将训练集转换成arff文件
+	 * @param instances
+	 * @param path
+	 */
 	public static void changesample2arff(ArrayList<ArrayList<Double>> instances,String path)
 	{
 		try

@@ -130,6 +130,11 @@ public class MergeSegment
 			fixdown(node);
 		
 	}
+	/**
+	 * 利用堆进行线段合并，每次找出最小代价合并，并更新堆
+	 * @param dataItems
+	 * @param rate
+	 */
 	MergeSegment(DataItems dataItems,double rate)
 	{
 		dataItemArray= new DataItem[dataItems.getLength()];
@@ -151,18 +156,39 @@ public class MergeSegment
 			if(i<dataItems.getLength()-1)
 				System.out.print(",");
 		}
-		System.out.println();
-	}
-	public ArrayList<Segment> getSegmentList()
-	{
-		ArrayList<Segment> segList = new ArrayList<Segment>();
-		if(dataItemArray.length==0)
-			return segList;
 		buildHeap();
 		while(size>dataItemArray.length*rate)
 		{
 			extractMin();
 		}
+		System.out.println();
+	}
+	/**
+	 * 获取合并过后的点
+	 * @return
+	 */
+	public DataItems getMergedDataItems()
+	{
+		DataItems dataItems = new DataItems();
+		for(int i=0;i<dataItemArray.length;i++)
+		{
+			if(dataItemArray[i]!=null)
+			{
+				dataItems.add1Data(dataItemArray[i]);
+			}
+		}
+		return dataItems;
+	}
+	/**
+	 * 得到合并后的线段，并作min-max归一化
+	 * @return
+	 */
+	public ArrayList<Segment> getSegmentList()
+	{
+		ArrayList<Segment> segList = new ArrayList<Segment>();
+		if(dataItemArray.length==0)
+			return segList;
+		
 		int pre = -1;
 		double maxLength=Double.MIN_VALUE,maxSlope=Double.MIN_VALUE,maxCentery=Double.MIN_VALUE;  //存储最大时间间隔，最大流量变化的绝对值
 		double minLength=Double.MAX_VALUE,minSlope=Double.MAX_VALUE,minCentery=Double.MAX_VALUE;
@@ -171,6 +197,7 @@ public class MergeSegment
 		{
 			if(dataItemArray[i]!=null)
 			{
+				
 				System.out.print(dataItemArray[i].getData()+",");
 				if(pre!=-1)
 				{
