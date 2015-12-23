@@ -14,7 +14,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+
 import weka.clusterers.SimpleKMeans;
+import weka.core.EuclideanDistance;
 import weka.core.Instances;
 import weka.core.ManhattanDistance;
 import weka.core.SerializationHelper;
@@ -297,7 +300,7 @@ public class WavCluster {
 			arffloader.setFile(new File(fileName+".arff"));
 			Instances dataset	=	arffloader.getDataSet();
 //			DistanceFunction disFun = new	ManhattanDistance();
-			kMeans.setDistanceFunction(new ManhattanDistance());
+			kMeans.setDistanceFunction(new EuclideanDistance() );
 			kMeans.setNumClusters(clusternum);
 			kMeans.setMaxIterations(100);
 			kMeans.setPreserveInstancesOrder(preserveOrder);
