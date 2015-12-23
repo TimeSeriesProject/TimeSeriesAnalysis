@@ -215,7 +215,8 @@ public class MergeSegment
 					Segment seg =new Segment();
 					seg.setCentery((y1+y2)/2);
 					seg.setLength(Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)));
-					seg.setSlope((y2-y1)/(x2-x1));
+					seg.setSlope(Math.atan((y2-y1)/(x2-x1)));
+					
 					seg.setStartTime(dataItemArray[pre].getTime());
 					seg.setEndTime(dataItemArray[i].getTime());
 					seg.getPointList().add(pre);
@@ -233,7 +234,7 @@ public class MergeSegment
 						maxSlope =seg.slope;
 					if(seg.slope<minSlope)
 						minSlope =seg.slope;
-					System.out.println(seg.slope+",");
+					
 				}
 				pre= i;
 			}
@@ -253,10 +254,15 @@ public class MergeSegment
 		{
 			Segment seg = segList.get(i);
 			seg.setCentery((seg.getCentery()-minCentery)/(maxCentery-minCentery));
-//			seg.setSlope((seg.getSlope()-minSlope)/(maxSlope-minSlope));
+//			seg.setSlope(Math.atan((seg.getSlope()-minSlope)/(maxSlope-minSlope));
+			if(seg.slope>0)
+				seg.slope+=30*2*Math.PI/360;
+			else
+				seg.slope-=30*2*Math.PI/360;
+			
 			seg.setLength((seg.getLength()-minLength)/(maxLength-minLength));
 			segList.set(i,seg);
-			
+//			System.out.println(seg.slope+",");
 		}
 		return segList;
 	}
