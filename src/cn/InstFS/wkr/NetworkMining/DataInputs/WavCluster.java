@@ -471,12 +471,12 @@ public class WavCluster {
 			ArrayList<Double>  instance = new ArrayList<Double>();
 			instance.add(seglist.get(j).getCentery());
 			instance.add(seglist.get(j).getLength());
-			instance.add(seglist.get(j).getSlope()*2);
+			instance.add(seglist.get(j).getSlope());
 			instances.add(instance);
 		}
 		if(instances.size()==0)
 			return result;
-		kMeans = Kmeans(instances,20,"segmentSelfCluster",true);
+		kMeans = Kmeans(instances,10,"segmentSelfCluster",true);
 		try
 		{
 			int labels[]=kMeans.getAssignments();

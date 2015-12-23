@@ -203,7 +203,7 @@ public class MergeSegment
 			if(dataItemArray[i]!=null)
 			{
 				
-				System.out.print(dataItemArray[i].getData()+",");
+//				System.out.print(dataItemArray[i].getData()+",");
 				if(pre!=-1)
 				{
 					double x1,x2,y1,y2;
@@ -233,6 +233,7 @@ public class MergeSegment
 						maxSlope =seg.slope;
 					if(seg.slope<minSlope)
 						minSlope =seg.slope;
+					System.out.println(seg.slope+",");
 				}
 				pre= i;
 			}
@@ -246,14 +247,16 @@ public class MergeSegment
 			}
 		}
 		System.out.println();
+		System.out.println("god"+minSlope+" "+maxSlope);
 		
 		for(int i=0;i<segList.size();i++)
 		{
 			Segment seg = segList.get(i);
 			seg.setCentery((seg.getCentery()-minCentery)/(maxCentery-minCentery));
-			seg.setSlope((seg.getSlope()-minSlope)/(maxSlope-minSlope));
+//			seg.setSlope((seg.getSlope()-minSlope)/(maxSlope-minSlope));
 			seg.setLength((seg.getLength()-minLength)/(maxLength-minLength));
 			segList.set(i,seg);
+			
 		}
 		return segList;
 	}
