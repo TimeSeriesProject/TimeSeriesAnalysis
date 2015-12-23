@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -45,6 +46,14 @@ public class Segment {
 	double length;
 	Date startTime;
 	Date endTime;
+	ArrayList<Integer> pointList=new ArrayList<Integer>();
+	
+	public ArrayList<Integer> getPointList() {
+		return pointList;
+	}
+	public void setPointList(ArrayList<Integer> pointList) {
+		this.pointList = pointList;
+	}
 	Segment(double centery,double slope,double length)
 	{
 		this.centery = centery;

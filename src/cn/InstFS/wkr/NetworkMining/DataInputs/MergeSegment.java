@@ -218,6 +218,8 @@ public class MergeSegment
 					seg.setSlope((y2-y1)/(x2-x1));
 					seg.setStartTime(dataItemArray[pre].getTime());
 					seg.setEndTime(dataItemArray[i].getTime());
+					seg.getPointList().add(pre);
+					seg.getPointList().add(i);
 					segList.add(seg);
 					if(seg.centery>maxCentery)
 						maxCentery =seg.centery;

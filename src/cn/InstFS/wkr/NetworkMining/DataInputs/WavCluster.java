@@ -468,7 +468,7 @@ public class WavCluster {
 			ArrayList<Double>  instance = new ArrayList<Double>();
 			instance.add(seglist.get(j).getCentery());
 			instance.add(seglist.get(j).getLength());
-			instance.add(seglist.get(j).getSlope());
+			instance.add(seglist.get(j).getSlope()*2);
 			instances.add(instance);
 		}
 		if(instances.size()==0)
@@ -485,6 +485,59 @@ public class WavCluster {
 				dataItem.setData(String.valueOf(labels[i]));
 				dataItem.setTime(seglist.get(i).getStartTime());
 				result.add1Data(dataItem);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+//			throw new RuntimeException(e);
+			System.exit(0);
+		}
+		return result;
+	}
+	/**
+	 * 得到聚类后的结果，以及每个符号对应的原始点序列
+	 * @param dataItems
+	 * @return
+	 */
+	public static ArrayList<ResultItem> getSegmentSelfClusterDetailResult(DataItems dataItems,HashMap<Integer,ArrayList<Integer>> clusterInstances)
+	{
+		ArrayList<ResultItem> result = new ArrayList<ResultItem>(); 
+		ArrayList<ArrayList<Double>> instances =new ArrayList<ArrayList<Double>>();
+		SimpleKMeans kMeans;
+		ArrayList<Segment> segList = new ArrayList<Segment>();
+		MergeSegment mergeSegment=new MergeSegment(dataItems,0.3);
+		
+		segList=mergeSegment.getSegmentList();
+		for(int j=0;j<segList.size();j++)
+		{
+			ArrayList<Double>  instance = new ArrayList<Double>();
+			instance.add(segList.get(j).getCentery());
+			instance.add(segList.get(j).getLength());
+			instance.add(segList.get(j).getSlope()*2);
+			instances.add(instance);
+		}
+		if(instances.size()==0)
+			return result;
+		kMeans = Kmeans(instances,20,"segmentSelfCluster",true);
+		
+		try
+		{
+			int labels[]=kMeans.getAssignments();
+			
+			for(int i=0;i<labels.length;i++)
+			{
+				
+				ResultItem resultItem =new ResultItem();	
+				resultItem.setPointList(segList.get(i).getPointList());
+				resultItem.setCluster(labels[i]);
+				result.add(resultItem);
+				if(!clusterInstances.containsKey(labels[i]))
+				{
+					ArrayList<Integer> list =new ArrayList<Integer>();
+					clusterInstances.put(labels[i], list);
+				}
+				clusterInstances.get(labels[i]).add(i);
 			}
 		}
 		catch(Exception e)
@@ -634,8 +687,14 @@ public class WavCluster {
 				dataItems=DataPretreatment.aggregateData(dataItems,3600,AggregateMethod.Aggregate_SUM,false);
 				System.out.println("i "+i);
 				System.out.println("list add "+dataItems.getLength());
-				segmentSelfCluster(dataItems);
-				
+				HashMap<Integer,ArrayList<Integer>> clusterInstances = new HashMap<Integer,ArrayList<Integer>>();
+				ArrayList<ResultItem> result = getSegmentSelfClusterDetailResult(dataItems,clusterInstances);
+				System.out.println(dataItems.getData());
+				for(int l=0;l<clusterInstances.get(0).size();l++)
+				{
+					result.get(clusterInstances.get(0).get(l)).getPointList();
+					result.get(clusterInstances.get(0).get(l)).getCluster();
+				}
 		
 //				list.add(dataItems);
 			
