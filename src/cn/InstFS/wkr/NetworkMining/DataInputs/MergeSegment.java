@@ -262,7 +262,7 @@ public class MergeSegment
 			
 			seg.setLength((seg.getLength()-minLength)/(maxLength-minLength));
 			segList.set(i,seg);
-//			System.out.println(seg.slope+",");
+			System.out.println(seg.slope+",");
 		}
 		return segList;
 	}

@@ -471,7 +471,7 @@ public class WavCluster {
 			ArrayList<Double>  instance = new ArrayList<Double>();
 			instance.add(seglist.get(j).getCentery());
 			instance.add(seglist.get(j).getLength());
-			instance.add(seglist.get(j).getSlope()*1000000000);
+			instance.add(seglist.get(j).getSlope());
 			instances.add(instance);
 		}
 		if(instances.size()==0)
