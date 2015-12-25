@@ -2,13 +2,18 @@ package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
+import cn.InstFS.wkr.NetworkMining.DataInputs.ResultItem;
+import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
@@ -134,18 +139,19 @@ class SMTimerTask extends TimerTask {
 					task.getAggregateMethod(), !dataItems.isAllDataIsDouble());
 		}
 		
-		dataItems=DataPretreatment.toDiscreteNumbersAccordingToWaveform(dataItems, task);
-		
-		results.setInputData(dataItems);
+		//符号化后的序列
+		DataItems clusterItems=WavCluster.segmentSelfCluster(dataItems);
+		results.setInputData(clusterItems);
 		
 		SequencePatterns sequencePattern=new SequencePatterns();
-		sequencePattern.setDataItems(dataItems);
+		sequencePattern.setDataItems(clusterItems);
 		sequencePattern.setTask(task);
 		sequencePattern.setWinSize(paramsSM.getSizeWindow());
 		sequencePattern.setThreshold(paramsSM.getMinSupport());
 		sequencePattern.setStepSize(paramsSM.getStepWindow());
+		sequencePattern.printClusterLabelTOLines(clusterItems, dataItems);
 		sequencePattern.patternMining();
-
+		sequencePattern.displayResult();
 		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
 		results.getRetSM().setPatters(patterns);
 		lastTimeStoped = true;

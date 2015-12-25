@@ -144,8 +144,9 @@ class PMTimerTask extends TimerTask{
 			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 					task.getDiscreteEndNodes());
 		}
-		dataItems=DataPretreatment.changeDataToProb(dataItems);
-		
+		if(task.getMiningObject().equals("pathprob")){
+			dataItems=DataPretreatment.changeDataToProb(dataItems);
+		}
 		results.setInputData(dataItems);
 
 		int dimension = task.getDiscreteDimension();

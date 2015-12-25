@@ -5,12 +5,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
+import cn.InstFS.wkr.NetworkMining.DataInputs.MergeSegment;
+import cn.InstFS.wkr.NetworkMining.DataInputs.Segment;
+import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
@@ -29,24 +34,25 @@ public class SequencePatterns {
 	private TaskElement task;
 	private List<ArrayList<String>> patterns;
 	private int winSize = 100; // 单位为秒
-	private int stepSize = 50;
+	private int stepSize = 10;
 	private int clusterNum = 10;
 	private Date minDate = null;
-	private double threshold = 0.25;
+	private double threshold = 0.4;
 
 	public static void main(String[] args) {
 		TaskElement task = new TaskElement();
-		task.setSourcePath("D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\data\\smtpPcap");
+		task.setSourcePath("./configs/real-1-11.csv");
 		task.setDataSource("Text");
 		task.setTaskRange(TaskRange.NodePairRange);
 		task.setFilterCondition("protocol=" + "402");  //402 --- 410都可以
 		task.setGranularity(3600);
 		task.setMiningObject("traffic");
 
-		String ip[] = new String[] { "10.0.1.1", "10.0.1.5" };
+		String ip[] = new String[] { "10.0.1.1", "10.0.1.2" };
 		IReader reader = new nodePairReader(task, ip);
 		DataItems tmp = reader.readInputByText();
 		DataItems dataItems = new DataItems();
+		DataItems clusterItems=new DataItems();
 		for (int k = 0; k < tmp.getLength(); k++) {
 			DataItem dataItem = tmp.getElementAt(k);
 			dataItem.setData(String.valueOf(Double.valueOf(dataItem.getData()) / 2));
@@ -55,12 +61,12 @@ public class SequencePatterns {
 
 		dataItems = DataPretreatment.aggregateData(dataItems, 3600,
 				AggregateMethod.Aggregate_MEAN, false);
-		dataItems = DataPretreatment.toDiscreteNumbersAccordingToWaveform(
-				dataItems, task);
+		clusterItems = WavCluster.segmentSelfCluster(dataItems);
 		
 		List<ArrayList<String>> patternsResult = new ArrayList<ArrayList<String>>();
-		SequencePatterns sp = new SequencePatterns(dataItems, task,
+		SequencePatterns sp = new SequencePatterns(clusterItems, task,
 				patternsResult);
+		
 		sp.patternMining();
 		sp.displayResult();
 
@@ -72,7 +78,6 @@ public class SequencePatterns {
 
 	public SequencePatterns(DataItems dataItems, TaskElement task,
 			List<ArrayList<String>> patterns) {
-
 		this.dataItems = dataItems;
 		this.task = task;
 		this.patterns = patterns;
@@ -409,7 +414,7 @@ public class SequencePatterns {
 	/**
 	 * 打印返回的结果
 	 */
-	private void displayResult() {
+	public void displayResult() {
 		System.out.println("displayResult....   频繁项数据量为：" + patterns.size());
 		for (int i = 0; i < patterns.size(); i++) {
 			System.out.format("频繁项 %d  ", i);
@@ -464,6 +469,61 @@ public class SequencePatterns {
 
 	public void setStepSize(int stepSize) {
 		this.stepSize = stepSize;
+	}
+	/**
+	 * 打印聚类后 每个类标签包含的线段
+	 * @param clusterItems 聚类后的DataItems
+	 */
+	public void printClusterLabelTOLines(DataItems clusterItems,DataItems dataItems){
+		List<Integer> indexOfClusterItem=new ArrayList<Integer>();
+		int i=0;
+		for(Date time:clusterItems.getTime()){
+			for(;i<dataItems.getLength();i++){
+				if(time.equals(dataItems.getTime().get(i))){
+					indexOfClusterItem.add(i);
+					break;
+				}
+			}
+		}
+		for(int index:indexOfClusterItem){
+			System.out.print(index+",");
+		}
+		System.out.println();
+		HashMap<Integer, List<String>> map=new HashMap<Integer, List<String>>();
+		for(int label=0;label<99;label++){
+			for(int itemIndex=0;itemIndex<clusterItems.getLength();itemIndex++){
+				if(clusterItems.getData().get(itemIndex).equals(label+"")){
+					if(map.containsKey(label)){
+						List<String> list=map.get(label);
+						if(itemIndex==clusterItems.getLength()-1){
+							list.add(indexOfClusterItem.get(itemIndex)+","+dataItems.getLength());
+						}else{
+							list.add(indexOfClusterItem.get(itemIndex)+","+indexOfClusterItem.get(itemIndex+1));
+						}
+						map.put(label, list);
+					}else{
+						List<String> list=new ArrayList<String>();
+						if(itemIndex==clusterItems.getLength()-1){
+							list.add(indexOfClusterItem.get(itemIndex)+","+dataItems.getLength());
+						}else{
+							list.add(indexOfClusterItem.get(itemIndex)+","+indexOfClusterItem.get(itemIndex+1));
+						}
+						map.put(label, list);
+					}
+				}
+			}
+		}
+		
+		
+		Iterator<Entry<Integer, List<String>>> iterator=map.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<Integer, List<String>>entry=iterator.next();
+			System.out.print(entry.getKey());
+			for(String item:entry.getValue()){
+				System.out.print(":"+item);
+			}
+			System.out.println();
+		}
 	}
 	
 }

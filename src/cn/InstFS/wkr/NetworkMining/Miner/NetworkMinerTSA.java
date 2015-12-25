@@ -162,7 +162,7 @@ class TSATimerTask extends TimerTask{
 			textUtils.writeOutput(dataItems);
 			tsaMethod=new NeuralNetwork(task.getSourcePath()+task.getMiningObject(), dataItems.getLastTime(), task);
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ARIMATSA)){
-			tsaMethod=new ARIMATSA(task, dataItems, 5);
+			tsaMethod=new ARIMATSA(task, dataItems, 10);
 		}else{
 			throw new RuntimeException("方法不存在！");
 		}

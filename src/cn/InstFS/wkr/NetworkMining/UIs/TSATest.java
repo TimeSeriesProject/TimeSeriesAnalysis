@@ -41,7 +41,7 @@ public class TSATest extends JPanel  implements IResultsDisplayer{
 	}
 	
 	public void testMinerTSA(){
-		TaskElement task = TaskElement.TSAExample;
+		TaskElement task = TaskElement.TSAExample1;
 		TaskElement.add1Task(task,false);	
 		//TaskElement.add1Task(task, false);
 		INetworkMiner miner = NetworkMinerFactory.getInstance().createMiner(task);
