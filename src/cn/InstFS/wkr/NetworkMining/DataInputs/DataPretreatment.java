@@ -468,12 +468,14 @@ public class DataPretreatment {
 	public static DataItems toDiscreteNumbersAccordingToWaveform(DataItems dataItems,TaskElement task)
 	{
 		
-		return WavCluster.waveTest(dataItems,task);
+		//return WavCluster.waveTest(dataItems,task);
+		return WavCluster.waveSelfCluster(dataItems);
 	}
 	
 	
 	public static DataItems toDiscreteNumbersAccordingToSegment(DataItems dataItems,TaskElement task)
 	{
-		return WavCluster.segmentTest(dataItems, task);
+		//return WavCluster.segmentTest(dataItems, task);
+		return WavCluster.segmentSelfCluster(dataItems);
 	}
 }
