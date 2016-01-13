@@ -34,6 +34,16 @@ public class nodePairReader implements IReader {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 	String[] ipPair;
 	boolean textSource;
+	private String filePath;
+	
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
+
 	public nodePairReader(TaskElement task,String[] ipPair) {
 		this.task=task;
 		this.ipPair=ipPair;
@@ -201,7 +211,13 @@ public class nodePairReader implements IReader {
 	public DataItems readInputByText() {
 		DataItems dataItems=new DataItems();
 		String minierObject=task.getMiningObject();
-		File sourceFile=new File(task.getSourcePath());
+		File sourceFile=null;
+		if(filePath==null||filePath.equals("")){
+			sourceFile=new File(task.getSourcePath());
+			
+		}else{
+			sourceFile=new File(filePath);
+		}
 		if(sourceFile.isFile()){
 			for(String ip:ipPair){
 				if(isFileContainsIp(ip, sourceFile.getName())){
@@ -267,7 +283,12 @@ public class nodePairReader implements IReader {
 	public DataItems readInputByText(String[] conditions) {
 		DataItems dataItems=new DataItems();
 		String minierObject=task.getMiningObject();
-		File sourceFile=new File(task.getSourcePath());
+		File sourceFile=null;
+		if(filePath==null||filePath.equals("")){
+			sourceFile=new File(task.getSourcePath());
+		}else{
+			sourceFile=new File(filePath);
+		}
 		if(sourceFile.isFile()){
 			boolean isExist=false;
 			for(String ip:ipPair){
@@ -383,7 +404,7 @@ public class nodePairReader implements IReader {
 		String line=null;
 		boolean fixCondition=true;
 
-		if(minierObject.equals("path")||minierObject.equals("PATH")||minierObject.equals("Path")){
+		if(minierObject.contains("path")||minierObject.contains("PATH")||minierObject.contains("Path")){
 			dataItems.setIsAllDataDouble(-1);
 			Map<Integer, Integer> map=new HashMap<Integer, Integer>();
 			List<Map.Entry<Integer, Integer>> mapList=new ArrayList<Map.Entry<Integer,Integer>>();
@@ -444,8 +465,15 @@ public class nodePairReader implements IReader {
 							}
 						}
 					}
+					int start=1;
+					
 					for(Map.Entry<Integer, Integer> entry:mapList){
+						int pos=entry.getValue();
+						for(int i=start;i<pos;i++){
+							sb.append("*").append(",");
+						}
 						sb.append(entry.getKey()).append(",");
+						start=entry.getValue()+1;
 					}
 					for(String ip:ipPair){
 						if(ip.endsWith("0")){

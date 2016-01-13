@@ -7,33 +7,53 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
+
+
+
+
+
+
+
+
+import associationRules.AssociationRuleMain;
+import associationRules.Rule;
 import ca.pfv.spmf.algorithms.frequentpatterns.fpgrowth_with_strings.AlgoFPGrowth_Strings;
 import ca.pfv.spmf.algorithms.sequentialpatterns.clospan_AGP.items.Sequences;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataInputUtils;
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
+import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
+import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsSM;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.ITaskDisplayer;
 import cn.InstFS.wkr.NetworkMining.UIs.MainFrame;
+import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
 public class NetworkMinerFP implements INetworkMiner {
 
 	TaskElement task;
 	MinerResults results;
+	IResultsDisplayer displayer;
 	
 	Timer timer;
 	FPTimerTask timerTask;
 	
 	boolean isStarted;
+	private IReader reader;
 	
-	public NetworkMinerFP(TaskElement task) {
+	public NetworkMinerFP(TaskElement task,IReader reader) {
 		this.task = task; 
+		this.reader=reader;
 	}
 	@Override
 	public boolean start() {
@@ -44,7 +64,7 @@ public class NetworkMinerFP implements INetworkMiner {
 		}
 		timer = new Timer();
 		results = new MinerResults(this);
-		timerTask = new FPTimerTask(task, results);
+		timerTask = new FPTimerTask(task, results,displayer,reader);
 		timer.scheduleAtFixedRate(timerTask, new Date(), 2000);
 		isStarted = true;
 		task.setRunning(true);
@@ -93,10 +113,15 @@ class FPTimerTask extends TimerTask{
 	private static boolean lastTimeStoped = true;
 	private MinerResults results;
 	private TaskElement task;
+	private IResultsDisplayer displayer;
+	private IReader reader;
+	private boolean isRunning = false;
 
-	FPTimerTask(TaskElement task, MinerResults results){
+	FPTimerTask(TaskElement task, MinerResults results,IResultsDisplayer displayer,IReader reader){
 		this.task = task;
 		this.results = results;
+		this.displayer=displayer;
+		this.reader=reader;
 	}
 	public static void setLastTimeStoped(boolean lastTimeStoped) {
 		FPTimerTask.lastTimeStoped = lastTimeStoped;
@@ -108,13 +133,47 @@ class FPTimerTask extends TimerTask{
 			return;
 		}
 		lastTimeStoped = false;
-		DataInputUtils di = new DataInputUtils(task);
-		DataItems data = di.readInput();
-		
-		
+		isRunning=true;
+		results.setDateProcess(UtilsSimulation.instance.getCurTime());
+		String[] filePath=task.getSourcePath().split(",");
+		((nodePairReader)reader).setFilePath(filePath[0]);
+		DataItems dataItems1=reader.readInputByText();
+		((nodePairReader)reader).setFilePath(filePath[1]);
+		DataItems dataItems2=reader.readInputByText();
+		if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
+			dataItems1=DataPretreatment.aggregateData(dataItems1, task.getGranularity(), 
+					task.getAggregateMethod(), !dataItems1.isAllDataIsDouble());
+			dataItems2=DataPretreatment.aggregateData(dataItems2, task.getGranularity(), 
+					task.getAggregateMethod(), !dataItems2.isAllDataIsDouble());
+		}
+		if(!task.getDiscreteMethod().equals(DiscreteMethod.None)){
+			dataItems1=DataPretreatment.toDiscreteNumbers(dataItems1, task.getDiscreteMethod(), task.getDiscreteDimension(), task.getDiscreteEndNodes());
+			dataItems2=DataPretreatment.toDiscreteNumbers(dataItems2, task.getDiscreteMethod(), task.getDiscreteDimension(), task.getDiscreteEndNodes());
+		}
+		AssociationRuleMain associationRule=new AssociationRuleMain();
+		associationRule.miningRules(dataItems1, dataItems2);
+		System.out.println(associationRule.rules);
+		StringBuilder sb=new StringBuilder();
+		for(Rule rule:associationRule.rules){
+			sb.append(rule.source);
+			Set<Integer>set=rule.times;
+			for(int index:set){
+				sb.append(":").append(index).append(",").append(index+1);
+			}
+			System.out.println(sb.toString());
+			sb.delete(0, sb.length());
+		}
+		for(Rule rule:associationRule.rules){
+			sb.append(rule.target);
+			Set<Integer>set=rule.times;
+			for(int index:set){
+				sb.append(":").append(index).append(",").append(index+1);
+			}
+			System.out.println(sb.toString());
+			sb.delete(0, sb.length());
+		}
 		synchronized (results) {
-//			results.getRetSM().setStrForcasts(strForcasts);
-//			results.getRetSM().setStrRules(strRules);
+			//TODO
 		}	
 		lastTimeStoped = true;		
 		if (UtilsUI.autoChangeResultsPanel ||

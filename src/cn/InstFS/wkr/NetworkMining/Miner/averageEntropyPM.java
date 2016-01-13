@@ -92,7 +92,7 @@ public class averageEntropyPM implements IMinerPM{
 			throw new RuntimeException("平均熵算法要求数据离散化");
 		}
 		int numItems=di.getLength();
-		int maxPeriod = (numItems/2>100)?100:numItems/2;
+		int maxPeriod = (numItems/2>300)?300:numItems/2;
 		if (numItems == 0)
 			return;
 		if(di.isAllDataIsDouble()){
@@ -126,7 +126,7 @@ public class averageEntropyPM implements IMinerPM{
 		
         startTime = times.get(0);
 		int period=1;
-		int maxPeriod = Math.min(numItems/2, 100);
+		int maxPeriod = Math.min(numItems/2, 300);
 		entropies = new Double[maxPeriod];
 		while((period+1)<= maxPeriod){
 			period++;	//周期递加
@@ -229,25 +229,58 @@ public class averageEntropyPM implements IMinerPM{
 	
 	private boolean isPeriod(Double[] Entropies,int index){
 		boolean period=true;
+		if(index==2){
+			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.1){
+				if(!nextPeriod(Entropies, index)){
+					period=false;
+				}
+			}else{
+				period=false;
+			}
+		}else if(index==Entropies.length){
+			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.1){
+				if(!nextPeriod(Entropies, index)){
+					period=false;
+				}
+			}else{
+				period=false;
+			}
+		}else{
+            if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.1&&
+            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.1){
+            	if(!nextPeriod(Entropies, index)){
+					period=false;
+				}
+			}else{
+				period=false;
+			}
+		}
+		return period;
+	}
+	
+	private boolean nextPeriod(Double[] Entropies,int index){
 		int i=index;
-		while(i<=Entropies.length){
+		boolean period=true;
+		int num=0;
+		while(i<=Entropies.length&&num<3){
 			if(i==2){
-				if(Entropies[i-1]-Entropies[i]>=-0.05){
+				if(Entropies[i-1]-Entropies[i]>0){
 					period=false;
 					break;
 				}
 			}else if(i==(Entropies.length)){
-				if(Entropies[i-1]-Entropies[i-2]>=-0.05){
+				if(Entropies[i-1]-Entropies[i-2]>0){
 					period=false;
 					break;
 				}
 			}else{
-				if(Entropies[i-1]-Entropies[i-2]>=-0.05||Entropies[i-1]-Entropies[i]>=-0.05){
+				if(Entropies[i-1]-Entropies[i-2]>0||Entropies[i-1]-Entropies[i]>0){
 					period=false;
 					break;
 				}
 			}
 			i+=index;
+			num++;
 		}
 		return period;
 	}

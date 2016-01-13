@@ -15,7 +15,7 @@ import oracle.net.aso.k;
 public class TCPStreamPool {
 	private Map<String, TCPStream> streams=new HashMap<String, TCPStream>();
 	private Map<String, TCPStream> aliveStreams=new HashMap<String, TCPStream>();
-	private String saveFile="E:\\data\\";
+	private String saveFile="E:\\degreeData\\";
 	private FileWriter writer;
 	private Random rand;
 	public TCPStreamPool(String fileName){

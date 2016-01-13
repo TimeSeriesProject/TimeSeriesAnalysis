@@ -55,7 +55,7 @@ public abstract class IParamsNetworkMining {
 						Class cls = descs[j].getPropertyType();
 						Object val = null;
 						if (cls.equals(Integer.class) || cls.equals(int.class))
-							val = Integer.parseInt(strs1[1]);
+							val = Integer.parseInt(strs1[1].split("\\.")[0]);
 						else if (cls.equals(Double.class) || cls.equals(double.class))
 							val = Double.parseDouble(strs1[1]);
 						else if(cls.equals(Date.class))

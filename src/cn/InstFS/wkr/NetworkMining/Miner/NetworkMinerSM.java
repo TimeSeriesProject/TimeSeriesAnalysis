@@ -16,6 +16,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.ResultItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.ITaskDisplayer;
 import cn.InstFS.wkr.NetworkMining.UIs.MainFrame;
@@ -138,9 +139,11 @@ class SMTimerTask extends TimerTask {
 			dataItems=DataPretreatment.aggregateData(dataItems, task.getGranularity(), 
 					task.getAggregateMethod(), !dataItems.isAllDataIsDouble());
 		}
-		
+		if(!task.getDiscreteMethod().equals(DiscreteMethod.None)){
+			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(), task.getDiscreteEndNodes());
+		}
 		//符号化后的序列
-		DataItems clusterItems=WavCluster.segmentSelfCluster(dataItems);
+		DataItems clusterItems=WavCluster.SelfCluster(dataItems, 24, 2);
 		results.setInputData(clusterItems);
 		
 		SequencePatterns sequencePattern=new SequencePatterns();

@@ -216,6 +216,7 @@ public class TEOPartern implements IMinerTSA{
 					simility=mergePointDistance(pattern, items);
 					if(simility>=threshold){
 						//设置下一个Pattern的起始位置，之所以减一是因为for循环一次 i要加1
+						//i=pattern.getEnd()-1;
 						i=pattern.getEnd()-1;
 						break;
 					}else{
@@ -226,6 +227,7 @@ public class TEOPartern implements IMinerTSA{
 					}
 				}else{
 					//序列拟合完毕
+					//i=pattern.getEnd()-1;
 					i=pattern.getEnd()-1;
 					break;
 				}
@@ -545,7 +547,11 @@ public class TEOPartern implements IMinerTSA{
 		for(int i=0;i<patterns.size();i++){
 			List<Integer> pos=new ArrayList<Integer>();
 			List<Double> dist=new ArrayList<Double>();
+			if(patterns.get(i).getStart()==972){
+				System.out.println();
+			}
 			for(int j=0;j<patterns.size();j++){
+				
 				if(i==j){
 					continue;
 				}else{
@@ -595,11 +601,15 @@ public class TEOPartern implements IMinerTSA{
 //			}
 //			index++;
 //		}
+		int lastPof=0;
 		for(Patterns pattern:patterns){
 
 			if(!patternReachMap.containsKey(pattern)){
 				patternOutliesMap.put(pattern, 1.0);
-				System.out.println(pattern.getStart()+","+pattern.getEnd()+",1.0");
+				for(int i=pattern.getStart();i<pattern.getEnd();i++){
+					System.out.print(10+",");
+				}
+				lastPof=10;
 			}else{
 				double pof=0.0;
 				List<Patterns> neighborPatterns=patternMap.get(pattern);
@@ -614,15 +624,10 @@ public class TEOPartern implements IMinerTSA{
 				for(int i=pattern.getStart();i<pattern.getEnd();i++){
 					System.out.print((int)(10*Math.max(1-pof, 0))+",");
 				}
-				//System.out.println(pattern.getStart()+"-"+pattern.getEnd()+" "+Math.max(1-pof, 0));
-//				if(Math.max(1-pof, 0)>0.6){
-//					System.out.println(pattern.getStart()+"-"+pattern.getEnd()+" "+Math.max(1-pof, 0));
-//					for(int j=pattern.getStart();j<=pattern.getEnd();j++){
-//						System.out.print(j+",");
-//					}
-//				}
+				lastPof=(int)(10*Math.max(1-pof, 0));
 			}
 		}
+		System.out.print(lastPof);
 	}
 	
 	/**
@@ -866,7 +871,7 @@ public class TEOPartern implements IMinerTSA{
 		//timeSeriesToPatternsByTEO();
 		//timeSeriesToPatternsByIEO();
 		//timeSeriesToPatterns();
-		timeSeriesToPatternByStep(50);
+		timeSeriesToPatternByStep(5000);
 		outliesDectation();
 	}
 

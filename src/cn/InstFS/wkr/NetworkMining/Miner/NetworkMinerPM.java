@@ -4,8 +4,10 @@
  */
 package cn.InstFS.wkr.NetworkMining.Miner;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -119,12 +121,10 @@ class PMTimerTask extends TimerTask{
 	@Override
 	
 	public void run() {
-		if (isRunning){
-			System.out.println(task.getTaskName() + " --> Still Running");
-			
-			
-			return;
-		}
+//		if (isRunning){
+//			System.out.println(task.getTaskName() + " --> Still Running");
+//			return;
+//		}
 //		if (UtilsSimulation.instance.isPaused())
 //			return;
 		results.setDateProcess(UtilsSimulation.instance.getCurTime());
@@ -135,6 +135,29 @@ class PMTimerTask extends TimerTask{
 		// 读取数据
 		DataItems dataItems = null;
 		dataItems=reader.readInputByText();
+		results.setInputData(dataItems);
+		Map<String, MinerResultsPM> retPmMap=new HashMap<String, MinerResultsPM>();
+		if(dataItems.getData().size()==0&&dataItems.getNonNumData().size()!=0){
+			for(String var:dataItems.varSet){
+				DataItems varItems=new DataItems();
+				varItems.setTime(dataItems.getTime());
+				List<String> data=new ArrayList<String>();
+				for(int i=0;i<dataItems.getLength();i++){
+					if(dataItems.NonNumData.get(i).containsKey(var)){
+						data.add("1");
+					}else{
+						data.add("0");
+					}
+				}
+				varItems.setData(data);
+				PMDetect(varItems,retPmMap,var);
+			}
+		}else{
+			PMDetect(dataItems,retPmMap,task.getMiningObject());
+		}
+	}
+	
+	private void PMDetect(DataItems dataItems,Map<String, MinerResultsPM> retPmMap,String MiningItem){
 		if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
 			dataItems=DataPretreatment.aggregateData(dataItems, task.getGranularity(), task.getAggregateMethod(),
 					!dataItems.isAllDataIsDouble());
@@ -144,24 +167,22 @@ class PMTimerTask extends TimerTask{
 			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 					task.getDiscreteEndNodes());
 		}
-		if(task.getMiningObject().equals("pathprob")){
-			dataItems=DataPretreatment.changeDataToProb(dataItems);
+		for(int i=0;i<dataItems.getLength();i++){
+			System.out.print(dataItems.getData().get(i).split("\\.")[0]+",");
 		}
-		results.setInputData(dataItems);
-
 		int dimension = task.getDiscreteDimension();
 		dimension = Math.max(task.getDiscreteDimension(), dataItems.getDiscretizedDimension());
 		IMinerPM pmMethod=null;
 		if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_averageEntropyPM)){
-			pmMethod=new averageEntropyPM(task, dimension,paramsPM.getPeriodThreshold());
+			pmMethod=new averageEntropyPM(task, dimension);
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
 			pmMethod=new ERPDistencePM();
 		}else{
 			throw new RuntimeException("方法不存在！");
 		}
+		
 		pmMethod.setDataItems(dataItems);
 		pmMethod.predictPeriod();
-		results.setInputData(dataItems);
 		
 		if(dataItems.isAllDataIsDouble()){
 			MinerResultsPM retPM = results.getRetPM();
@@ -175,8 +196,8 @@ class PMTimerTask extends TimerTask{
 			if(pmMethod.hasPeriod()){
 				System.out.println("周期值 "+pmMethod.getPredictPeriod());
 			}
+			retPmMap.put(MiningItem, retPM);
 		}else{
-			Map<String, MinerResultsPM> retPmMap=new HashMap<String, MinerResultsPM>();
 			Set<String>itemSet=dataItems.getVarSet();
 			for(String item:itemSet){
 				if(pmMethod.getHasPeriodOfNonNumDataItms().get(item)==null){
@@ -196,15 +217,8 @@ class PMTimerTask extends TimerTask{
 			}
 		}
 		
-		
-		
-//		DiscretePM discretePM=new DiscretePM(task,dimension, paramsPM.getPeriodThreshold());
-//		discretePM.setDataItems(dataItems);
-//		discretePM.predictBySeqSimility();//计算周期值
-//		results.setInputData(discretePM.getDi());
-		
 		isRunning = false;
 		if (displayer != null)
 			displayer.displayMinerResults(results);
-	}	
+	}
 }

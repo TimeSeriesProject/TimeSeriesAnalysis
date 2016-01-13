@@ -133,10 +133,12 @@ public class DataPretreatment {
 		Iterator<Map.Entry<String, Integer>> mapIter=null;
 		for(Map<String, Integer> map:datas){
 			Map<String, Double> probMap=new HashMap<String, Double>();
+			Map<String, Double> transMap=new HashMap<String, Double>();
+			transPathMapTotranslateProbMap(map,transMap);
 			mapIter=map.entrySet().iterator();
 			while(mapIter.hasNext()){
 				Entry<String,Integer> entry=mapIter.next();
-				double pathPossi=getPathProb(map,entry.getKey());
+				double pathPossi=getPathProb(transMap,entry.getKey());
 				probMap.put(entry.getKey(), pathPossi);
 			}
 			dataOut.getProbMap().add(probMap);
@@ -146,6 +148,76 @@ public class DataPretreatment {
 		dataOut.setVarSet(dataItems.getVarSet());
 		return dataOut;
 	}
+	/**
+	 * 获取DataItems路径中路由器的转移概率,并存储转移概率到文件中，
+	 * 文件名为路径的“源IP-目的IP”
+	 * @param dataItems
+	 * @return 转移概率
+	 */
+	public static Map<String, Double> translateProbilityOfData(DataItems dataItems){
+		Map<String, Double> transProbMap=new HashMap<String, Double>();
+		String fileName;
+		int len = dataItems.getLength();
+		if (dataItems == null ||  len == 0)
+			return null;
+		List<Map<String, Integer>> datas=dataItems.getNonNumData();
+		String firstPath=datas.get(0).keySet().iterator().next();
+		String[] firstPathNodes=firstPath.split(",");
+		fileName="translateProbOf"+firstPathNodes[0]+"-"+firstPathNodes[firstPathNodes.length-1]+".csv";
+		Map<String, Integer> routeMap=new HashMap<String, Integer>();
+		for(Map<String, Integer> map:datas){
+			Iterator<Map.Entry<String, Integer>> mapIter=map.entrySet().iterator();
+			while(mapIter.hasNext()){
+				Entry<String, Integer> entry=mapIter.next();
+				if(routeMap.containsKey(entry.getKey())){
+					int value=map.get(entry.getKey());
+					routeMap.remove(entry.getKey());
+					value+=entry.getValue();
+					routeMap.put(entry.getKey(), value);
+				}else{
+					routeMap.put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+		transPathMapTotranslateProbMap(routeMap,transProbMap);
+		TextUtils utils=new TextUtils();
+		utils.writeMap(transProbMap, "./configs/"+fileName);
+		return transProbMap;
+	}
+	/**
+	 * 求出所有通信路径中的状态转移概率
+	 * @param map 通信路径Map 每条路径是Key值，路径出现的次数是Value值
+	 * @param probMap 返回的路由节点转移概率 如Entry<"A,B",0.5>  表示从A路由到B路由的概率为0.5
+	 */
+	private static void transPathMapTotranslateProbMap(Map<String, Integer> map,Map<String, Double> probMap){
+		int sum=sumMap(map);
+		Iterator<Entry<String, Integer>>iterator=map.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<String, Integer>entry=iterator.next();
+			String path=entry.getKey();
+			if(((entry.getValue()*1.0)/(sum*1.0))<0.005){
+				continue;
+			}
+			String[] pathNodes=path.split(","); //路径上的节点
+			//路径概率计算服从一阶Markov模型 所以 P(A,B,C,D,E)=P(A)*P(B|A)*P(C|B)*P(D|C)*P(E|D)
+			StringBuilder sb=new StringBuilder();
+			for(int i=0;i<pathNodes.length-1;i++){
+				sb.delete(0, sb.length());
+				sb.append(pathNodes[i]);
+				String node=pathNodes[i];
+				while(pathNodes[i+1].equals("*")){
+					sb.append(",").append("*");
+					i++;
+				}
+				sb.append(",").append(pathNodes[i+1]);
+				if(!probMap.containsKey(sb.toString())){
+					int nodeNum=containsNodesPathNum(map,node);
+					int pathNum=containsNodesPathNum(map,sb.toString());
+					probMap.put(sb.toString(),(pathNum*1.0)/(nodeNum*1.0));
+				}
+			}
+		}
+	}
 	
 	/**
 	 * 根据历史路径信息，计算给定路径出现的概率
@@ -153,26 +225,26 @@ public class DataPretreatment {
 	 * @param path 要计算出现概率的路径
 	 * @return 该路径的概率
 	 */
-	private static double getPathProb(Map<String, Integer> map,String path){
-		int sum=sumMap(map);
+	public static double getPathProb(Map<String, Double> map,String path){
 		String[] pathNodes=path.split(","); //路径上的节点
-		double possiblity=1.0;              //这条路径的概率
-		double[] eachNodePossi=new double[pathNodes.length-1];   //路径每个节点出现概率  即先验概率P(X)
-		double[] neighborNodePossi=new double[pathNodes.length-1];  //相邻节点出现概率  即联合概率P(X,Y)
-		double[] conditionalPossi=new double[pathNodes.length-1];  //条件概率 即P(Y|X)
-		for(int i=0;i<pathNodes.length-1;i++){
-			int nodeNum=containsNodesPathNum(map,pathNodes[i]);
-			eachNodePossi[i]=(nodeNum*1.0)/sum;
-		}
-		possiblity*=eachNodePossi[0];
 		//路径概率计算服从一阶Markov模型 所以 P(A,B,C,D,E)=P(A)*P(B|A)*P(C|B)*P(D|C)*P(E|D)
+		StringBuilder sb=new StringBuilder();
+		double prob=1.0;
 		for(int i=0;i<pathNodes.length-1;i++){
-			int nodeNum=containsNodesPathNum(map,pathNodes[i]+","+pathNodes[i+1]);
-			neighborNodePossi[i]=(nodeNum*1.0)/sum;
-			conditionalPossi[i]=neighborNodePossi[i]/eachNodePossi[i];
-			possiblity*=conditionalPossi[i];
+			sb.delete(0, sb.length());
+			sb.append(pathNodes[i]);
+			while(pathNodes[i+1].equals("*")){
+				sb.append(",").append("*");
+				i++;
+			}
+			sb.append(",").append(pathNodes[i+1]);
+			if(map.containsKey(sb.toString())){
+				prob*=map.get(sb.toString());
+			}else{
+				return 0;
+			}
 		}
-		return possiblity;
+		return prob;
 	}
 	
 	/**
@@ -226,6 +298,21 @@ public class DataPretreatment {
 		}
 		return sum;
 	}
+	/**
+	 * 计算路径中经过多少个位置路由器节点
+	 * @param path 经过的路径
+	 * @return 位置路由器节点数
+	 */
+	private static int blankRouteNum(String path){
+		String[] nodes=path.split(",");
+		int routeNum=0;
+		for(String node:nodes){
+			if (node.equals("*")) {
+				routeNum++;
+			}
+		}
+		return routeNum;
+	}
 	
 	//datItems在相同的时间粒度上的聚合
 	public static DataItems aggregateData(DataItems di,int granularity,
@@ -247,6 +334,7 @@ public class DataPretreatment {
 		
 //		Date t = t1;									// 聚合后的时间点
 		int i=0;
+		int  flag=0;
 		for(;!t1.after(times.get(times.size()-1));t1=t2,t2 = getDateAfter(t2, granularity * 1000))
 		{
 			
@@ -283,7 +371,12 @@ public class DataPretreatment {
 //				else
 //					dataOut.add1Data(t1, "");
 				dataOut.add1Data(t1, valsStr);
+				flag++;
+				if(flag==2160){
+					System.out.println();
+				}
 				valsStr.clear();
+				System.out.println();
 			}else{
 				Double[] valsArray = vals.toArray(new Double[0]);
 				
@@ -350,9 +443,6 @@ public class DataPretreatment {
 		newDataItems.setDiscreteNodes(discreteNodes);
 		int len = dataItems.getLength();
 		for (int i = 0; i < len; i ++){		
-			if(i==220){
-				System.out.println("here");
-			}
 			if(dataItems.isAllDataIsDouble()){
 		    	newDataItems.add1Data(dataItems.getTime().get(i),
 		        getIndexOfData(numDims,Double.parseDouble(dataItems.getData().get(i)),newDataItems.getDiscreteNodes()));

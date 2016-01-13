@@ -426,6 +426,7 @@ class ItemDouble implements Comparable<ItemDouble>{
 class ItemTime implements Comparable<ItemTime>{
 	private Date time;
 	private String data;
+	private Map<String, Integer> NonNumData;
 	@Override
 	public int compareTo(ItemTime o) {
 		return this.getTimeInMill().compareTo(o.getTimeInMill());
@@ -443,6 +444,14 @@ class ItemTime implements Comparable<ItemTime>{
 		return data;
 	}
 	
+	public Map<String, Integer> getNonNumData() {
+		return NonNumData;
+	}
+
+	public void setNonNumData(Map<String, Integer> nonNumData) {
+		NonNumData = nonNumData;
+	}
+
 	public void setData(String data){
 		this.data=data;
 	}

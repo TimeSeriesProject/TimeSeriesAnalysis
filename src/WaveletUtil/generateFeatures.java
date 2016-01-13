@@ -82,9 +82,12 @@ public class generateFeatures {
 		double[] acf=connection.eval("atuoCorrelation$acf").asDoubles();
 		List<Integer> correlationIndex=new ArrayList<Integer>();
 		for(int i=0;i<acf.length;i++){
-			if(acf[i]>0.50&&acf[i]<1.0){
+			if(acf[i]>0.40&&acf[i]<0.99999){
 				correlationIndex.add(i);
 			}
+		}
+		if(correlationIndex.size()>20){
+			correlationIndex=correlationIndex.subList(0, 20);
 		}
 		int[] correlationIndexArray=new int[correlationIndex.size()];
 		for(int i=0;i<correlationIndex.size();i++){
@@ -100,7 +103,7 @@ public class generateFeatures {
 		double[] acf=connection.eval("atuoCorrelation$acf").asDoubles();
 		List<Integer> correlationIndex=new ArrayList<Integer>();
 		for(int i=0;i<acf.length;i++){
-			if(acf[i]>0.25&&acf[i]<1.0){
+			if(acf[i]>0.30&&acf[i]<0.99999){
 				correlationIndex.add(i);
 			}
 		}

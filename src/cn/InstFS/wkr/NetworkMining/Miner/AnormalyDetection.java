@@ -54,7 +54,7 @@ public class AnormalyDetection implements IMinerTSA {
 		}
      	for(int i=0;i < size;i++){
     		if(result.containsKey((long)i)){
-    			System.out.println(i+1);
+    			System.out.print(i+1+",");
     			outlies.add1Data(time.get(i), data.get(i));
     		}
     	}

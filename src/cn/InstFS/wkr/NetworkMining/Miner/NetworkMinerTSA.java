@@ -155,7 +155,7 @@ class TSATimerTask extends TimerTask{
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistTSA)){
 			tsaMethod=new ERPDistTSA(task,params.getPredictPeriod(),dataItems);
 		}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
-			tsaMethod=new TEOPartern(dataItems, 4, 4, 50);	
+			tsaMethod=new TEOPartern(dataItems, 4, 4, 7);	
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_NeuralNetworkTSA)){
 			TextUtils textUtils=new TextUtils();
 			textUtils.setTextPath(task.getSourcePath()+task.getMiningObject());

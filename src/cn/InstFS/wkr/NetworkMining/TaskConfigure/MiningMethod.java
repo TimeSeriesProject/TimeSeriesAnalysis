@@ -4,6 +4,7 @@ public enum MiningMethod {
 	MiningMethods_FrequenceItemMining("频繁项集挖掘"),
 	MiningMethods_SequenceMining("序列模式挖掘"),
 	MiningMethods_PeriodicityMining("周期模式发现"),
+	MiningMethods_PathProbilityMining("路径概率发现"),
 	MiningMethods_TsAnalysis("时间序列分析");
 	
 	private String value;

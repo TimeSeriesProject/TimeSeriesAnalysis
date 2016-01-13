@@ -34,15 +34,15 @@ public class RandomMarkovModel {
 	int size = 6;
 	public static void main(String[] args) {
 		TaskElement task = new TaskElement();
-		task.setSourcePath("./configs/real-1-65.csv");
+		task.setSourcePath("./configs/real-1-39.csv");
 		task.setDataSource("Text");
 		task.setTaskRange(TaskRange.NodePairRange);
 		//task.setFilterCondition("protocol=" + "402");  //402 --- 410都可以
 		task.setGranularity(3600);
 		task.setMiningObject("traffic");
 		task.setDiscreteMethod(DiscreteMethod.自定义端点);
-		task.setDiscreteEndNodes("200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400,3500,3600,3700,3800"
-				+ ",3900,4000,4100,4200,4300,4400,4500,4600,4700,4800,4900,5000,5100,5200,5300,5400,5500,5600,5700,5800,5900,6000,6100,6200,6300,6400,6500,6600,6700,6800,6900,7000");
+		task.setDiscreteEndNodes("1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000,12000,13000,14000,15000,16000,17000,18000,19000,20000,21000,22000,23000,24000,25000,26000,27000,28000,29000,30000,31000,32000,33000,34000,35000,36000,37000,38000"
+				+ ",39000,40000,41000,42000,43000,44000,45000,46000,47000,48000,49000,50000,51000,52000,53000,54000,55000,56000,57000,58000,59000,60000");
 
 		String ip[] = new String[] { "10.0.1.1" };
 		IReader reader = new nodePairReader(task, ip);

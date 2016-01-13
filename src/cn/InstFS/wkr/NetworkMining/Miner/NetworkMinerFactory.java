@@ -6,6 +6,7 @@ import java.util.Map;
 import cn.InstFS.wkr.NetworkMining.DataInputs.CWNetworkReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
+import cn.InstFS.wkr.NetworkMining.Exception.NoneSuchMinerMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
@@ -44,6 +45,12 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			miner = new NetworkMinerTSA(task,reader);
 		}else if (task.getMiningMethod().equals(MiningMethod.MiningMethods_PeriodicityMining)){
 			miner = new NetworkMinerPM(task,reader);
+		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_FrequenceItemMining)){
+			miner=new NetworkMinerFP(task, reader);
+		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_PathProbilityMining)){
+			miner=new NetwokerMinerPathProb(task, reader);
+		}else{
+			//TODO
 		}
 		allMiners.put(task, miner);
 		return miner;

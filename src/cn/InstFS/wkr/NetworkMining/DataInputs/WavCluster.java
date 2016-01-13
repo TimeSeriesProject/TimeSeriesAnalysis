@@ -16,7 +16,14 @@ import java.util.regex.Pattern;
 
 
 
+
+
+
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+
+import WaveletUtil.CheByDistance;
 import weka.clusterers.SimpleKMeans;
+import weka.core.ChebyshevDistance;
 import weka.core.EuclideanDistance;
 import weka.core.Instances;
 import weka.core.ManhattanDistance;
@@ -299,8 +306,10 @@ public class WavCluster {
 			ArffLoader arffloader	=	new	ArffLoader();
 			arffloader.setFile(new File(fileName+".arff"));
 			Instances dataset	=	arffloader.getDataSet();
-//			DistanceFunction disFun = new	ManhattanDistance();
-			kMeans.setDistanceFunction(new EuclideanDistance() );
+//			DistanceFunction disFun = new ManhattanDistance();
+			
+			kMeans.setDistanceFunction(new CheByDistance() );
+			//kMeans.setDistanceFunction(new ManhattanDistance());
 			kMeans.setNumClusters(clusternum);
 			kMeans.setMaxIterations(100);
 			kMeans.setPreserveInstancesOrder(preserveOrder);
@@ -464,7 +473,7 @@ public class WavCluster {
 		ArrayList<ArrayList<Double>> instances =new ArrayList<ArrayList<Double>>();
 		SimpleKMeans kMeans;
 		ArrayList<Segment> seglist = new ArrayList<Segment>();
-		MergeSegment mergeSegment=new MergeSegment(dataItems,0.3);
+		MergeSegment mergeSegment=new MergeSegment(dataItems,0.1);
 		seglist=mergeSegment.getSegmentList();
 		for(int j=0;j<seglist.size();j++)
 		{
@@ -498,6 +507,59 @@ public class WavCluster {
 		}
 		return result;
 	}
+	
+	/**
+	 * 对某段时间序列进行聚类，并返回聚类结果
+	 * @param dataItems 聚类元数据
+	 * @param size 每一类时间段的长度
+	 * @param clusterNum 聚类的类标签数量
+	 * @return 聚类之后的结果
+	 */
+	public static DataItems SelfCluster(DataItems dataItems,int size,int clusterNum)
+	{
+		DataItems result = new DataItems();
+		ArrayList<ArrayList<Double>> instances =new ArrayList<ArrayList<Double>>();
+		SimpleKMeans kMeans;
+		DataItem[] dataItemArray = new DataItem[dataItems.getLength()];
+		for(int i=0;i<dataItems.getLength()&&(i+size-1)<dataItems.getLength();i+=size)
+		{
+			ArrayList <Double> vector = new ArrayList<Double>();
+			DataItem dataItem = new DataItem();
+			dataItem.setTime(dataItems.getElementAt(i).getTime());
+			dataItemArray[i/size]= dataItem;
+			for(int j=i;j<i+size;j++)
+			{
+				double value=(Double.valueOf(dataItems.getElementAt(j).getData()));
+				vector.add(value);
+			}
+			instances.add(vector);
+
+		}
+		if(instances.size()==0)
+			return result;
+		kMeans = Kmeans(instances,clusterNum,"segmentSelfCluster",true);
+		try
+		{
+			int labels[]=kMeans.getAssignments();
+			
+			for(int i=0;i<labels.length;i++)
+			{
+				
+				DataItem dataItem =new DataItem();	
+				dataItem.setData(String.valueOf(labels[i]));
+				dataItem.setTime(dataItems.getTime().get(i*size));
+				result.add1Data(dataItem);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+//			throw new RuntimeException(e);
+			System.exit(0);
+		}
+		return result;
+	}
+	
 	/**
 	 * 得到聚类后的结果，以及每个符号对应的原始点序列
 	 * @param dataItems

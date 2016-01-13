@@ -36,7 +36,7 @@ public class NeuralNetwork implements IMinerTSA{
 		this.inputFilePath=inputFilePath;
 		this.task=task;
 		this.originDataEndTime=originDataEndTime;
-		this.predictPeriod=10;
+		this.predictPeriod=20;
 	}
 	
 	public NeuralNetwork(){}
@@ -71,7 +71,7 @@ public class NeuralNetwork implements IMinerTSA{
 			for(double learnRateIndex=learnRate;learnRateIndex<=0.4;learnRateIndex+=0.1){
 				for(double momentumIndex=momentum;momentumIndex<=0.3;momentumIndex+=0.1){
 					for(int seedIndex=seed;seedIndex<=1;seedIndex++){
-						for(int timeIndex=trianTime;timeIndex<=1000;timeIndex+=100){
+						for(int timeIndex=trianTime;timeIndex<=1000;timeIndex+=500){
 							classifier.setHiddenLayers("a");
 							classifier.setLearningRate(learnRateIndex);
 							classifier.setMomentum(momentumIndex);
@@ -105,18 +105,20 @@ public class NeuralNetwork implements IMinerTSA{
 			classifier.buildClassifier(trainInstances);
 			
 			int[] autoCorrelationIndex=features.getAutoCorrelation();
-			double[] items = new double[trianInstancesNum+testInstanceNum+predictPeriod];
+			int lastIndex=autoCorrelationIndex[autoCorrelationIndex.length-1];
+			double[] items = new double[trianInstancesNum+testInstanceNum+predictPeriod+lastIndex];
 			List<Date> time=new ArrayList<Date>();
 			Calendar calendar=Calendar.getInstance();
 			calendar.setTime(originDataEndTime);
-			for(int i=0;i<(trianInstancesNum+testInstanceNum);i++){
+			for(int i=0;i<(trianInstancesNum+testInstanceNum+lastIndex);i++){
 				items[i]=features.getItems()[i];
 			}
 			
 			
 			Attribute[] attributes=new Attribute[attrNum];
 			Instances instances=initializeAttribute(attributes);
-			for(int i=(trianInstancesNum+testInstanceNum);i<(trianInstancesNum+testInstanceNum+predictPeriod);i++){
+			
+			for(int i=(trianInstancesNum+testInstanceNum+lastIndex);i<(trianInstancesNum+testInstanceNum+lastIndex+predictPeriod);i++){
 				double[] values=new double[instances.numAttributes()];
 				for(int j=0;j<attrNum-1;j++){
 					double value=items[i-autoCorrelationIndex[j]];
@@ -128,10 +130,11 @@ public class NeuralNetwork implements IMinerTSA{
 				Instance inst=new DenseInstance(1.0, values);
 				instances.add(inst);
 				double forecastValue=classifier.classifyInstance(instances.get(0));
-				System.out.print(forecastValue+",");
+				System.out.print((int)(forecastValue)+",");
 				items[i]=forecastValue;
 				instances.delete(0);
 			}
+			System.out.println(trianInstancesNum+testInstanceNum+lastIndex);
 			List<String> data=new ArrayList<String>();
 			for(int i=(trianInstancesNum+testInstanceNum);i<(trianInstancesNum+testInstanceNum+predictPeriod);i++){
 				data.add(items[i]+"");

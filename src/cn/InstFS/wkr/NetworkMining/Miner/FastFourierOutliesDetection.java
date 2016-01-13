@@ -23,8 +23,8 @@ public class FastFourierOutliesDetection implements IMinerTSA {
     private static FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
     private static double[] original; // 未变换之前的数据
     private static double[] denoisedslicezz;//变换之后的数据
-    private static double varK = 1.5;
-    private static double amplitudeRatio = 0.9;
+    private static double varK = 3.0;
+    private static double amplitudeRatio = 0.8;
     private DataItems di;
     private DataItems outlies;
     
@@ -208,18 +208,28 @@ public class FastFourierOutliesDetection implements IMinerTSA {
 			AnomalyDetection(prediction_curTime);
 		}
 		
-		
-		for(int i=(int)(size-Math.pow(2, 8)-1);i<size;i++){
-			dataSlice.clear();
-			timeSlice.clear();
+		DataItems prediction_curTime = new DataItems();
+		dataSlice.clear();
+		timeSlice.clear();
+		for(int i=(int)(size-Math.pow(2, 8));i<size;i++){
 			dataSlice.add(data.get(i));
 			timeSlice.add(time.get(i));
-			DataItems prediction_curTime = null;
-			curData= FFTfilter(dataSlice,amplitudeRatio);
-			prediction_curTime = new DataItems();
-			prediction_curTime.setTime(timeSlice);
-			prediction_curTime.setData(curData);
-			AnomalyDetection(prediction_curTime);
+		}
+		curData= FFTfilter(dataSlice,amplitudeRatio);
+		prediction_curTime.setTime(timeSlice);
+		prediction_curTime.setData(curData);
+		AnomalyDetection(prediction_curTime);
+		
+		int outlength=outlies.getLength();
+		int dataLen=time.size();
+		int i=0;
+		for(int j=0;j<outlength;j++){
+			for(;i<dataLen;i++){
+				if(time.get(i).equals(outlies.getTime().get(j))){
+					System.out.print(i+1+",");
+					break;
+				}
+			}
 		}
 		
 	}

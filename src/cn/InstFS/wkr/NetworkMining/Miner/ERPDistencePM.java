@@ -2,16 +2,20 @@ package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import oracle.net.aso.k;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import com.sun.jna.platform.unix.X11.XClientMessageEvent.Data;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import ec.nbdemetra.x13.ui.X13ViewFactory.DTablesFactory;
 
 public class ERPDistencePM implements IMinerPM {
 	private int[][] distMatrix;
@@ -63,7 +67,7 @@ public class ERPDistencePM implements IMinerPM {
 		if(numItems==0){
 			return;
 		}
-		int maxPeriod = (numItems/2>300)?300:numItems/2;
+		int maxPeriod = (numItems/2>300)?300:(numItems/2);
 		if(di.isAllDataIsDouble()){
 			List<String> seq=new ArrayList<String>();
 			for(int i=0;i<numItems;i++){
@@ -77,48 +81,25 @@ public class ERPDistencePM implements IMinerPM {
 			isPeriodExist(maxPeriod,null,seq);
 		}else{
 			List<Map<String, Integer>> nonnumData=di.getNonNumData();
-			List<Map<String, Double>> probMapList=di.getProbMap();
 			Set<String> itemSet=di.getVarSet();
 			int  total=0;
 			for(String item:itemSet){
 				total=0;
 				List<String> seq=new ArrayList<String>();
-				if(nonnumData.size()>0){
-					for(Map<String, Integer>map:nonnumData){
-						if(map.containsKey(item)){
-							int value=map.get(item);
-							total+=value;
-							seq.add(value+"");
-						}else{
-							seq.add("0");
-						}
+				for(Map<String, Integer>map:nonnumData){
+					if(map.containsKey(item)){
+						int value=map.get(item);
+						total+=value;
+						seq.add(value+"");
+					}else{
+						seq.add("0");
 					}
-					if(total<200)
-						continue;
-					System.out.println(item+":"+total);
-					generateEntroy(seq, numItems);
-					isPeriodExist(maxPeriod,item,seq);
-				}else if(probMapList.size()>0){
-					for(Map<String, Double>map:probMapList){
-						if(map.containsKey(item)){
-							int value=(int)(map.get(item)*1000);
-							total+=value;
-							seq.add(value+"");
-						}else{
-							seq.add("0");
-						}
-					}
-					if(total<200)
-						continue;
-					
-					System.out.println(item+":"+total);
-					for(String se:seq){
-						System.out.println(se);
-					}
-//					generateEntroy(seq, numItems);
-//					isPeriodExist(maxPeriod,item,seq);
 				}
-				
+				if(total<200)
+					continue;
+				System.out.println(item+":"+total);
+				generateEntroy(seq, numItems);
+				isPeriodExist(maxPeriod,item,seq);
 			}
 		}
 	}
@@ -129,7 +110,7 @@ public class ERPDistencePM implements IMinerPM {
 	 */
 	private void generateEntroy(List<String> seq,int numItems){
 		double[][] ErpDistMatrix;
-		int maxPeriod = (numItems/2>300)?300:numItems/2;
+		int maxPeriod = (numItems/2>300)?300:(numItems/2);
 		int period=1;
 		entropies=new Double[maxPeriod];
 		List<String> standardList=new ArrayList<String>();
@@ -137,10 +118,10 @@ public class ERPDistencePM implements IMinerPM {
 		double Entropy;
 		while((period+1)<= maxPeriod){
 			period++;	//周期递加
-			Entropy=0.0;
 			standardList.clear();
-			generateStandardList(seq, period, standardList);
+			Entropy=0.0;
 			ErpDistMatrix=new double[period][period];
+			generateStandardList(seq, period, standardList);
 			for(int i=0;i<numItems/period;i++){
 				seqList.clear();
 				for(int j=0;j<period;j++){
@@ -151,7 +132,8 @@ public class ERPDistencePM implements IMinerPM {
 						ErpDistMatrix[k][j]=-1;
 					}
 				}
-				Entropy+=ERPDistance(standardList, seqList, period-1,period-1, ErpDistMatrix);
+				double en=ERPDistance(standardList, seqList, period-1,period-1, ErpDistMatrix);
+				Entropy+=en;
 			}
 			double diff=Entropy;
 			entropies[period-1]=diff;
@@ -175,13 +157,13 @@ public class ERPDistencePM implements IMinerPM {
 		}else if(xSize<0){
 			int sum=0;
 			for(int i=0;i<=ySize;i++){
-				sum+=Math.ceil(Double.parseDouble(seqY.get(i)));
+				sum+=Math.ceil(Math.abs(Double.parseDouble(seqY.get(i))));
 			}
 			return sum;
 		}else if(ySize<0){
 			int sum=0;
 			for(int i=0;i<=xSize;i++){
-				sum+=Math.ceil(Double.parseDouble(seqX.get(i)));
+				sum+=Math.ceil(Math.abs(Double.parseDouble(seqX.get(i))));
 			}
 			return sum;
 		}
@@ -219,6 +201,27 @@ public class ERPDistencePM implements IMinerPM {
 			standardList.add(statistics.getMean()+"");
 		}
 	}
+	
+//	private void geneNormList(List<String> seq,List<String> normList){
+//		DescriptiveStatistics meanStatistics=new DescriptiveStatistics();
+//		int length=seq.size();
+//		List<Double> items=new ArrayList<Double>();
+//		for(String item:seq){
+//			items.add(Double.parseDouble(item));
+//			meanStatistics.addValue(Double.parseDouble(item));
+//		}
+//		
+//		double stdMean=meanStatistics.getMean();
+//		double min=meanStatistics.getMin();
+//		meanStatistics.clear();
+//		for(int i=0;i<length;i++){
+//			items.set(i, items.get(i)-min);
+//			
+//		}
+//		for(int i=0;i<items.size();i++){
+//			normList.add((items.get(i)/(stdMean-min+0.1)*10)+"");
+//		}
+//	}
 	
 	/**
 	 * 序列未切分的ERP距离
@@ -329,9 +332,22 @@ public class ERPDistencePM implements IMinerPM {
 		int Period=maxPeriod;
 		Set<Integer> keyset=predictValuesMap.keySet();
 		for(Integer key:keyset){
-			if(key<=Period){
+			if(key<Period)
 				Period=key;
+		}
+		
+		int multiple=1;
+		boolean isSuccess=true;
+		while((multiple+1)*Period<maxPeriod){
+			if(entropies[multiple*Period-1]-entropies[(multiple+1)*Period-1]>=(-entropies[multiple*Period-1]*0.2)){
+				multiple++;
+			}else{
+				isSuccess=false;
+				break;
 			}
+		}
+		if(!isSuccess){
+			Period=multiple*Period;
 		}
 		predictPeriod=Period;
 		for(int i=1;i<maxPeriod;i++){
@@ -342,6 +358,19 @@ public class ERPDistencePM implements IMinerPM {
 		if(hasPeriod){
 			itemsInPeriod=new DataItems();
 			Integer[] predictValues=predictValuesMap.get(Period);
+			if(predictValues==null){
+				predictValues=new Integer[predictPeriod];
+				for(int index=0;index<predictPeriod;index++){
+					predictValues[index]=0;
+				}
+				for(int j=0;j<di.getLength();j++){
+					predictValues[j%(predictPeriod)]+=(int)Double.parseDouble(seq.get(j));
+				}
+				for(int j=0;j<(predictPeriod);j++){
+					predictValues[j]/=(di.getLength()/(predictPeriod));
+				}
+			}
+			predictValuesMap.put(predictPeriod, predictValues);
 			for(int i=0;i<Period;i++){
 				itemsInPeriod.add1Data(di.getTime().get(i),predictValues[i]+"");
 			}
@@ -364,27 +393,58 @@ public class ERPDistencePM implements IMinerPM {
 	
 	private boolean isPeriod(Double[] Entropies,int index){
 		boolean period=true;
+		if(index==2){
+			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2){
+				if(!nextPeriod(Entropies, index)){
+					period=false;
+				}
+			}else{
+				period=false;
+			}
+		}else if(index==Entropies.length){
+			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2){
+				if(!nextPeriod(Entropies, index)){
+					period=false;
+				}
+			}else{
+				period=false;
+			}
+		}else{
+            if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2&&
+            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2){
+            	if(!nextPeriod(Entropies, index)){
+					period=false;
+				}
+			}else{
+				period=false;
+			}
+		}
+		return period;
+	}
+	
+	private boolean nextPeriod(Double[] Entropies,int index){
 		int i=index;
-		if(i>(0.33*Entropies.length))
-			return false;
-		while(i<=Entropies.length){
+		boolean period=true;
+		int num=0;
+		while(i<=Entropies.length&&num<3){
 			if(i==2){
-				if(Entropies[i-1]-Entropies[i]<0){
+				if(Entropies[i-1]-Entropies[i]>0){
 					period=false;
 					break;
 				}
 			}else if(i==(Entropies.length)){
-				if(Entropies[i-1]-Entropies[i-2]<0){
+				if(Entropies[i-1]-Entropies[i-2]>0){
 					period=false;
 					break;
 				}
 			}else{
-				if(Entropies[i-1]-Entropies[i-2]>=0||Entropies[i-1]-Entropies[i]>=0){
+				if(Entropies[i-1]-Entropies[i-2]>0||Entropies[i-1]-Entropies[i]>0){
 					period=false;
 					break;
 				}
 			}
 			i+=index;
+			num++;
 		}
 		return period;
 	}

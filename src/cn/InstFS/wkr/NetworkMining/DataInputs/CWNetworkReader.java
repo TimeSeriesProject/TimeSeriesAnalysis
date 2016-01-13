@@ -19,8 +19,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
+
 import java.util.Comparator;
+
+import com.sun.jna.platform.unix.X11.XClientMessageEvent.Data;
 
 
 
@@ -129,7 +133,7 @@ public class CWNetworkReader  implements IReader{
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     private int start	=	0;
 	private int end		=	365*24*60*60-1;	
-	private int timeseg =   2*60*60; //两天粒度
+	private int timeseg =   3*60*60; //两天粒度
 	private DataItems dataItems = new DataItems();
 	
 	public static void main(String[] args) 
@@ -196,7 +200,11 @@ public class CWNetworkReader  implements IReader{
 						int hops = Integer.valueOf(str[1]);
 						if(map.containsKey(node))
 						{
-							map.put(node, (map.get(node)+hops)/2);
+							if(map.get(node)<(hops*1.0)){
+								map.remove(node);
+								map.put(node, hops*1.0);
+							}
+							//map.put(node, (map.get(node)+hops)/2);
 						}
 						else
 							map.put(node, 1.0*hops);
@@ -357,6 +365,49 @@ public class CWNetworkReader  implements IReader{
 		return result;
 	}
 	
+	private DataItems readNodeFrequenceByText(){
+		DataItems dataItems=new DataItems();
+		dataItems.setIsAllDataDouble(-1);
+		String path=task.getSourcePath();
+		File srcFiles=new File(path);
+		try
+		{
+			for(int i=0;i<srcFiles.list().length;i++)
+			{
+				System.out.println("read file "+srcFiles.list()[i]);
+				TextReader textReader = new TextReader(path+"/"+srcFiles.list()[i]);
+				String curLine="";
+				textReader.readLine();
+				while((curLine=textReader.readLine())!=null)
+				{
+					Map<String,Integer>	map = new HashMap<String,Integer>();  
+					String seg[]=curLine.split(",");
+					Date time=second2Date(Integer.parseInt(seg[0]));
+					
+					/**
+					 * 记录结点平均跳数。
+					 */
+					for(int j=8;j<seg.length;j++)
+					{
+						String str[] = seg[j].split(":");
+						if(!map.containsKey(str[0])){
+							map.put(str[0], 1);
+						}
+						dataItems.getVarSet().add(str[0]);
+					}
+					dataItems.add1Data(time, map);
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			System.exit(0);
+		}
+		dataItems=DataItems.sortByTimeValue(dataItems);
+		return dataItems;
+	}
+	
 	private DataItems readClusterByText()
 	{
 		
@@ -438,6 +489,7 @@ public class CWNetworkReader  implements IReader{
 		{
 		case "簇系数": return readClusterByText();
 		case "网络直径":return readDiameterByText();
+		case "节点变化":return readNodeFrequenceByText();
 		default: return null;
 		}
 	}

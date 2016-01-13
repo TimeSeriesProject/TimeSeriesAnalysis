@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +49,7 @@ public class DataItems {
 		data = new ArrayList<String>();	
 		NonNumData=new ArrayList<Map<String,Integer>>();
 		probMap=new ArrayList<Map<String,Double>>();
+		varSet=new HashSet<String>();
 		setProb(new ArrayList<Double>());
 		setGranularity(0);
 	}
@@ -162,7 +164,7 @@ public class DataItems {
 	}
 
 	public int getLength(){
-		return Math.min(Math.min(time.size(), Math.max(Math.max(data.size(), NonNumData.size()),probMap.size())),prob.size());
+		return Math.max(time.size(), Math.max(Math.max(data.size(), NonNumData.size()),probMap.size()));
 	}
 	
 	public DataItem getElementAt(int i ){
@@ -540,16 +542,31 @@ public class DataItems {
 		int len = input.getLength();
 		ItemTime []items = new ItemTime[len];	
 		List<Date>times = input.getTime();
-		List<String>vals = input.getData();
-		for (int i = 0; i < len; i ++){
-			items[i] = new ItemTime();
-			items[i].setTime(times.get(i));
-			items[i].setData(vals.get(i));
+		if(input.data!=null&&input.data.size()>0){
+			List<String>vals = input.getData();
+			for (int i = 0; i < len; i ++){
+				items[i] = new ItemTime();
+				items[i].setTime(times.get(i));
+				items[i].setData(vals.get(i));
+			}
+			Arrays.sort(items);
+			for (int i = 0; i < len; i ++){
+				output.add1Data(items[i].getTime(), items[i].getData());
+			}
+		}else if(input.NonNumData!=null&&input.NonNumData.size()>0){
+			List<Map<String, Integer>>vals = input.getNonNumData();
+			for (int i = 0; i < len; i ++){
+				items[i] = new ItemTime();
+				items[i].setTime(times.get(i));
+				items[i].setNonNumData(vals.get(i));
+			}
+			Arrays.sort(items);
+			for (int i = 0; i < len; i++){
+				output.add1Data(items[i].getTime(), items[i].getNonNumData());
+			}
 		}
-		Arrays.sort(items);
-		for (int i = 0; i < len; i ++){
-			output.add1Data(items[i].getTime(), items[i].getData());
-		}
+		output.setVarSet(input.getVarSet());
+		output.setIsAllDataDouble(input.getIsAllDataDouble());
 		return output;
 	}
 	
