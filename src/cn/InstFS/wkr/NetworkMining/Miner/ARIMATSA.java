@@ -26,6 +26,7 @@ public class ARIMATSA implements IMinerTSA{
 		this.predictPeriod=predictPeriod;
 		predictItems=new DataItems();
 		endDate=di.getLastTime();
+		
 	}
 	
 	@Override
