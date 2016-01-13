@@ -144,29 +144,29 @@ public class MergeSegment
 	{
 		dataItemArray= new DataItem[dataItems.getLength()];
 		this.rate=rate;
-		System.out.println("orgin");
+//		System.out.println("orgin");
 		
 		for(int i=0;i<dataItems.getLength();i++)
 		{
 			dataItemArray[i]=dataItems.getElementAt(i);
-			System.out.print(dataItemArray[i].getData());
-			if(i<dataItems.getLength()-1)
-				System.out.print(",");
+//			System.out.print(dataItemArray[i].getData());
+//			if(i<dataItems.getLength()-1)
+//				System.out.print(",");
 		}
-		System.out.println();
+//		System.out.println();
 		for(int i=0;i<dataItems.getLength();i++)
 		{
 			dataItemArray[i]=dataItems.getElementAt(i);
-			System.out.print(dataItemArray[i].getTime().getTime()/1000/3600);
-			if(i<dataItems.getLength()-1)
-				System.out.print(",");
+//			System.out.print(dataItemArray[i].getTime().getTime()/1000/3600);
+//			if(i<dataItems.getLength()-1)
+//				System.out.print(",");
 		}
 		buildHeap();
 		while(size>dataItemArray.length*rate)
 		{
 			extractMin();
 		}
-		System.out.println();
+//		System.out.println();
 	}
 	/**
 	 * 获取合并过后的点
@@ -197,7 +197,7 @@ public class MergeSegment
 		int pre = -1;
 		double maxLength=Double.MIN_VALUE,maxSlope=Double.MIN_VALUE,maxCentery=Double.MIN_VALUE;  //存储最大时间间隔，最大流量变化的绝对值
 		double minLength=Double.MAX_VALUE,minSlope=Double.MAX_VALUE,minCentery=Double.MAX_VALUE;
-		System.out.println("result");
+//		System.out.println("result");
 		for(int i=0;i<dataItemArray.length;i++)
 		{
 			if(dataItemArray[i]!=null)
@@ -239,16 +239,16 @@ public class MergeSegment
 				pre= i;
 			}
 		}
-		System.out.println();
+//		System.out.println();
 		for(int i=0;i<dataItemArray.length;i++)
 		{
 			if(dataItemArray[i]!=null)
 			{
-				System.out.print(dataItemArray[i].getTime().getTime()/3600/1000+",");
+//				System.out.print(dataItemArray[i].getTime().getTime()/3600/1000+",");
 			}
 		}
-		System.out.println();
-		System.out.println("god"+minSlope+" "+maxSlope);
+//		System.out.println();
+//		System.out.println("god"+minSlope+" "+maxSlope);
 		
 		for(int i=0;i<segList.size();i++)
 		{
@@ -262,7 +262,7 @@ public class MergeSegment
 			
 			seg.setLength((seg.getLength()-minLength)/(maxLength-minLength));
 			segList.set(i,seg);
-			System.out.println(seg.slope+",");
+//			System.out.println(seg.slope+",");
 		}
 		return segList;
 	}
