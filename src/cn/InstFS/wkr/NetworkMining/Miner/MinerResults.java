@@ -20,7 +20,8 @@ public class MinerResults {
 	DataItems di;
 	private MinerResultsPM retPM;
 	private MinerResultsTSA retTSA;
-	private MinerResultsSM retSM;
+	private MinerResultsSM retSM; 
+	private MinerResultsFP retFP;
 	
 	
 	public MinerResults(INetworkMiner miner) {
@@ -29,8 +30,17 @@ public class MinerResults {
 		retPM = new MinerResultsPM();
 		retTSA = new MinerResultsTSA();
 		retSM = new MinerResultsSM();
+		retFP=new MinerResultsFP();
 	}
 	
+	public MinerResultsFP getRetFP() {
+		return retFP;
+	}
+
+	public void setRetFP(MinerResultsFP retFP) {
+		this.retFP = retFP;
+	}
+
 	public DataItems getInputData(){
 		return di;
 	}

@@ -1,7 +1,9 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.ss.formula.functions.Choose;
 
@@ -16,6 +18,15 @@ public class MinerResultsSM {
 	private DataItems patterns;
 	private double recallRatio = -1;
 	private double accuracyRatio = -1;
+	private Map<Integer, List<String>> frequentItem=new HashMap<Integer, List<String>>();
+
+	public Map<Integer, List<String>> getFrequentItem() {
+		return frequentItem;
+	}
+
+	public void setFrequentItem(Map<Integer, List<String>> frequentItem) {
+		this.frequentItem = frequentItem;
+	}
 
 	public DataItems getForcasts_curTime() {
 		return forcasts_curTime;

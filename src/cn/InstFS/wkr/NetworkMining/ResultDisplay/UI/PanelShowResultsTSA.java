@@ -164,10 +164,16 @@ public class PanelShowResultsTSA extends JPanel implements IPanelShowResults{
 		if (rslts == null || rslts.getRetTSA() == null||
 				!rslts.getMiner().getClass().equals(NetworkMinerTSA.class))
 			return;
+		DataItems originItems=rslts.getInputData();
 		DataItems outliesItems = rslts.getRetTSA().getOutlies();
 		DataItems predictItems = rslts.getRetTSA().getPredictItems();
-		chart1.displayDataItems(outliesItems);
-		chart2.displayDataItems(predictItems);
+		chart1.displayDataItems(originItems);
+		if(outliesItems==null||outliesItems.getLength()==0){
+			chart2.displayDataItems(predictItems);
+		}else{
+			chart2.displayDataItems(outliesItems);
+		}
+		
 	}
 }
 

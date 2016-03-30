@@ -45,7 +45,7 @@ public class MainFrame extends JFrame {
 	public static MainFrame topFrame;
 	public static int numTxtOutput = 10;
 	public static int ii;
-	// ×Ó´°¿ÚFrame
+	// é”Ÿæ¥è¾¾æ‹·é”Ÿæ–¤æ‹·Frame
 	DialogConfigTask dialogConfigTask;
 	
 	private PanelListAllTasks panelListAllEvents;
@@ -64,7 +64,7 @@ public class MainFrame extends JFrame {
 			public void run() {
 				try {		
 					UtilsUI.InitFactories();
-					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+//					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 //					UIManager.setLookAndFeel("com.l2fprod.common.swing.plaf.metal.MetalLookAndFeelAddons");
 //					LookAndFeelTweaks.tweak();
 					MainFrame frame = new MainFrame();
@@ -81,7 +81,7 @@ public class MainFrame extends JFrame {
 	 */
 	public MainFrame() {
 		MainFrame.topFrame = this;
-		setTitle("ÍøÂç¹æÂÉÍÚ¾ò·ÖÎöÈí¼ş");
+		setTitle("ç½‘ç»œè§„å¾‹æŒ–æ˜åˆ†æè½¯ä»¶");
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
@@ -97,11 +97,11 @@ public class MainFrame extends JFrame {
 		contentPane.add(toolBar, BorderLayout.NORTH);
 		toolBar.setSize(100, 20);
 		
-		JMenu mnFile = new JMenu("ÎÄ¼ş(F)");
+		JMenu mnFile = new JMenu("æ–‡ä»¶(F)");
 		mnFile.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(mnFile);
 		
-		JMenuItem menuExit = new JMenuItem("ÍË³ö(X)");
+		JMenuItem menuExit = new JMenuItem("é€€å‡º(X)");
 		menuExit.setMnemonic(KeyEvent.VK_X);
 		menuExit.addActionListener(new ActionListener() {			
 			@Override
@@ -111,11 +111,11 @@ public class MainFrame extends JFrame {
 		});
 		mnFile.add(menuExit);
 		
-		JMenu mnTools = new JMenu("ÈÎÎñ(T)");
+		JMenu mnTools = new JMenu("ä»»åŠ¡(T)");
 		mnTools.setMnemonic(KeyEvent.VK_T);
 		menuBar.add(mnTools);
 		
-		JMenuItem menuConfigEvent = new JMenuItem("ÅäÖÃÈÎÎñ(P)");
+		JMenuItem menuConfigEvent = new JMenuItem("é…ç½®ä»»åŠ¡(P)");
 		menuConfigEvent.setMnemonic(KeyEvent.VK_P);
 		menuConfigEvent.addActionListener(new ActionListener() {			
 			@Override
@@ -124,7 +124,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		
-		JMenuItem menuStartMiningAll = new JMenuItem("È«²¿¿ªÊ¼ÍÚ¾ò(S)");
+		JMenuItem menuStartMiningAll = new JMenuItem("å…¨éƒ¨å¼€å§‹æŒ–æ˜(S)");
 		menuStartMiningAll.setMnemonic(KeyEvent.VK_S);
 		menuStartMiningAll.addActionListener(new ActionListener() {			
 			@Override
@@ -134,7 +134,7 @@ public class MainFrame extends JFrame {
 		});
 		mnTools.add(menuStartMiningAll);
 		
-		JMenuItem menuStopMiningAll = new JMenuItem("È«²¿Í£Ö¹ÍÚ¾ò(E)");
+		JMenuItem menuStopMiningAll = new JMenuItem("å…¨éƒ¨åœæ­¢æŒ–æ˜(E)");
 		menuStopMiningAll.setMnemonic(KeyEvent.VK_E);
 		menuStopMiningAll.addActionListener(new ActionListener() {
 			@Override
@@ -148,11 +148,57 @@ public class MainFrame extends JFrame {
 		mnTools.add(separator);
 		mnTools.add(menuConfigEvent);
 		
-		JMenu mnView = new JMenu("ÊÓÍ¼(V)");
+		
+		
+		//TODO åŠ å…¥è§„å¾‹æŒ–æ˜æŒ‰é’®
+		JMenu miner=new JMenu("è§„å¾‹æŒ–æ˜(G)");
+		miner.setMnemonic(KeyEvent.VK_G);
+		menuBar.add(miner);
+		
+		JMenuItem minerPeriodRules = new JMenuItem("å‘¨æœŸè§„å¾‹(P)");
+		minerPeriodRules.setMnemonic(KeyEvent.VK_P);
+		minerPeriodRules.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openFrameConfigTask();
+			}
+		});
+		miner.add(minerPeriodRules);
+		
+		JMenuItem minerOutlies = new JMenuItem("å¼‚å¸¸æ£€æµ‹(O)");
+		minerOutlies.setMnemonic(KeyEvent.VK_O);
+		minerOutlies.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				NetworkMinerFactory.getInstance().startAllMiners();
+			}
+		});
+		miner.add(minerOutlies);
+		
+		JMenuItem minerForecast = new JMenuItem("è¶‹åŠ¿é¢„æµ‹(F)");
+		minerForecast.setMnemonic(KeyEvent.VK_F);
+		minerForecast.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				NetworkMinerFactory.getInstance().stopAllMiners();
+			}
+		});
+		miner.add(minerForecast);
+		
+		JMenuItem minerFrequency = new JMenuItem("é¢‘ç¹æ¨¡å¼æŒ–æ˜(P)");
+		minerFrequency.setMnemonic(KeyEvent.VK_P);
+		minerFrequency.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				NetworkMinerFactory.getInstance().stopAllMiners();
+			}
+		});
+		
+		JMenu mnView = new JMenu("è§†å›¾(V)");
 		mnView.setMnemonic(KeyEvent.VK_V);
 		menuBar.add(mnView);
 		
-		chckAutoShowResults = new JCheckBox("×Ô¶¯ÏÔÊ¾½á¹û");
+		chckAutoShowResults = new JCheckBox("è‡ªåŠ¨æ˜¾ç¤ºç»“æœ");
 		chckAutoShowResults.setSelected(UtilsUI.autoChangeResultsPanel);
 		chckAutoShowResults.addActionListener(new ActionListener() {			
 			@Override

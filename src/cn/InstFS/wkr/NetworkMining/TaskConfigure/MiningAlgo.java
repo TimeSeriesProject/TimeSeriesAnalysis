@@ -1,5 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.TaskConfigure;
 
+import javax.lang.model.element.Element;
+
 public enum MiningAlgo {
 	MiningAlgo_averageEntropyPM("平均熵周期检测算法"),
 	MiningAlgo_ERPDistencePM("ERP距离周期检测算法"),
@@ -29,12 +31,18 @@ public enum MiningAlgo {
 			return MiningAlgo_ERPDistencePM;
 		else if(str.equals(MiningAlgo_ARTSA.toString())){
 			return MiningAlgo_ARTSA;
-		}else if(str.equals(MiningAlgo_ARTSA.toString())){
-			return MiningAlgo_ERPDistTSA;
+		}else if(str.equals(MiningAlgo_FastFourier.toString())){
+			return MiningAlgo_FastFourier;
+		}else if(str.equals(MiningAlgo_GaussDetection.toString())){
+			return MiningAlgo_GaussDetection;
+		}else if(str.equals(MiningAlgo_NeuralNetworkTSA.toString())){
+			return MiningAlgo_NeuralNetworkTSA;
+		}else if(str.equals(MiningAlgo_TEOTSA.toString())){
+			return MiningAlgo_TEOTSA;
+		}else if(str.equals(MiningAlgo_ARIMATSA.toString())){
+			return MiningAlgo_ARIMATSA;
 		}else{
 			return MiningAlgo_NULL;
 		}
-			
 	}
-	
 }

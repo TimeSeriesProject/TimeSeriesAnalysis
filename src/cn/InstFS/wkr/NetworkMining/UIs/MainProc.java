@@ -44,7 +44,7 @@ public class MainProc extends JPanel  implements IResultsDisplayer{
 	}
 	
 	public void testMinerPM(){
-		TaskElement task = TaskElement.example1;
+		TaskElement task = TaskElement.TSAExamplePM;
 		TaskElement.add1Task(task, false);
 		INetworkMiner miner = NetworkMinerFactory.getInstance().createMiner(task);
 		miner.setResultsDisplayer(this);//…Ë÷√result display
