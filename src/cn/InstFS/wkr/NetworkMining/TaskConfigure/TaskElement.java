@@ -48,6 +48,7 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 	private String comments;
 	private String dataSource;//源文件类型  数据库 或 文本文件
 	private String sourcePath; //当为文本文件时 文件路径
+	private String pathSource;
 	
 	public String getSourcePath() {
 		return sourcePath;
@@ -120,22 +121,245 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 		TSAExample.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
 		TSAExample.setMiningAlgo(MiningAlgo.MiningAlgo_ARTSA);
 		TSAExample.setDataSource("File");
-		TSAExample.setSourcePath("./configs/sendTimesOfNet1.csv");
-		TSAExample.setDiscreteMethod(DiscreteMethod.自定义端点);
-		TSAExample.setDiscreteEndNodes("500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,"
-				+ "2200,2300,2400,2500,2600,2700,2800,2900,3000,3100,3200,3300");
+		TSAExample.setSourcePath("./configs/real-1-1.csv");
+		TSAExample.setDiscreteMethod(DiscreteMethod.None);
+		TSAExample.setDiscreteEndNodes("0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,"
+				+ "2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0");
 		TSAExample.setTaskRange(TaskRange.NodePairRange);
 		TSAExample.setRange("10.0.1.1,10.0.1.2");
+	}
+	
+	public static TaskElement FPExample=new TaskElement();
+	static{
+		FPExample.setTaskName("大流量TSA测试");
+		FPExample.setComments("将流量较大的收发方作为挖掘对象, 挖掘TSA模式");
+		FPExample.setMiningObject("traffic");
+		FPExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		FPExample.setFilterCondition("流量>100");
+		FPExample.setGranularity(3600);
+		FPExample.setMiningMethod(MiningMethod.MiningMethods_FrequenceItemMining);
+		FPExample.setDataSource("File");
+		FPExample.setSourcePath("./configs/real-1-71.csv,./configs/real-1-72.csv");
+		FPExample.setDiscreteMethod(DiscreteMethod.None);
+		FPExample.setDiscreteEndNodes("0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,"
+				+ "2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0");
+		FPExample.setTaskRange(TaskRange.NodePairRange);
+		FPExample.setRange("10.0.1.1,10.0.1.2");
+	}
+	
+	public static TaskElement TSAExample1=new TaskElement();
+	static{
+		TSAExample1.setTaskName("大流量TSA测试");
+		TSAExample1.setComments("将流量较大的收发方作为挖掘对象, 挖掘TSA模式");
+		TSAExample1.setMiningObject("traffic");
+		TSAExample1.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		TSAExample1.setFilterCondition("流量>100");
+		TSAExample1.setGranularity(3600);
+		TSAExample1.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+		TSAExample1.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
+		TSAExample1.setDataSource("File");
+		TSAExample1.setSourcePath("./configs/real-1-28.csv");
+		TSAExample1.setDiscreteMethod(DiscreteMethod.None);
+		TSAExample1.setDiscreteEndNodes("0,40,80,120,160,200,240,280,320,360,400,440,480,520,560,600,640,680,720,760,"
+				+ "800,840,880,920,960,1000,1040,1080,1120,1160,1200,1240,1280,1320,1360,1400,1440,1480,1520,1560,1600,1640,1680,1720,1760,1800,1840,1880,1920,1960,2000");
+		TSAExample1.setTaskRange(TaskRange.NodePairRange);
+		TSAExample1.setRange("10.0.1.1,10.0.1.2");
+	}
+	
+	public static TaskElement TSAExampleGauss=new TaskElement();
+	static{
+		TSAExampleGauss.setTaskName("大流量TSA测试");
+		TSAExampleGauss.setComments("将流量较大的收发方作为挖掘对象, 挖掘TSA模式");
+		TSAExampleGauss.setMiningObject("traffic");
+		TSAExampleGauss.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		TSAExampleGauss.setFilterCondition("流量>100");
+		TSAExampleGauss.setGranularity(3600);
+		TSAExampleGauss.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+		TSAExampleGauss.setMiningAlgo(MiningAlgo.MiningAlgo_GaussDetection);
+		TSAExampleGauss.setDataSource("File");
+		TSAExampleGauss.setSourcePath("./configs/real-1-44.csv");
+		TSAExampleGauss.setDiscreteMethod(DiscreteMethod.None);
+		TSAExampleGauss.setDiscreteEndNodes("0,40,80,120,160,200,240,280,320,360,400,440,480,520,560,600,640,680,720,760,800,840,880,920,960,1000,1040,1080,1120,1160,1200,1240,1280,1320,1360,1400,1440,1480,1520,1560,1600,1640,1680,1720,1760,1800,1840,1880,1920,1960,2000");
+		TSAExampleGauss.setTaskRange(TaskRange.NodePairRange);
+		TSAExampleGauss.setRange("10.0.1.1,10.0.1.2");
+	}
+	
+	public static TaskElement TSAExampleFourier=new TaskElement();
+	static{
+		TSAExampleFourier.setTaskName("大流量TSA测试");
+		TSAExampleFourier.setComments("将流量较大的收发方作为挖掘对象, 挖掘TSA模式");
+		TSAExampleFourier.setMiningObject("traffic");
+		TSAExampleFourier.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		TSAExampleFourier.setFilterCondition("流量>100");
+		TSAExampleFourier.setGranularity(3600);
+		TSAExampleFourier.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+		TSAExampleFourier.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
+		TSAExampleFourier.setDataSource("File");
+		TSAExampleFourier.setSourcePath("./configs/real-1-70.csv");
+		TSAExampleFourier.setDiscreteMethod(DiscreteMethod.None);
+		TSAExampleFourier.setDiscreteEndNodes("0,40,80,120,160,200,240,280,320,360,400,440,480,520,560,600,640,680,720,760,"
+				+ "800,840,880,920,960,1000,1040,1080,1120,1160,1200,1240,1280,1320,1360,1400,1440,1480,1520,1560,1600,1640,1680,1720,1760,1800,1840,1880,1920,1960,2000");
+		TSAExampleFourier.setTaskRange(TaskRange.NodePairRange);
+		TSAExampleFourier.setRange("10.0.1.1,10.0.1.2");
+	}
+	
+	public static TaskElement TSAExampleARIMA=new TaskElement();
+	static{
+		TSAExampleARIMA.setTaskName("大流量TSA测试");
+		TSAExampleARIMA.setComments("将流量较大的收发方作为挖掘对象, 挖掘TSA模式");
+		TSAExampleARIMA.setMiningObject("traffic");
+		TSAExampleARIMA.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		TSAExampleARIMA.setFilterCondition("流量>100");
+		TSAExampleARIMA.setGranularity(3600);
+		TSAExampleARIMA.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+		TSAExampleARIMA.setMiningAlgo(MiningAlgo.MiningAlgo_ARIMATSA);
+		TSAExampleARIMA.setDataSource("File");
+		TSAExampleARIMA.setSourcePath("./configs/real-1-61.csv");
+		TSAExampleARIMA.setDiscreteMethod(DiscreteMethod.None);
+		TSAExampleARIMA.setDiscreteEndNodes("0,40,80,120,160,200,240,280,320,360,400,440,480,520,560,600,640,680,720,760,"
+				+ "800,840,880,920,960,1000,1040,1080,1120,1160,1200,1240,1280,1320,1360,1400,1440,1480,1520,1560,1600,1640,1680,1720,1760,1800,1840,1880,1920,1960,2000");
+		TSAExampleARIMA.setTaskRange(TaskRange.NodePairRange);
+		TSAExampleARIMA.setRange("10.0.1.1,10.0.1.2");
+	}
+	
+	public static TaskElement TSANeutralExample=new TaskElement();
+	static{
+		TSANeutralExample.setTaskName("大流量TSA测试");
+		TSANeutralExample.setComments("将流量较大的收发方作为挖掘对象, 挖掘TSA模式");
+		TSANeutralExample.setMiningObject("traffic");
+		TSANeutralExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		TSANeutralExample.setFilterCondition("流量>100");
+		TSANeutralExample.setGranularity(3600);
+		TSANeutralExample.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+		TSANeutralExample.setMiningAlgo(MiningAlgo.MiningAlgo_NeuralNetworkTSA);
+		TSANeutralExample.setDataSource("File");
+		TSANeutralExample.setSourcePath("./configs/real-1-68.csv");
+		TSANeutralExample.setDiscreteMethod(DiscreteMethod.None);
+		TSANeutralExample.setTaskRange(TaskRange.NodePairRange);
+		TSANeutralExample.setRange("10.0.1.1,10.0.1.2");
+	}
+	public static TaskElement TSAAssociationExample=new TaskElement();
+	static{
+		TSAAssociationExample.setTaskName("多元时间序列关联规则测试");
+		TSAAssociationExample.setComments("将流量较大的收发方作为挖掘对象, 挖掘关联规则模式");
+		TSAAssociationExample.setMiningObject("traffic");
+		TSAAssociationExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		TSAAssociationExample.setFilterCondition("流量>100");
+		TSAAssociationExample.setGranularity(3600);
+		TSAAssociationExample.setMiningMethod(MiningMethod.MiningMethods_FrequenceItemMining);
+		//TSAAssociationExample.setMiningAlgo(MiningAlgo.MiningAlgo_NeuralNetworkTSA);
+		TSAAssociationExample.setDataSource("File");
+		TSAAssociationExample.setSourcePath("./configs/real-1-71.csv,./configs/real-1-72.csv");
+		TSAAssociationExample.setDiscreteMethod(DiscreteMethod.None);
+		TSAAssociationExample.setTaskRange(TaskRange.NodePairRange);
+		TSAAssociationExample.setRange("10.0.1.1,10.0.1.2");
 	}
 	public static TaskElement example2 = new TaskElement();
 	static {
 		example2.setTaskName("大流量通信收发方");
 		example2.setComments("将流量较大的收发方作为挖掘对象, 挖掘其序列模式");
-		example2.setMiningObject("流量");
+		example2.setMiningObject("traffic");
+		example2.setDataSource("Text");
+		example2.setSourcePath("./configs/smtpPcap");
+		example2.setTaskRange(TaskRange.NodePairRange);
+		example2.setFilterCondition("protocol=402");
+		example2.setGranularity(3600);
+		example2.setRange("10.0.2.4,10.0.3.4");
 		example2.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		example2.setFilterCondition("流量>100");		
-		example2.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);		
+		example2.setMiningMethod(MiningMethod.MiningMethods_SequenceMining);		
 	}
+	
+	public static TaskElement TSAExamplePM=new TaskElement();
+	static{
+		TSAExamplePM.setTaskName("大流量TSA测试");
+		TSAExamplePM.setComments("将流量较大的收发方作为挖掘对象, 挖掘TSA模式");
+		TSAExamplePM.setMiningObject("traffic");
+		TSAExamplePM.setAggregateMethod(AggregateMethod.Aggregate_MEAN);
+		TSAExamplePM.setFilterCondition("流量>100");
+		TSAExamplePM.setGranularity(3600);
+		TSAExamplePM.setMiningMethod(MiningMethod.MiningMethods_PeriodicityMining);
+		TSAExamplePM.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
+		TSAExamplePM.setDiscreteMethod(DiscreteMethod.None);
+		TSAExamplePM.setDiscreteEndNodes("0,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500,2600");
+		TSAExamplePM.setDataSource("File");
+		TSAExamplePM.setSourcePath("./configs/real-1-55.csv");
+		TSAExamplePM.setTaskRange(TaskRange.NodePairRange);
+		TSAExamplePM.setRange("10.0.1.1,10.0.1.2");
+	}
+	
+	public static TaskElement SMExample=new TaskElement();
+	static{
+		SMExample.setTaskName("大流量TSA测试");
+		SMExample.setComments("将流量较大的收发方作为挖掘对象, 挖掘TSA模式");
+		SMExample.setMiningObject("traffic");
+		SMExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		SMExample.setFilterCondition("流量>100");
+		SMExample.setGranularity(3600);
+		SMExample.setMiningMethod(MiningMethod.MiningMethods_SequenceMining);
+		SMExample.setDiscreteMethod(DiscreteMethod.None);
+		SMExample.setDiscreteDimension(8);
+		SMExample.setDiscreteEndNodes("0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000");
+		SMExample.setDataSource("File");
+		SMExample.setSourcePath("./configs/real-1-39.csv");
+		SMExample.setTaskRange(TaskRange.NodePairRange);
+		SMExample.setRange("10.0.1.1,10.0.1.2");
+	}
+	
+	public static TaskElement PathPMExample=new TaskElement();
+	static{
+		PathPMExample.setTaskName("网络路径周期");
+		PathPMExample.setComments("将网络路径作为挖掘对象, 挖掘PM模式");
+		PathPMExample.setMiningObject("pathProb");
+		PathPMExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		PathPMExample.setFilterCondition("流量>100");
+		PathPMExample.setGranularity(3600);
+		PathPMExample.setMiningMethod(MiningMethod.MiningMethods_PathProbilityMining);
+		PathPMExample.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
+		PathPMExample.setDataSource("File");
+		PathPMExample.setSourcePath("./configs/pathData");
+		PathPMExample.setDiscreteMethod(DiscreteMethod.None);
+		PathPMExample.setPathSource("./configs/probPath.txt");
+		//PathPMExample.setDiscreteEndNodes("0,2,4,6,8,10,12,14,16,18,20");
+		PathPMExample.setTaskRange(TaskRange.NodePairRange);
+		PathPMExample.setRange("10.0.1.0,10.0.2.0");
+	}
+	
+	public static TaskElement PathProbTrans=new TaskElement();
+	static{
+		PathProbTrans.setTaskName("路由器跳转概率预测");
+		PathProbTrans.setComments("将网络路径跳转概率作为挖掘对象");
+		PathProbTrans.setMiningObject("path");
+		PathProbTrans.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		PathProbTrans.setFilterCondition("流量>100");
+		PathProbTrans.setGranularity(3600);
+		PathProbTrans.setMiningMethod(MiningMethod.MiningMethods_PathProbilityMining);
+		PathProbTrans.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
+		PathProbTrans.setDataSource("File");
+		PathProbTrans.setSourcePath("./configs/pathData");
+		PathProbTrans.setDiscreteMethod(DiscreteMethod.None);
+		PathProbTrans.setPathSource("./configs/probPath.txt");
+		//PathPMExample.setDiscreteEndNodes("0,2,4,6,8,10,12,14,16,18,20");
+		PathProbTrans.setTaskRange(TaskRange.NodePairRange);
+		PathProbTrans.setRange("10.0.1.0,10.0.2.0");
+	}
+	
+	
+	public static TaskElement ClusterPMExample=new TaskElement();
+	static{
+		ClusterPMExample.setTaskName("网络簇系数测试");
+		ClusterPMExample.setComments("将网络簇系数挖掘对象, 挖掘PM模式");
+		ClusterPMExample.setMiningObject("节点变化");
+		ClusterPMExample.setAggregateMethod(AggregateMethod.Aggregate_MAX);
+		ClusterPMExample.setDiscreteMethod(DiscreteMethod.自定义端点);
+		ClusterPMExample.setGranularity(3600);
+		ClusterPMExample.setMiningMethod(MiningMethod.MiningMethods_PeriodicityMining);
+		ClusterPMExample.setMiningAlgo(MiningAlgo.MiningAlgo_averageEntropyPM);
+		ClusterPMExample.setDataSource("File");
+		ClusterPMExample.setSourcePath("./configs/clusterPathData");
+		ClusterPMExample.setDiscreteEndNodes("0,1");
+		ClusterPMExample.setTaskRange(TaskRange.WholeNetworkRange);
+	}
+	
 	public TaskElement() {
 		setTaskName("");
 		setFilterCondition("");
@@ -365,6 +589,10 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 					task.setComments(p.getValue().toString());
 				else if (key.equalsIgnoreCase("miningObject"))
 					task.setMiningObject(p.getValue().toString());
+				else if (key.equalsIgnoreCase("dataSource"))
+					task.setDataSource(p.getValue().toString());
+				else if (key.equalsIgnoreCase("sourcePath"))
+					task.setSourcePath(p.getValue().toString());
 				else if (key.equalsIgnoreCase("aggregateMethod"))
 					task.setAggregateMethod(AggregateMethod.fromString(p.getValue().toString()));
 				else if (key.equalsIgnoreCase("filterCondition"))
@@ -387,6 +615,19 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 					task.setDiscreteEndNodes(p.getValue().toString());
 				else if (key.equalsIgnoreCase("discreteDimsion"))
 					task.setDiscreteDimension(Integer.parseInt(p.getValue().toString()));
+				else if(key.equalsIgnoreCase("range"))
+					task.setRange(p.getValue().toString());
+				else if(key.equalsIgnoreCase("taskRange")){
+					if(p.getValue().toString().equalsIgnoreCase("NodePairRange"))
+						task.setTaskRange(TaskRange.NodePairRange);
+					else if(p.getValue().toString().equalsIgnoreCase("SingleNodeRange"))
+						task.setTaskRange(TaskRange.SingleNodeRange);
+					else if(p.getValue().toString().equalsIgnoreCase("WholeNetworkRange"))
+						task.setTaskRange(TaskRange.WholeNetworkRange);
+				}
+				else if(key.equalsIgnoreCase("miningAlgo")){
+					task.setMiningAlgo(MiningAlgo.fromString(p.getValue().toString()));
+				}
 			}
 		}catch(Exception e1){
 			e1.printStackTrace();
@@ -592,4 +833,13 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 		this.miningAlgo = miningAlgo;
 	}
 
+	public String getPathSource() {
+		return pathSource;
+	}
+
+	public void setPathSource(String pathSource) {
+		this.pathSource = pathSource;
+	}
+	
+	
 }
