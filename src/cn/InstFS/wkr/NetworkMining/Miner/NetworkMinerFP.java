@@ -140,6 +140,8 @@ class FPTimerTask extends TimerTask{
 		DataItems dataItems1=reader.readInputByText();
 		((nodePairReader)reader).setFilePath(filePath[1]);
 		DataItems dataItems2=reader.readInputByText();
+		results.getRetFP().getOriginItems().add(dataItems1);
+		results.getRetFP().getOriginItems().add(dataItems2);
 		if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
 			dataItems1=DataPretreatment.aggregateData(dataItems1, task.getGranularity(), 
 					task.getAggregateMethod(), !dataItems1.isAllDataIsDouble());
@@ -157,9 +159,12 @@ class FPTimerTask extends TimerTask{
 		for(Rule rule:associationRule.rules){
 			sb.append(rule.source);
 			Set<Integer>set=rule.times;
+			List<String> items=new ArrayList<String>();
 			for(int index:set){
 				sb.append(":").append(index).append(",").append(index+1);
+				items.add(index+","+(index+1));
 			}
+			results.getRetFP().getAssociateRules().put(rule.source, items);
 			System.out.println(sb.toString());
 			sb.delete(0, sb.length());
 		}

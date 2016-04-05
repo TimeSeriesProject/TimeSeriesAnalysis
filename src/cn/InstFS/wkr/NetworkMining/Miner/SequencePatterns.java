@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
@@ -474,7 +475,7 @@ public class SequencePatterns {
 	 * 打印聚类后 每个类标签包含的线段
 	 * @param clusterItems 聚类后的DataItems
 	 */
-	public void printClusterLabelTOLines(DataItems clusterItems,DataItems dataItems){
+	public Map<Integer, List<String>> printClusterLabelTOLines(DataItems clusterItems,DataItems dataItems){
 		List<Integer> indexOfClusterItem=new ArrayList<Integer>();
 		int i=0;
 		for(Date time:clusterItems.getTime()){
@@ -524,6 +525,7 @@ public class SequencePatterns {
 			}
 			System.out.println();
 		}
+		return map;
 	}
 	
 }

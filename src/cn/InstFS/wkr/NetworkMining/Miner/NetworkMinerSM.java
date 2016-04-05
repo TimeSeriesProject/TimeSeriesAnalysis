@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -135,6 +136,7 @@ class SMTimerTask extends TimerTask {
 		ParamsSM paramsSM=(ParamsSM)task.getMiningParams();
 		isRunning=true;
 		DataItems dataItems=reader.readInputByText();
+		results.setInputData(dataItems);
 		if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
 			dataItems=DataPretreatment.aggregateData(dataItems, task.getGranularity(), 
 					task.getAggregateMethod(), !dataItems.isAllDataIsDouble());
@@ -144,7 +146,7 @@ class SMTimerTask extends TimerTask {
 		}
 		//符号化后的序列
 		DataItems clusterItems=WavCluster.SelfCluster(dataItems, 24, 2);
-		results.setInputData(clusterItems);
+		
 		
 		SequencePatterns sequencePattern=new SequencePatterns();
 		sequencePattern.setDataItems(clusterItems);
@@ -152,7 +154,8 @@ class SMTimerTask extends TimerTask {
 		sequencePattern.setWinSize(paramsSM.getSizeWindow());
 		sequencePattern.setThreshold(paramsSM.getMinSupport());
 		sequencePattern.setStepSize(paramsSM.getStepWindow());
-		sequencePattern.printClusterLabelTOLines(clusterItems, dataItems);
+		Map<Integer, List<String>>frequentItem=sequencePattern.printClusterLabelTOLines(clusterItems, dataItems);
+		results.getRetSM().setFrequentItem(frequentItem);
 		sequencePattern.patternMining();
 		sequencePattern.displayResult();
 		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
