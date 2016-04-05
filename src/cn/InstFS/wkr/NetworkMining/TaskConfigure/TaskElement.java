@@ -793,6 +793,19 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 	public int compareTo(TaskElement o) {
 		return this.getTaskName().compareTo(o.getTaskName());
 	}
+	@Override
+	public boolean equals(Object arg0) {
+		if(arg0 instanceof TaskElement){
+			return this.getTaskName().equals(((TaskElement)arg0).getTaskName());
+		}else{
+			return false;
+		}	  
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.getTaskName().hashCode();
+	}
 	public AggregateMethod getAggregateMethod() {
 		return aggregateMethod;
 	}
