@@ -18,6 +18,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.OutliesMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsSM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
@@ -39,6 +40,7 @@ import javax.swing.JSeparator;
 import javax.swing.JCheckBox;
 
 import com.l2fprod.common.swing.LookAndFeelTweaks;
+
 import javax.swing.JToolBar;
 
 public class MainFrame extends JFrame {
@@ -160,7 +162,7 @@ public class MainFrame extends JFrame {
 		minerPeriodRules.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openFrameConfigTask();
+//				openFrameConfigTask();
 			}
 		});
 		miner.add(minerPeriodRules);
@@ -170,20 +172,13 @@ public class MainFrame extends JFrame {
 		minerOutlies.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				OutliesMinerFactory outliesFactory=OutliesMinerFactory.getInstance();
+				outliesFactory.detectOutlies();
 				NetworkMinerFactory.getInstance().startAllMiners();
+				panelListAllEvents.refreshAllTasks();
 			}
 		});
 		miner.add(minerOutlies);
-		
-		JMenuItem minerForecast = new JMenuItem("趋势预测(F)");
-		minerForecast.setMnemonic(KeyEvent.VK_F);
-		minerForecast.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				NetworkMinerFactory.getInstance().stopAllMiners();
-			}
-		});
-		miner.add(minerForecast);
 		
 		JMenuItem minerFrequency = new JMenuItem("频繁模式挖掘(P)");
 		minerFrequency.setMnemonic(KeyEvent.VK_P);

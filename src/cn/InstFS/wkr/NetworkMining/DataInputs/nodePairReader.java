@@ -364,6 +364,49 @@ public class nodePairReader implements IReader {
 		return -1;
 	}
 	
+	/**
+	 * 读取指定IP文件中所有协议的DataItems
+	 * @param filePath IP文件地址
+	 * @return Map<String,DataItems> ,其中key值为协议，value值为DataItems
+	 */
+	public HashMap<String, DataItems> readEachProtocolDataItems(String filePath){
+		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
+		TextUtils textUtils=new TextUtils();
+		textUtils.setTextPath(filePath);
+		textUtils.readByrow();
+		String line=null;
+		int rows=0;//记录总共读取的行数
+		while((line=textUtils.readByrow())!=null){
+			rows++;
+			String[] items=line.split(",");
+			int timeSpan=Integer.parseInt(items[0]);
+			Date time=parseTime(timeSpan);
+			String protocolItems=items[items.length-1];
+			String[] eachProtocol=protocolItems.split(";");
+			for(String protocol:eachProtocol){
+				String[] proAndTraffic=protocol.split(":");
+				if(protocolDataItems.containsKey(proAndTraffic[0])){
+					DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
+					dataItems.add1Data(time, proAndTraffic[1]);
+				}else{
+					DataItems dataItems=new DataItems();
+					for(int i=rows-1;i>0;i--){
+						dataItems.add1Data(parseTime(timeSpan-3600*i), "0");
+					}
+					dataItems.add1Data(time, proAndTraffic[1]);
+					protocolDataItems.put(proAndTraffic[0], dataItems);
+				}
+			}
+			Collection<DataItems>values=protocolDataItems.values();
+			for(DataItems value:values){
+				if(value.getLength()<rows){
+					value.add1Data(time,"0");
+				}
+			}
+		}
+		return protocolDataItems;
+	}
+	
 	private void readFile(String filePath,String miningObejct,List<String> items){
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);

@@ -130,7 +130,14 @@ class TSATimerTask extends TimerTask{
 		
 		// 读取数据
 		DataItems dataItems = null;
-		dataItems=reader.readInputByText();
+		//当Miner Reuslts中存在数据时，则不再读取
+		if(results.getInputData()==null||results.getInputData().getLength()==0){
+			dataItems=reader.readInputByText();
+			results.setInputData(dataItems);
+		}else{
+			dataItems=results.getInputData();
+		}
+		
 		if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
 			DataPretreatment.aggregateData(dataItems, task.getGranularity(), task.getAggregateMethod(),
 					dataItems.isAllDataIsDouble());
@@ -139,8 +146,6 @@ class TSATimerTask extends TimerTask{
 			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 					task.getDiscreteEndNodes());
 		}
-
-		results.setInputData(dataItems);
 		IMinerTSA tsaMethod=null;
 		
 //		int dimension=Math.max(task.getDiscreteDimension(),dataItems.getDiscretizedDimension());
