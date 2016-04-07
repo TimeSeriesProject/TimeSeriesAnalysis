@@ -10,6 +10,7 @@ public interface INetworkMiner {
 	boolean start();
 	boolean stop();
 	boolean isAlive();
+	boolean isOver();
 	TaskElement getTask();	
 	MinerResults getResults();
 	void setResultsDisplayer(IResultsDisplayer displayer);

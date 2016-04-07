@@ -30,7 +30,8 @@ public class NetworkMinerTSA implements INetworkMiner {
 	MinerResults results;
 	IResultsDisplayer displayer;
 	
-	boolean isRunning;
+	boolean isRunning=false;
+	Boolean isOver=false;
 	TaskElement task;
 	IReader reader;
 	
@@ -38,6 +39,7 @@ public class NetworkMinerTSA implements INetworkMiner {
 	public NetworkMinerTSA(TaskElement task,IReader reader) {
 		this.task = task;
 		this.reader=reader;
+		results = new MinerResults(this);
 	}
 	@Override
 	public boolean start() {
@@ -51,8 +53,7 @@ public class NetworkMinerTSA implements INetworkMiner {
 			return false;
 		}
 		timer = new Timer();
-		results = new MinerResults(this);
-		timerTask = new TSATimerTask(task, results, displayer,reader);
+		timerTask = new TSATimerTask(task, results, displayer,reader,timer,isOver);
 		timer.scheduleAtFixedRate(timerTask, new Date(), 2000);
 		isRunning = true;
 		task.setRunning(isRunning);
@@ -80,8 +81,12 @@ public class NetworkMinerTSA implements INetworkMiner {
 
 	@Override
 	public boolean isAlive() {
-		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	@Override
+	public boolean isOver() {
+		return isOver;
 	}
 
 
@@ -103,13 +108,17 @@ class TSATimerTask extends TimerTask{
 	TaskElement task;
 	MinerResults results;
 	IResultsDisplayer displayer;
+	private Timer timer;
 	private boolean isRunning = false;
+	private Boolean isOver;
 	IReader reader;
-	public TSATimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,IReader reader) {
+	public TSATimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,IReader reader,Timer timer,Boolean isOver) {
 		this.task = task;
 		this.results = results;
 		this.displayer = displayer;
 		this.reader=reader;
+		this.timer=timer;
+		this.isOver=isOver;
 	}
 	
 	public boolean isRunning(){
@@ -189,7 +198,9 @@ class TSATimerTask extends TimerTask{
 //			results.getRetTSA().setPredictItems(discreteTSA.getPredictItems());  //Ô¤²â
 //		}
 		isRunning = false;
+		isOver=true;
 		if (displayer != null)
 			displayer.displayMinerResults(results);
+		timer.cancel();
 	}
 }

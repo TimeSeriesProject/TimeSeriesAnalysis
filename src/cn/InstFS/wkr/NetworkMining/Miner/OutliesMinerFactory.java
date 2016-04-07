@@ -1,17 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import com.google.common.io.Files;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
@@ -25,8 +15,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 public class OutliesMinerFactory {
 	private static OutliesMinerFactory outMinerFactoryInst;
 	public static boolean isMining=false;
-	public String filePath;
-	public String dataPath;
+	public String dataPath="./tasks1/";
 	private OutliesMinerFactory(){}
 	public static OutliesMinerFactory getInstance(){
 		if(outMinerFactoryInst==null){
@@ -40,66 +29,68 @@ public class OutliesMinerFactory {
 		if(isMining)
 			return;
 		isMining=true;
-		File rootDirectory=new File(filePath);
 		File dataDirectory=new File(dataPath);
 		nodePairReader reader=new nodePairReader();
-		if(rootDirectory.isFile()){
-			parseFile(rootDirectory,dataDirectory,reader);
+		if(dataDirectory.isFile()){
+			parseFile(dataDirectory,reader);
 		}else{
-			File[] rootDirs=rootDirectory.listFiles();
 			File[] dataDirs=dataDirectory.listFiles();
-			for(int i=0;i<rootDirs.length;i++){
-				parseFile(rootDirs[i],dataDirs[i],reader);
+			for(int i=0;i<dataDirs.length;i++){
+				parseFile(dataDirs[i],reader);
 			}
 		}
 	}
 	
-	private void parseFile(File protoclFile,File dataFile,nodePairReader reader){
-		String[] ipAndProtocols=null;
-		try {
-			ipAndProtocols=getTaskElements(protoclFile);
-		} catch (Exception e) {
-			System.out.println("配置文件 "+protoclFile.getName()+" 读取错误");
-		}
-		int[] granularities={3600,3600*24,3600*24*7};
+	private void parseFile(File dataFile,nodePairReader reader){
+		String ip=dataFile.getName().substring(0, dataFile.getName().lastIndexOf("."));
+		//事先读取每一个IP上，每一个协议的DataItems
+		HashMap<String, DataItems> rawDataItems=
+				reader.readEachProtocolDataItems(dataFile.getAbsolutePath());
+		int[] granularities={3600};
 		for(int granularity:granularities){
-			
-			String ip=ipAndProtocols[0];
-			//事先读取每一个IP上，每一个协议的DataItems
-			HashMap<String, DataItems> rawDataItems=
-					reader.readEachProtocolDataItems(dataFile.getAbsolutePath());
-			for(int i=1;i<ipAndProtocols.length;i++){
-				TaskElement task=new TaskElement();
-				String name=ip+"_"+ipAndProtocols[i]+"_"+"周期挖掘";
-				task.setTaskName(name);
-				task.setComments("挖掘  "+"ip 为"+ip+" 上，协议"+ipAndProtocols[i]+"的周期规律");
-				task.setDataSource("File");
-				task.setGranularity(granularity);
-				task.setAggregateMethod(AggregateMethod.Aggregate_MEAN);
-				task.setSourcePath(dataFile.getPath());
-				task.setTaskRange(TaskRange.SingleNodeRange);
-				task.setRange(ip);
-				task.setDiscreteMethod(DiscreteMethod.None);
-				task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
-				task.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
-				task.setMiningObject(ipAndProtocols[i]);
-				TaskElement.add1Task(task, false);
-				NetworkMinerFactory minerFactory=NetworkMinerFactory.getInstance();
-				INetworkMiner miner=minerFactory.allMiners.get(task);
-				DataItems dataItems=rawDataItems.get(ipAndProtocols[i]);
-				miner.getResults().setInputData(dataItems);
+			for(String protocol:rawDataItems.keySet()){
+				DataItems dataItems=rawDataItems.get(protocol);
+				if(!isDataItemSparse(dataItems)){
+					TaskElement task=new TaskElement();
+					String name=ip+"_"+protocol+"_"+"异常检测";
+					task.setTaskName(name);
+					task.setComments("挖掘  ip 为"+ip+" 上，协议"+protocol+"的异常检测");
+					task.setDataSource("File");
+					task.setGranularity(granularity);
+					task.setAggregateMethod(AggregateMethod.Aggregate_MEAN);
+					task.setSourcePath(dataFile.getPath());
+					task.setTaskRange(TaskRange.SingleNodeRange);
+					task.setRange(ip);
+					task.setDiscreteMethod(DiscreteMethod.None);
+					task.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
+					task.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+					task.setMiningObject(protocol);
+					TaskElement.add1Task(task, false);
+					NetworkMinerFactory minerFactory=NetworkMinerFactory.getInstance();
+					INetworkMiner miner=minerFactory.allMiners.get(task);
+					miner.getResults().setInputData(dataItems);
+				}
 			}
 		}
 	}
 	
-	private String[] getTaskElements(File file)throws Exception{
-		List<String> ipAndProtocols=new ArrayList<String>();
-		FileReader fileReader=new FileReader(file);
-		BufferedReader bufferedReader=new BufferedReader(fileReader);
-		String line=null;
-		while((line=bufferedReader.readLine())!=null){
-			ipAndProtocols.add(line.trim());
+	/**
+	 * 判断给定的时间序列是否稀疏，（稀疏即意味着时间序列大于50%的值都是0） 如果稀疏返回True
+	 * @param dataItems 时间序列
+	 * @return true if 时间序列稀疏  否则返回 false
+	 */
+	private boolean isDataItemSparse(DataItems dataItems){
+		int length=dataItems.getLength();
+		int sparseNum=0;
+		for(int i=0;i<length;i++){
+			if(dataItems.getData().get(i).equals("0")){
+				sparseNum+=1;
+			}
 		}
-		return (String[]) ipAndProtocols.toArray();
+		
+		if(sparseNum*1.0/length>=0.5)
+			return true;
+		else 
+			return false;
 	}
 }

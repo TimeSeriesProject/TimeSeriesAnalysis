@@ -44,7 +44,7 @@ public class NetworkMinerFP implements INetworkMiner {
 	TaskElement task;
 	MinerResults results;
 	IResultsDisplayer displayer;
-	
+	private Boolean isOver=false;
 	Timer timer;
 	FPTimerTask timerTask;
 	
@@ -54,6 +54,7 @@ public class NetworkMinerFP implements INetworkMiner {
 	public NetworkMinerFP(TaskElement task,IReader reader) {
 		this.task = task; 
 		this.reader=reader;
+		results = new MinerResults(this);
 	}
 	@Override
 	public boolean start() {
@@ -63,8 +64,7 @@ public class NetworkMinerFP implements INetworkMiner {
 			return false;
 		}
 		timer = new Timer();
-		results = new MinerResults(this);
-		timerTask = new FPTimerTask(task, results,displayer,reader);
+		timerTask = new FPTimerTask(task, results,displayer,reader,timer,isOver);
 		timer.scheduleAtFixedRate(timerTask, new Date(), 2000);
 		isStarted = true;
 		task.setRunning(true);
@@ -87,7 +87,11 @@ public class NetworkMinerFP implements INetworkMiner {
 //		TaskElement.modify1Task(task);
 		return true;
 	}
-
+	
+	@Override
+	public boolean isOver() {
+		return isOver;
+	}
 	@Override
 	public boolean isAlive() {
 		return isStarted;
@@ -116,12 +120,16 @@ class FPTimerTask extends TimerTask{
 	private IResultsDisplayer displayer;
 	private IReader reader;
 	private boolean isRunning = false;
+	private Boolean isOver;
+	private Timer timer;
 
-	FPTimerTask(TaskElement task, MinerResults results,IResultsDisplayer displayer,IReader reader){
+	FPTimerTask(TaskElement task, MinerResults results,IResultsDisplayer displayer,IReader reader,Timer timer,Boolean isOver){
 		this.task = task;
 		this.results = results;
 		this.displayer=displayer;
 		this.reader=reader;
+		this.timer=timer;
+		this.isOver=isOver;
 	}
 	public static void setLastTimeStoped(boolean lastTimeStoped) {
 		FPTimerTask.lastTimeStoped = lastTimeStoped;
@@ -185,5 +193,7 @@ class FPTimerTask extends TimerTask{
 				MainFrame.topFrame.getSelectedTask() == task||
 				MainFrame.topFrame.getSelectedTask() == null)
 			TaskElement.display1Task(task, ITaskDisplayer.DISPLAY_RESULTS);
+		isOver=true;
+		timer.cancel();
 	}		
 }

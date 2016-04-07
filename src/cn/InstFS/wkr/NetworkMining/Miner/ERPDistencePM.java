@@ -71,13 +71,13 @@ public class ERPDistencePM implements IMinerPM {
 		if(di.isAllDataIsDouble()){
 			List<String> seq=new ArrayList<String>();
 			for(int i=0;i<numItems;i++){
-				seq.add((int)(Double.parseDouble(di.getData().get(i))*100)+"");
+				seq.add((int)(Double.parseDouble(di.getData().get(i)))+"");
 			}
-			for(String i:seq){
-				System.out.println(i);
-			}
+//			for(String i:seq){
+//				System.out.println(i);
+//			}
 			//System.out.println();
-			generateEntroy(seq,numItems);
+			generateManHatonEntroy(seq,numItems);
 			isPeriodExist(maxPeriod,null,seq);
 		}else{
 			List<Map<String, Integer>> nonnumData=di.getNonNumData();
@@ -141,7 +141,44 @@ public class ERPDistencePM implements IMinerPM {
 		}
 	}
 	
+	/**
+	 * 计算没个时间段的曼哈顿值
+	 * @param seq 
+	 * @param numItems
+	 */
+	private void generateManHatonEntroy(List<String> seq,int numItems){
+		int maxPeriod = (numItems/2>300)?300:(numItems/2);
+		int period=1;
+		entropies=new Double[maxPeriod];
+		List<String> standardList=new ArrayList<String>();
+		ArrayList<String> seqList=new ArrayList<String>();
+		double Entropy;
+		while((period+1)<= maxPeriod){
+			period++;	//周期递加
+			standardList.clear();
+			Entropy=0.0;
+			generateStandardList(seq, period, standardList);
+			for(int i=0;i<numItems/period;i++){
+				seqList.clear();
+				for(int j=0;j<period;j++){
+					seqList.add(seq.get(i*period+j));
+				}
+				double en=MHTDistance(standardList, seqList);
+				Entropy+=en;
+			}
+			double diff=Entropy;
+			entropies[period-1]=diff;
+			System.out.println("period "+period+"'s diff is "+diff);
+		}
+	}
 	
+	private double MHTDistance(List<String> seqX,List<String>seqY){
+		double distance=0;
+		for(int i=0;i<seqX.size();i++){
+			distance+=Math.abs(Double.parseDouble(seqX.get(i))-Double.parseDouble(seqY.get(i)));
+		}
+		return distance;
+	}
 	
 	/**
 	 * 返回两条序列的ERP距离

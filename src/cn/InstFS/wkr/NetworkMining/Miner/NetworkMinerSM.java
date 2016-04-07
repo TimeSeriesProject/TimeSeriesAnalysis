@@ -34,12 +34,14 @@ public class NetworkMinerSM implements INetworkMiner {
 	SMTimerTask timerTask;
 
 	boolean isStarted;
+	Boolean isOver=false;
 	
 	IReader reader;
 
 	public NetworkMinerSM(TaskElement task,IReader reader) {
 		this.task = task;
 		this.reader=reader;
+		results = new MinerResults(this);
 	}
 	
 
@@ -51,9 +53,8 @@ public class NetworkMinerSM implements INetworkMiner {
 			return false;
 		}
 		timer = new Timer();
-		results = new MinerResults(this);
-		timerTask = new SMTimerTask(task, results,displayer,reader);
-		timer.scheduleAtFixedRate(timerTask, 0, (int)(((ParamsSM)task.getMiningParams()).getStepWindow()) * 1000);
+		timerTask = new SMTimerTask(task, results,displayer,reader,timer,isOver);
+		timer.scheduleAtFixedRate(timerTask, new Date(), 2000);
 		isStarted = true;
 		task.setRunning(true);
 		// TaskElement.modify1Task(task);
@@ -79,6 +80,10 @@ public class NetworkMinerSM implements INetworkMiner {
 	@Override
 	public boolean isAlive() {
 		return isStarted;
+	}
+	@Override
+	public boolean isOver() {
+		return isOver;
 	}
 
 	@Override
@@ -106,17 +111,21 @@ class SMTimerTask extends TimerTask {
 	private IResultsDisplayer displayer;
 	private IReader reader;
 	private boolean isRunning = false;
+	private Timer timer;
+	private Boolean isOver;
 	
 	/**
 	 * 本次处理数据的时间
 	 */
 	private Date lastRunTime;	
 
-	SMTimerTask(TaskElement task, MinerResults results,IResultsDisplayer displayer,IReader reader) {
+	SMTimerTask(TaskElement task, MinerResults results,IResultsDisplayer displayer,IReader reader,Timer timer,Boolean isOver) {
 		this.task = task;
 		this.results = results;
 		this.displayer=displayer;
 		this.reader=reader;
+		this.timer=timer;
+		this.isOver=isOver;
 	}
 
 	public void setLastTimeStoped(boolean lastTimeStoped) {
@@ -135,8 +144,15 @@ class SMTimerTask extends TimerTask {
 		results.setDateProcess(UtilsSimulation.instance.getCurTime());
 		ParamsSM paramsSM=(ParamsSM)task.getMiningParams();
 		isRunning=true;
-		DataItems dataItems=reader.readInputByText();
-		results.setInputData(dataItems);
+		DataItems dataItems=null;
+		//当Miner Reuslts中存在数据时，则不再读取
+		if(results.getInputData()==null||results.getInputData().getLength()==0){
+			dataItems=reader.readInputByText();
+			results.setInputData(dataItems);
+		}else{
+			dataItems=results.getInputData();
+		}
+		
 		if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
 			dataItems=DataPretreatment.aggregateData(dataItems, task.getGranularity(), 
 					task.getAggregateMethod(), !dataItems.isAllDataIsDouble());
@@ -167,5 +183,7 @@ class SMTimerTask extends TimerTask {
 				|| MainFrame.topFrame.getSelectedTask() == task
 				|| MainFrame.topFrame.getSelectedTask() == null)
 			TaskElement.display1Task(task, ITaskDisplayer.DISPLAY_RESULTS);
+		isOver=true;
+		timer.cancel();
 	}
 }

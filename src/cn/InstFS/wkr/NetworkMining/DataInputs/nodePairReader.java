@@ -370,6 +370,7 @@ public class nodePairReader implements IReader {
 	 * @return Map<String,DataItems> ,其中key值为协议，value值为DataItems
 	 */
 	public HashMap<String, DataItems> readEachProtocolDataItems(String filePath){
+		
 		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
@@ -380,7 +381,7 @@ public class nodePairReader implements IReader {
 			rows++;
 			String[] items=line.split(",");
 			int timeSpan=Integer.parseInt(items[0]);
-			Date time=parseTime(timeSpan);
+			Date time=parseTime(timeSpan*3600);
 			String protocolItems=items[items.length-1];
 			String[] eachProtocol=protocolItems.split(";");
 			for(String protocol:eachProtocol){

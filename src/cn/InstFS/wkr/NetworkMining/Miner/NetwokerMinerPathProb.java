@@ -26,6 +26,7 @@ public class NetwokerMinerPathProb implements INetworkMiner{
 	PathProbTimerTask timerTask;
 	MinerResults results;
 	IResultsDisplayer displayer;
+	private Boolean isOver=false;
 	
 	boolean isRunning;
 	TaskElement task;
@@ -50,7 +51,7 @@ public class NetwokerMinerPathProb implements INetworkMiner{
 		}
 		timer = new Timer();
 		results = new MinerResults(this);
-		timerTask = new PathProbTimerTask(task, results, displayer,reader);
+		timerTask = new PathProbTimerTask(task, results, displayer,reader,isOver);
 		timer.scheduleAtFixedRate(timerTask, new Date(), UtilsSimulation.instance.getForcastWindowSizeInSeconds() * 1000);
 		isRunning = true;
 		task.setRunning(isRunning);
@@ -78,8 +79,11 @@ public class NetwokerMinerPathProb implements INetworkMiner{
 	public boolean isAlive() {
 		return isRunning;
 	}
-
-
+	
+	@Override
+	public boolean isOver() {
+		return isOver;
+	}
 	@Override
 	public TaskElement getTask() {
 		return task;
@@ -97,16 +101,17 @@ public class NetwokerMinerPathProb implements INetworkMiner{
 class PathProbTimerTask extends TimerTask{
 	TaskElement task;
 	MinerResults results;
-	
+	private Boolean isOver;
 	IResultsDisplayer displayer;
 	private boolean isRunning = false;
 	
 	IReader reader;
-	public PathProbTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,IReader reader) {
+	public PathProbTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,IReader reader,Boolean isOver) {
 		this.task = task;
 		this.results = results;
 		this.displayer = displayer;
 		this.reader=reader;
+		this.isOver=isOver;
 	}
 	
 	public boolean isRunning(){
@@ -193,6 +198,7 @@ class PathProbTimerTask extends TimerTask{
 		}
 		
 		isRunning = false;
+		isOver=true;
 		if (displayer != null)
 			displayer.displayMinerResults(results);
 	}

@@ -64,14 +64,14 @@ public class ChartPanelShowTs extends JPanel{
 		
 		XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
 		
-		renderer.setBaseShapesVisible(true);
+		renderer.setBaseShapesVisible(false);
 //		renderer.setBaseShape(itemShape);	// 好像不管用，必须用setSeriesShape
-		renderer.setBaseLinesVisible(false);
+		renderer.setBaseLinesVisible(true);
 //		renderer.setBasePaint(new Color(0));	// 好像不管用，必须用setSeriesPaint
 		
 		itemShape = ShapeUtilities.createDiamond((float) 3);
 		renderer.setSeriesShape(0, itemShape);		
-		renderer.setSeriesPaint(0, new Color(255,0,0));
+		renderer.setSeriesPaint(0, new Color(0,0,0));
 
 		renderer.setSeriesShape(1, itemShape);		
 		renderer.setSeriesPaint(1, new Color(0,255,0));

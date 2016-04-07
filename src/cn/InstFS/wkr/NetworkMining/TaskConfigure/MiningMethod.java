@@ -21,7 +21,14 @@ public enum MiningMethod {
 			return MiningMethods_TsAnalysis;
 		else if (str.equals(MiningMethods_PeriodicityMining.toString()))
 			return MiningMethods_PeriodicityMining;
-		else
+		else if(str.equals(MiningMethods_FrequenceItemMining.toString())){
+			return MiningMethods_FrequenceItemMining;
+		}else if(str.equals(MiningMethods_SequenceMining.toString())){
 			return MiningMethods_SequenceMining;
+		}else if(str.equals(MiningMethods_PathProbilityMining.toString())){
+			return MiningMethods_PathProbilityMining;
+		}else{
+			return MiningMethods_TsAnalysis;
+		}
 	}
 }

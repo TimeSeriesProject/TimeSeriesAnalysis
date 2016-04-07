@@ -35,7 +35,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		if(task.getTaskRange().equals(TaskRange.NodePairRange)){
 			reader=new nodePairReader(task, task.getRange().split(","));
 		}else if(task.getTaskRange().equals(TaskRange.SingleNodeRange)){
-			//TODO　生成单节点读取数据Reader
+			reader=new nodePairReader(task, task.getRange().split(","));
 		}else if(task.getTaskRange().equals(TaskRange.WholeNetworkRange)){
 			reader=new CWNetworkReader(task);
 		}
@@ -70,6 +70,8 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	
 	public void startAllMiners(){
 		for(INetworkMiner miner :allMiners.values()){
+			if(miner.isOver())
+				continue;    //已经挖掘完的任务不需再次挖掘
 			miner.start();
 			try {
 				Thread.sleep(100);

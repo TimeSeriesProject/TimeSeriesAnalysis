@@ -35,12 +35,13 @@ public class NetworkMinerPM implements INetworkMiner {
 	
 	boolean isRunning;
 	TaskElement task;
-	
+	Boolean isOver=false;
 	IReader reader;
 	
 	public NetworkMinerPM(TaskElement task,IReader reader) {
 		this.task = task;
 		this.reader=reader;
+		results = new MinerResults(this);
 	}
 	
 	@Override
@@ -55,9 +56,8 @@ public class NetworkMinerPM implements INetworkMiner {
 			return false;
 		}
 		timer = new Timer();
-		results = new MinerResults(this);
 		
-		timerTask = new PMTimerTask(task, results, displayer,reader);
+		timerTask = new PMTimerTask(task, results, displayer,reader,timer,isOver);
 		timer.scheduleAtFixedRate(timerTask, new Date(), UtilsSimulation.instance.getForcastWindowSizeInSeconds() * 1000);
 		isRunning = true;
 		task.setRunning(isRunning);
@@ -85,8 +85,10 @@ public class NetworkMinerPM implements INetworkMiner {
 	public boolean isAlive() {
 		return isRunning;
 	}
-
-
+	@Override
+	public boolean isOver() {
+		return isOver;
+	}
 	@Override
 	public TaskElement getTask() {
 		return task;
@@ -104,15 +106,18 @@ public class NetworkMinerPM implements INetworkMiner {
 class PMTimerTask extends TimerTask{
 	TaskElement task;
 	MinerResults results;
-	
+	Timer timer;
 	IResultsDisplayer displayer;
 	private boolean isRunning = false;
+	private Boolean isOver;
 	IReader reader;
-	public PMTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,IReader reader) {
+	public PMTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,IReader reader,Timer timer,Boolean isOver) {
 		this.task = task;
 		this.results = results;
 		this.displayer = displayer;
 		this.reader=reader;
+		this.timer=timer;
+		this.isOver=isOver;
 	}
 	
 	public boolean isRunning(){
@@ -134,8 +139,13 @@ class PMTimerTask extends TimerTask{
 		isRunning = true;
 		// 读取数据
 		DataItems dataItems = null;
-		dataItems=reader.readInputByText();
-		results.setInputData(dataItems);
+		//当Miner Reuslts中存在数据时，则不再读取
+		if(results.getInputData()==null||results.getInputData().getLength()==0){
+			dataItems=reader.readInputByText();
+			results.setInputData(dataItems);
+		}else{
+			dataItems=results.getInputData();
+		}
 		Map<String, MinerResultsPM> retPmMap=new HashMap<String, MinerResultsPM>();
 		if(dataItems.getData().size()==0&&dataItems.getNonNumData().size()!=0){
 			for(String var:dataItems.varSet){
@@ -218,7 +228,18 @@ class PMTimerTask extends TimerTask{
 		}
 		
 		isRunning = false;
+		isOver=true;
+		NetworkMinerFactory factory=NetworkMinerFactory.getInstance();
+		if(pmMethod.hasPeriod()){
+//			Map<TaskElement, INetworkMiner>map=factory.allMiners;
+//			for(TaskElement tasks:map.keySet()){
+//				//if(tasks.)
+//			}
+		}else{
+			factory.removeMiner(task);
+		}
 		if (displayer != null)
 			displayer.displayMinerResults(results);
+		timer.cancel();
 	}
 }

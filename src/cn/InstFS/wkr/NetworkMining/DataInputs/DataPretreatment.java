@@ -372,11 +372,7 @@ public class DataPretreatment {
 //					dataOut.add1Data(t1, "");
 				dataOut.add1Data(t1, valsStr);
 				flag++;
-				if(flag==2160){
-					System.out.println();
-				}
 				valsStr.clear();
-				System.out.println();
 			}else{
 				Double[] valsArray = vals.toArray(new Double[0]);
 				
@@ -558,14 +554,12 @@ public class DataPretreatment {
 	public static DataItems toDiscreteNumbersAccordingToWaveform(DataItems dataItems,TaskElement task)
 	{
 		
-		//return WavCluster.waveTest(dataItems,task);
-		return WavCluster.waveSelfCluster(dataItems);
+		return WavCluster.waveTest(dataItems,task);
 	}
 	
 	
 	public static DataItems toDiscreteNumbersAccordingToSegment(DataItems dataItems,TaskElement task)
 	{
-		//return WavCluster.segmentTest(dataItems, task);
-		return WavCluster.segmentSelfCluster(dataItems);
+		return WavCluster.segmentTest(dataItems, task);
 	}
 }

@@ -17,8 +17,10 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 
+import cn.InstFS.wkr.NetworkMining.Miner.FrequentItemMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.OutliesMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.PeriodMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsSM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
@@ -162,7 +164,10 @@ public class MainFrame extends JFrame {
 		minerPeriodRules.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				openFrameConfigTask();
+				PeriodMinerFactory periodMinerFactory=PeriodMinerFactory.getInstance();
+				periodMinerFactory.minerAllPeriods();
+				NetworkMinerFactory.getInstance().startAllMiners();
+				panelListAllEvents.refreshAllTasks();
 			}
 		});
 		miner.add(minerPeriodRules);
@@ -185,10 +190,13 @@ public class MainFrame extends JFrame {
 		minerFrequency.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				NetworkMinerFactory.getInstance().stopAllMiners();
+				FrequentItemMinerFactory freItemsFactory=FrequentItemMinerFactory.getInstance();
+				freItemsFactory.detectFrequntItems();
+				NetworkMinerFactory.getInstance().startAllMiners();
+				panelListAllEvents.refreshAllTasks();
 			}
 		});
-		
+		miner.add(minerFrequency);
 		JMenu mnView = new JMenu("视图(V)");
 		mnView.setMnemonic(KeyEvent.VK_V);
 		menuBar.add(mnView);
