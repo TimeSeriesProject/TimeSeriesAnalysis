@@ -184,6 +184,65 @@ public class MergeSegment
 		}
 		return dataItems;
 	}
+	public ArrayList<Pattern> getPatterns()
+	{
+		ArrayList<Pattern> patList = new ArrayList<Pattern>();
+		if(dataItemArray.length==0)
+			return patList;
+		
+		int pre = -1;
+		double maxSpan=Double.MIN_VALUE,maxSlope=Double.MIN_VALUE,maxAverage=Double.MIN_VALUE;  //存储最大时间间隔，最大流量变化的绝对值
+		double minSpan=Double.MAX_VALUE,minSlope=Double.MAX_VALUE,minAverage=Double.MAX_VALUE;
+		for(int i=0;i<dataItemArray.length;i++)
+		{
+			if(dataItemArray[i]!=null)
+			{
+				
+//				System.out.print(dataItemArray[i].getData()+",");
+				if(pre!=-1)
+				{
+					double x1,x2,y1,y2;
+					x1=dataItemArray[pre].getTime().getTime();
+					y1=Double.valueOf(dataItemArray[pre].getData());
+					x2=dataItemArray[i].getTime().getTime();
+					y2=Double.valueOf(dataItemArray[i].getData());
+					
+					Pattern pat =new Pattern();
+					pat.setAverage((y1+y2)/2);
+					pat.setSpan(Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)));
+					pat.setSlope(Math.atan((y2-y1)/(x2-x1)));
+					pat.setStart(pre);;
+					pat.setEnd(i);
+					patList.add(pat);
+					if(pat.getAverage()>maxAverage)
+						maxAverage =pat.getAverage();
+					if(pat.getAverage()<minAverage)
+						minAverage =pat.getAverage();
+					if(pat.getSpan()>maxSpan)
+						maxSpan = pat.getSpan();
+					if(pat.getSpan()<minSpan)
+						minSpan = pat.getSpan();
+					if(pat.getSlope()>maxSlope)
+						maxSlope =pat.getSlope();
+					if(pat.getSlope()<minSlope)
+						minSlope =pat.getSlope();
+					
+				}
+				pre= i;
+			}
+		}
+		
+		for(int i=0;i<patList.size();i++)
+		{
+			Pattern pat = patList.get(i);
+			pat.setAverage((pat.getAverage()-minAverage)/(maxAverage-minAverage));
+			pat.setSlope((pat.getSlope()-minSlope)/(maxSlope-minSlope));
+			pat.setSpan((pat.getSpan()-minSpan)/(maxSpan-minSpan));
+			patList.set(i,pat);
+//			System.out.println(seg.slope+",");
+		}
+		return patList;
+	}
 	/**
 	 * 得到合并后的线段，并作min-max归一化
 	 * @return
