@@ -1,7 +1,10 @@
 package cn.InstFS.wkr.NetworkMining.PcapStatistics;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PcapParser {
 	
-	public static void unpack(InputStream is,ConcurrentHashMap<RecordKey,Integer>records) throws IOException {
+	public static void unpack(InputStream is,String file,ConcurrentHashMap<RecordKey,Integer>records,HashMap<String,BufferedWriter >bws,String path) throws IOException {
 		   byte[] buffer_4 = new byte[4];
 		   byte[] buffer_3 = new byte[3];
 		   byte[] buffer_2 = new byte[2];
@@ -55,7 +58,7 @@ public class PcapParser {
 		            break;
 			    }
 			    count++;
-			    if(count%1000==0)
+			    if(count%100000==0)
 			    	System.out.println(count);
 		    	reverseByteArray(buffer_4);
 			    data.setTime_s(byteArrayToLong(buffer_4, 0));
@@ -70,7 +73,7 @@ public class PcapParser {
 			    data.setLength(byteArrayToInt(buffer_4, 0));
 			    if(header.getLinktype()==9)
 			    {
-			    	m=is.read(buffer,0,2);//跳过PPP包头
+			    	m=is.read(buffer,0,2);
 			    	datalength+=2;
 			    	if(buffer[0]!=0||buffer[1]!=0x21)
 			    	{
@@ -117,19 +120,27 @@ public class PcapParser {
 			    data.setDstPort(byteArrayToPort(buffer_2, 0));
 			    is.read(buffer,0,data.getpLength()-datalength);
 			    if(data.getTraffic()>30){
-			    	RecordKey tmpKey1= new RecordKey(data.getSrcIP(),data.getDstIP(),data.getDstPort(),data.getTime_s()/3600);
-			    	RecordKey tmpKey2= new RecordKey(data.getDstIP(),data.getSrcIP(),data.getDstPort(),data.getTime_s()/3600);
-//			    	System.out.println(records);
-			    	if(!records.containsKey(tmpKey1))
+			    	BufferedWriter bw;
+			    	if(!bws.containsKey(path+"\\"+data.getSrcIP()))
 			    	{
-			    		records.put(tmpKey1, 0);
+			    		synchronized(bws)
+			    		{
+			    			if(!bws.containsKey(path+"\\"+data.getSrcIP()))
+			    			{
+			    				OutputStreamWriter o =new OutputStreamWriter(new FileOutputStream(path+"\\routesrc\\routesrc"+data.getSrcIP()+".txt"),"UTF-8");
+			    				bw = new BufferedWriter(o);
+			    				bws.put(path+"\\"+data.getSrcIP(), bw);
+			    			}
+			    		}
 			    	}
-			    	if(!records.containsKey(tmpKey2))
-			    	{
-			    		records.put(tmpKey2, 0);
-			    	}
-			    	records.put(tmpKey1, records.get(tmpKey1)+data.getTraffic());
-			    	records.put(tmpKey2, records.get(tmpKey2)+data.getTraffic());
+			        String curLine = new String();
+			        synchronized(bw=bws.get(path+"\\"+data.getSrcIP()))
+	        		{
+			        	curLine=data.getSrcIP()+","+data.getDstIP()+","+data.getSrcPort()+","+data.getDstPort()+","+data.getTime_s()+","+data.getTime_ms()+","+file+","+data.getTraffic()+","+data.getTTL();
+			        	bw.write(curLine);
+			        	bw.newLine();
+	        		}
+			    	
 			    }
 		   }
 		 }
@@ -189,9 +200,9 @@ public class PcapParser {
 		    m = is.read(buffer_4);
 		    reverseByteArray(buffer_4);
 		    data.setLength(byteArrayToInt(buffer_4, 0));
-		    if(header.getLinktype()==9)
+		    if(header.getLinktype()==9) //ppp
 		    {
-		    	m=is.read(buffer,0,2);//跳过PPP包头
+		    	m=is.read(buffer,0,2);
 		    	datalength+=2;
 		    	if(buffer[0]!=0||buffer[1]!=0x21)
 		    	{
@@ -199,7 +210,7 @@ public class PcapParser {
 		    		continue;
 		    	}
 		    }
-		    else if(header.getLinktype()==1)
+		    else if(header.getLinktype()==1) //以太网
 		    {
 		    	 m=is.read(buffer,0,14);
 		    	 datalength+=14;

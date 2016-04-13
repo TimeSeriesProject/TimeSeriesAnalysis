@@ -1,6 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.PcapStatistics;
 
-public class PcapData {
+public class PcapData implements Comparable{
 	 private long time_s;//时间戳（秒）
 	 private long time_ms;//时间戳（微妙）
 	 private int pLength;//抓包长度
@@ -82,4 +82,26 @@ public class PcapData {
 	  s.append("\nlength=").append(this.length);
 	  return null;
 	 }
+	@Override
+	public int compareTo(Object arg0) {
+		// TODO Auto-generated method stub
+		PcapData data = (PcapData)arg0;
+		String str= srcIP+"_"+dstIP+"_"+srcPort+"_"+dstPort;
+		String str2 =data.srcIP+"_"+data.dstIP+"_"+data.srcPort+"_"+data.dstPort;
+		if(str.equals(str2))
+		{
+			if(time_s==data.getTime_s())
+			{
+				if(time_ms==data.getTime_ms())
+					return 0;
+				return time_ms<data.getTime_ms()?-1:1;
+			}
+			else
+				return time_s<data.getTime_s()?-1:1;
+		}
+		else
+		{
+			return str.compareTo(str2);
+		}
+	}
 }

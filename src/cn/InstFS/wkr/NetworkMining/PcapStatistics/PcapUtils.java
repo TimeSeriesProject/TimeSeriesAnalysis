@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.PcapStatistics;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,12 +9,14 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -49,18 +52,156 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 class Parser implements Callable
 {
 	InputStream is=null;
+	String file;
 	ConcurrentHashMap<RecordKey,Integer>records ;
-	Parser(InputStream is,ConcurrentHashMap<RecordKey,Integer>records)
+	private HashMap<String,BufferedWriter> bws;
+	String path;
+	Parser(InputStream is,String file,ConcurrentHashMap<RecordKey,Integer>records,HashMap<String,BufferedWriter> bws,String path)
 	{
 		this.is=is;
+		this.file=file;
 		this.records=records;
+		this.bws=bws;
+		this.path=path;
 	}
 	public Boolean call()
 	{
 		try {
-			PcapParser.unpack(is,records);
+			PcapParser.unpack(is,file,records,bws,path);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+	}
+}
+class RouteGen implements Callable
+{
+	
+	String path;
+	String outpath;
+	ConcurrentHashMap<RecordKey,Integer>records ;
+	TreeMap<PcapData,String> datas= new TreeMap<PcapData,String>();
+	RouteGen(String path,String outpath,ConcurrentHashMap<RecordKey,Integer>records )
+	{
+		this.path=path;
+		this.outpath=outpath;
+		this.records=records;
+	}
+	private void updaterecords(PcapData pre)
+	{
+		RecordKey tmpKey1= new RecordKey(pre.getSrcIP(),pre.getDstIP(),pre.getDstPort(),pre.getTime_s()/3600);
+    	RecordKey tmpKey2= new RecordKey(pre.getDstIP(),pre.getSrcIP(),pre.getDstPort(),pre.getTime_s()/3600);
+//    	System.out.println(records);
+    	if(!records.containsKey(tmpKey1))
+    	{
+    		records.put(tmpKey1, 0);
+    	}
+    	if(!records.containsKey(tmpKey2))
+    	{
+    		records.put(tmpKey2, 0);
+    	}
+    	records.put(tmpKey1, records.get(tmpKey1)+pre.getTraffic());
+    	records.put(tmpKey2, records.get(tmpKey2)+pre.getTraffic());
+	}
+	private void gen() throws IOException
+	{
+		File f =new File(path);
+		String file= f.getName();
+		int index = file.lastIndexOf(".");
+		file = file.substring(0,index);
+		OutputStreamWriter o =new OutputStreamWriter(new FileOutputStream(outpath+"\\route"+"\\"+file+".csv"),"UTF-8");
+		BufferedWriter bw = new BufferedWriter(o);
+		PcapData pre =null;
+		HashSet<String> set =null;
+		String curLine;
+		curLine ="Time(S),srcIP,dstIP,traffic,hops";
+		bw.write(curLine);
+		bw.newLine();
+		int num=0;
+		int count=0;
+		for(Map.Entry<PcapData, String>entry:datas.entrySet())
+		{
+			count++;
+			if(count%100000==0)
+				System.out.println("genroute "+count);
+			PcapData data =entry.getKey();
+			if(pre==null)
+			{
+				curLine=","+entry.getValue()+":"+data.getTTL(); 
+				pre=entry.getKey();
+				num=1;
+				continue;
+			}
+			
+			if(!pre.getSrcIP().equals(data.getSrcIP())||!pre.getDstIP().equals(data.getDstIP())||pre.getSrcPort()!=data.getSrcPort()||pre.getDstPort()!=data.getDstPort())
+			{
+				updaterecords(pre);
+				bw.write(String.valueOf(pre.getTime_s())+","+pre.getSrcIP()+","+pre.getDstIP()+","+pre.getTraffic()+","+num+curLine);
+				bw.newLine();
+				curLine=","+entry.getValue()+":"+data.getTTL();
+				pre=data;
+				num=1;
+			}
+			else if((double)data.getTime_s()+data.getTime_ms()/1000000.0>pre.getTime_s()+pre.getTime_ms()/1000000.0+2.0)
+			{
+				updaterecords(pre);
+		    	
+				bw.write(String.valueOf(pre.getTime_s())+","+pre.getSrcIP()+","+pre.getDstIP()+","+pre.getTraffic()+","+num+curLine);
+				bw.newLine();
+				curLine=","+entry.getValue()+":"+data.getTTL();
+				pre=data;
+				num=1;
+			}
+			else
+			{
+				curLine+=","+entry.getValue()+":"+data.getTTL();
+				num++;
+			}
+		}
+		updaterecords(pre);
+		
+		bw.write(String.valueOf(pre.getTime_s())+","+pre.getSrcIP()+","+pre.getDstIP()+","+pre.getTraffic()+","+num+curLine);
+		bw.close();
+	}
+	public Boolean call()
+	{
+		try {
+			
+			InputStreamReader in =new InputStreamReader(new FileInputStream(path),"UTF-8");
+			BufferedReader bin = new BufferedReader(in);
+			String curLine =null;
+			int count=0;
+			
+			while((curLine=bin.readLine())!=null)
+			{
+				count++;
+				if(count%100000==0)
+					System.out.println("readsrc "+count);
+//				System.out.println(curLine);
+				if(curLine.length()<2)
+					continue;
+				String str[]= curLine.split(",");
+//				System.out.println(str.length);
+				PcapData data = new PcapData();
+//				for(int i=0;i<str.length;i++)
+//					System.out.println(str[i]);
+				data.setSrcIP(str[0]);
+				data.setDstIP(str[1]);
+				data.setSrcPort(Integer.parseInt(str[2]));
+				data.setDstPort(Integer.parseInt(str[3]));
+				data.setTime_s(Long.parseLong(str[4]));
+				data.setTime_ms(Long.parseLong(str[5]));
+				data.setTTL(Integer.parseInt(str[8]));
+				data.setTraffic(Integer.valueOf(str[7]));
+				datas.put(data,str[6]);
+				
+			}
+			gen();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//System.out.println("........");
 			e.printStackTrace();
 		}
 		return true;
@@ -76,23 +217,59 @@ public class PcapUtils {
 	private ConcurrentHashMap<RecordKey,Integer> records=new ConcurrentHashMap<RecordKey,Integer>();
 	TreeMap<RecordKey,Integer> sortedrecords=new TreeMap<RecordKey,Integer> ();
 	private ArrayList<File> fileList=new ArrayList<File>();
+	private HashMap<String,BufferedWriter> bws=new HashMap<String,BufferedWriter>();
+	
 	public static void main(String [] args) throws FileNotFoundException{
-		String fpath = "C:\\data\\smtp";
+		String fpath = "C:\\data\\pcap";
 		PcapUtils pcapUtils = new PcapUtils();
 		//pcapUtils.readInput(fpath,1);
-		pcapUtils.readInput(fpath, "C:\\data\\record");
+		pcapUtils.readInput(fpath, "C:\\data\\out");
+		//pcapUtils.generateRoute("C:\\data\\out\\routesrc","C:\\data\\out");
 	}
 	
-	
-	public void readInput(String fpath,String outpath) throws FileNotFoundException
+	private void generateRoute(String fpath,String outPath)
 	{
-		getFileList(fpath);
+//		System.out.println("ggg");
+		fileList.clear();
+		getFileList(fpath,"txt");
+		ExecutorService exec = Executors.newCachedThreadPool();
+		ArrayList<Future<Boolean>> results= new ArrayList<Future<Boolean>>(); 
+		for(int i=0;i<fileList.size();i++)
+		{
+//			System.out.println(fileList.get(i).getAbsolutePath());
+			RouteGen routeGen= new RouteGen(fileList.get(i).getAbsolutePath(),outPath,records); 
+			routeGen.call();
+			results.add(exec.submit(routeGen));
+		}
+		for(int i=0;i<results.size();i++)
+		{
+			try {
+				results.get(i).get();
+			} catch (InterruptedException | ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.out.println(e);
+			}
+			finally{
+				exec.shutdown();
+			}
+		}
+	}
+	private void parsePcap(String fpath,String outpath) throws FileNotFoundException
+	{
+		getFileList(fpath,"pcap");
 		ExecutorService exec = Executors.newCachedThreadPool();
 		ArrayList<Future<Boolean>> results= new ArrayList<Future<Boolean>>(); 
 		for(int i=0;i<fileList.size();i++)
 		{
 			InputStream is=new FileInputStream(fileList.get(i));
-			Parser parser= new Parser(is,records);
+			String file= fileList.get(i).getName();
+			int index = file.lastIndexOf(".");
+			file = file.substring(0,index);
+			
+			System.out.println(file);
+			
+			Parser parser= new Parser(is,file,records,bws,outpath);
 			results.add(exec.submit(parser));
 			
 		}
@@ -109,9 +286,22 @@ public class PcapUtils {
 				exec.shutdown();
 			}
 		}
+	}
+	private void generateTraffic(String outpath)
+	{
+		
 		for(Map.Entry<RecordKey, Integer>entry:records.entrySet())
 		{
 			sortedrecords.put(entry.getKey(),entry.getValue());
+		}
+		for(Map.Entry<String, BufferedWriter>entry:bws.entrySet())
+		{
+			try {
+				entry.getValue().close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		System.out.println("sorted"+sortedrecords.size());
 		RecordKey prekey = null;
@@ -144,7 +334,7 @@ public class PcapUtils {
 				 try {
 					if(prekey!=null)
 						 bw.close();
-					o =new OutputStreamWriter(new FileOutputStream(outpath+"\\"+key.getSrcIp()+".txt"),"UTF-8");
+					o =new OutputStreamWriter(new FileOutputStream(outpath+"\\traffic"+"\\"+key.getSrcIp()+".txt"),"UTF-8");
 					bw = new BufferedWriter(o);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -171,10 +361,26 @@ public class PcapUtils {
 			
 		}
 	}
-	private void getFileList(String fpath)
+	public void readInput(String fpath,String outpath) throws FileNotFoundException
+	{
+		
+	    File folder = new File(outpath+"\\routesrc");
+	    boolean suc= (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
+	    
+		folder = new File(outpath+"\\route");
+		suc= (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
+
+		folder = new File(outpath+"\\traffic");
+		suc= (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
+		
+		parsePcap(fpath,outpath);
+		generateRoute(outpath+"\\routesrc",outpath);
+		generateTraffic(outpath);
+	}
+	private void getFileList(String fpath,String type)
 	{
 		File ff = new File(fpath);
-		if(ff.isFile()&&fpath.endsWith("pcap"))
+		if(ff.isFile()&&fpath.endsWith(type))
 		{
 			fileList.add(ff);
 		}
@@ -184,7 +390,7 @@ public class PcapUtils {
 			for(File f : files)
 			{
 				String path=f.getPath();
-				getFileList(f.getAbsolutePath());
+				getFileList(f.getAbsolutePath(),type);
 			}
 		}
 	}
