@@ -336,7 +336,6 @@ public class PcapUtils {
 		{
 //			System.out.println(fileList.get(i).getAbsolutePath());
 			RouteGen routeGen= new RouteGen(this,fileList.get(i).getAbsolutePath(),outPath,records); 
-			routeGen.call();
 			results.add(exec.submit(routeGen));
 		}
 		for(int i=0;i<results.size();i++)

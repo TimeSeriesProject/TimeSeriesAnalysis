@@ -138,7 +138,13 @@ public class PcapParser {
 	        		{
 			        	curLine=data.getSrcIP()+","+data.getDstIP()+","+data.getSrcPort()+","+data.getDstPort()+","+data.getTime_s()+","+data.getTime_ms()+","+file+","+data.getTraffic()+","+data.getTTL();
 			        	bw.write(curLine);
+//			        	if(data.getSrcIP().equals("10.0.10.2")&&data.getDstIP().equals("10.0.2.2"))
+//			        	{
+//			        		System.out.println(curLine);
+//			        		
+//			        	}
 			        	bw.newLine();
+//			        	bw.flush();
 	        		}
 			    	
 			    }
