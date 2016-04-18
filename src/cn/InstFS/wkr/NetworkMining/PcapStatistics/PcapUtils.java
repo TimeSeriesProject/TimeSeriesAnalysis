@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -46,6 +47,7 @@ import org.openide.text.CloneableEditorSupport.Pane;
 
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.IPStream;
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.IPStreamPool;
+import cn.InstFS.wkr.NetworkMining.PcapStatistics.PcapUtils.Status;
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.TCPStream;
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.TCPStreamPool;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
@@ -56,8 +58,11 @@ class Parser implements Callable
 	ConcurrentHashMap<RecordKey,Integer>records ;
 	private HashMap<String,BufferedWriter> bws;
 	String path;
-	Parser(InputStream is,String file,ConcurrentHashMap<RecordKey,Integer>records,HashMap<String,BufferedWriter> bws,String path)
+	PcapUtils pcapUtils ;
+	
+	Parser(PcapUtils pcapUtils,InputStream is,String file,ConcurrentHashMap<RecordKey,Integer>records,HashMap<String,BufferedWriter> bws,String path)
 	{
+		this.pcapUtils=pcapUtils;
 		this.is=is;
 		this.file=file;
 		this.records=records;
@@ -68,6 +73,8 @@ class Parser implements Callable
 	{
 		try {
 			PcapParser.unpack(is,file,records,bws,path);
+			pcapUtils.setParsedNum(pcapUtils.getParsedNum()+1);
+			System.out.println(pcapUtils.getParsedNum());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,9 +88,11 @@ class RouteGen implements Callable
 	String path;
 	String outpath;
 	ConcurrentHashMap<RecordKey,Integer>records ;
-	TreeMap<PcapData,String> datas= new TreeMap<PcapData,String>();
-	RouteGen(String path,String outpath,ConcurrentHashMap<RecordKey,Integer>records )
+	TreeSet<PcapData> datas= new TreeSet<PcapData>();
+	PcapUtils pcapUtils;
+	RouteGen(PcapUtils pcapUtils,String path,String outpath,ConcurrentHashMap<RecordKey,Integer>records )
 	{
+		this.pcapUtils=pcapUtils;
 		this.path=path;
 		this.outpath=outpath;
 		this.records=records;
@@ -120,16 +129,20 @@ class RouteGen implements Callable
 		bw.newLine();
 		int num=0;
 		int count=0;
-		for(Map.Entry<PcapData, String>entry:datas.entrySet())
+		for(PcapData entry:datas)
 		{
 			count++;
-			if(count%100000==0)
-				System.out.println("genroute "+count);
-			PcapData data =entry.getKey();
+//			if(count%100000==0)
+//				System.out.println("genroute "+count);
+			PcapData data =entry;
+//			if(data.getSrcIP().equals("10.0.1.2")&&data.getDstIP().equals("10.0.2.2"))
+//			{
+//				System.out.println(data);
+//			}
 			if(pre==null)
 			{
-				curLine=","+entry.getValue()+":"+data.getTTL(); 
-				pre=entry.getKey();
+				curLine=","+data.getPcapFile()+":"+data.getTTL(); 
+				pre=entry;
 				num=1;
 				continue;
 			}
@@ -139,7 +152,7 @@ class RouteGen implements Callable
 				updaterecords(pre);
 				bw.write(String.valueOf(pre.getTime_s())+","+pre.getSrcIP()+","+pre.getDstIP()+","+pre.getTraffic()+","+num+curLine);
 				bw.newLine();
-				curLine=","+entry.getValue()+":"+data.getTTL();
+				curLine=","+data.getPcapFile()+":"+data.getTTL();
 				pre=data;
 				num=1;
 			}
@@ -149,13 +162,13 @@ class RouteGen implements Callable
 		    	
 				bw.write(String.valueOf(pre.getTime_s())+","+pre.getSrcIP()+","+pre.getDstIP()+","+pre.getTraffic()+","+num+curLine);
 				bw.newLine();
-				curLine=","+entry.getValue()+":"+data.getTTL();
+				curLine=","+data.getPcapFile()+":"+data.getTTL();
 				pre=data;
 				num=1;
 			}
 			else
 			{
-				curLine+=","+entry.getValue()+":"+data.getTTL();
+				curLine+=","+data.getPcapFile()+":"+data.getTTL();
 				num++;
 			}
 		}
@@ -176,8 +189,8 @@ class RouteGen implements Callable
 			while((curLine=bin.readLine())!=null)
 			{
 				count++;
-				if(count%100000==0)
-					System.out.println("readsrc "+count);
+//				if(count%100000==0)
+//					System.out.println("readsrc "+count);
 //				System.out.println(curLine);
 				if(curLine.length()<2)
 					continue;
@@ -194,10 +207,13 @@ class RouteGen implements Callable
 				data.setTime_ms(Long.parseLong(str[5]));
 				data.setTTL(Integer.parseInt(str[8]));
 				data.setTraffic(Integer.valueOf(str[7]));
-				datas.put(data,str[6]);
+				data.setPcapFile(str[6]);
+				datas.add(data);
 				
 			}
 			gen();
+			pcapUtils.setGenedRouteNum(pcapUtils.getGenedRouteNum()+1);
+			System.out.println(pcapUtils.getGenedRouteNum());
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -218,13 +234,89 @@ public class PcapUtils {
 	TreeMap<RecordKey,Integer> sortedrecords=new TreeMap<RecordKey,Integer> ();
 	private ArrayList<File> fileList=new ArrayList<File>();
 	private HashMap<String,BufferedWriter> bws=new HashMap<String,BufferedWriter>();
-	
+	public enum Status{
+       PREPARE("prepare"),PARSE("parse"),GENROUTE("genroute"),END("end");
+       private String comment;
+       Status(String str)
+       {
+    	   this.comment=str;
+       }
+       @Override
+       public String toString()
+       {
+    	   return comment;
+       }
+    }
+	Status status = Status.PREPARE;
+	private int parseSum=0;
+	private int parsedNum=0;
+	private int genRouteSum=0;
+	private int genedRouteNum=0;
+	private int genTrafficSum=0;
+	private int gentedTrafficNum=0;
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	public int getParseSum() {
+		return parseSum;
+	}
+
+	public void setParseSum(int parseSum) {
+		this.parseSum = parseSum;
+	}
+
+	public synchronized int getParsedNum() {
+		return parsedNum;
+	}
+
+	public synchronized void setParsedNum(int parsedNum) {
+		this.parsedNum = parsedNum;
+	}
+
+	public int getGenRouteSum() {
+		return genRouteSum;
+	}
+
+	public void setGenRouteSum(int genSum) {
+		this.genRouteSum = genSum;
+	}
+
+	public synchronized int getGenedRouteNum() {
+		return genedRouteNum;
+	}
+
+	public synchronized void setGenedRouteNum(int genedNum) {
+		this.genedRouteNum = genedNum;
+	}
+
+	public synchronized int getGentedTrafficNum() {
+		return gentedTrafficNum;
+	}
+
+	public synchronized void setGentedTrafficNum(int gentedTrafficNum) {
+		this.gentedTrafficNum = gentedTrafficNum;
+	}
+
+	public synchronized int getGenTrafficSum() {
+		return genTrafficSum;
+	}
+
+	public synchronized void setGenTrafficSum(int genTrafficSum) {
+		this.genTrafficSum = genTrafficSum;
+	}
+
 	public static void main(String [] args) throws FileNotFoundException{
 		String fpath = "C:\\data\\pcap";
 		PcapUtils pcapUtils = new PcapUtils();
 		//pcapUtils.readInput(fpath,1);
 		pcapUtils.readInput(fpath, "C:\\data\\out");
 		//pcapUtils.generateRoute("C:\\data\\out\\routesrc","C:\\data\\out");
+		
 	}
 	
 	private void generateRoute(String fpath,String outPath)
@@ -232,12 +324,16 @@ public class PcapUtils {
 //		System.out.println("ggg");
 		fileList.clear();
 		getFileList(fpath,"txt");
-		ExecutorService exec = Executors.newCachedThreadPool();
+		genRouteSum=fileList.size();
+		status=Status.GENROUTE;
+		System.out.println(status);
+		System.out.println("genSum "+genRouteSum);
+		ExecutorService exec = Executors.newFixedThreadPool(1);
 		ArrayList<Future<Boolean>> results= new ArrayList<Future<Boolean>>(); 
 		for(int i=0;i<fileList.size();i++)
 		{
 //			System.out.println(fileList.get(i).getAbsolutePath());
-			RouteGen routeGen= new RouteGen(fileList.get(i).getAbsolutePath(),outPath,records); 
+			RouteGen routeGen= new RouteGen(this,fileList.get(i).getAbsolutePath(),outPath,records); 
 			routeGen.call();
 			results.add(exec.submit(routeGen));
 		}
@@ -258,7 +354,11 @@ public class PcapUtils {
 	private void parsePcap(String fpath,String outpath) throws FileNotFoundException
 	{
 		getFileList(fpath,"pcap");
-		ExecutorService exec = Executors.newCachedThreadPool();
+		parseSum=fileList.size();
+		status=Status.PARSE;
+		System.out.println(status);
+		System.out.println("parseSum "+parseSum);
+		ExecutorService exec = Executors.newFixedThreadPool(8);
 		ArrayList<Future<Boolean>> results= new ArrayList<Future<Boolean>>(); 
 		for(int i=0;i<fileList.size();i++)
 		{
@@ -267,9 +367,9 @@ public class PcapUtils {
 			int index = file.lastIndexOf(".");
 			file = file.substring(0,index);
 			
-			System.out.println(file);
+//			System.out.println(file);
 			
-			Parser parser= new Parser(is,file,records,bws,outpath);
+			Parser parser= new Parser(this,is,file,records,bws,outpath);
 			results.add(exec.submit(parser));
 			
 		}
@@ -333,7 +433,9 @@ public class PcapUtils {
 			{
 				 try {
 					if(prekey!=null)
+					{
 						 bw.close();
+					}
 					o =new OutputStreamWriter(new FileOutputStream(outpath+"\\traffic"+"\\"+key.getSrcIp()+".txt"),"UTF-8");
 					bw = new BufferedWriter(o);
 				} catch (IOException e) {
@@ -372,10 +474,12 @@ public class PcapUtils {
 
 		folder = new File(outpath+"\\traffic");
 		suc= (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
-		
+		System.out.println(status);
 		parsePcap(fpath,outpath);
 		generateRoute(outpath+"\\routesrc",outpath);
 		generateTraffic(outpath);
+		status=Status.END;
+		
 	}
 	private void getFileList(String fpath,String type)
 	{

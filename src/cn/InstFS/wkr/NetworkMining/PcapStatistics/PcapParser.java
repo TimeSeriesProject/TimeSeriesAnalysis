@@ -58,8 +58,8 @@ public class PcapParser {
 		            break;
 			    }
 			    count++;
-			    if(count%100000==0)
-			    	System.out.println(count);
+//			    if(count%100000==0)
+//			    	System.out.println(count);
 		    	reverseByteArray(buffer_4);
 			    data.setTime_s(byteArrayToLong(buffer_4, 0));
 			    m = is.read(buffer_4);

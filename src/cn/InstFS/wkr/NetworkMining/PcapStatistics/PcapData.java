@@ -8,6 +8,7 @@ public class PcapData implements Comparable{
 	 private int traffic;
 	 private int TTL;
 	 private String srcIP;
+	 private String pcapFile;
 	 public int getTraffic() {
 		return traffic;
 	}
@@ -93,7 +94,17 @@ public class PcapData implements Comparable{
 			if(time_s==data.getTime_s())
 			{
 				if(time_ms==data.getTime_ms())
-					return 0;
+				{
+					if(TTL==data.getTTL())
+					{
+						if(pcapFile==data.getPcapFile())
+							return 0;
+						else
+							return pcapFile.compareTo(data.getPcapFile());
+					}
+					else
+						return TTL<data.getTTL()?-1:1;
+				}
 				return time_ms<data.getTime_ms()?-1:1;
 			}
 			else
@@ -103,5 +114,11 @@ public class PcapData implements Comparable{
 		{
 			return str.compareTo(str2);
 		}
+	}
+	public String getPcapFile() {
+		return pcapFile;
+	}
+	public void setPcapFile(String pcapFile) {
+		this.pcapFile = pcapFile;
 	}
 }
