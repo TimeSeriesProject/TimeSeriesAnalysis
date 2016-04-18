@@ -75,6 +75,7 @@ class Parser implements Callable
 			PcapParser.unpack(is,file,records,bws,path);
 			pcapUtils.setParsedNum(pcapUtils.getParsedNum()+1);
 			System.out.println(pcapUtils.getParsedNum());
+			is.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -211,6 +212,7 @@ class RouteGen implements Callable
 				datas.add(data);
 				
 			}
+			bin.close();
 			gen();
 			pcapUtils.setGenedRouteNum(pcapUtils.getGenedRouteNum()+1);
 			System.out.println(pcapUtils.getGenedRouteNum());
@@ -385,6 +387,18 @@ public class PcapUtils {
 			finally{
 				exec.shutdown();
 			}
+		}
+		for(Map.Entry<String, BufferedWriter>entry:bws.entrySet())
+		{
+			
+				try {
+					entry.getValue().close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
+			
 		}
 	}
 	private void generateTraffic(String outpath)

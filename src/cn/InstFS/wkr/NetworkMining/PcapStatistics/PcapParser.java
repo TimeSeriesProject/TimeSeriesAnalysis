@@ -143,6 +143,7 @@ public class PcapParser {
 			    	
 			    }
 		   }
+		   is.close();
 		 }
 
 	public static void unpack(InputStream is,TCPStreamPool streamPool) throws IOException {
