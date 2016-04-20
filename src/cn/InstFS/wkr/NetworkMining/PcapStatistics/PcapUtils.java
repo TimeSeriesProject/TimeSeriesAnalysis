@@ -533,6 +533,7 @@ public class PcapUtils {
 		generateRoute(outpath+"\\routesrc",outpath);
 		generateTraffic(outpath);
 		status=Status.END;
+		System.out.println("½âÎö½áÊø");
 		
 	}
 	private void getFileList(String fpath,String type)
