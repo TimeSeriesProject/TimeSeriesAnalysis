@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -130,6 +131,24 @@ class RouteGen implements Callable
 		bw.newLine();
 		int num=0;
 		int count=0;
+		
+		class NodeAndTTL implements Comparable<NodeAndTTL>
+		{
+			String node;
+			Integer TTL;
+			NodeAndTTL(String node,Integer TTL)
+			{
+				this.node =node;
+				this.TTL=TTL;
+			}
+			@Override
+			public int compareTo(NodeAndTTL arg0) {
+				// TODO Auto-generated method stub
+				return TTL.compareTo(arg0.TTL);
+			}
+		}
+		ArrayList<NodeAndTTL> ttlList= new ArrayList<NodeAndTTL> ();
+		
 		for(PcapData entry:datas)
 		{
 			count++;
@@ -142,7 +161,8 @@ class RouteGen implements Callable
 //			}
 			if(pre==null)
 			{
-				curLine=","+data.getPcapFile()+":"+data.getTTL(); 
+				ttlList.add(new NodeAndTTL(data.getPcapFile(),data.getTTL()));
+				
 				pre=entry;
 				num=1;
 				continue;
@@ -151,9 +171,16 @@ class RouteGen implements Callable
 			if(!pre.getSrcIP().equals(data.getSrcIP())||!pre.getDstIP().equals(data.getDstIP())||pre.getSrcPort()!=data.getSrcPort()||pre.getDstPort()!=data.getDstPort())
 			{
 				updaterecords(pre);
-				bw.write(String.valueOf(pre.getTime_s())+","+pre.getSrcIP()+","+pre.getDstIP()+","+pre.getTraffic()+","+num+curLine);
+				StringBuilder sb=new StringBuilder();
+				sb.append(String.valueOf(pre.getTime_s())).append(","+pre.getSrcIP()).append(","+pre.getDstIP()).append(","+pre.getTraffic()).append(","+num);
+				Collections.sort(ttlList);
+				for(int i=0;i<ttlList.size();i++)
+					sb.append(","+ttlList.get(i).node+":"+ttlList.get(i).TTL);
+				bw.write(sb.toString());
+				
 				bw.newLine();
-				curLine=","+data.getPcapFile()+":"+data.getTTL();
+				ttlList.clear();
+				ttlList.add(new NodeAndTTL(data.getPcapFile(),data.getTTL()));
 				pre=data;
 				num=1;
 			}
@@ -161,21 +188,35 @@ class RouteGen implements Callable
 			{
 				updaterecords(pre);
 		    	
-				bw.write(String.valueOf(pre.getTime_s())+","+pre.getSrcIP()+","+pre.getDstIP()+","+pre.getTraffic()+","+num+curLine);
+				StringBuilder sb=new StringBuilder();
+				sb.append(String.valueOf(pre.getTime_s())).append(","+pre.getSrcIP()).append(","+pre.getDstIP()).append(","+pre.getTraffic()).append(","+num);
+				Collections.sort(ttlList);
+				for(int i=0;i<ttlList.size();i++)
+					sb.append(","+ttlList.get(i).node+":"+ttlList.get(i).TTL);
+				bw.write(sb.toString()); 
+				
 				bw.newLine();
-				curLine=","+data.getPcapFile()+":"+data.getTTL();
+				ttlList.clear();
+				ttlList.add(new NodeAndTTL(data.getPcapFile(),data.getTTL()));
 				pre=data;
 				num=1;
 			}
 			else
 			{
-				curLine+=","+data.getPcapFile()+":"+data.getTTL();
+				ttlList.add(new NodeAndTTL(data.getPcapFile(),data.getTTL()));
 				num++;
 			}
 		}
 		updaterecords(pre);
 		
-		bw.write(String.valueOf(pre.getTime_s())+","+pre.getSrcIP()+","+pre.getDstIP()+","+pre.getTraffic()+","+num+curLine);
+		StringBuilder sb=new StringBuilder();
+		sb.append(String.valueOf(pre.getTime_s())).append(","+pre.getSrcIP()).append(","+pre.getDstIP()).append(","+pre.getTraffic()).append(","+num);
+		Collections.sort(ttlList);
+		for(int i=0;i<ttlList.size();i++)
+			sb.append(","+ttlList.get(i).node+":"+ttlList.get(i).TTL);
+		bw.write(sb.toString());
+		
+		ttlList.clear();
 		bw.close();
 	}
 	public Boolean call()
@@ -359,7 +400,7 @@ public class PcapUtils {
 		status=Status.PARSE;
 		System.out.println(status);
 		System.out.println("parseSum "+parseSum);
-		ExecutorService exec = Executors.newFixedThreadPool(8);
+		ExecutorService exec = Executors.newFixedThreadPool(16);
 		ArrayList<Future<Boolean>> results= new ArrayList<Future<Boolean>>(); 
 		for(int i=0;i<fileList.size();i++)
 		{
@@ -488,7 +529,7 @@ public class PcapUtils {
 		folder = new File(outpath+"\\traffic");
 		suc= (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
 		System.out.println(status);
-		parsePcap(fpath,outpath);
+		//parsePcap(fpath,outpath);
 		generateRoute(outpath+"\\routesrc",outpath);
 		generateTraffic(outpath);
 		status=Status.END;
