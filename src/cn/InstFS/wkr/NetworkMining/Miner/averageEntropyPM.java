@@ -27,6 +27,7 @@ public class averageEntropyPM implements IMinerPM{
     private HashMap<Integer, Integer[]> predictValuesMap;
 	private double threshold;  //是否具有周期的阈值
 	private int lastNumIndexInPeriod;//最后一个数在周期中的位置
+	private double confidence;
 	
 	private Map<String, List<Integer>> existPeriodOfNonNumDataItems;
 	private Map<String, Boolean> hasPeriodOfNonNumDataItms;
@@ -116,9 +117,6 @@ public class averageEntropyPM implements IMinerPM{
 				isPeriodExist(maxPeriod,item,seq);
 			}
 		}
-		List<Date> times = di.getTime();
-		List<String> values=di.getData();
-		
 		
 	}
 	
@@ -175,9 +173,17 @@ public class averageEntropyPM implements IMinerPM{
 		itemsInPeriod=new DataItems();
 		existPeriod=new ArrayList<Integer>();
 		predictValuesMap=new HashMap<Integer, Integer[]>();
+		Map<Integer, Double> ratio=new HashMap<Integer, Double>();
 		hasPeriod=false;
 		for(int i=1;i<maxPeriod;i++){
 			if(isPeriod(entropies, i+1)){
+				if(i==1){
+					ratio.put(2, entropies[2]/entropies[1]);
+				}else if(i==entropies.length-1){
+					ratio.put(i+1, entropies[i-1]/entropies[i]);
+				}else{
+					ratio.put(i+1, Math.min(entropies[i-1]/entropies[i],entropies[i+1]/entropies[i]));
+				}
 				hasPeriod=true;
 				existPeriod.add(i+1);
 				Integer[] predictValues=new Integer[i+1];
@@ -193,23 +199,54 @@ public class averageEntropyPM implements IMinerPM{
 				predictValuesMap.put((i+1), predictValues);
 			}
 		}
-		int Period=maxPeriod;
-		Set<Integer> keyset=predictValuesMap.keySet();
-		for(Integer key:keyset){
-			if(key<=Period){
-				Period=key;
+//		int Period=maxPeriod;
+//		Set<Integer> keyset=predictValuesMap.keySet();
+//		for(Integer key:keyset){
+//			if(key<=Period){
+//				Period=key;
+//			}
+//		}
+//		predictPeriod=Period;
+//		for(int i=1;i<maxPeriod;i++){
+//			if(entropies[i]<minEntropy){
+//				minEntropy=entropies[i];
+//			}
+//		}
+		
+		double ratios=0;
+		int possiPeriod=0;
+		for(Integer key:ratio.keySet()){
+			if(ratio.get(key)>ratios){
+				ratios=ratio.get(key);
+				possiPeriod=key;
 			}
 		}
-		predictPeriod=Period;
+		predictPeriod=possiPeriod;
+		confidence=ratios;        //该检测周期的置信度
+		
 		for(int i=1;i<maxPeriod;i++){
 			if(entropies[i]<minEntropy){
 				minEntropy=entropies[i];
 			}
 		}
+		
 		if(hasPeriod){
 			itemsInPeriod=new DataItems();
-			Integer[] predictValues=predictValuesMap.get(Period);
-			for(int i=0;i<Period;i++){
+			Integer[] predictValues=predictValuesMap.get(predictPeriod);
+			if(predictValues==null){
+				predictValues=new Integer[predictPeriod];
+				for(int index=0;index<predictPeriod;index++){
+					predictValues[index]=0;
+				}
+				for(int j=0;j<di.getLength();j++){
+					predictValues[j%(predictPeriod)]+=(int)Double.parseDouble(seq.get(j));
+				}
+				for(int j=0;j<(predictPeriod);j++){
+					predictValues[j]/=(di.getLength()/(predictPeriod));
+				}
+			}
+			predictValuesMap.put(predictPeriod, predictValues);
+			for(int i=0;i<possiPeriod;i++){
 				itemsInPeriod.add1Data(di.getTime().get(i),predictValues[i]+"");
 			}
 		}else{
@@ -227,54 +264,64 @@ public class averageEntropyPM implements IMinerPM{
 		}
 	}
 	
-	private boolean isPeriod(Double[] Entropies,int index){
-		boolean period=true;
+	private boolean maxThanNeighbor(Double[] Entropies,int index,boolean isnext,int origin){
+		boolean isMaxThanNeighbor=false;
+		
 		if(index==2){
-			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.1){
-				if(!nextPeriod(Entropies, index)){
-					period=false;
-				}
-			}else{
-				period=false;
+			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2){
+				isMaxThanNeighbor=true;
 			}
 		}else if(index==Entropies.length){
-			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.1){
-				if(!nextPeriod(Entropies, index)){
-					period=false;
-				}
-			}else{
-				period=false;
+			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2){
+				isMaxThanNeighbor=true;
 			}
 		}else{
-            if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.1&&
-            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.1){
-            	if(!nextPeriod(Entropies, index)){
-					period=false;
+			if(isnext){
+				if(origin-index==1){
+					if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2)
+						isMaxThanNeighbor=true;
+				}else if(origin-index==-1){
+					if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2)
+						isMaxThanNeighbor=true;
 				}
-			}else{
-				period=false;
+			}else if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2&&
+            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2){
+            	isMaxThanNeighbor=true;
 			}
 		}
-		return period;
+		return isMaxThanNeighbor;
+	}
+	private boolean isPeriod(Double[] Entropies,int index){
+		if(maxThanNeighbor(Entropies, index,false,index)){
+			if(nextPeriod(Entropies, index)){
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
 	}
 	
 	private boolean nextPeriod(Double[] Entropies,int index){
 		int i=index;
 		boolean period=true;
 		int num=0;
-		while(i<=Entropies.length&&num<3){
+		while(i<=Entropies.length&&num<4){
 			if(i==2){
-				if(Entropies[i-1]-Entropies[i]>0){
+				if(!(maxThanNeighbor(Entropies, i,false,i)||maxThanNeighbor(Entropies, i+1,true,i))){
 					period=false;
 					break;
 				}
 			}else if(i==(Entropies.length)){
-				if(Entropies[i-1]-Entropies[i-2]>0){
+				
+				if(!(maxThanNeighbor(Entropies, i,false,i)||maxThanNeighbor(Entropies, i-1,true,i))){
 					period=false;
 					break;
 				}
 			}else{
-				if(Entropies[i-1]-Entropies[i-2]>0||Entropies[i-1]-Entropies[i]>0){
+				if(!(maxThanNeighbor(Entropies, i,false,i)||maxThanNeighbor(Entropies, i-1,true,i)||
+						maxThanNeighbor(Entropies, i+1,true,i))){
 					period=false;
 					break;
 				}
@@ -392,6 +439,14 @@ public class averageEntropyPM implements IMinerPM{
 	public void setItemsInperiodMapOfNonNumDataitems(
 			Map<String, DataItems> itemsInperiodMapOfNonNumDataitems) {
 		this.itemsInperiodMapOfNonNumDataitems = itemsInperiodMapOfNonNumDataitems;
+	}
+
+	public double getConfidence() {
+		return confidence;
+	}
+
+	public void setConfidence(double confidence) {
+		this.confidence = confidence;
 	}
 	
 	

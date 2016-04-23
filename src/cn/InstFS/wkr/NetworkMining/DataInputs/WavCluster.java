@@ -299,7 +299,7 @@ public class WavCluster {
 	public static SimpleKMeans Kmeans(ArrayList<ArrayList<Double>>instances,int clusternum,String fileName,boolean preserveOrder)
 	{
 		changesample2arff(instances,fileName+".arff");
-		System.out.println(instances.size());
+		//System.out.println(instances.size());
 		SimpleKMeans  kMeans= new SimpleKMeans(); 
 		try
 		{
@@ -515,7 +515,7 @@ public class WavCluster {
 	 * @param clusterNum 聚类的类标签数量
 	 * @return 聚类之后的结果
 	 */
-	public static DataItems SelfCluster(DataItems dataItems,int size,int clusterNum)
+	public static DataItems SelfCluster(DataItems dataItems,int size,int clusterNum,String fileName)
 	{
 		DataItems result = new DataItems();
 		ArrayList<ArrayList<Double>> instances =new ArrayList<ArrayList<Double>>();
@@ -537,7 +537,7 @@ public class WavCluster {
 		}
 		if(instances.size()==0)
 			return result;
-		kMeans = Kmeans(instances,clusterNum,"segmentSelfCluster",true);
+		kMeans = Kmeans(instances,clusterNum,fileName,true);
 		try
 		{
 			int labels[]=kMeans.getAssignments();
@@ -554,7 +554,6 @@ public class WavCluster {
 		catch(Exception e)
 		{
 			e.printStackTrace();
-//			throw new RuntimeException(e);
 			System.exit(0);
 		}
 		return result;

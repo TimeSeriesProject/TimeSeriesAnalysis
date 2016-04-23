@@ -20,6 +20,7 @@ import javax.swing.text.BadLocationException;
 import cn.InstFS.wkr.NetworkMining.Miner.FrequentItemMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.OutliesMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.PathMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.PeriodMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsSM;
@@ -27,6 +28,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogConfigTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PanelConfigTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PanelListAllTasks;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.ProcessBarShow;
 import cn.InstFS.wkr.NetworkMining.UIs.SimulationUIs.PanelControlSimulationTime;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
@@ -115,6 +117,17 @@ public class MainFrame extends JFrame {
 		});
 		mnFile.add(menuExit);
 		
+		
+		JMenuItem menuParse = new JMenuItem("Pcap解析(P)");
+		menuExit.setMnemonic(KeyEvent.VK_P);
+		menuExit.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ProcessBarShow();
+			}
+		});
+		mnFile.add(menuParse);
+		
 		JMenu mnTools = new JMenu("任务(T)");
 		mnTools.setMnemonic(KeyEvent.VK_T);
 		menuBar.add(mnTools);
@@ -185,8 +198,8 @@ public class MainFrame extends JFrame {
 		});
 		miner.add(minerOutlies);
 		
-		JMenuItem minerFrequency = new JMenuItem("频繁模式挖掘(P)");
-		minerFrequency.setMnemonic(KeyEvent.VK_P);
+		JMenuItem minerFrequency = new JMenuItem("频繁模式挖掘(F)");
+		minerFrequency.setMnemonic(KeyEvent.VK_F);
 		minerFrequency.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -197,6 +210,19 @@ public class MainFrame extends JFrame {
 			}
 		});
 		miner.add(minerFrequency);
+		
+		JMenuItem minerPath = new JMenuItem("通信路径规律(T)");
+		minerPath.setMnemonic(KeyEvent.VK_T);
+		minerPath.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				PathMinerFactory pathFactory=PathMinerFactory.getInstance();
+				pathFactory.minerPathPeriod();
+				NetworkMinerFactory.getInstance().startAllMiners();
+				panelListAllEvents.refreshAllTasks();
+			}
+		});
+		miner.add(minerPath);
 		JMenu mnView = new JMenu("视图(V)");
 		mnView.setMnemonic(KeyEvent.VK_V);
 		menuBar.add(mnView);

@@ -12,9 +12,9 @@ public class ParamsSM extends IParamsNetworkMining{
 	private int minSeqLen;	// 最短序列模式长度
 	
 	public ParamsSM() {
-		minSupport = 0.4;
+		minSupport = 5;
 		sizeWindow = 10;
-		stepWindow = 10;
+		stepWindow = 1;
 		minSeqLen = 4;
 	}
 	

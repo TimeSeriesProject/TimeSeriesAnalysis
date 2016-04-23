@@ -16,6 +16,7 @@ public interface IMinerPM {
 	public Double getMinEntropy();
 	public Double[] getEntropies();
 	public int getLastNumberIndexInperiod();
+	public double getConfidence();
 	
 	public Map<String, List<Integer>> getExistPeriodOfNonNumDataItems();
 	public Map<String, Boolean> getHasPeriodOfNonNumDataItms();

@@ -63,7 +63,7 @@ import cn.InstFS.wkr.NetworkMining.UIs.MainFrame;
 public class DataPretreatment {
 	
 	//获取给定毫秒数之后的时间
-	private static Date getDateAfter(Date curTime, int milliSeconds){
+	public static Date getDateAfter(Date curTime, int milliSeconds){
 		Calendar cal = Calendar.getInstance();
 		try{
 		cal.setTime(curTime);
@@ -314,6 +314,26 @@ public class DataPretreatment {
 		return routeNum;
 	}
 	
+	public static DataItems normalization(DataItems di){
+		DataItems dataout=new DataItems();
+		dataout.setTime(di.getTime());
+		if(di==null||di.getTime()==null||di.getData()==null||di.getLength()==0)
+			return dataout;
+		List<String> datas=di.getData();
+		DescriptiveStatistics statistics=new DescriptiveStatistics();
+		for(String data:datas){
+			statistics.addValue(Double.parseDouble(data));
+		}
+		double mean=statistics.getMean();
+		double minMaxSpan=statistics.getMax()-statistics.getMin();
+		
+		List<String> normData=new ArrayList<String>();
+		for(String data:datas){
+			normData.add(((Double.parseDouble(data)-mean)*1000)/minMaxSpan+"");
+		}
+		dataout.setData(normData);
+		return dataout;
+	}
 	//datItems在相同的时间粒度上的聚合
 	public static DataItems aggregateData(DataItems di,int granularity,
 			AggregateMethod method,boolean isDiscreteOrNonDouble){	

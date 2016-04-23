@@ -13,6 +13,7 @@ public class MinerResultsPM{
 	private Double[] featureValues;	// 不同周期对应的指标值，如featureValues[2]代表周期为2时的指标值
 	DataItems distibutePeriod;
 	private int firstPossiblePeriod;
+	private double confidence;
 	
 	public MinerResultsPM(){}
 	
@@ -72,4 +73,14 @@ public class MinerResultsPM{
 	public void setFirstPossiblePeriod(int firstPossiblePeriod) {
 		this.firstPossiblePeriod = firstPossiblePeriod;
 	}
+
+	public double getConfidence() {
+		return confidence;
+	}
+
+	public void setConfidence(double confidence) {
+		this.confidence = confidence;
+	}
+	
+	
 }

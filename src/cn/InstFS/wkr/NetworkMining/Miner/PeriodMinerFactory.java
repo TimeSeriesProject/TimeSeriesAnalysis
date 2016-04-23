@@ -62,7 +62,7 @@ public class PeriodMinerFactory {
 				DataItems dataItems=rawDataItems.get(protocol);
 				if(!isDataItemSparse(dataItems)){
 					TaskElement task = new TaskElement();
-					String name = ip+"_"+protocol+"_"+granularity+"_"+"周期挖掘";
+					String name = ip+"_"+protocol+"_"+granularity+"_"+"周期挖掘_auto";
 					task.setTaskName(name);
 					task.setComments("挖掘  ip 为"+ip+" ，粒度为"+granularity+"s 的协议"+protocol+"的周期规律");
 					task.setDataSource("File");

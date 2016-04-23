@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
@@ -250,6 +251,12 @@ public class PortCorreationInputs implements IReader{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
+	}
+	
+	@Override
+	public Map<String, DataItems> readAllRoute() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

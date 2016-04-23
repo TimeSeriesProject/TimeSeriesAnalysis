@@ -7,6 +7,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.CWNetworkReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.Exception.NoneSuchMinerMethod;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerPM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
@@ -44,7 +45,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		}else if (task.getMiningMethod().equals(MiningMethod.MiningMethods_TsAnalysis)){
 			miner = new NetworkMinerTSA(task,reader);
 		}else if (task.getMiningMethod().equals(MiningMethod.MiningMethods_PeriodicityMining)){
-			miner = new NetworkMinerPM(task,reader);
+			miner = new NetworkMinerPM(task, reader);
 		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_FrequenceItemMining)){
 			miner=new NetworkMinerFP(task, reader);
 		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_PathProbilityMining)){
@@ -79,6 +80,42 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 				e.printStackTrace();
 			}
 		}
+		
+		for(INetworkMiner miner :allMiners.values()){
+			if(!miner.isOver()){
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		for(int t=0;t<TaskElement.allTasks.size();t++){
+			TaskElement task=TaskElement.allTasks.get(t);
+			if(task.getTaskName().contains("周期挖掘_auto")){
+				if(allMiners.containsKey(task)){
+					INetworkMiner miner=allMiners.get(task);
+					if(!miner.getResults().getRetPM().hasPeriod){
+						allMiners.get(task).stop();
+						allMiners.remove(task);
+						TaskElement.allTasks.remove(t);
+						t--;
+					}
+				}
+			}else if(task.getTaskName().contains("auto_频繁模式挖掘")){
+				if(allMiners.containsKey(task)){
+					INetworkMiner miner=allMiners.get(task);
+					if(!miner.getResults().getRetSM().isHasFreItems()){
+						allMiners.get(task).stop();
+						allMiners.remove(task);
+						TaskElement.allTasks.remove(t);
+						t--;
+					}
+				}
+			}
+		}
+		System.out.println(TaskElement.allTasks.size());
 	}
 	public void startMiner(TaskElement task){
 		if(allMiners.containsKey(task)){

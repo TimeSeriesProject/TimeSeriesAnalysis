@@ -22,6 +22,7 @@ public class MinerResults {
 	private MinerResultsTSA retTSA;
 	private MinerResultsSM retSM; 
 	private MinerResultsFP retFP;
+	private MinerResultsPath retPath;
 	
 	
 	public MinerResults(INetworkMiner miner) {
@@ -80,6 +81,14 @@ public class MinerResults {
 		return retSM;
 	}
 	
+	public MinerResultsPath getRetPath() {
+		return retPath;
+	}
+
+	public void setRetPath(MinerResultsPath retPath) {
+		this.retPath = retPath;
+	}
+
 	public void setRetSM(MinerResultsSM retSM) {
 		this.retSM = retSM;
 	}

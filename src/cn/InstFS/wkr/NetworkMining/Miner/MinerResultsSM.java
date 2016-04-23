@@ -19,6 +19,7 @@ public class MinerResultsSM {
 	private double recallRatio = -1;
 	private double accuracyRatio = -1;
 	private Map<Integer, List<String>> frequentItem=new HashMap<Integer, List<String>>();
+	private boolean hasFreItems=false;
 
 	public Map<Integer, List<String>> getFrequentItem() {
 		return frequentItem;
@@ -97,8 +98,16 @@ public class MinerResultsSM {
 	private void calculateRecallAndAccuracy() {
 
 	}
-	
 
+	public boolean isHasFreItems() {
+		return hasFreItems;
+	}
+
+	public void setHasFreItems(boolean hasFreItems) {
+		this.hasFreItems = hasFreItems;
+	}
+	
+	
 	
 	
 }

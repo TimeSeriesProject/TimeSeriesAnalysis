@@ -169,7 +169,8 @@ class TSATimerTask extends TimerTask{
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistTSA)){
 			tsaMethod=new ERPDistTSA(task,params.getPredictPeriod(),dataItems);
 		}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
-			tsaMethod=new TEOPartern(dataItems, 4, 4, 7);	
+			tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
+			results.getRetTSA().setIslinkDegree(true);
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_NeuralNetworkTSA)){
 			TextUtils textUtils=new TextUtils();
 			textUtils.setTextPath(task.getSourcePath()+task.getMiningObject());
@@ -183,20 +184,27 @@ class TSATimerTask extends TimerTask{
 		tsaMethod.TimeSeriesAnalysis();
 		results.getRetTSA().setOutlies(tsaMethod.getOutlies());            //查找异常
 		results.getRetTSA().setPredictItems(tsaMethod.getPredictItems());  //预测
+		results.getRetTSA().setHasOutlies(false);
+		if(tsaMethod.getOutlies()!=null){
+			DataItems outlies=tsaMethod.getOutlies();
+			if(outlies.getLength()==dataItems.getLength()){
+				int confidence=0;
+				for(String item:outlies.getData()){
+					if(Double.parseDouble(item)>=8){
+						results.getRetTSA().setHasOutlies(true);
+						confidence++;
+					}
+				}
+				if(confidence!=0)
+					results.getRetTSA().setConfidence(confidence);
+			}else{
+				if(outlies.getLength()>0){
+					results.getRetTSA().setHasOutlies(true);
+					results.getRetTSA().setConfidence(outlies.getLength());
+				}
+			}
+		}
 		
-//		boolean isDiscrete = dataItems.isDiscrete();
-//		if (!isDiscrete){	// 连续值
-//			ContinuousPeriodDetection cpd = new ContinuousPeriodDetection();
-//			cpd.Detection(results);
-//		}else{
-//			int dimension=Math.max(task.getDiscreteDimension(),dataItems.getDiscretizedDimension());
-//			DiscreteTSA discreteTSA=new DiscreteTSA(dimension, task,task.getDiscreteEndNodes(),
-//					params.getPeriodThreshold(),params.getOutlierThreshold()
-//					,params.getPredictPeriod(),dataItems);
-//			discreteTSA.predictByPeriod();
-//			results.getRetTSA().setOutlies(discreteTSA.getOutlies());            //查找异常
-//			results.getRetTSA().setPredictItems(discreteTSA.getPredictItems());  //预测
-//		}
 		isRunning = false;
 		isOver=true;
 		if (displayer != null)

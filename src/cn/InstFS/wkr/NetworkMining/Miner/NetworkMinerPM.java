@@ -126,10 +126,10 @@ class PMTimerTask extends TimerTask{
 	@Override
 	
 	public void run() {
-//		if (isRunning){
-//			System.out.println(task.getTaskName() + " --> Still Running");
-//			return;
-//		}
+		if (isRunning){
+			System.out.println(task.getTaskName() + " --> Still Running");
+			return;
+		}
 //		if (UtilsSimulation.instance.isPaused())
 //			return;
 		results.setDateProcess(UtilsSimulation.instance.getCurTime());
@@ -177,9 +177,11 @@ class PMTimerTask extends TimerTask{
 			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 					task.getDiscreteEndNodes());
 		}
-		for(int i=0;i<dataItems.getLength();i++){
-			System.out.print(dataItems.getData().get(i).split("\\.")[0]+",");
-		}
+		
+		dataItems=DataPretreatment.normalization(dataItems);
+//		for(int i=0;i<dataItems.getLength();i++){
+//			System.out.print(dataItems.getData().get(i).split("\\.")[0]+",");
+//		}
 		int dimension = task.getDiscreteDimension();
 		dimension = Math.max(task.getDiscreteDimension(), dataItems.getDiscretizedDimension());
 		IMinerPM pmMethod=null;
@@ -202,6 +204,7 @@ class PMTimerTask extends TimerTask{
 			retPM.setFeatureValue(pmMethod.getMinEntropy());
 			retPM.setFeatureValues(pmMethod.getEntropies());
 			retPM.setFirstPossiblePeriod(pmMethod.getFirstPossiblePeriod());//找出第一个呈现周期性的周期
+			retPM.setConfidence(pmMethod.getConfidence());
 			System.out.println("是否存在周期："+pmMethod.hasPeriod());
 			if(pmMethod.hasPeriod()){
 				System.out.println("周期值 "+pmMethod.getPredictPeriod());
@@ -229,15 +232,7 @@ class PMTimerTask extends TimerTask{
 		
 		isRunning = false;
 		isOver=true;
-		NetworkMinerFactory factory=NetworkMinerFactory.getInstance();
-		if(pmMethod.hasPeriod()){
-//			Map<TaskElement, INetworkMiner>map=factory.allMiners;
-//			for(TaskElement tasks:map.keySet()){
-//				//if(tasks.)
-//			}
-		}else{
-			factory.removeMiner(task);
-		}
+		
 		if (displayer != null)
 			displayer.displayMinerResults(results);
 		timer.cancel();

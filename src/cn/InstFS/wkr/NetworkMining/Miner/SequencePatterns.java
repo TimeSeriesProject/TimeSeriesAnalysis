@@ -38,7 +38,8 @@ public class SequencePatterns {
 	private int stepSize = 10;
 	private int clusterNum = 10;
 	private Date minDate = null;
-	private double threshold = 0.4;
+	private double threshold = 0.8;
+	private boolean hasPattern=false;
 
 	public static void main(String[] args) {
 		TaskElement task = new TaskElement();
@@ -69,7 +70,7 @@ public class SequencePatterns {
 				patternsResult);
 		
 		sp.patternMining();
-		sp.displayResult();
+		//sp.displayResult();
 
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -395,10 +396,10 @@ public class SequencePatterns {
 			sb.delete(0, sb.length());
 		}
 		
-		for(int i = 0;i < sliceSequence.size();i++)
-		{
-			System.out.println(sliceSequence.get(i));
-		}
+//		for(int i = 0;i < sliceSequence.size();i++)
+//		{
+//			System.out.println(sliceSequence.get(i));
+//		}
 		return sliceSequence;
 
 	}
@@ -416,14 +417,14 @@ public class SequencePatterns {
 	 * 打印返回的结果
 	 */
 	public void displayResult() {
-		System.out.println("displayResult....   频繁项数据量为：" + patterns.size());
-		for (int i = 0; i < patterns.size(); i++) {
-			System.out.format("频繁项 %d  ", i);
-			for (int j = 0; j < patterns.get(i).size(); j++) {
-				System.out.print(patterns.get(i).get(j) + ",");
-			}
-			System.out.println();
-		}
+//		System.out.println("displayResult....   频繁项数据量为：" + patterns.size());
+//		for (int i = 0; i < patterns.size(); i++) {
+//			System.out.format("频繁项 %d  ", i);
+//			for (int j = 0; j < patterns.get(i).size(); j++) {
+//				System.out.print(patterns.get(i).get(j) + ",");
+//			}
+//			System.out.println();
+//		}
 	}
 	public DataItems getDataItems() {
 		return dataItems;
@@ -439,6 +440,14 @@ public class SequencePatterns {
 
 	public void setTask(TaskElement task) {
 		this.task = task;
+	}
+
+	public boolean isHasPattern() {
+		return hasPattern;
+	}
+
+	public void setHasPattern(boolean hasPattern) {
+		this.hasPattern = hasPattern;
 	}
 
 	public List<ArrayList<String>> getPatterns() {

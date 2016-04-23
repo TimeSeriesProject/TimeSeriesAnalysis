@@ -110,6 +110,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		add(chart1);
 //
 		InitMiner(task);
+		
 	}
 
 	private void InitMiner(TaskElement task) {
@@ -159,115 +160,99 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 
 	@Override
 	public void displayMinerResults(MinerResults rslt) {
+		DataItems nor=rslt.getInputData();
+		
+		
+		HashMap<String,ArrayList<DataItems>> f_model_nor= new HashMap<>();
+		
+		
+		Map<Integer, List<String>> freq = rslt.getRetSM().getFrequentItem();
+//		System.out.println("normal model");
+//		for (Integer key : freq.keySet()) {
+//			System.out.println(key);
+//			for (String s : freq.get(key))
+//				System.out.print(s+" ");
+//			System.out.println("");
+//		}
+//		System.out.println("freq size "+freq.size());
 		if (rslt == null || rslt.getRetTSA() == null ||
 				!rslt.getMiner().getClass().equals(NetworkMinerSM.class))
 			return;
 		else if(count==0)
 		{
-
-			DataItems nor = rslt.getInputData();
-			chart1.displayDataItems(nor);
-//			HashMap<String,ArrayList<DataItems>> f_model_nor= new HashMap<>();
-//			Map<Integer, List<String>> freq = rslt.getRetSM().getFrequentItem();
-//			if(freq!=null){
-//				HashMap<String, ArrayList<String>> nor_model = new HashMap<>();
-//				for (Integer key : freq.keySet()) {
-////				System.out.println(key);
-//					String skey = key.toString();
-//					ArrayList<String> astring = new ArrayList<>();
-//					for (String s : freq.get(key)) {
-////					System.out.println(s);
-//						astring.add(s);
-//					}
-//					nor_model.put(skey, astring);
-////				System.out.println("_____________________");
-//				}
-//				//显示结果
+			if(freq!=null&&count==0){
+				HashMap<String, ArrayList<String>> nor_model = new HashMap<>();
+				for (Integer key : freq.keySet()) {
+//				System.out.println(key);
+					String skey = key.toString();
+					ArrayList<String> astring = new ArrayList<>();
+					for (String s : freq.get(key)) {
+//					System.out.println(s);
+						astring.add(s);
+					}
+					nor_model.put(skey, astring);
+				}
+				//显示结果
+//				System.out.println("f-normal-model");
 //				for (String key : nor_model.keySet()) {
 //					System.out.println(key);
 //					for (String s : nor_model.get(key))
-//						System.out.println(s);
-//					System.out.println("____________________");
+//						System.out.print(s+" ");
+//					System.out.println("");
 //				}
-////			DataItems nor = new DataItems();
-//				System.out.println(nor_model.size());
-////				System.out.println(nor_model.get("0").size());
-////				System.out.println(nor_model.get("1").size());
-//				for (int i = 0; i < nor_model.size(); i++) {
-//					String key = Integer.toString(i);
-//					ArrayList<DataItems> nor_data = new <DataItems>ArrayList();
-//
-//					ArrayList<String> model_line = nor_model.get(key);
-//					for (int j = 0; j < model_line.size(); j++) {
-//						String temp = model_line.get(j);
-//						String[] temp_processData = temp.split(",");
-//						int first = 0;
-//						int last = 0;
+//				System.out.println("normal  "+nor_model.size());
+				for (int i = 0; i < nor_model.size(); i++) {
+					String key = Integer.toString(i);
+					ArrayList<DataItems> nor_data = new ArrayList<DataItems>();
+
+					ArrayList<String> model_line = nor_model.get(key);
+					for (int j = 0; j < model_line.size(); j++) {
+						String temp = model_line.get(j);
+						String[] temp_processData = temp.split(",");
+						int first = 0;
+						int last = 0;
 //						System.out.println(first);
 //						System.out.println(last);
-//						DataItems nor_line = new DataItems();
-////					DataItems abnor_line=new DataItems();
-//						if (temp_processData[0] != null) {
-//							String firstString = temp_processData[0];
-//							first = Integer.parseInt(firstString);
-//						}
-//						if (temp_processData.length > 1) {
-//							String endString = temp_processData[1];
-//							last = Integer.parseInt(endString);
-//						}
-//						for (int k = first; k <= last; k++) {
-////						DataItem dataItemAbnor=new DataItem();
-//							if (k == nor.getLength())
-//								break;
-//							DataItem tempItem = new DataItem();
-//							System.out.println(nor.getElementAt(k).getTime());
-//							tempItem.setTime(nor.getElementAt(k).getTime());
-//							System.out.println(nor.getElementAt(k).getData());
-////						dataItemAbnor.setData(abnor.getElementAt(k).getData());
-////						dataItemAbnor.setTime(abnor.getElementAt(k).getTime());
-//							tempItem.setData(nor.getElementAt(k).getData());
-//
-//
-//							nor_line.add1Data(tempItem);
-////						abnor_line.add1Data(dataItemAbnor);
-//						}
-//						nor_data.add(nor_line);
-////					abnor_data.add(abnor_line);
-//
-//					}
-//					f_model_nor.put(key, nor_data);
-////					nor_data.clear();
-//					if(f_model_nor.size()==nor_model.size())
-//					{
-//						System.out.println("ppppppppp"+f_model_nor.size());
-//						JFreeChart jf = ChartPanelShowFI.createChart(f_model_nor, nor);
-//						ChartPanel chartpanel = new ChartPanel(jf);
-//						remove(chart1);
-//						add(chartpanel);
-//						repaint();
-//						validate();
-//						count++;
-//					}
-//				
-//
-//			}
-				
-//					else{
-//			tblCurData.showDataItems(new DataItems());
-//			tblCurData.hideColumnProb();
-//			tblForcasts_curTime.showDataItems(new DataItems());
-//			tblForcasts_curTime.hideColumnTime();
-//			tblForcasts_futureTime.showDataItems(new DataItems());
-//			tblForcasts_futureTime.hideColumnTime();
-//			tblPatterns.showDataItems(new DataItems());
-//			tblPatterns.hideColumnTime();
-//
-//			tblShowAccuracy.showMinerResultsPrecisionAndRecall(rslt);
-//		}
-//			}
+						DataItems nor_line = new DataItems();
+//					DataItems abnor_line=new DataItems();
+						if (temp_processData[0] != null) {
+							String firstString = temp_processData[0];
+							first = Integer.parseInt(firstString);
+						}
+						if (temp_processData.length > 1) {
+							String endString = temp_processData[1];
+							last = Integer.parseInt(endString);
+						}
+						//System.out.println(first+" "+last);
+						for (int k = first; k <= last; k++) {
+							if (k == nor.getLength())
+								break;
+							DataItem tempItem = new DataItem();
+							tempItem.setTime(nor.getElementAt(k).getTime());
+							tempItem.setData(nor.getElementAt(k).getData());
+							nor_line.add1Data(tempItem);
+						}
+						nor_data.add(nor_line);
+					}
+					f_model_nor.put(key, nor_data);
+					if(f_model_nor.size()==nor_model.size())
+					{
+						//System.out.println("ppppppppp"+f_model_nor.size());
+						JFreeChart jf = ChartPanelShowFI.createChart(f_model_nor, nor);
+						ChartPanel chartpanel = new ChartPanel(jf);
+						remove(chart1);
+						add(chartpanel);
+						repaint();
+						validate();
+						count++;
+					}
+				}
+			}
 		}
 	}
 }
+
+
 
 
 

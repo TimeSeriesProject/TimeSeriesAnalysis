@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.lang.model.element.Element;
+
 import oracle.net.aso.k;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -29,6 +31,7 @@ public class ERPDistencePM implements IMinerPM {
 	private int predictPeriod;   //周期长度
 	private List<Integer> existPeriod;
 	private DataItems itemsInPeriod;  //一个周期内的items
+	private double confidence;
 	
 	
 	private Map<String, List<Integer>> existPeriodOfNonNumDataItems;
@@ -157,18 +160,19 @@ public class ERPDistencePM implements IMinerPM {
 			period++;	//周期递加
 			standardList.clear();
 			Entropy=0.0;
-			generateStandardList(seq, period, standardList);
-			for(int i=0;i<numItems/period;i++){
+			//generateStandardList(seq, period, standardList);
+			for(int i=0;i<period;i++){
 				seqList.clear();
-				for(int j=0;j<period;j++){
-					seqList.add(seq.get(i*period+j));
+				for(int j=0;j<numItems/period;j++){
+					seqList.add(seq.get(j*period+i));
 				}
-				double en=MHTDistance(standardList, seqList);
+				//double en=MHTDistance(standardList, seqList);
+				double en=VarianceOfList(seqList);
 				Entropy+=en;
 			}
 			double diff=Entropy;
 			entropies[period-1]=diff;
-			System.out.println("period "+period+"'s diff is "+diff);
+			//System.out.println("period "+period+"'s diff is "+diff);
 		}
 	}
 	
@@ -178,6 +182,14 @@ public class ERPDistencePM implements IMinerPM {
 			distance+=Math.abs(Double.parseDouble(seqX.get(i))-Double.parseDouble(seqY.get(i)));
 		}
 		return distance;
+	}
+	
+	private double VarianceOfList(List<String> list){
+		DescriptiveStatistics statistics=new DescriptiveStatistics();
+		for(String item:list){
+			statistics.addValue(Double.parseDouble(item));
+		}
+		return statistics.getStandardDeviation();
 	}
 	
 	/**
@@ -239,118 +251,21 @@ public class ERPDistencePM implements IMinerPM {
 		}
 	}
 	
-//	private void geneNormList(List<String> seq,List<String> normList){
-//		DescriptiveStatistics meanStatistics=new DescriptiveStatistics();
-//		int length=seq.size();
-//		List<Double> items=new ArrayList<Double>();
-//		for(String item:seq){
-//			items.add(Double.parseDouble(item));
-//			meanStatistics.addValue(Double.parseDouble(item));
-//		}
-//		
-//		double stdMean=meanStatistics.getMean();
-//		double min=meanStatistics.getMin();
-//		meanStatistics.clear();
-//		for(int i=0;i<length;i++){
-//			items.set(i, items.get(i)-min);
-//			
-//		}
-//		for(int i=0;i<items.size();i++){
-//			normList.add((items.get(i)/(stdMean-min+0.1)*10)+"");
-//		}
-//	}
-	
-	/**
-	 * 序列未切分的ERP距离
-	 * private int ERPDistance(List<String> seqX,List<String>seqY,int xSize,int ySize,int [][]matrix,int offset){
-		if(xSize<0&&ySize<0){
-			return 0;
-		}else if(xSize<0){
-			int sum=0;
-			for(int i=0;i<=ySize;i++){
-				sum+=Integer.parseInt(seqY.get(i));
-			}
-			return sum;
-		}else if(ySize<0){
-			int sum=0;
-			for(int i=0;i<=xSize;i++){
-				sum+=Integer.parseInt(seqX.get(i));
-			}
-			return sum;
-		}
-		
-		if(matrix[xSize][ySize]!=0){
-			return matrix[xSize][ySize];
-		}else{
-			int xItem=Integer.parseInt(seqX.get(xSize));
-			int yItem=Integer.parseInt(seqY.get(ySize));
-			int dis1=ERPDistance(seqX,seqY,xSize-1,ySize-1,matrix,offset)+distMatrix[xSize][ySize+offset];
-			int dis2=ERPDistance(seqX, seqY,xSize-1,ySize,matrix,offset)+Math.abs(xItem);
-			int dis3=ERPDistance(seqX, seqY,xSize,ySize-1,matrix,offset)+Math.abs(yItem);
-			int min=(dis1>dis2)?dis2:dis1;
-			min= (min>dis3)?dis3:min;
-			matrix[xSize][ySize]=min;
-			return min;
-		}
-	}
-	**
-	*序列未切分设置Matrix
-	private void setDistMatrix(List<String> items) {
-		int length=items.size();
-		distMatrix=new int[length][length];
-		for(int i=0;i<length;i++){
-			for(int j=0;j<length;j++){
-				if(i==j)
-					distMatrix[i][j]=7000*10;
-				else
-					distMatrix[i][j]=Math.abs((int)Double.parseDouble(items.get(i))-
-							(int)Double.parseDouble(items.get(j)));
-			}
-		}
-	}
-	
-	**
-	*未切分线段的ＥＲＰ距离计算公式
-	*private int ERPDistance(List<String> seqX,List<String>seqY,int xSize,int ySize,int [][]matrix,int offset){
-		if(xSize<0&&ySize<0){
-			return 0;
-		}else if(xSize<0){
-			int sum=0;
-			for(int i=0;i<=ySize;i++){
-				sum+=Integer.parseInt(seqY.get(i));
-			}
-			return sum;
-		}else if(ySize<0){
-			int sum=0;
-			for(int i=0;i<=xSize;i++){
-				sum+=Integer.parseInt(seqX.get(i));
-			}
-			return sum;
-		}
-		
-		if(matrix[xSize][ySize]!=0){
-			return matrix[xSize][ySize];
-		}else{
-			int xItem=Integer.parseInt(seqX.get(xSize));
-			int yItem=Integer.parseInt(seqY.get(ySize));
-			int dis1=ERPDistance(seqX,seqY,xSize-1,ySize-1,matrix,offset)+distMatrix[xSize][ySize+offset];
-			int dis2=ERPDistance(seqX, seqY,xSize-1,ySize,matrix,offset)+Math.abs(xItem);
-			int dis3=ERPDistance(seqX, seqY,xSize,ySize-1,matrix,offset)+Math.abs(yItem);
-			int min=(dis1>dis2)?dis2:dis1;
-			min= (min>dis3)?dis3:min;
-			matrix[xSize][ySize]=min;
-			return min;
-		}
-	}
-	 */
-	
 	private void isPeriodExist(int maxPeriod,String item,List<String>seq){
 		itemsInPeriod=new DataItems();
 		existPeriod=new ArrayList<Integer>();
 		predictValuesMap=new HashMap<Integer, Integer[]>();
+		Map<Integer, Double> ratio=new HashMap<Integer, Double>();
 		hasPeriod=false;
 		for(int i=1;i<maxPeriod;i++){
 			if(isPeriod(entropies, i+1)){
+				if(i==1){
+					ratio.put(2, entropies[2]/entropies[1]);
+				}else if(i==entropies.length-1){
+					ratio.put(i+1, entropies[i-1]/entropies[i]);
+				}else{
+					ratio.put(i+1, Math.min(entropies[i-1]/entropies[i],entropies[i+1]/entropies[i]));
+				}
 				hasPeriod=true;
 				existPeriod.add(i+1);
 				Integer[] predictValues=new Integer[i+1];
@@ -366,27 +281,38 @@ public class ERPDistencePM implements IMinerPM {
 				predictValuesMap.put((i+1), predictValues);
 			}
 		}
-		int Period=maxPeriod;
-		Set<Integer> keyset=predictValuesMap.keySet();
-		for(Integer key:keyset){
-			if(key<Period)
-				Period=key;
-		}
-		
-		int multiple=1;
-		boolean isSuccess=true;
-		while((multiple+1)*Period<maxPeriod){
-			if(entropies[multiple*Period-1]-entropies[(multiple+1)*Period-1]>=(-entropies[multiple*Period-1]*0.2)){
-				multiple++;
-			}else{
-				isSuccess=false;
-				break;
+//		int shortestPeriod=maxPeriod;
+//		Set<Integer> keyset=predictValuesMap.keySet();
+//		for(Integer key:keyset){
+//			if(key<shortestPeriod)
+//				shortestPeriod=key;
+//		}
+//		
+//		int multiple=1;
+//		boolean isSuccess=true;
+//		while((multiple+1)*Period<maxPeriod){
+//			if(entropies[multiple*Period-1]-entropies[(multiple+1)*Period-1]>=(-entropies[multiple*Period-1]*0.2)){
+//				multiple++;
+//			}else{
+//				isSuccess=false;
+//				break;
+//			}
+//		}
+//		if(!isSuccess){
+//			Period=multiple*Period;
+//		}
+//		predictPeriod=Period;
+		double ratios=0;
+		int possiPeriod=0;
+		for(Integer key:ratio.keySet()){
+			if(ratio.get(key)>ratios){
+				ratios=ratio.get(key);
+				possiPeriod=key;
 			}
 		}
-		if(!isSuccess){
-			Period=multiple*Period;
-		}
-		predictPeriod=Period;
+		predictPeriod=possiPeriod;
+		confidence=ratios;        //该检测周期的置信度
+		
 		for(int i=1;i<maxPeriod;i++){
 			if(entropies[i]<minEntropy){
 				minEntropy=entropies[i];
@@ -394,7 +320,7 @@ public class ERPDistencePM implements IMinerPM {
 		}
 		if(hasPeriod){
 			itemsInPeriod=new DataItems();
-			Integer[] predictValues=predictValuesMap.get(Period);
+			Integer[] predictValues=predictValuesMap.get(predictPeriod);
 			if(predictValues==null){
 				predictValues=new Integer[predictPeriod];
 				for(int index=0;index<predictPeriod;index++){
@@ -408,7 +334,7 @@ public class ERPDistencePM implements IMinerPM {
 				}
 			}
 			predictValuesMap.put(predictPeriod, predictValues);
-			for(int i=0;i<Period;i++){
+			for(int i=0;i<possiPeriod;i++){
 				itemsInPeriod.add1Data(di.getTime().get(i),predictValues[i]+"");
 			}
 			
@@ -428,54 +354,67 @@ public class ERPDistencePM implements IMinerPM {
 		}
 	}
 	
-	private boolean isPeriod(Double[] Entropies,int index){
-		boolean period=true;
+	private boolean maxThanNeighbor(Double[] Entropies,int index,boolean isnext,int origin){
+		boolean isMaxThanNeighbor=false;
+		
+		
 		if(index==2){
 			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2){
-				if(!nextPeriod(Entropies, index)){
-					period=false;
-				}
-			}else{
-				period=false;
+				isMaxThanNeighbor=true;
 			}
 		}else if(index==Entropies.length){
 			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2){
-				if(!nextPeriod(Entropies, index)){
-					period=false;
-				}
-			}else{
-				period=false;
+				isMaxThanNeighbor=true;
 			}
 		}else{
-            if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2&&
-            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2){
-            	if(!nextPeriod(Entropies, index)){
-					period=false;
+			if(isnext){
+				if(origin-index==1){
+					if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2)
+						isMaxThanNeighbor=true;
+				}else if(origin-index==-1){
+					if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2)
+						isMaxThanNeighbor=true;
 				}
-			}else{
-				period=false;
+			}else if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2&&
+            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2){
+            	isMaxThanNeighbor=true;
 			}
 		}
-		return period;
+		return isMaxThanNeighbor;
+	}
+	
+	private boolean isPeriod(Double[] Entropies,int index){
+
+		if(maxThanNeighbor(Entropies, index,false,index)){
+			if(nextPeriod(Entropies, index)){
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
 	}
 	
 	private boolean nextPeriod(Double[] Entropies,int index){
 		int i=index;
 		boolean period=true;
 		int num=0;
-		while(i<=Entropies.length&&num<3){
+		while(i<=Entropies.length&&num<4){
 			if(i==2){
-				if(Entropies[i-1]-Entropies[i]>0){
+				if(!(maxThanNeighbor(Entropies, i,false,i)||maxThanNeighbor(Entropies, i+1,true,i))){
 					period=false;
 					break;
 				}
 			}else if(i==(Entropies.length)){
-				if(Entropies[i-1]-Entropies[i-2]>0){
+				
+				if(!(maxThanNeighbor(Entropies, i,false,i)||maxThanNeighbor(Entropies, i-1,true,i))){
 					period=false;
 					break;
 				}
 			}else{
-				if(Entropies[i-1]-Entropies[i-2]>0||Entropies[i-1]-Entropies[i]>0){
+				if(!(maxThanNeighbor(Entropies, i,false,i)||maxThanNeighbor(Entropies, i-1,true,i)||
+						maxThanNeighbor(Entropies, i+1,true,i))){
 					period=false;
 					break;
 				}
@@ -603,4 +542,13 @@ public class ERPDistencePM implements IMinerPM {
 	public double getThreshold(){
 		return threshold;
 	}
+
+	public double getConfidence() {
+		return confidence;
+	}
+
+	public void setConfidence(double confidence) {
+		this.confidence = confidence;
+	}
+	
 }

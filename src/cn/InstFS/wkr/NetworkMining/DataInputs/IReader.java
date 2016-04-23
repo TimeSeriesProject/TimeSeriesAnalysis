@@ -1,12 +1,14 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
 import java.util.List;
+import java.util.Map;
 
 
 
 public interface IReader {	
 	//读取文本文件中的数据
 	public DataItems readInputByText();
+	public Map<String, DataItems> readAllRoute();
 	//读取数据库中的数据
 	public DataItems readInputBySql();
 	

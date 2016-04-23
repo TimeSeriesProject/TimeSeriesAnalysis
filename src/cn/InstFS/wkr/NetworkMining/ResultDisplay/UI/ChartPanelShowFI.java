@@ -199,7 +199,7 @@ public class ChartPanelShowFI extends JPanel {
         xylineandshaperenderer.setSeriesPaint(0, Color.black);
         xylineandshaperenderer.setSeriesFillPaint(0, Color.yellow);
         xylineandshaperenderer.setSeriesOutlinePaint(0, Color.gray);
-        xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
+        xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.1F));
         //设置显示数据点
 //        xylineandshaperenderer.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
 //        xylineandshaperenderer.setBaseItemLabelsVisible(true);

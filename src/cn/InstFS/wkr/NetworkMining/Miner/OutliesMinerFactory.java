@@ -52,7 +52,7 @@ public class OutliesMinerFactory {
 				DataItems dataItems=rawDataItems.get(protocol);
 				if(!isDataItemSparse(dataItems)){
 					TaskElement task=new TaskElement();
-					String name=ip+"_"+protocol+"_"+"异常检测";
+					String name=ip+"_"+protocol+"_"+"auto_异常检测";
 					task.setTaskName(name);
 					task.setComments("挖掘  ip 为"+ip+" 上，协议"+protocol+"的异常检测");
 					task.setDataSource("File");

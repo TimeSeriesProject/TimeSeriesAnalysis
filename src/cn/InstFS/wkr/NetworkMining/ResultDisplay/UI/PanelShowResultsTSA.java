@@ -11,7 +11,6 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataInputUtils;
 import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerPM;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerTSA;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
@@ -178,17 +177,34 @@ public class PanelShowResultsTSA extends JPanel implements IPanelShowResults {
 		DataItems outliesItems = rslts.getRetTSA().getOutlies();
 		DataItems predictItems = rslts.getRetTSA().getPredictItems();
 		DataItems oriItems = rslts.getInputData();
+		boolean islinkPic=rslts.getRetTSA().isIslinkDegree();
 		if(count==0){
+			if(outliesItems!=null){
+		    	System.out.println("outlies "+outliesItems.getLength());
+			}
 			if(outliesItems!=null)
 			{
-				JFreeChart jf=ChartPanelShowAb.createChart(oriItems,outliesItems);
-				ChartPanel chartpanel = new ChartPanel(jf);
-				chart1.displayDataItems(oriItems);
+				if(islinkPic){
+					JFreeChart jf=ChartPanelShowAbd.createChart(outliesItems);
+					ChartPanel chartpanel = new ChartPanel(jf);
+					chart1.displayDataItems(oriItems);
 					remove(chart1);
 					remove(chart3);
-				add(chart1);
-				add(chartpanel);
+					add(chart1);
+					add(chartpanel);
 				count++;
+
+				}else{
+					JFreeChart jf=ChartPanelShowAb.createChart(oriItems,outliesItems);
+					ChartPanel chartpanel = new ChartPanel(jf);
+					chart1.displayDataItems(oriItems);
+						remove(chart1);
+						remove(chart3);
+					add(chart1);
+					add(chartpanel);
+					count++;
+				}
+				
 			}
 			if(predictItems!=null)
 			{

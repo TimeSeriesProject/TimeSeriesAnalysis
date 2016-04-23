@@ -123,6 +123,9 @@ public class PanelListAllTasks extends JScrollPane implements ITaskElementEventL
 
 	public void refreshAllTasks(){
 //		listTasks.updateUI();
+		lmodel.removeAllElements();
+		for(TaskElement ee : TaskElement.allTasks)
+			lmodel.addElement(ee);
 		Object []tasks =  lmodel.toArray();
 		Arrays.sort(tasks);
 		lmodel.removeAllElements();

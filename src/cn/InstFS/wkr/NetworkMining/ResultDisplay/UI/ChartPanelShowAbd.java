@@ -155,23 +155,25 @@ public class ChartPanelShowAbd extends JPanel{
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
-    public static JFreeChart createChart(DataItems nor,DataItems abnor)
+    public static JFreeChart createChart(DataItems abnor)
     {
-        XYDataset xydataset = createNormalDataset(nor);
-        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("异常度检测", "时间", "值", xydataset);
+//        XYDataset xydataset = createNormalDataset(nor);
+        
+        //设置异常点提示红点大小
+        java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(-4D, -4D, 6D, 6D);
+//        XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer)xyplot.getRenderer();
+//        xylineandshaperenderer.setBaseShapesVisible(false);
+//        xylineandshaperenderer.setBaseLinesVisible(false);
+//        xylineandshaperenderer.setSeriesShape(0, double1);
+//        xylineandshaperenderer.setSeriesPaint(0, Color.black);
+//        xylineandshaperenderer.setSeriesFillPaint(0, Color.yellow);
+//        xylineandshaperenderer.setSeriesOutlinePaint(0, Color.gray);
+//        xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
+        XYDataset xydataset1 = createAbnormalDataset(abnor);
+        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("异常度检测", "时间", "值", xydataset1);
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
-        //设置异常点提示红点大小
-        java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(-4D, -4D, 6D, 6D);
-        XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer)xyplot.getRenderer();
-        xylineandshaperenderer.setBaseShapesVisible(false);
-        xylineandshaperenderer.setSeriesShape(0, double1);
-        xylineandshaperenderer.setSeriesPaint(0, Color.black);
-        xylineandshaperenderer.setSeriesFillPaint(0, Color.yellow);
-        xylineandshaperenderer.setSeriesOutlinePaint(0, Color.gray);
-        xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
-        XYDataset xydataset1 = createAbnormalDataset(abnor);
         XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
         xyplot.setDataset(1, xydataset1);
         xyplot.setRenderer(1, xylineandshaperenderer1);
@@ -180,10 +182,10 @@ public class ChartPanelShowAbd extends JPanel{
         xylineandshaperenderer1.setSeriesShape(0, double1);
         xylineandshaperenderer1.setSeriesPaint(0, Color.red);
         xylineandshaperenderer1.setSeriesFillPaint(0, Color.red);
-        xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.gray);
-        xylineandshaperenderer1.setUseFillPaint(true);
+//        xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.gray);
+//        xylineandshaperenderer1.setUseFillPaint(true);
         xylineandshaperenderer1.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-        xylineandshaperenderer1.setBaseItemLabelsVisible(true);
+//        xylineandshaperenderer1.setBaseItemLabelsVisible(true);
         return jfreechart;
     }
 }

@@ -47,7 +47,7 @@ public class NetworkMinerSM implements INetworkMiner {
 
 	@Override
 	public boolean start() {
-		System.out.println("PanelShowResultsSM   timer开始");
+//		System.out.println("PanelShowResultsSM   timer开始");
 		if (timer != null) {
 			UtilsUI.appendOutput(task.getTaskName() + " -- 早已启动！");
 			return false;
@@ -161,10 +161,15 @@ class SMTimerTask extends TimerTask {
 			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(), task.getDiscreteEndNodes());
 		}
 		//符号化后的序列
-		DataItems clusterItems=WavCluster.SelfCluster(dataItems, 24, 2);
+		DataItems clusterItems=null;
+		if(task.getPatternNum()==0){
+			clusterItems=WavCluster.SelfCluster(dataItems, 24, 2,task.getTaskName());
+		}else{
+			clusterItems=WavCluster.SelfCluster(dataItems, 24, task.getPatternNum(),task.getTaskName());
+		}
 		
-		
-		SequencePatterns sequencePattern=new SequencePatterns();
+		//SequencePatterns sequencePattern=new SequencePatterns();
+		SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit();
 		sequencePattern.setDataItems(clusterItems);
 		sequencePattern.setTask(task);
 		sequencePattern.setWinSize(paramsSM.getSizeWindow());
@@ -173,16 +178,22 @@ class SMTimerTask extends TimerTask {
 		Map<Integer, List<String>>frequentItem=sequencePattern.printClusterLabelTOLines(clusterItems, dataItems);
 		results.getRetSM().setFrequentItem(frequentItem);
 		sequencePattern.patternMining();
-		sequencePattern.displayResult();
+		//sequencePattern.displayResult();
 		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
-		results.getRetSM().setPatters(patterns);
+		if(sequencePattern.isHasFreItems()){
+			results.getRetSM().setPatters(patterns);
+			results.getRetSM().setHasFreItems(true);
+		}else{
+			results.getRetSM().setHasFreItems(false);
+		}
+		
 		lastTimeStoped = true;
 		isRunning=false;
-		displayer.displayMinerResults(results);
+		//displayer.displayMinerResults(results);
 		if (MainFrame.topFrame == null || UtilsUI.autoChangeResultsPanel
 				|| MainFrame.topFrame.getSelectedTask() == task
 				|| MainFrame.topFrame.getSelectedTask() == null)
-			TaskElement.display1Task(task, ITaskDisplayer.DISPLAY_RESULTS);
+			//TaskElement.display1Task(task, ITaskDisplayer.DISPLAY_RESULTS);
 		isOver=true;
 		timer.cancel();
 	}

@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.JOptionPane;
@@ -236,5 +237,10 @@ public class SingleNodeTrafficInputs implements IReader {
 		}
 		return null;
 	}
-
+	
+	@Override
+	public Map<String, DataItems> readAllRoute() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

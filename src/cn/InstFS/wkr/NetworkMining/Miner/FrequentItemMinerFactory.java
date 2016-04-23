@@ -50,24 +50,27 @@ public class FrequentItemMinerFactory {
 		for(int granularity:granularities){
 			for(String protocol:rawDataItems.keySet()){
 				DataItems dataItems=rawDataItems.get(protocol);
-				if(!isDataItemSparse(dataItems)){
-					TaskElement task=new TaskElement();
-					String name=ip+"_"+protocol+"_"+"频繁模式挖掘";
-					task.setTaskName(name);
-					task.setComments("挖掘  "+"ip 为"+ip+" 上，协议"+protocol+"的频繁模式");
-					task.setDataSource("File");
-					task.setGranularity(granularity);
-					task.setAggregateMethod(AggregateMethod.Aggregate_MEAN);
-					task.setSourcePath(dataFile.getPath());
-					task.setTaskRange(TaskRange.SingleNodeRange);
-					task.setRange(ip);
-					task.setDiscreteMethod(DiscreteMethod.None);
-					task.setMiningMethod(MiningMethod.MiningMethods_SequenceMining);
-					task.setMiningObject(protocol);
-					TaskElement.add1Task(task, false);
-					NetworkMinerFactory minerFactory=NetworkMinerFactory.getInstance();
-					INetworkMiner miner=minerFactory.allMiners.get(task);
-					miner.getResults().setInputData(dataItems);
+                if(!isDataItemSparse(dataItems)){
+                	for(int num=2;num<=4;num++){
+    					TaskElement task=new TaskElement();
+    					String name=ip+"_"+protocol+"_auto_频繁模式挖掘"+"_"+num;
+    					task.setTaskName(name);
+    					task.setPatternNum(num);
+    					task.setComments("挖掘  "+"ip 为"+ip+" 上，协议为"+protocol+"的频繁模式");
+    					task.setDataSource("File");
+    					task.setGranularity(granularity);
+    					task.setAggregateMethod(AggregateMethod.Aggregate_MEAN);
+    					task.setSourcePath(dataFile.getPath());
+    					task.setTaskRange(TaskRange.SingleNodeRange);
+    					task.setRange(ip);
+    					task.setDiscreteMethod(DiscreteMethod.None);
+    					task.setMiningMethod(MiningMethod.MiningMethods_SequenceMining);
+    					task.setMiningObject(protocol);
+    					TaskElement.add1Task(task, false);
+    					NetworkMinerFactory minerFactory=NetworkMinerFactory.getInstance();
+    					INetworkMiner miner=minerFactory.allMiners.get(task);
+    					miner.getResults().setInputData(dataItems);
+    				}
 				}
 			}
 		}

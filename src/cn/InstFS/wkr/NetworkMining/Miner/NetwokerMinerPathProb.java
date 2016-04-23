@@ -3,11 +3,15 @@ package cn.InstFS.wkr.NetworkMining.Miner;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Map.Entry;
+
+import com.sun.jna.platform.unix.X11.XClientMessageEvent.Data;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
@@ -51,7 +55,7 @@ public class NetwokerMinerPathProb implements INetworkMiner{
 		}
 		timer = new Timer();
 		results = new MinerResults(this);
-		timerTask = new PathProbTimerTask(task, results, displayer,reader,isOver);
+		timerTask = new PathProbTimerTask(task, results, displayer,reader,timer,isOver);
 		timer.scheduleAtFixedRate(timerTask, new Date(), UtilsSimulation.instance.getForcastWindowSizeInSeconds() * 1000);
 		isRunning = true;
 		task.setRunning(isRunning);
@@ -102,16 +106,18 @@ class PathProbTimerTask extends TimerTask{
 	TaskElement task;
 	MinerResults results;
 	private Boolean isOver;
+	private Timer timer;
 	IResultsDisplayer displayer;
 	private boolean isRunning = false;
 	
 	IReader reader;
-	public PathProbTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,IReader reader,Boolean isOver) {
+	public PathProbTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,IReader reader,Timer timer,Boolean isOver) {
 		this.task = task;
 		this.results = results;
 		this.displayer = displayer;
 		this.reader=reader;
 		this.isOver=isOver;
+		this.timer=timer;
 	}
 	
 	public boolean isRunning(){
@@ -131,7 +137,7 @@ class PathProbTimerTask extends TimerTask{
 		isRunning = true;
 		// 读取数据
 		DataItems dataItems = null;
-		if(task.getMiningObject().equals("pathProb")){
+		if(task.getMiningObject().toLowerCase().equals("pathprob")){
 			TextUtils utils=new TextUtils();
 			//给定路径，找到每条路径概率
 			if(task.getPathSource()==null||task.getPathSource().equals("")){
@@ -156,7 +162,7 @@ class PathProbTimerTask extends TimerTask{
 			for(int i=0;i<dataItems.getLength();i++){
 				System.out.println(dataItems.data.get(i)+":"+dataItems.prob.get(i));
 			}
-		}else if(task.getMiningObject().equals("path")){
+		}else if(task.getMiningObject().toLowerCase().equals("path")){
 			//不给定路径，统计每条路径的概率
 			dataItems=reader.readInputByText();
 			if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
@@ -167,39 +173,64 @@ class PathProbTimerTask extends TimerTask{
 				dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 						task.getDiscreteEndNodes());
 			}
-			DataPretreatment.translateProbilityOfData(dataItems);//将跳转概率保存到文件中
-			dataItems=DataPretreatment.changeDataToProb(dataItems); //计算每条路径的概率
-			results.setInputData(dataItems);
-			List<Map<String, Double>>datas=dataItems.getProbMap();
-			Set<String>varset=dataItems.getVarSet();
-			List<List<String>> seqs=new ArrayList<List<String>>();
-			for(String item:varset){
-				int row=0;
-				List<String>seq=new ArrayList<String>();
-				seq.add(item);
-				for(Map<String, Double>map:datas){
-					if(map.containsKey(item)){
-						int value=(int)(map.get(item)*1000);
-						seq.add(value+"");
-						row++;
-					}else{
-						seq.add("0");
-					}
-				}
-				if(row<dataItems.getLength()*0.05)
-					continue;
-				seqs.add(seq);
+			pathPeriodDetect(dataItems);
+		}else if(task.getMiningObject().toLowerCase().equals("allpath")){
+			task.setMiningObject("path");
+			Map<String, DataItems> dataMap=reader.readAllRoute();
+			Iterator<Entry<String, DataItems>> iterator=dataMap.entrySet().iterator();
+			while(iterator.hasNext()){
+				Entry<String, DataItems> entry=iterator.next();
+				pathPeriodDetect(entry.getValue());
 			}
-			String fileName;
-			String[] pathExampleNodes=seqs.get(0).get(0).split(",");
-			fileName="path_"+pathExampleNodes[0]+"-"+pathExampleNodes[pathExampleNodes.length-1]+".csv";
-			TextUtils textUtils=new TextUtils();
-			textUtils.writeLists(seqs, "./configs/"+fileName);
 		}
-		
 		isRunning = false;
 		isOver=true;
 		if (displayer != null)
 			displayer.displayMinerResults(results);
+		timer.cancel();
+	}
+	
+	private void pathPeriodDetect(DataItems dataItems){
+		DataPretreatment.translateProbilityOfData(dataItems);//将跳转概率保存到文件中
+		dataItems=DataPretreatment.changeDataToProb(dataItems); //计算每条路径的概率
+		results.setInputData(dataItems);
+		List<Map<String, Double>>datas=dataItems.getProbMap();
+		Set<String>varset=dataItems.getVarSet();
+		List<List<String>> seqs=new ArrayList<List<String>>();
+		for(String item:varset){
+			int row=0;
+			List<String>seq=new ArrayList<String>();
+			seq.add(item);
+			for(Map<String, Double>map:datas){
+				if(map.containsKey(item)){
+					int value=(int)(map.get(item)*1000);
+					seq.add(value+"");
+					row++;
+				}else{
+					seq.add("0");
+				}
+			}
+			if(row<dataItems.getLength()*0.05)
+				continue;
+			seqs.add(seq);
+		}
+		//针对每一个seq做一次周期检测
+		MinerResultsPath retPath=new MinerResultsPath();
+		for(List<String>seq:seqs){
+			DataItems newItem=new DataItems();
+			String name=seq.get(0);
+			seq.remove(0);
+			newItem.setData(seq);
+			newItem.setTime(dataItems.getTime());
+			IMinerPM pmMethod=new ERPDistencePM();
+			pmMethod.setDataItems(newItem);
+			pmMethod.predictPeriod();
+			if(pmMethod.hasPeriod()){
+				System.out.println("period:"+name+":"+pmMethod.getPredictPeriod()+":"+pmMethod.getFirstPossiblePeriod());
+				retPath.getPeriodPath().put(name, pmMethod.getPredictPeriod());
+				retPath.getFirstPeriodOfPath().put(name, pmMethod.getFirstPossiblePeriod());
+				retPath.getItemsInPeriod().put(name, pmMethod.getItemsInPeriod());
+			}
+		}
 	}
 }

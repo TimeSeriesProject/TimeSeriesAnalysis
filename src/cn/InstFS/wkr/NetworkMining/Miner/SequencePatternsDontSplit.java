@@ -39,6 +39,8 @@ public class SequencePatternsDontSplit {
 	private int clusterNum = 10;
 	private Date minDate = null;
 	private double threshold = 0.4;
+	private double freThreshold=0.5;
+	private boolean hasFreItems=false;
 
 	public static void main(String[] args) {
 		TaskElement task = new TaskElement();
@@ -99,13 +101,13 @@ public class SequencePatternsDontSplit {
 		minDate = min_date;
 		HashSet<String> clusterLabel = getClusterNum(); // 得到序列聚类的个数
 		clusterNum = clusterLabel.size();
-		System.out.println("clusterNum:" + clusterNum);
-		System.out.println("dataItems.data.size():" + dataItems.data.size());
+//		System.out.println("clusterNum:" + clusterNum);
+//		System.out.println("dataItems.data.size():" + dataItems.data.size());
 		
 		String sliceSequence = getSliceSequence(); // 将一个样例以字符串形式给出
 		
 		ArrayList<String> basicSequence = convertHashSetToArray(clusterLabel); // 初始化长度串
-		System.out.println("sequenceProb:" + basicSequence.size());
+//		System.out.println("sequenceProb:" + basicSequence.size());
 
 		patterns = getFrequentItemSet(sliceSequence, basicSequence, threshold);
 		return patterns;
@@ -133,7 +135,7 @@ public class SequencePatternsDontSplit {
 		int count = 0;
 		while (true) {
 			
-			System.out.println("迭代次数："+(++count) +"  满足条件大小："+NewestSequence.size());
+			//System.out.println("迭代次数："+(++count) +"  满足条件大小："+NewestSequence.size());
 			NewestSequence = getNewFrequentItemsAndJudge(BasicSequence,NewestSequence,
 					sliceSequence,position,thresh);
 			if(NewestSequence.size() == 0)
@@ -211,12 +213,15 @@ public class SequencePatternsDontSplit {
 		if(ps == null)
 			return false;
 		ArrayList<Integer> asi_list = new ArrayList<Integer>();
-		
+		int m = 0;
+		int len=0;
+		int nextPos=-1;
 		for(int i = 0;i < ps.size();i++)
 		{
 			int index = ps.get(i);
+			if(index <= nextPos)
+				continue;
 			int j = 0;
-			int m = 0;
 			for(j = index+first_item.length()+1,m = 0;j < sliceSequence.length() && m < last_item.length();j++,m++)
 			{
 				if(sliceSequence.charAt(j) != last_item.charAt(m))
@@ -225,12 +230,17 @@ public class SequencePatternsDontSplit {
 			if(m == last_item.length())
 			{
 				asi_list.add(index);
+				nextPos=index+first_item.length() + last_item.length()+1;
 			}
 			
 		}
-		int len = first_item.length() + last_item.length()+1;
-		if(asi_list.size()*len*1.0/sliceSequence.length() > thresh)
+		len = first_item.length() + last_item.length()+1;
+		if(asi_list.size()*1.0 > thresh)
 		{
+			if(len>=9&&(asi_list.size()*len*1.0/sliceSequence.length()>freThreshold)){
+				hasFreItems=true;
+				System.out.println(first_item+","+last_item+":"+asi_list.size());
+			}
 			position.put(first_item+","+last_item, asi_list);
 			return true;
 		}
@@ -265,11 +275,12 @@ public class SequencePatternsDontSplit {
 				if(index == -1)
 					break;
 
-				len += item.length();
+				len = index + item.length();
+//				System.out.println("index:"+index+"  len:"+len);
 				labelPosition.add(index);
 				
 			}
-			if(labelPosition.size()*item.length() >= thresh)
+			if(labelPosition.size()>= thresh)
 				position.put(item, labelPosition);
 			else
 			{
@@ -447,10 +458,10 @@ public class SequencePatternsDontSplit {
 				}
 			}
 		}
-		for(int index:indexOfClusterItem){
-			System.out.print(index+",");
-		}
-		System.out.println();
+//		for(int index:indexOfClusterItem){
+//			System.out.print(index+",");
+//		}
+//		System.out.println();
 		HashMap<Integer, List<String>> map=new HashMap<Integer, List<String>>();
 		for(int label=0;label<99;label++){
 			for(int itemIndex=0;itemIndex<clusterItems.getLength();itemIndex++){
@@ -477,17 +488,25 @@ public class SequencePatternsDontSplit {
 		}
 		
 		
-		Iterator<Entry<Integer, List<String>>> iterator=map.entrySet().iterator();
-		while(iterator.hasNext()){
-			Entry<Integer, List<String>>entry=iterator.next();
-			System.out.print(entry.getKey());
-			for(String item:entry.getValue()){
-				System.out.print(":"+item);
-			}
-			System.out.println();
-		}
+//		Iterator<Entry<Integer, List<String>>> iterator=map.entrySet().iterator();
+//		while(iterator.hasNext()){
+//			Entry<Integer, List<String>>entry=iterator.next();
+//			System.out.print(entry.getKey());
+//			for(String item:entry.getValue()){
+//				System.out.print(":"+item);
+//			}
+//			System.out.println();
+//		}
 		return map;
 	}
+	public boolean isHasFreItems() {
+		return hasFreItems;
+	}
+	public void setHasFreItems(boolean hasFreItems) {
+		this.hasFreItems = hasFreItems;
+	}
+	
+	
 	
 }
 //class SampleIndex{

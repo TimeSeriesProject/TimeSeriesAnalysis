@@ -10,6 +10,9 @@ public class MinerResultsTSA{
 	
 	private DataItems predictItems;
 	private DataItems outlies;
+	private boolean islinkDegree=false;
+	private boolean hasOutlies;
+	private int confidence;
 	
 	
 	public DataItems getPredictItems() {
@@ -30,4 +33,23 @@ public class MinerResultsTSA{
 	public void setParamsTSA(ParamsTSA params){
 		this.params=params;
 	}
+	public boolean isIslinkDegree() {
+		return islinkDegree;
+	}
+	public void setIslinkDegree(boolean islinkDegree) {
+		this.islinkDegree = islinkDegree;
+	}
+	public boolean isHasOutlies() {
+		return hasOutlies;
+	}
+	public void setHasOutlies(boolean hasOutlies) {
+		this.hasOutlies = hasOutlies;
+	}
+	public int getConfidence() {
+		return confidence;
+	}
+	public void setConfidence(int confidence) {
+		this.confidence = confidence;
+	}
+	
 }

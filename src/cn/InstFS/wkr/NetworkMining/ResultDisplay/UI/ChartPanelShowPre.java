@@ -159,7 +159,7 @@ public class ChartPanelShowPre extends JPanel{
     {
 
         XYDataset xydataset = createNormalDataset(nor);
-        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" Prediction", "time", "value", xydataset);
+        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" Ô¤²â", "time", "value", xydataset);
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);

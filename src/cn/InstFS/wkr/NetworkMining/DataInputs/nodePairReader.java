@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -240,6 +242,27 @@ public class nodePairReader implements IReader {
 		return DataItems.sortByTimeValue(dataItems);
 		
 	}
+	/**
+	 * 获取文件下所有通信节点对路径
+	 * @return 所有通信节点对路径
+	 */
+	public Map<String, DataItems> readAllRoute(){
+		Map<String, DataItems> dataMap=new HashMap<String, DataItems>();
+		Map<String, Date> timeMap=new HashMap<String, Date>();
+		String minierObject=task.getMiningObject();
+		File sourceFile=null;
+		if(filePath==null||filePath.equals("")){
+			sourceFile=new File(task.getSourcePath());
+			
+		}else{
+			sourceFile=new File(filePath);
+		}
+		if(sourceFile.isFile()){
+			readFile(sourceFile.getAbsolutePath(), minierObject, dataMap,timeMap);
+			System.out.println("read file "+sourceFile.getName());
+		}
+		return dataMap;
+	}
 	public Map<String,DataItems > readAllPairByText(String[] conditions)
 	{
 		Map<String,DataItems> ipPairItems = new HashMap<String,DataItems>();
@@ -378,9 +401,9 @@ public class nodePairReader implements IReader {
 		String line=null;
 		int rows=0;//记录总共读取的行数
 		while((line=textUtils.readByrow())!=null){
-			rows++;
 			String[] items=line.split(",");
 			int timeSpan=Integer.parseInt(items[0]);
+			rows=timeSpan-0;
 			Date time=parseTime(timeSpan*3600);
 			String protocolItems=items[items.length-1];
 			String[] eachProtocol=protocolItems.split(";");
@@ -388,11 +411,19 @@ public class nodePairReader implements IReader {
 				String[] proAndTraffic=protocol.split(":");
 				if(protocolDataItems.containsKey(proAndTraffic[0])){
 					DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
-					dataItems.add1Data(time, proAndTraffic[1]);
+					DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
+					//合并同一个IP，同一个协议的通信的流量要合并
+					if(dataItem.getTime().toString().equals(time.toString())){
+						int traffic=Integer.parseInt(dataItem.getData());
+						int addTraffic=Integer.parseInt(proAndTraffic[1]);
+						dataItems.getData().set(dataItems.getLength()-1,(traffic+addTraffic)+"");
+					}else{
+						dataItems.add1Data(time, proAndTraffic[1]);
+					}	
 				}else{
 					DataItems dataItems=new DataItems();
-					for(int i=rows-1;i>0;i--){
-						dataItems.add1Data(parseTime(timeSpan-3600*i), "0");
+					for(int i=rows-1;i>=0;i--){
+						dataItems.add1Data(parseTime(timeSpan-i), "0");
 					}
 					dataItems.add1Data(time, proAndTraffic[1]);
 					protocolDataItems.put(proAndTraffic[0], dataItems);
@@ -425,6 +456,113 @@ public class nodePairReader implements IReader {
 	}
 	
 	/**
+	 * 读取给定文件下所有通信节点对的通信路径
+	 * @param filePath  文件地址 
+	 * @param minierObject 节点对通信路径
+	 * @param dataMap  存放每对通信节点对的路径序列
+	 * @param timeMap  按小时聚合，防止数据量过大
+	 */
+	private void readFile(String filePath,String minierObject,Map<String, DataItems> dataMap,Map<String, Date> timeMap){
+		TextUtils textUtils=new TextUtils();
+		textUtils.setTextPath(filePath);
+		String header=textUtils.readByrow();
+		String[] columns=header.split(",");
+		int minerObjectIndex=NameToIndex(minierObject, columns);
+		if(minerObjectIndex==-1){
+			throw new RuntimeException("未找到挖掘对象");
+		}
+		int TimeColIndex=NameToIndex("Time(S)", columns);
+		int SIPColIndex=NameToIndex("srcIP", columns);
+		int DIPColIndex=NameToIndex("dstIP", columns);
+		if(TimeColIndex==-1||SIPColIndex==-1||DIPColIndex==-1){
+			throw new RuntimeException("Time SIP DIP 属性在文件中未找到");
+		}
+		String line=null;
+		
+		DataItems dataItems=null;
+		Date deadDate=null;
+		List<Integer> nodeList=new ArrayList<Integer>();
+		List<Integer> hopsList=new ArrayList<Integer>();
+		StringBuilder sb=new StringBuilder();
+		while((line=textUtils.readByrow())!=null){
+			columns=line.split(",");
+			int time=Integer.parseInt(columns[TimeColIndex]);
+			String key=columns[SIPColIndex]+","+columns[DIPColIndex];
+			if(dataMap.containsKey(key)){
+				dataItems=dataMap.get(key);
+				deadDate=timeMap.get(key);
+			}else{
+				dataItems=new DataItems();
+				dataItems.setVarSet(new HashSet<String>());
+				dataItems.setIsAllDataDouble(-1);
+				dataMap.put(key, dataItems);
+				deadDate=parseTime(time);
+				deadDate=DataPretreatment.getDateAfter(deadDate, 3600*1000);
+				timeMap.put(key, deadDate);
+			}
+			
+			//跳过本节点 直接转到路由器节点
+			for(int j=minerObjectIndex;j<columns.length;j++)
+			{
+				int len=nodeList.size();
+				int node = Integer.valueOf(columns[j].split("-")[0]);
+				int hops = Integer.valueOf(columns[j].split(":")[1]);
+				if(len>0&&nodeList.get(len-1)==node){
+					hopsList.set(len-1, hops);
+				}else{
+					nodeList.add(node);
+					hopsList.add(hops);
+				}
+			}
+			sb.append(columns[SIPColIndex]).append(",");
+			int start=1;
+			
+
+			for(int i=0;i<nodeList.size();i++){
+				int hops=hopsList.get(i);
+				for(int pos=start;pos<hops;pos++)
+					sb.append("*").append(",");
+				sb.append(nodeList.get(i)).append(",");
+				start=hops+1;
+			}
+			sb.append(columns[DIPColIndex]);
+			String path=sb.toString();
+			dataItems.getVarSet().add(path);
+			int len=dataItems.getLength();
+			if(parseTime(time).before(deadDate)&&len>0){
+				Map<String, Integer> data=dataItems.getNonNumData().get(len-1);
+				if(data.containsKey(path)){
+					int originValue=data.get(path);
+					data.put(path, originValue+1);
+				}else{
+					data.put(path, 1);
+				}
+			}else{
+				if(len==0){
+					dataItems.getTime().add(parseTime(time));
+					Map<String, Integer> data=new HashMap<String, Integer>();
+					data.put(path, 1);
+					dataItems.getNonNumData().add(data);
+				}else{
+					while(!parseTime(time).before(deadDate)){
+						dataItems.getTime().add(deadDate);
+						Map<String, Integer> data=new HashMap<String, Integer>();
+						dataItems.getNonNumData().add(data);
+						deadDate=DataPretreatment.getDateAfter(deadDate, 3600*1000);
+						timeMap.put(key, deadDate);
+					}
+					int size=dataItems.getNonNumData().size();
+					Map<String, Integer> data=dataItems.getNonNumData().get(size-1);
+					data.put(path, 1);
+				}
+			}
+			sb.delete(0, sb.length());
+			nodeList.clear();
+			hopsList.clear();
+		}
+	}
+	
+	/**
 	 * 读取文件
 	 * @param filePath 文件路径
 	 * @param minierObject 要读取的属性
@@ -443,21 +581,21 @@ public class nodePairReader implements IReader {
 		int SIPColIndex=NameToIndex("srcIP", columns);
 		int DIPColIndex=NameToIndex("dstIP", columns);
 		if(TimeColIndex==-1||SIPColIndex==-1||DIPColIndex==-1){
-			throw new RuntimeException("Time SIP SIP 属性在文件中未找到");
+			throw new RuntimeException("Time SIP DIP 属性在文件中未找到");
 		}
 		String line=null;
 		boolean fixCondition=true;
 
-		if(minierObject.contains("path")||minierObject.contains("PATH")||minierObject.contains("Path")){
+		if(minierObject.toLowerCase().contains("path")){
 			dataItems.setIsAllDataDouble(-1);
-			Map<Integer, Integer> map=new HashMap<Integer, Integer>();
-			List<Map.Entry<Integer, Integer>> mapList=new ArrayList<Map.Entry<Integer,Integer>>();
+			List<Integer> nodeList=new ArrayList<Integer>();
+			List<Integer> hopsList=new ArrayList<Integer>();
 			StringBuilder sb=new StringBuilder();
 			while((line=textUtils.readByrow())!=null){
 				columns=line.split(",");
 				fixCondition=true;
 				for(String ip:ipPair){
-					if(ip.endsWith("0")){//针对局域网IP
+					if(ip.endsWith(".0")){//针对局域网IP
 						if(!(columns[SIPColIndex].substring(0, columns[SIPColIndex].lastIndexOf(".")+1).equals(ip.substring(0,ip.lastIndexOf(".")+1))||
 								columns[DIPColIndex].substring(0, columns[DIPColIndex].lastIndexOf(".")+1).equals(ip.substring(0,ip.lastIndexOf(".")+1)))){
 							fixCondition=false;
@@ -472,32 +610,21 @@ public class nodePairReader implements IReader {
 				}
 				if(fixCondition){
 					int time=Integer.parseInt(columns[TimeColIndex]);
-					//String[] pathNodes=columns[minerObjectIndex].split(" ");
-					for(int j=minerObjectIndex;j<columns.length;j++)
+					//跳过本节点 直接转到路由器节点
+					for(int j=minerObjectIndex+1;j<columns.length-1;j++)
 					{
-						String str[] = columns[j].split(":");
-						int node = Integer.valueOf(str[0]);
-						int hops = Integer.valueOf(str[1]);
-						if(map.containsKey(node)){//去掉一个路由器节点在路径在出现两次的情况
-							if(hops>map.get(node)){
-								map.put(node, hops);
-							}
+						int len=nodeList.size();
+						int node = Integer.valueOf(columns[j].split("-")[0]);
+						int hops = Integer.valueOf(columns[j].split(":")[1]);
+						if(len>0&&nodeList.get(len-1)==node){
+							hopsList.set(len-1, hops);
 						}else{
-							map.put(node, hops);
+							nodeList.add(node);
+							hopsList.add(hops);
 						}
-						
 					}
-					mapList.addAll(map.entrySet());
-					Collections.sort(mapList,new Comparator<Map.Entry<Integer, Integer>>() {
-						@Override
-						public int compare(Entry<Integer, Integer> o1,
-								Entry<Integer, Integer> o2) {
-							
-							return o1.getValue().compareTo(o2.getValue());
-						}
-					});
 					for(String ip:ipPair){
-						if(ip.endsWith("0")){
+						if(ip.endsWith(".0")){
 							if(ip.substring(0, ip.lastIndexOf(".")+1).equals(columns[SIPColIndex].substring(0, columns[SIPColIndex].lastIndexOf(".")+1))){
 								sb.append(ip).append(",");
 								break;
@@ -511,16 +638,16 @@ public class nodePairReader implements IReader {
 					}
 					int start=1;
 					
-					for(Map.Entry<Integer, Integer> entry:mapList){
-						int pos=entry.getValue();
-						for(int i=start;i<pos;i++){
+
+					for(int i=0;i<nodeList.size();i++){
+						int hops=hopsList.get(i);
+						for(int pos=start;pos<hops;pos++)
 							sb.append("*").append(",");
-						}
-						sb.append(entry.getKey()).append(",");
-						start=entry.getValue()+1;
+						sb.append(nodeList.get(i)).append(",");
+						start=hops+1;
 					}
 					for(String ip:ipPair){
-						if(ip.endsWith("0")){
+						if(ip.endsWith(".0")){
 							if(ip.substring(0, ip.lastIndexOf(".")+1).equals(columns[DIPColIndex].substring(0, columns[DIPColIndex].lastIndexOf(".")+1))){
 								sb.append(ip);
 								break;
@@ -532,10 +659,11 @@ public class nodePairReader implements IReader {
 							}
 						}
 					}
+					
 					dataItems.add1Data(parseTime(time), sb.toString());
 					sb.delete(0, sb.length());
-					mapList.clear();
-					map.clear();
+					nodeList.clear();
+					hopsList.clear();
 				}
 			}
 		}else{
@@ -557,6 +685,7 @@ public class nodePairReader implements IReader {
 		}
 		
 	}
+	
 	private void readFile(String filePath,String minierObject,Map<String,DataItems> ipPairItems,String[] conditions){
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
@@ -663,8 +792,6 @@ public class nodePairReader implements IReader {
 					break;
 				}
 			}
-//			if(!fixCondition)
-//			System.out.println("ggggg");
 			if(fixCondition){
 				if(columns[SIPColIndex].compareTo(columns[DIPColIndex])<0)
 				{
@@ -851,12 +978,20 @@ public class nodePairReader implements IReader {
 	 * @return 
 	 */
 	private boolean isFileContainsIp(String ip,String fileName){
-		int fileIndex=Integer.parseInt(fileName.split("-")[1]);
-		int LANIndex=Integer.parseInt(ip.split("\\.")[2]);
-		if((fileIndex/6+1)==LANIndex){
-			return true;
+		if(ip.endsWith(".0")){
+			String ipNet=ip.substring(0, ip.lastIndexOf("."));
+			String fileIp=fileName.substring(0, fileName.lastIndexOf("."));
+			String fileNet=fileIp.substring(0, fileIp.lastIndexOf("."));
+			if(ipNet.equals(fileNet))
+				return true;
+			else 
+				return false;
 		}else{
-			return false;
+			if(ip.equals(fileName.substring(0, fileName.lastIndexOf(".")))){
+				return true;
+			}else{
+				return false;
+			}
 		}
 	}
 	
