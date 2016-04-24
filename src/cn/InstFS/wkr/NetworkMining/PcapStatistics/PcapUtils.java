@@ -172,10 +172,10 @@ class RouteGen implements Callable
 			{
 				updaterecords(pre);
 				StringBuilder sb=new StringBuilder();
-				sb.append(String.valueOf(pre.getTime_s())).append(","+pre.getSrcIP()).append(","+pre.getDstIP()).append(","+pre.getTraffic()).append(","+num);
+				sb.append(String.valueOf(pre.getTime_s())).append(",").append(pre.getSrcIP()).append(",").append(pre.getDstIP()).append(",").append(pre.getTraffic()).append(",").append(num);
 				Collections.sort(ttlList);
 				for(int i=0;i<ttlList.size();i++)
-					sb.append(","+ttlList.get(i).node+":"+ttlList.get(i).TTL);
+					sb.append(",").append(ttlList.get(i).node).append(":").append(ttlList.get(i).TTL);
 				bw.write(sb.toString());
 				
 				bw.newLine();
@@ -189,10 +189,10 @@ class RouteGen implements Callable
 				updaterecords(pre);
 		    	
 				StringBuilder sb=new StringBuilder();
-				sb.append(String.valueOf(pre.getTime_s())).append(","+pre.getSrcIP()).append(","+pre.getDstIP()).append(","+pre.getTraffic()).append(","+num);
+				sb.append(String.valueOf(pre.getTime_s())).append(",").append(pre.getSrcIP()).append(",").append(pre.getDstIP()).append(",").append(pre.getTraffic()).append(",").append(num);
 				Collections.sort(ttlList);
 				for(int i=0;i<ttlList.size();i++)
-					sb.append(","+ttlList.get(i).node+":"+ttlList.get(i).TTL);
+					sb.append(",").append(ttlList.get(i).node).append(":").append(ttlList.get(i).TTL);
 				bw.write(sb.toString()); 
 				
 				bw.newLine();
@@ -210,10 +210,10 @@ class RouteGen implements Callable
 		updaterecords(pre);
 		
 		StringBuilder sb=new StringBuilder();
-		sb.append(String.valueOf(pre.getTime_s())).append(","+pre.getSrcIP()).append(","+pre.getDstIP()).append(","+pre.getTraffic()).append(","+num);
+		sb.append(String.valueOf(pre.getTime_s())).append(",").append(pre.getSrcIP()).append(",").append(pre.getDstIP()).append(",").append(pre.getTraffic()).append(",").append(num);
 		Collections.sort(ttlList);
 		for(int i=0;i<ttlList.size();i++)
-			sb.append(","+ttlList.get(i).node+":"+ttlList.get(i).TTL);
+			sb.append(",").append(ttlList.get(i).node).append(":").append(ttlList.get(i).TTL);
 		bw.write(sb.toString());
 		
 		ttlList.clear();
@@ -250,11 +250,14 @@ class RouteGen implements Callable
 				data.setTTL(Integer.parseInt(str[8]));
 				data.setTraffic(Integer.valueOf(str[7]));
 				data.setPcapFile(str[6]);
+				//if(count<10)
 				datas.add(data);
 				
 			}
 			bin.close();
 			gen();
+			datas=null;
+			System.gc();
 			pcapUtils.setGenedRouteNum(pcapUtils.getGenedRouteNum()+1);
 			System.out.println(pcapUtils.getGenedRouteNum());
 			
@@ -377,21 +380,22 @@ public class PcapUtils {
 		{
 //			System.out.println(fileList.get(i).getAbsolutePath());
 			RouteGen routeGen= new RouteGen(this,fileList.get(i).getAbsolutePath(),outPath,records); 
-			results.add(exec.submit(routeGen));
+//			results.add(exec.submit(routeGen));
+			routeGen.call();
 		}
-		for(int i=0;i<results.size();i++)
-		{
-			try {
-				results.get(i).get();
-			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.out.println(e);
-			}
-			finally{
-				exec.shutdown();
-			}
-		}
+//		for(int i=0;i<results.size();i++)
+//		{
+//			try {
+//				results.get(i).get();
+//			} catch (InterruptedException | ExecutionException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//				System.out.println(e);
+//			}
+//			finally{
+//				exec.shutdown();
+//			}
+//		}
 	}
 	private void parsePcap(String fpath,String outpath) throws FileNotFoundException
 	{
@@ -529,7 +533,7 @@ public class PcapUtils {
 		folder = new File(outpath+"\\traffic");
 		suc= (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
 		System.out.println(status);
-		parsePcap(fpath,outpath);
+//		parsePcap(fpath,outpath);
 		generateRoute(outpath+"\\routesrc",outpath);
 		generateTraffic(outpath);
 		status=Status.END;

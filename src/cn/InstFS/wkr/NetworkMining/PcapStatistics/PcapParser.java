@@ -121,20 +121,20 @@ public class PcapParser {
 			    is.read(buffer,0,data.getpLength()-datalength);
 			    if(data.getTraffic()>30){
 			    	BufferedWriter bw;
-			    	if(!bws.containsKey(path+"\\"+data.getSrcIP()))
+			    	if(!bws.containsKey(data.getSrcIP()+"_"+data.getDstIP()))
 			    	{
 			    		synchronized(bws)
 			    		{
-			    			if(!bws.containsKey(path+"\\"+data.getSrcIP()))
+			    			if(!bws.containsKey(data.getSrcIP()+"_"+data.getDstIP()))
 			    			{
-			    				OutputStreamWriter o =new OutputStreamWriter(new FileOutputStream(path+"\\routesrc\\routesrc"+data.getSrcIP()+".txt"),"UTF-8");
+			    				OutputStreamWriter o =new OutputStreamWriter(new FileOutputStream(path+"\\routesrc\\"+data.getSrcIP()+"_"+data.getDstIP()+".txt"),"UTF-8");
 			    				bw = new BufferedWriter(o);
-			    				bws.put(path+"\\"+data.getSrcIP(), bw);
+			    				bws.put(data.getSrcIP()+"_"+data.getDstIP(), bw);
 			    			}
 			    		}
 			    	}
 			        String curLine = new String();
-			        synchronized(bw=bws.get(path+"\\"+data.getSrcIP()))
+			        synchronized(bw=bws.get(data.getSrcIP()+"_"+data.getDstIP()))
 	        		{
 			        	curLine=data.getSrcIP()+","+data.getDstIP()+","+data.getSrcPort()+","+data.getDstPort()+","+data.getTime_s()+","+data.getTime_ms()+","+file+","+data.getTraffic()+","+data.getTTL();
 			        	bw.write(curLine);
