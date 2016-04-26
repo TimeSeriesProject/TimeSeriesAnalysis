@@ -33,11 +33,11 @@ import java.awt.event.MouseEvent;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
 
-public class PanelConfigTask extends JPanel {
-	private PanelDisplayTask panelDisplayConfig;
-	private PanelListAllTasks panelListAllEvents;
-	private JList listConfigs;
-	private JTextField textField;
+public class PanelConfigBaseTask extends JPanel {
+    private PanelDisplayBaseTask panelDisplayConfig;
+    private PanelListAllTasks panelListAllEvents;
+    private JList listConfigs;
+    private JTextField textField;
 	
 /*	
 	public static void main(String []args){
@@ -48,33 +48,33 @@ public class PanelConfigTask extends JPanel {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}*/
-	/**
-	 * Create the panel.
-	 */
-	public PanelConfigTask() {
-		setLayout(new BorderLayout(0,0));
+    /**
+     * Create the panel.
+     */
+    public PanelConfigBaseTask() {
+        setLayout(new BorderLayout(0,0));
 //		JSplitPane splitPane = new JSplitPane();
-		JPanel splitPane=new JPanel();
-		splitPane.setLayout(new BorderLayout());
+        JPanel splitPane=new JPanel();
+        splitPane.setLayout(new BorderLayout());
 //		splitPane.setDividerLocation(0);
-		add(splitPane);
+        add(splitPane);
 
-		TaskElement NewTask = new TaskElement();
-		panelDisplayConfig = new PanelDisplayTask(NewTask);
+        TaskElement NewTask = new TaskElement();
+        panelDisplayConfig = new PanelDisplayBaseTask(NewTask);
 //		splitPane.setRightComponent(panelDisplayConfig);
-		splitPane.add(panelDisplayConfig,BorderLayout.CENTER);
+        splitPane.add(panelDisplayConfig,BorderLayout.CENTER);
 //		panelListAllEvents = new PanelListAllTasks(panelDisplayConfig);
 //		splitPane.setLeftComponent(panelListAllEvents);
-		
+
 //		InitUIs();
-	}
-	public void InitUIs(){
-		panelListAllEvents.loadAllTasks();
+    }
+    public void InitUIs(){
+        panelListAllEvents.loadAllTasks();
 //		panelListAllEvents.onCreate();
-	}
-	
-	
+    }
 
 
-	
+
+
+
 }

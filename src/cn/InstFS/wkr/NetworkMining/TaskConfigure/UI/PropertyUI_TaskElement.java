@@ -10,10 +10,8 @@ import java.util.List;
 import cn.InstFS.wkr.NetworkMining.Params.IParamsNetworkMining;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
+import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsFP;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.descriptors.IObjectDescriptor;
@@ -25,18 +23,19 @@ public class PropertyUI_TaskElement implements IObjectDescriptor<TaskElement> {
 	PropertyUI_MiningParamsSM sm = null;
 	PropertyUI_MiningParamsTSA tsa = null;
 	PropertyUI_MiningParamsPM pm = null;
+	PropertyUI_MiningParamsFP fm=null;
 	HashMap<String, String> displayNames = new HashMap<String,String>();
 	
 	String [] names = new String[]{"taskName", "comments", "miningObject", 
-			"discreteMethod", "discreteEndNodes","discreteDimension",
+			"discreteMethod", "discreteEndNodes","discreteDimension","miningAlgo","taskRange","range",
 			"aggregateMethod", "granularity",
 			"filterCondition", "miningMethod", "miningParams", 
-			"dateStart", "dateEnd"};
-	String []CnNames = new String[]{"任务名", "说明", "挖掘对象",
-			"离散化方法", "离散化采用的端点","离散后的维数",
+			"dateStart", "dateEnd","dataSource","sourcePath","sqlStr"};
+	String []CnNames = new String[]{"任务名字", "说明", "挖掘对象",
+			"离散化方法", "离散化采用的端点","离散后的维数","挖掘算法","任务范围","选择节点值",
 			"数据聚合方法","时间粒度(s)",
 			"过滤条件", "挖掘方法", "挖掘参数",
-			"起始时间","结束时间"};
+			"起始时间","结束时间","数据来源","文本路径","数据库"};
 	
 	
 	public PropertyUI_TaskElement() {
@@ -75,16 +74,18 @@ public class PropertyUI_TaskElement implements IObjectDescriptor<TaskElement> {
 		
 		props.add(getPropDesc("discreteMethod", 0, "如果需要首先对数据进行离散化，请选择此项<br>" +
 				"1.无需离散化<br>2.使得各区间数值范围相同<br>3.使得各区间数据点数相同<br>4.自定义端点"));
-		switch (core.getDiscreteMethod()) {
-		case 各区间数值范围相同:
-		case 各区间数据点数相同:
-			props.add(getPropDesc("discreteDimension", 0));
-		case 自定义端点:
-			props.add(getPropDesc("discreteEndNodes", 0,
-					"若离散化方法为'自定义方法'，则此项设置生效，否则该设置无效！"));
-		default:
-		}		
-		
+//		switch (core.getDiscreteMethod()) {
+//		case 各区间数值范围相同:
+//		case 各区间数据点数相同:
+		props.add(getPropDesc("discreteDimension", 0));
+//		case 自定义端点:
+		props.add(getPropDesc("discreteEndNodes", 0));
+//					"若离散化方法为'自定义方法'，则此项设置生效，否则该设置无效！"));
+//		default:
+//		}
+		props.add(getPropDesc("miningAlgo",0));
+		props.add(getPropDesc("taskRange",0));
+		props.add(getPropDesc("range",0));
 		props.add(getPropDesc("granularity", 0, "常用的粒度如下：<br>" +
 				"分：60<br>" +
 				"时：3600<br>" +
@@ -99,7 +100,10 @@ public class PropertyUI_TaskElement implements IObjectDescriptor<TaskElement> {
 		props.add(getPropDesc("miningParams", 0));
 		props.add(getPropDesc("dateStart", 0));
 		props.add(getPropDesc("dateEnd", 0));
-		
+		props.add(getPropDesc("dataSource",0));
+		props.add(getPropDesc("sourcePath",0));
+//		props.add(getPropDesc("pathSource",0));
+//		props.add(getPropDesc("sqlStr",0));
 		return props;
 	}
 	@Override
@@ -130,11 +134,33 @@ public class PropertyUI_TaskElement implements IObjectDescriptor<TaskElement> {
 	public String getTaskName() {
 		return core.getTaskName();
 	}
-
+	public MiningAlgo getMiningAlgo()
+	{
+		return core.getMiningAlgo();
+	}
+	public void setMiningAlgo(MiningAlgo miningAlgo)
+	{
+		core.setMiningAlgo(miningAlgo);
+	}
+	public void setTaskRange(TaskRange taskRange)
+	{
+		core.setTaskRange(taskRange);
+	}
+	public TaskRange getTaskRange()
+	{
+		return core.getTaskRange();
+	}
 	public void setTaskName(String taskName) {
 		core.setTaskName(taskName);
 	}
-
+	public void setRange(String taskValue)
+	{
+		core.setRange(taskValue);
+	}
+	public String getRange()
+	{
+		return core.getRange();
+	}
 	public String getComments() {
 		return core.getComments();
 	}
@@ -181,7 +207,15 @@ public class PropertyUI_TaskElement implements IObjectDescriptor<TaskElement> {
 		else if (core.getMiningMethod().equals(MiningMethod.MiningMethods_PeriodicityMining)){
 			pm = new PropertyUI_MiningParamsPM(core.getMiningParams());
 			return pm;
-		}else
+
+		}
+		else if (core.getMiningMethod().equals(MiningMethod.MiningMethods_FrequenceItemMining))
+		{
+			fm = new PropertyUI_MiningParamsFP(core.getMiningParams());
+			return fm;
+		}
+
+		else
 			return null;
 	}
 
@@ -238,5 +272,30 @@ public class PropertyUI_TaskElement implements IObjectDescriptor<TaskElement> {
 	public void setDiscreteDimension(int discreteDimension) {
 		core.setDiscreteDimension(discreteDimension);
 	}
+	public String getPathSource()
+	{
+		return core.getPathSource();
+	}
+	public void setPathSource(String pathSource)
+	{
+		core.setPathSource(pathSource);
+	}
+	public String getDataSource()
+	{
+		return core.getDataSource();
+	}
+	public void setDataSource(String dataSource)
+	{
+		core.setDataSource(dataSource);
+	}
+	public void setSourcePath(String sourcePath)
+	{
+		core.setSourcePath(sourcePath);
+	}
+	public String getSourcePath()
+	{
+		return core.getSourcePath();
+	}
+
 
 }

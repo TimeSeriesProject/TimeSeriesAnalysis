@@ -11,7 +11,9 @@ public class MinerResultsPM{
 	long period;
 	private Double featureValue;	// 指标值
 	private Double[] featureValues;	// 不同周期对应的指标值，如featureValues[2]代表周期为2时的指标值
-	DataItems distibutePeriod;
+	private DataItems distibutePeriod;
+	private DataItems minDistributePeriod;
+	private DataItems maxDistributePeriod;
 	private int firstPossiblePeriod;
 	private double confidence;
 	
@@ -80,6 +82,22 @@ public class MinerResultsPM{
 
 	public void setConfidence(double confidence) {
 		this.confidence = confidence;
+	}
+
+	public DataItems getMinDistributePeriod() {
+		return minDistributePeriod;
+	}
+
+	public void setMinDistributePeriod(DataItems minDistributePeriod) {
+		this.minDistributePeriod = minDistributePeriod;
+	}
+
+	public DataItems getMaxDistributePeriod() {
+		return maxDistributePeriod;
+	}
+
+	public void setMaxDistributePeriod(DataItems maxDistributePeriod) {
+		this.maxDistributePeriod = maxDistributePeriod;
 	}
 	
 	

@@ -1,9 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.TaskConfigure.UI;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.EventQueue;
-import java.awt.Font;
+import java.awt.*;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -64,12 +61,14 @@ public class DialogConfigTask extends JDialog {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
+//		contentPane.setLayout(new FlowLayout());
 		setContentPane(contentPane);
 		
 		setTitle(" ¬º˛–Ú¡–≈‰÷√");
-			
+
 		
 		contentPane.add(new PanelConfigTask(), BorderLayout.CENTER);
+//		contentPane.add(new PanelConfigTask());
 	}
 	
 	

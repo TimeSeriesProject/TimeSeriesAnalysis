@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -30,6 +31,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
 
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.PcapUtils;
 
@@ -57,15 +60,18 @@ public class ProcessBarShow implements Runnable {
 	JPanel topPanel = new JPanel();
 	JPanel midPanel = new JPanel();
 	JPanel bottomPanel = new JPanel();
-	
 	public ProcessBarShow() {
-
+		
 		frame = new JFrame("测试进度条");
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		
 		// 创建一条垂直进度条
 		initLayout();
 		addButtonActionLister();
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//			SwingUtilities.updateComponentTreeUI(frame);
 			SwingUtilities.updateComponentTreeUI(frame);
 		} catch (Exception exe) {
 			exe.printStackTrace();
@@ -123,7 +129,6 @@ public class ProcessBarShow implements Runnable {
 		JPanel panelContainer = new JPanel();
 //		panelContainer.setLayout(new GridBagLayout());
 		panelContainer.setLayout(new GridLayout(3,1));
-
 //		GridBagConstraints c1 = new GridBagConstraints();
 //		c1.gridx = 0;
 //		c1.gridy = 0;
@@ -141,7 +146,7 @@ public class ProcessBarShow implements Runnable {
 //		c2.fill = GridBagConstraints.VERTICAL;
 //		panelContainer.add(midPanel, c2);
 
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //		panelContainer.setOpaque(true);
 		frame.setSize(new Dimension(400, 320));
 		panelContainer.add(topPanel,BorderLayout.NORTH);

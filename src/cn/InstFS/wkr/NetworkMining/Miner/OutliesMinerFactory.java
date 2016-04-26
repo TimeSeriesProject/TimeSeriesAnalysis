@@ -62,7 +62,7 @@ public class OutliesMinerFactory {
 					task.setTaskRange(TaskRange.SingleNodeRange);
 					task.setRange(ip);
 					task.setDiscreteMethod(DiscreteMethod.None);
-					task.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
+					task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
 					task.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
 					task.setMiningObject(protocol);
 					TaskElement.add1Task(task, false);

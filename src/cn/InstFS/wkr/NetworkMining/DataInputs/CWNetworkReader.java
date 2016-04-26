@@ -133,7 +133,7 @@ public class CWNetworkReader  implements IReader{
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     private int start	=	0;
 	private int end		=	365*24*60*60-1;	
-	private int timeseg =   3*60*60; //Á½ÌìÁ£¶È
+	private int timeseg =   3*60*60; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	private DataItems dataItems = new DataItems();
 	
 	public static void main(String[] args) 
@@ -142,15 +142,15 @@ public class CWNetworkReader  implements IReader{
 		TaskElement task = new TaskElement();
 		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\NetworkMiningSystem\\mergeNode");
 		
-		task.setMiningObject("´ØÏµÊý");
+		task.setMiningObject("ï¿½ï¿½Ïµï¿½ï¿½");
 		CWNetworkReader reader = new CWNetworkReader(task);
-		System.out.println("´ØÏµÊý");
+		System.out.println("ï¿½ï¿½Ïµï¿½ï¿½");
 //		System.out.println(reader.readClusterByText().getData());
 		System.out.println(reader.readInputByText().getData());
 	
-		task.setMiningObject("ÍøÂçÖ±¾¶");
+		task.setMiningObject("ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½");
 		reader = new CWNetworkReader(task);
-		System.out.println("ÍøÂçÖ±¾¶");
+		System.out.println("ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½");
 		System.out.println(reader.readInputByText().getData());
 //		System.out.println(reader.readInputByText().getData());
 		
@@ -181,17 +181,17 @@ public class CWNetworkReader  implements IReader{
 				
 				TextReader textReader = new TextReader(path+"/"+srcFiles.list()[i]);
 				String curLine="";
-				String header =textReader.readLine(); //ÎÄ¼þÍ·²¿
+				String header =textReader.readLine(); //ï¿½Ä¼ï¿½Í·ï¿½ï¿½
 				while((curLine=textReader.readLine())!=null)
 				{
-					Map<Integer,Double>	map = new HashMap<Integer,Double>();  //¼ÇÂ¼½áµãÆ½¾ùÌøÊý
+					Map<Integer,Double>	map = new HashMap<Integer,Double>();  //ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					//List<Map.Entry<Integer,Double>> mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet());
 					ArrayList<Map.Entry<Integer,Double>> mappingList = null; 
 				    mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet()); 
 					
 					String seg[]=curLine.split(",");
 					/**
-					 * ¼ÇÂ¼½áµãÆ½¾ùÌøÊý¡£
+					 * ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					 */
 					for(int j=8;j<seg.length;j++)
 					{
@@ -213,7 +213,7 @@ public class CWNetworkReader  implements IReader{
 					}
 					
 					/**
-					 * ½áµãÅÅÐò
+					 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					 */
 					mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet()); 
 //					ArrayList <Integer>tmpList =new ArrayList<Integer>();
@@ -226,7 +226,7 @@ public class CWNetworkReader  implements IReader{
 					}); 
 					
 					/**
-					 * Éú³ÉÂ·¾¶
+					 * ï¿½ï¿½ï¿½Â·ï¿½ï¿½
 					 */
 					Iterator<Map.Entry<Integer,Double>> iter = mappingList.iterator();
 					if(mappingList.size() > 1)
@@ -257,7 +257,7 @@ public class CWNetworkReader  implements IReader{
 	}
 	
 	/**
-	 * ¼ÆËã´ØÏµÊý
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½
 	 * @return
 	 */
 	private double calCluster(Map<Pair,Integer> matrix)
@@ -265,7 +265,7 @@ public class CWNetworkReader  implements IReader{
 		double result=0.0;
 		Map<Integer,Set<Integer>> neighbourMap= new HashMap<Integer,Set<Integer>> ();
 		/**
-		 * »ñµÃ½áµãËùÓÐÁÚ¾Ó
+		 * ï¿½ï¿½Ã½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¾ï¿½
 		 */
 		for(Map.Entry<Pair, Integer> entry:matrix.entrySet())
 		{
@@ -285,7 +285,7 @@ public class CWNetworkReader  implements IReader{
 			neighbourMap.get(ed).add(st);
 		}
 		/**
-		 * ¼ÆËã½áµã´ØÏµÊý
+		 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½
 		 */
 		for(Map.Entry<Integer,Set<Integer>> entry:neighbourMap.entrySet())
 		{
@@ -314,13 +314,13 @@ public class CWNetworkReader  implements IReader{
 			else
 				result += 2.0*edgenum/(k*(k-1));
 		}
-		result/=neighbourMap.size();   //Æ½¾ù´ØÏµÊý
+		result/=neighbourMap.size();   //Æ½ï¿½ï¿½ï¿½Ïµï¿½ï¿½
 //		System.out.println("neighbourMap"+neighbourMap.size());
 		return result;
 		
 	}
 	/**
-	 * ¼ÆËãÍøÂçÖ±¾¶
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½
 	 * @param matrix
 	 * @return
 	 */
@@ -338,7 +338,7 @@ public class CWNetworkReader  implements IReader{
 		Integer [] p =nodesSet.toArray(new Integer [nodesSet.size()]);
 		int [][]dis = new int[p.length][p.length];
 		/**
-		 * floyd¼ÆËãËùÓÐµã¶Ô×î½ü¾àÀë
+		 * floydï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		 */
 		for(int i=0;i<p.length;i++)
 			for(int j=0;j<p.length;j++)
@@ -385,7 +385,7 @@ public class CWNetworkReader  implements IReader{
 					Date time=second2Date(Integer.parseInt(seg[0]));
 					
 					/**
-					 * ¼ÇÂ¼½áµãÆ½¾ùÌøÊý¡£
+					 * ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					 */
 					for(int j=8;j<seg.length;j++)
 					{
@@ -418,7 +418,7 @@ public class CWNetworkReader  implements IReader{
 		getlinkList();
 		
 		/**
-		 * Ã¿¸öÊ±¼ä¶Î¼ÆËã´ØÊý£¬·µ»ØÐòÁÐ
+		 * Ã¿ï¿½ï¿½Ê±ï¿½ï¿½Î¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		 */
 		for(int i=0;i<linkList.size();i++)
 		{
@@ -449,7 +449,7 @@ public class CWNetworkReader  implements IReader{
 		getlinkList();
 		
 		/**
-		 * Ã¿¸öÊ±¼ä¶Î¼ÆËã´ØÊý£¬·µ»ØÐòÁÐ
+		 * Ã¿ï¿½ï¿½Ê±ï¿½ï¿½Î¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		 */
 		for(int i=0;i<linkList.size();i++)
 		{
@@ -487,9 +487,9 @@ public class CWNetworkReader  implements IReader{
 	{
 		switch(task.getMiningObject())
 		{
-		case "´ØÏµÊý": return readClusterByText();
-		case "ÍøÂçÖ±¾¶":return readDiameterByText();
-		case "½Úµã±ä»¯":return readNodeFrequenceByText();
+		case "ï¿½ï¿½Ïµï¿½ï¿½": return readClusterByText();
+		case "ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½":return readDiameterByText();
+		case "ï¿½Úµï¿½ä»¯":return readNodeFrequenceByText();
 		default: return null;
 		}
 	}
@@ -499,12 +499,16 @@ public class CWNetworkReader  implements IReader{
 		
 		switch(task.getMiningObject())
 		{
-		case "´ØÏµÊý": return readClusterByText();
-		case "ÍøÂçÖ±¾¶":return readDiameterByText();
+		case "ï¿½ï¿½Ïµï¿½ï¿½": return readClusterByText();
+		case "ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½":return readDiameterByText();
 		default: return null;
 		}
 		
 	}
-	
+	@Override
+	public Map<String, DataItems> readAllRoute() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 		
 }

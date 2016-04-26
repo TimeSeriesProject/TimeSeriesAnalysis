@@ -27,18 +27,21 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.event.EventListenerList;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.OracleUtils;
 import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Params.IParamsNetworkMining;
+import cn.InstFS.wkr.NetworkMining.Params.ParamsFP;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsPM;
+import cn.InstFS.wkr.NetworkMining.Params.ParamsPP;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsClass;
 
-public class TaskElement implements Serializable, Comparable<TaskElement>{
+public class TaskElement extends JDialog implements Serializable, Comparable<TaskElement>{
 	public static String PATH_TO_SAVE_TASKS = "./tasks/";
 	public static List<TaskElement>allTasks ;	
 
@@ -363,7 +366,7 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 	}
 	
 	public TaskElement() {
-		setTaskName("");
+		setTaskName("qq");
 		setFilterCondition("");
 		setMiningObject("");
 		setComments("");
@@ -372,18 +375,23 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 		setDiscreteEndNodes("0,0,0,0");
 		// 按时间聚合数据
 		setGranularity(1);
-		setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		
+		setAggregateMethod(AggregateMethod.Aggregate_NONE);
+		setMiningAlgo(MiningAlgo.MiningAlgo_NULL);
 		setMiningMethod(MiningMethod.MiningMethods_SequenceMining);
 		setMiningParams(new ParamsSM());
-		
+
 		Calendar cal = Calendar.getInstance();
 		cal.set(1, 0, 1, 0, 0, 0);
 		setDateEnd(cal.getTime());
-//		cal.add(Calendar.MONTH, -1);
+		cal.add(Calendar.MONTH, -1);
 		setDateStart(cal.getTime());
 		setDiscreteDimension(2);
-		setDataSource("DataBase");
+		setDataSource("File");
+		setTaskRange(TaskRange.NodePairRange);
+		setRange(" ");
+		setDataSource("");
+		setSourcePath("");
+		setSqlStr("");
 	}
 	
 	public String getDataSource() {
@@ -426,21 +434,25 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 	
 	public Properties toProperties(){
 		Properties prop = new Properties();
+		putProp(prop, "miningMethod", getMiningMethod());
+		putProp(prop,"miningAlgo",getMiningAlgo());
+		putProp(prop, "discreteMethod", getDiscreteMethod());
+		putProp(prop, "aggregateMethod", getAggregateMethod());
+		putProp(prop, "miningParams", getMiningParams());
+		putProp(prop,"miningObject",getMiningObject());
+		putProp(prop, "filterCondition", getFilterCondition());
 		putProp(prop,"eventName", getTaskName());
 		putProp(prop, "comments", getComments());
-		putProp(prop, "miningObject", getMiningObject());
-		putProp(prop, "discreteMethod", getDiscreteMethod());
+		putProp(prop, "dateStart", getDateStart());
+		putProp(prop,"range",getRange());
+		putProp(prop,"taskRange",getTaskRange());
 		putProp(prop, "discreteDimsion", getDiscreteDimension());
 		putProp(prop, "discreteEndNodes", getDiscreteEndNodes());
 		putProp(prop, "granularity", getGranularity());
-		putProp(prop, "aggregateMethod", getAggregateMethod());
-		putProp(prop, "filterCondition", getFilterCondition());
-		putProp(prop, "miningMethod", getMiningMethod());
-		putProp(prop, "miningParams", getMiningParams());
-		putProp(prop, "dateStart", getDateStart());
 		putProp(prop, "dateEnd", getDateEnd());
+		putProp(prop,"dataSource",getDataSource());
+		putProp(prop,"sourcePath",getSourcePath());
 		putProp(prop, "sqlStr", getSqlStr());
-		
 		return prop;
 	}
 	private void putProp(Properties prop, String key, Object obj){
@@ -470,7 +482,12 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 		task.setDateEnd(this.getDateEnd());
 		task.setDateStart(this.getDateStart());
 		task.setSqlStr(this.getSqlStr());
-
+		//add
+		task.setMiningAlgo(this.getMiningAlgo());
+		task.setRange(this.getRange());
+		task.setTaskRange(this.getTaskRange());
+		task.setDataSource(this.getDataSource());
+		task.setSourcePath(this.getSourcePath());
 		task.setMiningParams(IParamsNetworkMining.newInstance(this.getMiningParams()));
 	}
 	
@@ -765,6 +782,10 @@ public class TaskElement implements Serializable, Comparable<TaskElement>{
 			this.setMiningParams(new ParamsSM());
 		else if (miningMethod.equals(MiningMethod.MiningMethods_PeriodicityMining))
 			this.setMiningParams(new ParamsPM());
+		else if(miningMethod.equals(MiningMethod.MiningMethods_FrequenceItemMining))
+			this.setMiningParams(new ParamsFP());
+		else if(miningMethod.equals(MiningMethod.MiningMethods_PathProbilityMining))
+			this.setMiningParams(new ParamsPP());
 	}
 	public Date getDateStart() {
 		return dateStart;

@@ -40,6 +40,7 @@ public class NetwokerMinerPathProb implements INetworkMiner{
 	public NetwokerMinerPathProb(TaskElement task,IReader reader) {
 		this.task = task;
 		this.reader=reader;
+		this.results=new MinerResults(this);
 	}
 	
 	@Override
@@ -232,5 +233,6 @@ class PathProbTimerTask extends TimerTask{
 				retPath.getItemsInPeriod().put(name, pmMethod.getItemsInPeriod());
 			}
 		}
+		results.setRetPath(retPath);
 	}
 }

@@ -1,7 +1,9 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.CWNetworkReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
@@ -69,6 +71,38 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		}			
 	}
 	
+	public void startAllMiners(MiningMethod method){
+		Iterator<Entry<TaskElement,INetworkMiner>>iterator=allMiners.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<TaskElement, INetworkMiner> entry=iterator.next();
+			if(!entry.getValue().isOver()){
+				if(entry.getKey().getMiningMethod().name().equals(method.name())){
+					entry.getValue().start();
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
+		iterator=allMiners.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<TaskElement, INetworkMiner> entry=iterator.next();
+			if(entry.getKey().getMiningMethod().name().equals(method.name())){
+				if(!entry.getValue().isOver()){
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		autoTaskFilter();
+	}
+	
 	public void startAllMiners(){
 		for(INetworkMiner miner :allMiners.values()){
 			if(miner.isOver())
@@ -90,7 +124,10 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 				}
 			}
 		}
-		
+		autoTaskFilter();
+	}
+	
+	private void autoTaskFilter(){
 		for(int t=0;t<TaskElement.allTasks.size();t++){
 			TaskElement task=TaskElement.allTasks.get(t);
 			if(task.getTaskName().contains("ÖÜÆÚÍÚ¾ò_auto")){

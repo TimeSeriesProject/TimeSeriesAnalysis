@@ -168,6 +168,7 @@ class PMTimerTask extends TimerTask{
 	}
 	
 	private void PMDetect(DataItems dataItems,Map<String, MinerResultsPM> retPmMap,String MiningItem){
+		DataItems oriDataItems=dataItems;
 		if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
 			dataItems=DataPretreatment.aggregateData(dataItems, task.getGranularity(), task.getAggregateMethod(),
 					!dataItems.isAllDataIsDouble());
@@ -177,8 +178,8 @@ class PMTimerTask extends TimerTask{
 			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 					task.getDiscreteEndNodes());
 		}
-		
-		dataItems=DataPretreatment.normalization(dataItems);
+		if(task.getDiscreteMethod().equals(DiscreteMethod.None))
+    		dataItems=DataPretreatment.normalization(dataItems);
 //		for(int i=0;i<dataItems.getLength();i++){
 //			System.out.print(dataItems.getData().get(i).split("\\.")[0]+",");
 //		}
@@ -192,7 +193,7 @@ class PMTimerTask extends TimerTask{
 		}else{
 			throw new RuntimeException("方法不存在！");
 		}
-		
+		pmMethod.setOriginDataItems(oriDataItems);
 		pmMethod.setDataItems(dataItems);
 		pmMethod.predictPeriod();
 		
@@ -201,6 +202,8 @@ class PMTimerTask extends TimerTask{
 			retPM.setHasPeriod(pmMethod.hasPeriod());
 			retPM.setPeriod(pmMethod.getPredictPeriod());
 			retPM.setDistributePeriod(pmMethod.getItemsInPeriod());
+			retPM.setMinDistributePeriod(pmMethod.getMinItemsInPeriod());
+			retPM.setMaxDistributePeriod(pmMethod.getMaxItemsInPeriod());
 			retPM.setFeatureValue(pmMethod.getMinEntropy());
 			retPM.setFeatureValues(pmMethod.getEntropies());
 			retPM.setFirstPossiblePeriod(pmMethod.getFirstPossiblePeriod());//找出第一个呈现周期性的周期

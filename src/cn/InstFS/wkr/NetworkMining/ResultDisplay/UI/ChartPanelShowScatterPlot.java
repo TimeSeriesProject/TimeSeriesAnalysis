@@ -83,20 +83,23 @@ public class ChartPanelShowScatterPlot extends JPanel{
 		add(p, BorderLayout.CENTER);
 		
 		XYPlot plot = chart.getXYPlot();
+		XYPlot plot1=chart.getXYPlot();
 		XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
-	
+		XYLineAndShapeRenderer renderer1=(XYLineAndShapeRenderer) plot1.getRenderer();
 		renderer.setBaseShapesVisible(true);
 //		renderer.setBaseShape(itemShape);	// 好像不管用，必须用setSeriesShape
 		renderer.setBaseLinesVisible(true);
 //		renderer.setBasePaint(new Color(0));	// 好像不管用，必须用setSeriesPaint
 		
 		itemShape = ShapeUtilities.createDiamond((float) 3);
-		renderer.setSeriesShape(0, itemShape);		
-		renderer.setSeriesPaint(0, new Color(255,0,0));
+		renderer.setSeriesShape(0, itemShape);
+		renderer.setSeriesPaint(0, Color.red);
 
-		renderer.setSeriesShape(1, itemShape);		
+		renderer.setSeriesShape(1, itemShape);
 		renderer.setSeriesPaint(1, new Color(0,255,0));
-		
+
+		renderer.setSeriesShape(2, itemShape);
+		renderer.setSeriesPaint(2, Color.black);
 		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0}:({1} , {2})", new DecimalFormat("#.00"), new DecimalFormat("#.00")));
 	}
 	
@@ -114,7 +117,7 @@ public class ChartPanelShowScatterPlot extends JPanel{
 		return chart;
 	}
 	
-	public void displayDataItems(DataItems items, String lineLabel){
+	public void displayDataItems(DataItems items,DataItems items1,DataItems items2, String lineLabel,String lineLabel2,String lineLabel3){
 		if(items == null)
 			return;
 		XYSeries series = new XYSeries(lineLabel);
@@ -122,9 +125,28 @@ public class ChartPanelShowScatterPlot extends JPanel{
 		List<String>datas = items.getData();
 		for (int i = 0; i < len; i ++)
 			series.add(i+1, Double.parseDouble(datas.get(i)));
+		XYSeries series1 = new XYSeries(lineLabel2);
+		int len1 = items.getLength();
+		List<String>datas1 = items1.getData();
+		for (int i = 0; i < len1; i ++)
+			series1.add(i+1, Double.parseDouble(datas1.get(i)));
 		XYSeriesCollection dataset = new XYSeriesCollection();
+
+		XYSeries series2 = new XYSeries(lineLabel3);
+		int len2 = items.getLength();
+		List<String>datas2 = items2.getData();
+		for (int i = 0; i < len2; i ++)
+			series2.add(i+1, Double.parseDouble(datas2.get(i)));
 		dataset.addSeries(series);
+		dataset.addSeries(series1);
+		dataset.addSeries(series2);
 		chart.getXYPlot().setDataset(dataset);
+
+//		dataset1.addSeries(series1);
+//		chart.getXYPlot().setDataset(1,dataset1);
+		updateUI();
+		validate();
+
 	}
 	public void displayDataItems(Double [] items, String lineLabel){
 		if(items == null)

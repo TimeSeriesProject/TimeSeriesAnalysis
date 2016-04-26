@@ -2,21 +2,16 @@ package cn.InstFS.wkr.NetworkMining.TaskConfigure.UI;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
 import cn.InstFS.wkr.NetworkMining.Miner.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.PropertiesPanelFactory_wkr;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsClass;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PanelCreateTask;
 
 import com.l2fprod.common.beans.editor.JCalendarDatePropertyEditor;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
@@ -24,22 +19,23 @@ import com.l2fprod.common.propertysheet.PropertySheetTableModel;
 import com.l2fprod.common.swing.LookAndFeelTweaks;
 
 import ec.nbdemetra.ui.properties.l2fprod.CustomPropertyEditorRegistry;
+
 import java.awt.GridLayout;
-import javax.swing.JButton;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
-import javax.swing.JScrollPane;
-import javax.swing.BoxLayout;
 
 public class PanelDisplayTask extends JPanel implements ITaskDisplayer{
+	//配置任务表
 	PropertySheetPanel sheet;
 	TaskElement task;
 	PropertyUI_TaskElement taskUI;
+	PanelConfigTask taskNew;
 //	String oldTaskName;
 	
 	private JTextArea txtArea;
@@ -58,7 +54,8 @@ public class PanelDisplayTask extends JPanel implements ITaskDisplayer{
 		PropertiesPanelFactory_wkr.INSTANCE.registerEnumEditor(MiningMethod.class);
 		PropertiesPanelFactory_wkr.INSTANCE.registerEnumEditor(DiscreteMethod.class);
 		PropertiesPanelFactory_wkr.INSTANCE.registerEnumEditor(AggregateMethod.class);
-		
+		PropertiesPanelFactory_wkr.INSTANCE.registerEnumEditor(MiningAlgo.class);
+		PropertiesPanelFactory_wkr.INSTANCE.registerEnumEditor(TaskRange.class);
 		CustomPropertyEditorRegistry.INSTANCE.getRegistry().unregisterEditor(Date.class);
 		CustomPropertyEditorRegistry.INSTANCE.getRegistry().registerEditor(Date.class, JDatePropertyEditor.class);	
 		
@@ -86,33 +83,40 @@ public class PanelDisplayTask extends JPanel implements ITaskDisplayer{
 	    add(panel);
 	    panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 	    
-	    JButton btnNew = new JButton("新建");
-	    btnNew.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				taskUI = new PropertyUI_TaskElement();
-				PropertiesPanelFactory_wkr.INSTANCE.update(sheet, taskUI, null);				
-			}
-		});
-	    panel.add(btnNew);
+//	    JButton btnNew = new JButton("新建");
+//	    btnNew.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+////				taskUI = new PropertyUI_TaskElement();
+////				PropertiesPanelFactory_wkr.INSTANCE.update(sheet, taskUI, null);
+//				JFrame jf=new JFrame();
+//				try {
+//					PanelCreateTask pct=new PanelCreateTask(jf);
+//					pct.setVisible(true);
+//				} catch (IOException e1) {
+//					e1.printStackTrace();
+//				}
+//			}
+//		});
+//	    panel.add(btnNew);
 	    
 	    JButton btnSave = new JButton("保存");
-	    btnSave.addActionListener(new ActionListener() {			
+	    btnSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				saveConfigure();
 			}
 		});
 	    panel.add(btnSave);
-	    
-	    JButton btnNewCopy = new JButton("复制");
-	    btnNewCopy.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				doNewTaskOfCopy();
-			}
-		});
-	    panel.add(btnNewCopy);
+//
+//	    JButton btnNewCopy = new JButton("复制");
+//	    btnNewCopy.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				doNewTaskOfCopy();
+//			}
+//		});
+//	    panel.add(btnNewCopy);
 	    
 	    
 	    listener = new PropertyChangeListener() {			

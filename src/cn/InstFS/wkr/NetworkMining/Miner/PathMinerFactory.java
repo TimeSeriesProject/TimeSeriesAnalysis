@@ -14,7 +14,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 public class PathMinerFactory {
 	private static PathMinerFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="E:\\route";
+	public String dataPath="F:\\parsePcap\\route";
 	private PathMinerFactory(){}
 	public static PathMinerFactory getInstance(){
 		if(inst==null){

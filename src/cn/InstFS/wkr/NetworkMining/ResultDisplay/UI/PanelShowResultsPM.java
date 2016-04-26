@@ -153,7 +153,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 				lblPeriodValue.setText("周期值：无");
 				lblFirstPossiblePeriod.setText("最小的可能周期:");
 //				lblPeriodFeature.setText("特征值：");
-				chartDistribute.displayDataItems(new DataItems(), "");
+				chartDistribute.displayDataItems(new DataItems(), new DataItems(),new DataItems(),"周期","最大值","最小值");
 			}
 			refreshFeatureVal();
 			
@@ -166,7 +166,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 		if (chckShowFeatureVal.isSelected())
 			chartDistribute.displayDataItems(rets.getRetPM().getFeatureValues(), "周期性特征值");
 		else
-			chartDistribute.displayDataItems(rets.getRetPM().getDistributePeriod(), "值");
+			chartDistribute.displayDataItems(rets.getRetPM().getDistributePeriod(),rets.getRetPM().getMaxDistributePeriod(),rets.getRetPM().getMinDistributePeriod(), "周期","最大值","最小值");
 	}
 	@Override
 	public void displayMinerResults() {

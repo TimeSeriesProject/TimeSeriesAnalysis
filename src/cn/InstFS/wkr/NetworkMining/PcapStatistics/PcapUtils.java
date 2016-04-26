@@ -533,7 +533,7 @@ public class PcapUtils {
 		folder = new File(outpath+"\\traffic");
 		suc= (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
 		System.out.println(status);
-//		parsePcap(fpath,outpath);
+		parsePcap(fpath,outpath);
 		generateRoute(outpath+"\\routesrc",outpath);
 		generateTraffic(outpath);
 		status=Status.END;

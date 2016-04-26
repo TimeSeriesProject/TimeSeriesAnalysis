@@ -22,15 +22,20 @@ import ec.nbdemetra.x13.ui.X13ViewFactory.DTablesFactory;
 public class ERPDistencePM implements IMinerPM {
 	private int[][] distMatrix;
 	private DataItems di; //当前时间区间的数据集
+	private DataItems oriDi;
 	private Double minEntropy = Double.MAX_VALUE;  
     private Double []entropies;   //存储每个可能周期的平均熵或平均ERP距离
     private HashMap<Integer, Integer[]> predictValuesMap;
+    private HashMap<Integer, Integer[]> minPredictValuesMap;
+    private HashMap<Integer, Integer[]> maxPredictValuesMap;
    	private double threshold;  //是否具有周期的阈值
    	private int lastNumIndexInPeriod;//最后一个数在周期中的位置
    	private Boolean hasPeriod; //是否有周期
 	private int predictPeriod;   //周期长度
 	private List<Integer> existPeriod;
 	private DataItems itemsInPeriod;  //一个周期内的items
+	private DataItems minItemsInPeriod;
+	private DataItems maxItemsInPeriod;
 	private double confidence;
 	
 	
@@ -47,6 +52,8 @@ public class ERPDistencePM implements IMinerPM {
 		predictPeriod=1;
 		minEntropy = Double.MAX_VALUE;
 		predictValuesMap=new HashMap<Integer, Integer[]>();
+		minPredictValuesMap=new HashMap<Integer, Integer[]>();
+		maxPredictValuesMap=new HashMap<Integer, Integer[]>();
 		existPeriod=new ArrayList<Integer>();
 		if(!di.isAllDataIsDouble()){
 			existPeriodOfNonNumDataItems=new HashMap<String, List<Integer>>();
@@ -62,6 +69,8 @@ public class ERPDistencePM implements IMinerPM {
 		predictPeriod=1;
 		minEntropy = Double.MAX_VALUE;
 		predictValuesMap=new HashMap<Integer, Integer[]>();
+		minPredictValuesMap=new HashMap<Integer, Integer[]>();
+		maxPredictValuesMap=new HashMap<Integer, Integer[]>();
 		existPeriod=new ArrayList<Integer>();
 	}
 	
@@ -81,6 +90,10 @@ public class ERPDistencePM implements IMinerPM {
 //			}
 			//System.out.println();
 			generateManHatonEntroy(seq,numItems);
+			seq.clear();
+			for(int i=0;i<numItems;i++){
+				seq.add((int)(Double.parseDouble(oriDi.getData().get(i)))+"");
+			}
 			isPeriodExist(maxPeriod,null,seq);
 		}else{
 			List<Map<String, Integer>> nonnumData=di.getNonNumData();
@@ -269,16 +282,29 @@ public class ERPDistencePM implements IMinerPM {
 				hasPeriod=true;
 				existPeriod.add(i+1);
 				Integer[] predictValues=new Integer[i+1];
+				Integer[] minPredictValues=new Integer[i+1];
+				Integer[] maxPredictValues=new Integer[i+1];
 				for(int index=0;index<=i;index++){
 					predictValues[index]=0;
+					minPredictValues[index]=Integer.MAX_VALUE;
+					maxPredictValues[index]=Integer.MIN_VALUE;
 				}
 				for(int j=0;j<di.getLength();j++){
-					predictValues[j%(i+1)]+=(int)Double.parseDouble(seq.get(j));
+					int value=(int)Double.parseDouble(seq.get(j));
+					predictValues[j%(i+1)]+=value;
+					if(minPredictValues[j%(i+1)]>value){
+						minPredictValues[j%(i+1)]=value;
+					}
+					if(maxPredictValues[j%(i+1)]<value){
+						maxPredictValues[j%(i+1)]=value;
+					}
 				}
 				for(int j=0;j<(i+1);j++){
 					predictValues[j]/=(di.getLength()/(i+1));
 				}
 				predictValuesMap.put((i+1), predictValues);
+				minPredictValuesMap.put((i+1),minPredictValues);
+				maxPredictValuesMap.put((i+1),maxPredictValues);
 			}
 		}
 //		int shortestPeriod=maxPeriod;
@@ -320,22 +346,42 @@ public class ERPDistencePM implements IMinerPM {
 		}
 		if(hasPeriod){
 			itemsInPeriod=new DataItems();
+			minItemsInPeriod=new DataItems();
+			maxItemsInPeriod=new DataItems();
 			Integer[] predictValues=predictValuesMap.get(predictPeriod);
+			Integer[] minPredictValues=minPredictValuesMap.get(predictPeriod);
+			Integer[] maxPredictValues=maxPredictValuesMap.get(predictPeriod);
 			if(predictValues==null){
 				predictValues=new Integer[predictPeriod];
+				minPredictValues=new Integer[predictPeriod];
+				maxPredictValues=new Integer[predictPeriod];
 				for(int index=0;index<predictPeriod;index++){
 					predictValues[index]=0;
+					minPredictValues[index]=Integer.MAX_VALUE;
+					maxPredictValues[index]=Integer.MIN_VALUE;
 				}
 				for(int j=0;j<di.getLength();j++){
-					predictValues[j%(predictPeriod)]+=(int)Double.parseDouble(seq.get(j));
+					int value=(int)Double.parseDouble(seq.get(j));
+					predictValues[j%(predictPeriod)]+=value;
+					if(minPredictValues[j%(predictPeriod)]>value){
+						minPredictValues[j%(predictPeriod)]=value;
+					}
+					if(maxPredictValues[j%(predictPeriod)]<value){
+						maxPredictValues[j%(predictPeriod)]=value;
+					}
 				}
 				for(int j=0;j<(predictPeriod);j++){
 					predictValues[j]/=(di.getLength()/(predictPeriod));
 				}
+				predictValuesMap.put(predictPeriod, predictValues);
+				minPredictValuesMap.put(predictPeriod, minPredictValues);
+				maxPredictValuesMap.put(predictPeriod, maxPredictValues);
 			}
-			predictValuesMap.put(predictPeriod, predictValues);
+			
 			for(int i=0;i<possiPeriod;i++){
 				itemsInPeriod.add1Data(di.getTime().get(i),predictValues[i]+"");
+				minItemsInPeriod.add1Data(di.getTime().get(i),minPredictValues[i]+"");
+				maxItemsInPeriod.add1Data(di.getTime().get(i),maxPredictValues[i]+"");
 			}
 			
 		}else{
@@ -359,24 +405,24 @@ public class ERPDistencePM implements IMinerPM {
 		
 		
 		if(index==2){
-			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2){
+			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.13){
 				isMaxThanNeighbor=true;
 			}
 		}else if(index==Entropies.length){
-			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2){
+			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.13){
 				isMaxThanNeighbor=true;
 			}
 		}else{
 			if(isnext){
 				if(origin-index==1){
-					if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2)
+					if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.13)
 						isMaxThanNeighbor=true;
 				}else if(origin-index==-1){
-					if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2)
+					if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.13)
 						isMaxThanNeighbor=true;
 				}
-			}else if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2&&
-            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2){
+			}else if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.13&&
+            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.13){
             	isMaxThanNeighbor=true;
 			}
 		}
@@ -485,6 +531,22 @@ public class ERPDistencePM implements IMinerPM {
 		return minEntropy;
 	}
 	
+	public DataItems getMinItemsInPeriod() {
+		return minItemsInPeriod;
+	}
+
+	public void setMinItemsInPeriod(DataItems minItemsInPeriod) {
+		this.minItemsInPeriod = minItemsInPeriod;
+	}
+
+	public DataItems getMaxItemsInPeriod() {
+		return maxItemsInPeriod;
+	}
+
+	public void setMaxItemsInPeriod(DataItems maxItemsInPeriod) {
+		this.maxItemsInPeriod = maxItemsInPeriod;
+	}
+
 	@Override
 	public Double[] getEntropies() {
 		return entropies;
@@ -499,7 +561,10 @@ public class ERPDistencePM implements IMinerPM {
 		}
 		
 	}
-	
+	@Override
+	public void setOriginDataItems(DataItems dataItems) {
+		this.oriDi=dataItems;
+	}
 	@Override
 	public int getLastNumberIndexInperiod() {
 		if(hasPeriod()){

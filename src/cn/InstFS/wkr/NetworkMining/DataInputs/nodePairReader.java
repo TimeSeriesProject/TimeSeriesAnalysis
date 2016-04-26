@@ -221,22 +221,12 @@ public class nodePairReader implements IReader {
 			sourceFile=new File(filePath);
 		}
 		if(sourceFile.isFile()){
-			for(String ip:ipPair){
-				if(isFileContainsIp(ip, sourceFile.getName())){
-					readFile(sourceFile.getAbsolutePath(), minierObject, dataItems);
-					break;
-				}
-			}
+			readFile(sourceFile.getAbsolutePath(), minierObject, dataItems);
 		}else{
 			File[] files=sourceFile.listFiles();
 			for(File file:files){
-				for(String ip:ipPair){
-					if(isFileContainsIp(ip, file.getName())){
-						readFile(file.getAbsolutePath(), minierObject, dataItems);
-						System.out.println("read file "+file.getName());
-						break;
-					}
-				}
+				readFile(file.getAbsolutePath(), minierObject, dataItems);
+				System.out.println("read file "+file.getName());
 			}
 		}
 		return DataItems.sortByTimeValue(dataItems);
@@ -502,7 +492,7 @@ public class nodePairReader implements IReader {
 			}
 			
 			//跳过本节点 直接转到路由器节点
-			for(int j=minerObjectIndex;j<columns.length;j++)
+			for(int j=minerObjectIndex+1;j<columns.length-1;j++)
 			{
 				int len=nodeList.size();
 				int node = Integer.valueOf(columns[j].split("-")[0]);
