@@ -24,8 +24,10 @@ import cn.InstFS.wkr.NetworkMining.Miner.PathMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.PeriodMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsSM;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogConfigTask;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettingTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PanelConfigTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PanelListAllTasks;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.ProcessBarShow;
@@ -42,6 +44,7 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 import javax.swing.JCheckBox;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.l2fprod.common.swing.LookAndFeelTweaks;
 
@@ -84,11 +87,16 @@ public class MainFrame extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws UnsupportedLookAndFeelException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 * @throws ClassNotFoundException 
 	 */
-	public MainFrame() {
+	public MainFrame() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		MainFrame.topFrame = this;
 		setTitle("网络规律挖掘分析软件");
-		
+		UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
@@ -107,6 +115,19 @@ public class MainFrame extends JFrame {
 		mnFile.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(mnFile);
 		
+		
+		
+		
+		JMenuItem menuParse = new JMenuItem("Pcap解析(P)");
+		menuParse.setMnemonic(KeyEvent.VK_P);
+		menuParse.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ProcessBarShow();
+			}
+		});
+		mnFile.add(menuParse);
+		
 		JMenuItem menuExit = new JMenuItem("退出(X)");
 		menuExit.setMnemonic(KeyEvent.VK_X);
 		menuExit.addActionListener(new ActionListener() {			
@@ -117,17 +138,6 @@ public class MainFrame extends JFrame {
 		});
 		mnFile.add(menuExit);
 		
-		
-		JMenuItem menuParse = new JMenuItem("Pcap解析(P)");
-		menuExit.setMnemonic(KeyEvent.VK_P);
-		menuExit.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new ProcessBarShow();
-			}
-		});
-		mnFile.add(menuParse);
-		
 		JMenu mnTools = new JMenu("任务(T)");
 		mnTools.setMnemonic(KeyEvent.VK_T);
 		menuBar.add(mnTools);
@@ -137,7 +147,10 @@ public class MainFrame extends JFrame {
 		menuConfigEvent.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openFrameConfigTask();
+				JFrame jf=new JFrame();
+				DialogSettingTask dialogSettingTask=new DialogSettingTask(jf);
+				dialogSettingTask.setVisible(true);
+
 			}
 		});
 		
@@ -179,7 +192,7 @@ public class MainFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				PeriodMinerFactory periodMinerFactory=PeriodMinerFactory.getInstance();
 				periodMinerFactory.minerAllPeriods();
-				NetworkMinerFactory.getInstance().startAllMiners();
+				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PeriodicityMining);
 				panelListAllEvents.refreshAllTasks();
 			}
 		});
@@ -192,7 +205,7 @@ public class MainFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				OutliesMinerFactory outliesFactory=OutliesMinerFactory.getInstance();
 				outliesFactory.detectOutlies();
-				NetworkMinerFactory.getInstance().startAllMiners();
+				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_TsAnalysis);
 				panelListAllEvents.refreshAllTasks();
 			}
 		});
@@ -205,7 +218,7 @@ public class MainFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				FrequentItemMinerFactory freItemsFactory=FrequentItemMinerFactory.getInstance();
 				freItemsFactory.detectFrequntItems();
-				NetworkMinerFactory.getInstance().startAllMiners();
+				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_SequenceMining);
 				panelListAllEvents.refreshAllTasks();
 			}
 		});
@@ -218,7 +231,7 @@ public class MainFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				PathMinerFactory pathFactory=PathMinerFactory.getInstance();
 				pathFactory.minerPathPeriod();
-				NetworkMinerFactory.getInstance().startAllMiners();
+				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PathProbilityMining);
 				panelListAllEvents.refreshAllTasks();
 			}
 		});
