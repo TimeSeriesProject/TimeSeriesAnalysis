@@ -250,7 +250,7 @@ public class MainFrame extends JFrame {
 		});
 		mnView.add(chckAutoShowResults);
 		
-		toolBar.add(new PanelControlSimulationTime());
+//		toolBar.add(new PanelControlSimulationTime());
 		
 		
 		JSplitPane splitPane = new JSplitPane();

@@ -69,13 +69,13 @@ public class ProcessBarShow implements Runnable {
 		// 创建一条垂直进度条
 		initLayout();
 		addButtonActionLister();
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//		try {
+//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+////			SwingUtilities.updateComponentTreeUI(frame);
 //			SwingUtilities.updateComponentTreeUI(frame);
-			SwingUtilities.updateComponentTreeUI(frame);
-		} catch (Exception exe) {
-			exe.printStackTrace();
-		}
+//		} catch (Exception exe) {
+//			exe.printStackTrace();
+//		}
 		Timer timer = new Timer(1000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (haseBegin) {

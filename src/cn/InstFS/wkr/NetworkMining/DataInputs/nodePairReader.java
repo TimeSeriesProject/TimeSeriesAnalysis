@@ -662,7 +662,7 @@ public class nodePairReader implements IReader {
 				columns=line.split(",");
 				fixCondition=true;
 				for(String ip:ipPair){
-					if(!(columns[SIPColIndex].equals(ip)||columns[DIPColIndex].equals(ip))){
+					if(!(columns[SIPColIndex].equals(ip.trim())||columns[DIPColIndex].equals(ip.trim()))){
 						fixCondition=false;
 						break;
 					}
