@@ -12,6 +12,8 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,6 +23,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -36,9 +39,10 @@ import javax.swing.WindowConstants;
 
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.PcapUtils;
 
-public class ProcessBarShow implements Runnable {
+public class ProcessBarShow extends JDialog implements Callable {
 
 	JFrame frame = null;
+//	JDialog jdialog = null;
 	JProgressBar bar = new JProgressBar(JProgressBar.HORIZONTAL);
 
 	JButton jb_input = new JButton("打开待解析的pecap文件目录");
@@ -60,10 +64,29 @@ public class ProcessBarShow implements Runnable {
 	JPanel topPanel = new JPanel();
 	JPanel midPanel = new JPanel();
 	JPanel bottomPanel = new JPanel();
-	public ProcessBarShow() {
+	public ProcessBarShow() {}
+	public ProcessBarShow(JFrame jframe) {
 		
-		frame = new JFrame("测试进度条");
+//		super(jframe);
+		frame = new JFrame();
+		frame.setTitle("pcap包解析进度监控");
+		frame.setVisible(true);
+//		frame.setModal(true);
+//		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        //添加监听事件
+        /**
+		frame.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter() {//监听退出事件
+		   	public void windowClosing(WindowEvent e) {
+		   		frame.dispose();
+		   		//释放当前窗口资源，并且设置为不可见
+		   	}
+		});
+        */
+//		frame = new JFrame("测试进度条");
+//		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 //		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
 		// 创建一条垂直进度条
@@ -76,48 +99,7 @@ public class ProcessBarShow implements Runnable {
 //		} catch (Exception exe) {
 //			exe.printStackTrace();
 //		}
-		Timer timer = new Timer(1000, new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (haseBegin) {
-//					System.out.println("开始解析。。。。。。");
-					// 以任务的当前完成量设置进度条的value
-					if(pp.pu.getStatus().name().compareTo("PREPARE") == 0) {
-						
-						currentPhrase = "正在准备";
-						System.out.println("当前处于准备阶段");
-					}
-					else if (pp.pu.getStatus().name().compareTo("PARSE") == 0) {
-						if (pp.pu.getParseSum() == 0) {
-							phrase = 0;
-							bar.setMaximum(pp.pu.getParseSum());
-							currentPhrase = "当前阶段为解析pecap包阶段 1/2";
-							System.out.println("任务总数："+pp.pu.getParseSum());
-//							jlable.setText(currentPhrase);
-						}
-						
-						int num = (int) Math.round(pp.pu.getParsedNum()*1.0/pp.pu.getParseSum()*100);
-						bar.setValue(num);
-						jlable.setText(currentPhrase);
-					} else if (pp.pu.getStatus().name().compareTo("GENROUTE") == 0) {
-						
-						bar.setMaximum(pp.pu.getGenRouteSum());
-						currentPhrase = "当前阶段为解析路由阶段 2/2";
-						int num = (int) Math.round(pp.pu.getGenedRouteNum()*1.0/pp.pu.getGenRouteSum()*100);
-						bar.setValue(num);
-						jlable.setText(currentPhrase);
-					}
-					else if(pp.pu.getStatus().name().compareTo("END") == 0) {
-					
-						haseBegin = false;
-						currentPhrase = "解析结束";
-						jlable.setText(currentPhrase);
-					}
-
-				}
-
-			}
-		});
-		timer.start();
+		
 		// init();
 	}
 
@@ -129,22 +111,6 @@ public class ProcessBarShow implements Runnable {
 		JPanel panelContainer = new JPanel();
 //		panelContainer.setLayout(new GridBagLayout());
 		panelContainer.setLayout(new GridLayout(3,1));
-//		GridBagConstraints c1 = new GridBagConstraints();
-//		c1.gridx = 0;
-//		c1.gridy = 0;
-//		c1.weightx = 1.0;
-//		c1.weighty = 1.0;
-//
-//		c1.fill = GridBagConstraints.VERTICAL;
-//		panelContainer.add(topPanel, c1);
-//
-//		GridBagConstraints c2 = new GridBagConstraints();
-//		c2.gridx = 0;
-//		c2.gridy = 1;
-//		c2.weightx = 1.0;
-//		c2.weighty = 0;
-//		c2.fill = GridBagConstraints.VERTICAL;
-//		panelContainer.add(midPanel, c2);
 
 //		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //		panelContainer.setOpaque(true);
@@ -156,6 +122,40 @@ public class ProcessBarShow implements Runnable {
 		frame.setVisible(true);
 	}
 
+	private void beginParsePcap()
+	{
+		frame = new JFrame();
+		frame.setTitle("pcap包解析进度监控");
+//		frame.setModal(true);
+//		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        //添加监听事件
+        
+		frame.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter() {//监听退出事件
+		   	public void windowClosing(WindowEvent e) {
+		   		frame.dispose();
+		   		//释放当前窗口资源，并且设置为不可见
+		   	}
+		});
+        
+//		frame = new JFrame("测试进度条");
+//		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		
+		// 创建一条垂直进度条
+		initLayout();
+		addButtonActionLister();
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//			SwingUtilities.updateComponentTreeUI(frame);
+			SwingUtilities.updateComponentTreeUI(frame);
+		} catch (Exception exe) {
+			exe.printStackTrace();
+		}
+		
+	}
 	private void createTopPanel() {
 
 //		JLabel sourceLabel = new JLabel("添加路径：");
@@ -267,6 +267,7 @@ public class ProcessBarShow implements Runnable {
 							.getText());
 					ExecutorService exec = Executors.newFixedThreadPool(1);
 					exec.submit(pp);
+					timer.start();
 				}
 				
 			}
@@ -274,16 +275,60 @@ public class ProcessBarShow implements Runnable {
 		});
 	}
 
-	@Override
-	public void run() {
-
-	}
-
 	public static void main(String[] args) {
-		ProcessBarShow pbs = new ProcessBarShow();
+		ProcessBarShow pbs = new ProcessBarShow(null);
 		// pbs.setVisible(true);
 	}
 
+	Timer timer = new Timer(1000, new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			if (haseBegin) {
+//				System.out.println("开始解析。。。。。。");
+				// 以任务的当前完成量设置进度条的value
+				if(pp.pu.getStatus().name().compareTo("PREPARE") == 0) {
+					
+					currentPhrase = "正在准备";
+					System.out.println("当前处于准备阶段");
+				}
+				else if (pp.pu.getStatus().name().compareTo("PARSE") == 0) {
+					if (pp.pu.getParseSum() == 0) {
+						phrase = 0;
+						bar.setMaximum(100);
+						currentPhrase = "当前阶段为解析pecap包阶段 1/2";
+						System.out.println("任务总数："+pp.pu.getParseSum());
+//						jlable.setText(currentPhrase);
+					}
+					
+					int num = (int) Math.round(pp.pu.getParsedNum()*1.0/pp.pu.getParseSum()*100);
+					bar.setValue(num);
+					jlable.setText(currentPhrase);
+				} else if (pp.pu.getStatus().name().compareTo("GENROUTE") == 0) {
+					
+//					bar.setMaximum(100);
+					currentPhrase = "当前阶段为解析路由阶段 2/2";
+					int num = (int) Math.round(pp.pu.getGenedRouteNum()*1.0/pp.pu.getGenRouteSum()*100);
+					bar.setValue(num);
+					jlable.setText(currentPhrase);
+				}
+				else if(pp.pu.getStatus().name().compareTo("END") == 0) {
+				
+					haseBegin = false;
+					currentPhrase = "解析结束";
+					jlable.setText(currentPhrase);
+//					timer.stop();
+				}
+
+			}
+
+		}
+	});
+	@Override
+	public Object call() throws Exception {
+		
+		beginParsePcap();
+		// TODO Auto-generated method stub
+		return true;
+	}
 }
 
 class PecapParse implements Callable {
