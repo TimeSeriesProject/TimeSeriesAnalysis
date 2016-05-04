@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import associationRules.ProtocolAssociationResult;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
 /**
@@ -23,30 +24,38 @@ public class ProtocolAssociation {
 	double supportThresh = 0;
 	int bias = 0;
 	Map<String,List<ProtocolDataItems>> ip_proData ;
+	/**
+	 * 直接传入已经处理好的结果
+	 * @param pdi
+	 * @param thresh
+	 */
 	public ProtocolAssociation(Map<String,List<ProtocolDataItems>> pdi,double thresh)
 	{
 		ip_proData = pdi;
 		setThresh(thresh,0.5);
 	}
 	/**
-	 * 设置支持度阈值，如果传入的参数小于0，则使用默认阈值，默认值为0.5
+	 * 传递ip_protocol_dataItems的数据格式。
+	 * @param data
 	 * @param thresh
-	 * @param defaultValue
+	 * @param flag
 	 */
-	public void setThresh(double thresh, double defaultValue) {
-		
-		if(thresh < 0)
-			supportThresh = defaultValue;
-		else
-			supportThresh = thresh;
-		
+	public ProtocolAssociation(Map<String,Map<String,DataItems>> data,double thresh,boolean flag)
+	{
+		convertData(data);
+		setThresh(-1,0.5);
 	}
+	
 	/**
 	 * 挖掘ip下协议之间的关联
 	 */
 	public Map<String,List<ProtocolAssociationResult>> miningAssociation()
 	{
-		
+		if(ip_proData == null)
+		{
+			System.out.println("待挖掘数据为空，请先载入数据！");
+			System.exit(0);
+		}
 		Map<String,List<ProtocolAssociationResult>> resultMap = new TreeMap<String,List<ProtocolAssociationResult>>();
 		Iterator<String> ip_iter = ip_proData.keySet().iterator();
 		while(ip_iter.hasNext())
@@ -76,6 +85,12 @@ public class ProtocolAssociation {
 		}
 		return resultMap;
 	}
+	/**
+	 * 计算两协议的关联性
+	 * @param dataItems
+	 * @param dataItems2
+	 * @return
+	 */
 	private double caculateAssociation(DataItems dataItems,
 			DataItems dataItems2) {
 		
@@ -130,33 +145,60 @@ public class ProtocolAssociation {
 			if(data.get(i) > mean - 2*s && data.get(i) < mean+2*s)
 				num++;
 		}
-		
 		return num*1.0/data.size();
 	}
-}
-class ProtocolAssociationResult{
-	
-	double support = 0.0;
-	int bias = 0;
-	String protocol1 = "";
-	String protocol2 = "";
-	DataItems dataItems1;
-	DataItems dataItems2;
-	public ProtocolAssociationResult(String p1,String p2,DataItems data1,DataItems data2,double s,int k)
-	{
-		protocol1 = p1;
-		protocol2 = p2;
-		dataItems1 = data1;
-		dataItems2 = data2;
-		support = s;
-		bias = k;
+	/**
+	 * 设置支持度阈值，如果传入的参数小于0，则使用默认阈值，默认值为0.5
+	 * @param thresh
+	 * @param defaultValue
+	 */
+	private void setThresh(double thresh, double defaultValue) {
+		
+		if(thresh < 0)
+			supportThresh = defaultValue;
+		else
+			supportThresh = thresh;
+		
 	}
-	
+	/**
+	 * 将map<ip,map<protocol,DataItems>>数据格式 转化为map<ip,List<class>>数据格式，方便处理
+	 * @param data
+	 */
+	public void convertData(Map<String,Map<String,DataItems>> data)
+	{
+		Iterator<String> ip_iter = data.keySet().iterator();
+		while(ip_iter.hasNext())
+		{
+			String ip = ip_iter.next();
+			Map<String,DataItems> pro_map = data.get(ip);
+			
+			List<ProtocolDataItems> list = new ArrayList<ProtocolDataItems>();
+			Iterator<String> pro_iter = pro_map.keySet().iterator();
+			while(pro_iter.hasNext())
+			{
+				String protocol = pro_iter.next();
+				ProtocolDataItems pdi = new ProtocolDataItems(protocol,pro_map.get(protocol));
+				list.add(pdi);
+			}
+			ip_proData.put(ip, list);
+		}
+	}
 }
+
+/**
+ * 存储协议名和数据
+ * @author Administrator
+ *
+ */
 class ProtocolDataItems
 {
 	String protocolName = "";
 	DataItems dataItems;
+	public ProtocolDataItems(String name,DataItems data)
+	{
+		protocolName = name;
+		dataItems = data;
+	}
 	public void setProtocolName(String name)
 	{
 		protocolName = name;
