@@ -1,6 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,21 +18,30 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
  */
 public class ProtocolAssociation {
 
+	/**
+	 * 该主函数主要是为了测试使用，正式使用时，可以删掉该主函数
+	 * @param args
+	 */
 	public static void main(String[] args)
 	{
+		ProtocolAssMinerFactory paf = ProtocolAssMinerFactory.getInstance();
+		paf.mineAllAssociations();
+		ProtocolAssociation pa = new ProtocolAssociation(paf.eachProtocolItems,0.6,true);
+		pa.miningAssociation();
 		
 	}
 	double supportThresh = 0;
 	int bias = 0;
-	Map<String,List<ProtocolDataItems>> ip_proData ;
+	HashMap<String,ArrayList<ProtocolDataItems>> ip_proData ;
 	/**
 	 * 直接传入已经处理好的结果
 	 * @param pdi
 	 * @param thresh
 	 */
-	public ProtocolAssociation(Map<String,List<ProtocolDataItems>> pdi,double thresh)
+	public ProtocolAssociation(HashMap<String,ArrayList<ProtocolDataItems>> pdi,double thresh)
 	{
 		ip_proData = pdi;
+		ip_proData = new HashMap<String,ArrayList<ProtocolDataItems>>();
 		setThresh(thresh,0.5);
 	}
 	/**
@@ -40,10 +50,12 @@ public class ProtocolAssociation {
 	 * @param thresh
 	 * @param flag
 	 */
-	public ProtocolAssociation(Map<String,Map<String,DataItems>> data,double thresh,boolean flag)
+	public ProtocolAssociation(Map<String,HashMap<String,DataItems>> data,double thresh,boolean flag)
 	{
+		ip_proData = new HashMap<String,ArrayList<ProtocolDataItems>>();
 		convertData(data);
 		setThresh(-1,0.5);
+		
 	}
 	
 	/**
@@ -125,12 +137,11 @@ public class ProtocolAssociation {
 		while(i < dataItems.data.size() && j < dataItems2.data.size())
 		{
 			num++;
-			i++;
-			j++;
 			double d = Double.parseDouble(dataItems.data.get(i))/(0.1 + Double.parseDouble(dataItems.data.get(j)));
 			data.add(d);
 			sum += d;
-			
+			i++;
+			j++;
 		}
 		mean = sum/num;
 		double s = 0;
@@ -164,15 +175,23 @@ public class ProtocolAssociation {
 	 * 将map<ip,map<protocol,DataItems>>数据格式 转化为map<ip,List<class>>数据格式，方便处理
 	 * @param data
 	 */
-	public void convertData(Map<String,Map<String,DataItems>> data)
+	public void convertData(Map<String,HashMap<String,DataItems>> data)
 	{
+		if(ip_proData == null)
+		{
+			System.out.println("变量申请失败");
+		}
+		if(data == null)
+		{
+			System.out.println("数据为空，请检查输入");
+		}
 		Iterator<String> ip_iter = data.keySet().iterator();
 		while(ip_iter.hasNext())
 		{
 			String ip = ip_iter.next();
 			Map<String,DataItems> pro_map = data.get(ip);
 			
-			List<ProtocolDataItems> list = new ArrayList<ProtocolDataItems>();
+			ArrayList<ProtocolDataItems> list = new ArrayList<ProtocolDataItems>();
 			Iterator<String> pro_iter = pro_map.keySet().iterator();
 			while(pro_iter.hasNext())
 			{
@@ -180,6 +199,11 @@ public class ProtocolAssociation {
 				ProtocolDataItems pdi = new ProtocolDataItems(protocol,pro_map.get(protocol));
 				list.add(pdi);
 			}
+			if(list.size() == 0)
+			{
+				continue;
+			}
+			System.out.println("ip "+ ip+"  "+list.size());
 			ip_proData.put(ip, list);
 		}
 	}
