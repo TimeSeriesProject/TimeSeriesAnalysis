@@ -52,7 +52,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	private String dataSource;//源文件类型  数据库 或 文本文件
 	private String sourcePath; //当为文本文件时 文件路径
 	private String pathSource;
-	
+	private String protocol;
 	private int patternNum;   //检测序列频繁模式时，确定序列的频繁项
 	
 	public String getSourcePath() {
@@ -883,6 +883,14 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 
 	public void setPatternNum(int patternNum) {
 		this.patternNum = patternNum;
+	}
+
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
 	}
 	
 	

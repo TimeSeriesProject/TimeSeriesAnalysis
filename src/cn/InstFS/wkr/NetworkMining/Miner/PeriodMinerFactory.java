@@ -76,8 +76,8 @@ public class PeriodMinerFactory {
 							+ "26000,26500,27000,27500,28000,28500,29000,29500,30000,30500,31000,31500,32000,32500,33000,335000,34000");
 					task.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
 					task.setMiningMethod(MiningMethod.MiningMethods_PeriodicityMining);
-					task.setMiningObject(protocol);
-					
+					task.setMiningObject("traffic");
+					task.setProtocol(protocol);
 					TaskElement.add1Task(task, false);
 					NetworkMinerFactory minerFactory=NetworkMinerFactory.getInstance();
 					INetworkMiner miner=minerFactory.allMiners.get(task);
