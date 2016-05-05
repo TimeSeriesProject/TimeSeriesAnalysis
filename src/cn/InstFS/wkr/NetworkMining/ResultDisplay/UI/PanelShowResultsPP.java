@@ -194,6 +194,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                     if(pathcount<6) {
                         ArrayList<String> oneSeries = sortPeriod.get(key);
                         ArrayList<DataItems> pathNor=new ArrayList<>();
+                        ArrayList<String> pathname=new ArrayList<String>();
                         for(int i=0;i<oneSeries.size();i++)
                         {
                             String tempName=oneSeries.get(i);
@@ -201,6 +202,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                             {
                                 if(pathkey.equals(tempName))
                                 {
+                                	pathname.add(pathkey);
                                     pathNor.add(pathDataItems.get(pathkey));
                                     numfirstPeriod=firstPeriod.get(pathkey);
                                 }
@@ -211,7 +213,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                         DataItems abnor=new DataItems();
 
 
-                        JFreeChart jf = ChartPanelShowPP.createChart(pathNor, nor, abnor,numPeriod,numfirstPeriod);
+                        JFreeChart jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod);
                         ChartPanel chartpanel = new ChartPanel(jf);
 //                        remove(chart2);
                         jp.add(chartpanel);

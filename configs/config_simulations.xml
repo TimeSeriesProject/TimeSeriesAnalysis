@@ -4,6 +4,6 @@
 <comment/>
 <entry key="forcastWindowSizeInSeconds">15</entry>
 <entry key="maxDaysToRead">2.0</entry>
-<entry key="curTime">2015-04-05 03:35:32</entry>
-<entry key="useSimulatedData">true</entry>
+<entry key="curTime">2015-04-05 03:45:32</entry>
+<entry key="useSimulatedData">false</entry>
 </properties>

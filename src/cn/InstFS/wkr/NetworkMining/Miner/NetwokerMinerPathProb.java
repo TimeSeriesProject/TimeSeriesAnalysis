@@ -225,6 +225,7 @@ class PathProbTimerTask extends TimerTask{
 			newItem.setTime(dataItems.getTime());
 			IMinerPM pmMethod=new ERPDistencePM();
 			pmMethod.setDataItems(newItem);
+			pmMethod.setOriginDataItems(newItem);
 			pmMethod.predictPeriod();
 			if(pmMethod.hasPeriod()){
 				System.out.println("period:"+name+":"+pmMethod.getPredictPeriod()+":"+pmMethod.getFirstPossiblePeriod());

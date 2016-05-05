@@ -124,7 +124,7 @@ public class ChartPanelShowPP extends JPanel {
         //获取正常数据的长度、
         int length = normal.getLength();
         int time[] = new int[length];
-        XYSeries xyseries = new XYSeries("原始值");
+        XYSeries xyseries = new XYSeries("");
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
@@ -143,7 +143,7 @@ public class ChartPanelShowPP extends JPanel {
     //对异常点进行初始化
     public static XYDataset createAbnormalDataset(DataItems abnor) {  // 统计异常点的长度
         int length = abnor.getLength();
-        XYSeries xyseries = new XYSeries("路径挖掘");
+        XYSeries xyseries = new XYSeries("");
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
@@ -162,11 +162,11 @@ public class ChartPanelShowPP extends JPanel {
         return xyseriescollection;
     }
 
-    public static XYDataset createmodeDataset(DataItems normal) {
+    public static XYDataset createmodeDataset(DataItems normal,String name) {
         //获取正常数据的长度、
         int length = normal.getLength();
         int time[] = new int[length];
-        XYSeries xyseries = new XYSeries(".");
+        XYSeries xyseries = new XYSeries(name);
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
@@ -182,7 +182,7 @@ public class ChartPanelShowPP extends JPanel {
         return xyseriescollection;
     }
 
-    public static JFreeChart createChart(ArrayList<DataItems> _nor_model, DataItems nor, DataItems abnor,int period,int firstperiod) {
+    public static JFreeChart createChart(ArrayList<DataItems> _nor_model,ArrayList<String> name, DataItems nor, DataItems abnor,int period,int firstperiod) {
         XYDataset xydataset = createNormalDataset(nor);
         JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("周期值: "+period+"    "+"最可能子周期值 : "+firstperiod, "时间", "值", xydataset);
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
@@ -195,9 +195,9 @@ public class ChartPanelShowPP extends JPanel {
         xylineandshaperenderer.setSeriesLinesVisible(0, true);
         xylineandshaperenderer.setBaseShapesVisible(false);
         xylineandshaperenderer.setSeriesShape(0, double1);
-        xylineandshaperenderer.setSeriesPaint(0, Color.black);
-        xylineandshaperenderer.setSeriesFillPaint(0, Color.yellow);
-        xylineandshaperenderer.setSeriesOutlinePaint(0, Color.gray);
+        xylineandshaperenderer.setSeriesPaint(0, Color.white);
+        xylineandshaperenderer.setSeriesFillPaint(0, Color.white);
+        xylineandshaperenderer.setSeriesOutlinePaint(0, Color.white);
         xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
         //设置显示数据点
 //        xylineandshaperenderer.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
@@ -213,9 +213,9 @@ public class ChartPanelShowPP extends JPanel {
         xylineandshaperenderer1.setSeriesLinesVisible(0, true);
         xylineandshaperenderer1.setSeriesShape(0, double1);
         //设置线和点的颜色。
-        xylineandshaperenderer1.setSeriesPaint(0, Color.black);
-        xylineandshaperenderer1.setSeriesFillPaint(0, Color.black);
-        xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.black);
+        xylineandshaperenderer1.setSeriesPaint(0, Color.white);
+        xylineandshaperenderer1.setSeriesFillPaint(0, Color.white);
+        xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.white);
         xylineandshaperenderer1.setUseFillPaint(true);
         xylineandshaperenderer1.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
         xylineandshaperenderer1.setSeriesStroke(0, new BasicStroke(0.5F));
@@ -223,7 +223,7 @@ public class ChartPanelShowPP extends JPanel {
         //xylineandshaperenderer1.setBaseItemLabelsVisible(true);
         for (int i = 0; i < _nor_model.size(); i++) {
             if(i==0) {
-                XYDataset xydataset2 = createmodeDataset(_nor_model.get(0));
+                XYDataset xydataset2 = createmodeDataset(_nor_model.get(0),name.get(0));
                 XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
                 xyplot.setDataset( 2, xydataset2);
                 xyplot.setRenderer(2 , xylineandshaperenderer2);
@@ -238,10 +238,10 @@ public class ChartPanelShowPP extends JPanel {
                 xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.red);
                 xylineandshaperenderer2.setUseFillPaint(true);
                 xylineandshaperenderer2.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(2.5F));
+                xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(1.5F));
             }
             if(i==1) {
-                XYDataset xydataset3 = createmodeDataset(_nor_model.get(1));
+                XYDataset xydataset3 = createmodeDataset(_nor_model.get(1),name.get(1));
                 XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
                 xyplot.setDataset( 3, xydataset3);
                 xyplot.setRenderer(3 , xylineandshaperenderer3);
@@ -256,10 +256,10 @@ public class ChartPanelShowPP extends JPanel {
                 xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.black);
                 xylineandshaperenderer3.setUseFillPaint(true);
                 xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(2.5F));
+                xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(1.5F));
             }
             if(i==2) {
-                XYDataset xydataset4 = createmodeDataset(_nor_model.get(2));
+                XYDataset xydataset4 = createmodeDataset(_nor_model.get(2),name.get(2));
                 XYLineAndShapeRenderer xylineandshaperenderer4 = new XYLineAndShapeRenderer();
                 xyplot.setDataset( 4, xydataset4);
                 xyplot.setRenderer(4 , xylineandshaperenderer4);
@@ -269,15 +269,15 @@ public class ChartPanelShowPP extends JPanel {
                 xylineandshaperenderer4.setSeriesLinesVisible(0, true);
                 xylineandshaperenderer4.setSeriesShape(0, double1);
                 //设置线和点的颜色。
-                xylineandshaperenderer4.setSeriesPaint(0, Color.cyan);
-                xylineandshaperenderer4.setSeriesFillPaint(0, Color.cyan);
-                xylineandshaperenderer4.setSeriesOutlinePaint(0, Color.cyan);
+                xylineandshaperenderer4.setSeriesPaint(0, Color.orange);
+                xylineandshaperenderer4.setSeriesFillPaint(0, Color.orange);
+                xylineandshaperenderer4.setSeriesOutlinePaint(0, Color.orange);
                 xylineandshaperenderer4.setUseFillPaint(true);
                 xylineandshaperenderer4.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                xylineandshaperenderer4.setSeriesStroke(0, new BasicStroke(2.5F));
+                xylineandshaperenderer4.setSeriesStroke(0, new BasicStroke(1.5F));
             }
             if(i==3) {
-                XYDataset xydataset5 = createmodeDataset(_nor_model.get(3));
+                XYDataset xydataset5 = createmodeDataset(_nor_model.get(3),name.get(3));
                 XYLineAndShapeRenderer xylineandshaperenderer5 = new XYLineAndShapeRenderer();
                 xyplot.setDataset( 5, xydataset5);
                 xyplot.setRenderer(5 , xylineandshaperenderer5);
@@ -292,10 +292,10 @@ public class ChartPanelShowPP extends JPanel {
                 xylineandshaperenderer5.setSeriesOutlinePaint(0, Color.blue);
                 xylineandshaperenderer5.setUseFillPaint(true);
                 xylineandshaperenderer5.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                xylineandshaperenderer5.setSeriesStroke(0, new BasicStroke(2.5F));
+                xylineandshaperenderer5.setSeriesStroke(0, new BasicStroke(1.5F));
             }
             if(i==4) {
-                XYDataset xydataset6 = createmodeDataset(_nor_model.get(4));
+                XYDataset xydataset6 = createmodeDataset(_nor_model.get(4),name.get(4));
                 XYLineAndShapeRenderer xylineandshaperenderer6 = new XYLineAndShapeRenderer();
                 xyplot.setDataset( 6, xydataset6);
                 xyplot.setRenderer(6 , xylineandshaperenderer6);
@@ -310,10 +310,10 @@ public class ChartPanelShowPP extends JPanel {
                 xylineandshaperenderer6.setSeriesOutlinePaint(0, Color.green);
                 xylineandshaperenderer6.setUseFillPaint(true);
                 xylineandshaperenderer6.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                xylineandshaperenderer6.setSeriesStroke(0, new BasicStroke(2.5F));
+                xylineandshaperenderer6.setSeriesStroke(0, new BasicStroke(1.5F));
             }
             if(i==5) {
-                XYDataset xydataset7 = createmodeDataset(_nor_model.get(5));
+                XYDataset xydataset7 = createmodeDataset(_nor_model.get(5),name.get(5));
                 XYLineAndShapeRenderer xylineandshaperenderer7 = new XYLineAndShapeRenderer();
                 xyplot.setDataset( 7, xydataset7);
                 xyplot.setRenderer(7 , xylineandshaperenderer7);
@@ -328,10 +328,10 @@ public class ChartPanelShowPP extends JPanel {
                 xylineandshaperenderer7.setSeriesOutlinePaint(0, Color.yellow);
                 xylineandshaperenderer7.setUseFillPaint(true);
                 xylineandshaperenderer7.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                xylineandshaperenderer7.setSeriesStroke(0, new BasicStroke(2.5F));
+                xylineandshaperenderer7.setSeriesStroke(0, new BasicStroke(1.5F));
             }
             if(i==6) {
-                XYDataset xydataset8 = createmodeDataset(_nor_model.get(6));
+                XYDataset xydataset8 = createmodeDataset(_nor_model.get(6),name.get(6));
                 XYLineAndShapeRenderer xylineandshaperenderer8 = new XYLineAndShapeRenderer();
                 xyplot.setDataset( 8, xydataset8);
                 xyplot.setRenderer(8 , xylineandshaperenderer8);
@@ -341,15 +341,15 @@ public class ChartPanelShowPP extends JPanel {
                 xylineandshaperenderer8.setSeriesLinesVisible(0, true);
                 xylineandshaperenderer8.setSeriesShape(0, double1);
                 //设置线和点的颜色。
-                xylineandshaperenderer8.setSeriesPaint(0, Color.orange);
-                xylineandshaperenderer8.setSeriesFillPaint(0, Color.orange);
-                xylineandshaperenderer8.setSeriesOutlinePaint(0, Color.orange);
+                xylineandshaperenderer8.setSeriesPaint(0, Color.cyan);
+                xylineandshaperenderer8.setSeriesFillPaint(0, Color.cyan);
+                xylineandshaperenderer8.setSeriesOutlinePaint(0, Color.cyan);
                 xylineandshaperenderer8.setUseFillPaint(true);
                 xylineandshaperenderer8.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                xylineandshaperenderer8.setSeriesStroke(0, new BasicStroke(2.5F));
+                xylineandshaperenderer8.setSeriesStroke(0, new BasicStroke(1.5F));
             }
             if(i==7) {
-                XYDataset xydataset9 = createmodeDataset(_nor_model.get(7));
+                XYDataset xydataset9 = createmodeDataset(_nor_model.get(7),name.get(7));
                 XYLineAndShapeRenderer xylineandshaperenderer9 = new XYLineAndShapeRenderer();
                 xyplot.setDataset( 9, xydataset9);
                 xyplot.setRenderer(9 , xylineandshaperenderer9);
@@ -364,10 +364,10 @@ public class ChartPanelShowPP extends JPanel {
                 xylineandshaperenderer9.setSeriesOutlinePaint(0, Color.gray      );
                 xylineandshaperenderer9.setUseFillPaint(true);
                 xylineandshaperenderer9.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                xylineandshaperenderer9.setSeriesStroke(0, new BasicStroke(2.5F));
+                xylineandshaperenderer9.setSeriesStroke(0, new BasicStroke(1.5F));
             }
             if(i==8) {
-                XYDataset xydataset10 = createmodeDataset(_nor_model.get(8));
+                XYDataset xydataset10 = createmodeDataset(_nor_model.get(8),name.get(8));
                 XYLineAndShapeRenderer xylineandshaperenderer10 = new XYLineAndShapeRenderer();
                 xyplot.setDataset( 10, xydataset10);
                 xyplot.setRenderer(10, xylineandshaperenderer10);
@@ -382,13 +382,13 @@ public class ChartPanelShowPP extends JPanel {
                 xylineandshaperenderer10.setSeriesOutlinePaint(0, Color.pink);
                 xylineandshaperenderer10.setUseFillPaint(true);
                 xylineandshaperenderer10.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                xylineandshaperenderer10.setSeriesStroke(0, new BasicStroke(2.5F));
+                xylineandshaperenderer10.setSeriesStroke(0, new BasicStroke(1.5F));
             }
 
 
         }
 
-        jfreechart.getLegend().setVisible(false);
+//        jfreechart.getLegend().setVisible(false);
         return jfreechart;
     }
 }

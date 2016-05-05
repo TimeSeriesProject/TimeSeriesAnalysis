@@ -168,7 +168,6 @@ class PMTimerTask extends TimerTask{
 	}
 	
 	private void PMDetect(DataItems dataItems,Map<String, MinerResultsPM> retPmMap,String MiningItem){
-		DataItems oriDataItems=dataItems;
 		if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
 			dataItems=DataPretreatment.aggregateData(dataItems, task.getGranularity(), task.getAggregateMethod(),
 					!dataItems.isAllDataIsDouble());
@@ -178,6 +177,7 @@ class PMTimerTask extends TimerTask{
 			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 					task.getDiscreteEndNodes());
 		}
+		DataItems oriDataItems=dataItems;
 		if(task.getDiscreteMethod().equals(DiscreteMethod.None))
     		dataItems=DataPretreatment.normalization(dataItems);
 //		for(int i=0;i<dataItems.getLength();i++){

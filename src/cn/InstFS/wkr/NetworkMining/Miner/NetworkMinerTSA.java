@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import WaveletUtil.PointPatternDetection;
 import WaveletUtil.TEOPartern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataInputUtils;
@@ -169,7 +170,8 @@ class TSATimerTask extends TimerTask{
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistTSA)){
 			tsaMethod=new ERPDistTSA(task,params.getPredictPeriod(),dataItems);
 		}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
-			tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
+			//tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
+			tsaMethod=new PointPatternDetection(dataItems,2,10);
 			results.getRetTSA().setIslinkDegree(true);
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_NeuralNetworkTSA)){
 			TextUtils textUtils=new TextUtils();
