@@ -42,7 +42,7 @@ public class ProtocolAssociation {
 	{
 		ip_proData = pdi;
 		ip_proData = new HashMap<String,ArrayList<ProtocolDataItems>>();
-		setThresh(thresh,0.5);
+		setThresh(thresh,0.5);   //默认支持度阈值为0.5
 	}
 	/**
 	 * 传递ip_protocol_dataItems的数据格式。
@@ -80,6 +80,12 @@ public class ProtocolAssociation {
 				for(int j = i+1;j < proDataList.size();j++)
 				{
 					double thresh = caculateAssociation(proDataList.get(i).getDataItems(),proDataList.get(j).getDataItems());
+					System.out.format("计算 %s 下的协议 %s 和协议 %s 之间的关联度为 %f \t", 
+							ip,proDataList.get(i).protocolName,proDataList.get(j).protocolName,thresh);
+					if(thresh > supportThresh)
+						System.out.println("接受该关联");
+					else
+						System.out.println("拒绝该关联");
 					if(thresh > supportThresh)
 					{
 						ProtocolAssociationResult par = new ProtocolAssociationResult(proDataList.get(i).protocolName
