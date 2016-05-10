@@ -191,6 +191,7 @@ public class ProtocolAssociation {
 		{
 			System.out.println("数据为空，请检查输入");
 		}
+		int noProtocolNum = 0;
 		Iterator<String> ip_iter = data.keySet().iterator();
 		while(ip_iter.hasNext())
 		{
@@ -205,13 +206,16 @@ public class ProtocolAssociation {
 				ProtocolDataItems pdi = new ProtocolDataItems(protocol,pro_map.get(protocol));
 				list.add(pdi);
 			}
-			if(list.size() == 0)
+			if(list.size() == 0)  //当前ip没有协议，则不加入到数据集中
 			{
+				noProtocolNum++;
 				continue;
 			}
-			System.out.println("ip "+ ip+"  "+list.size());
+			
+//			System.out.println("ip "+ ip+"  "+list.size());
 			ip_proData.put(ip, list);
 		}
+		System.out.println("过滤掉的ip有："+noProtocolNum);
 	}
 }
 
