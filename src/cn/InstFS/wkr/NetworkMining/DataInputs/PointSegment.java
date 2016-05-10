@@ -8,12 +8,12 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 public class PointSegment {
 
 	private DataItems dataItems;
-	private double ratio;
+	private int ratio;
 	private ArrayList<Integer> pointsIndex;
 	private int length;
 	private List<SegPattern> patterns;
 	
-	public PointSegment(DataItems dataItems,double ratio){
+	public PointSegment(DataItems dataItems,int ratio){
 		this.dataItems=dataItems;
 		this.ratio=ratio;
 		length=dataItems.getLength();
@@ -69,8 +69,8 @@ public class PointSegment {
 //			}
 //		}
 		while(index<length-1){
-			index=findMaxinum(index, 5);
-			index=findMininum(index, 5);
+			index=findMaxinum(index, ratio);
+			index=findMininum(index, ratio);
 		}
 		pointsIndex.add(length-1);
 	}
@@ -104,7 +104,7 @@ public class PointSegment {
 		for(;i<(length-1);i++){
 			if(getItem(i)<getItem(iMin))
 				iMin=i;
-			if(getItem(i)>getItem(iMin)&&(i-iMin)>=span){
+			if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-0.05)>=getItem(iMin)){
 				pointsIndex.add(iMin);
 				break;
 			}
@@ -131,7 +131,7 @@ public class PointSegment {
 		for(;i<(length-1);i++){
 			if(getItem(i)>getItem(iMax))
 				iMax=i;
-			if(getItem(i)<getItem(iMax)&&(i-iMax)>=span){
+			if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-0.05)){
 				pointsIndex.add(iMax);
 				break;
 			}

@@ -13,7 +13,9 @@ import java.util.TimerTask;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
+import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.ResultItem;
+import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
@@ -162,11 +164,20 @@ class SMTimerTask extends TimerTask {
 		}
 		//符号化后的序列
 		DataItems clusterItems=null;
+		PointSegment segment=new PointSegment(dataItems, 5);
+		List<SegPattern> segPatterns=segment.getPatterns();
+		
 		if(task.getPatternNum()==0){
-			clusterItems=WavCluster.SelfCluster(dataItems, 24, 2,task.getTaskName());
+			clusterItems=WavCluster.SelfCluster(segPatterns,dataItems, 24, 8,task.getTaskName());
 		}else{
-			clusterItems=WavCluster.SelfCluster(dataItems, 24, task.getPatternNum(),task.getTaskName());
+			clusterItems=WavCluster.SelfCluster(segPatterns,dataItems, 24, task.getPatternNum(),task.getTaskName());
 		}
+		
+//		if(task.getPatternNum()==0){
+//			clusterItems=WavCluster.SelfCluster(dataItems, 24, 2,task.getTaskName());
+//		}else{
+//			clusterItems=WavCluster.SelfCluster(dataItems, 24, task.getPatternNum(),task.getTaskName());
+//		}
 		
 		//SequencePatterns sequencePattern=new SequencePatterns();
 		SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit();

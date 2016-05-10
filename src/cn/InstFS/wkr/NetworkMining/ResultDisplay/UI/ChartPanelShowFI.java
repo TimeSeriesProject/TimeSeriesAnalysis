@@ -257,11 +257,11 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.red);
                     xylineandshaperenderer2.setUseFillPaint(true);
                     xylineandshaperenderer2.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(0.5F));
+                    xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(1.0F));
 
                 }
             }
-            if (i == 1) {
+            else if (i == 1) {
                 second = nor_model.get(key);
                 for (int j= 0; j < second.size(); j++) {
                     XYDataset xydataset3 = createmodeDataset(second.get(j));
@@ -279,12 +279,12 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.blue);
                     xylineandshaperenderer3.setUseFillPaint(true);
                     xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(0.5F));
+                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(1.0F));
 
 
                 }
             }
-            if (i == 2) {
+            else if (i == 2) {
                 third = nor_model.get(key);
                 for (int j= 0; j < third.size(); j++) {
                     XYDataset xydataset4 = createmodeDataset(third.get(j));
@@ -302,12 +302,12 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer4.setSeriesOutlinePaint(0, Color.green);
                     xylineandshaperenderer4.setUseFillPaint(true);
                     xylineandshaperenderer4.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer4.setSeriesStroke(0, new BasicStroke(0.5F));
+                    xylineandshaperenderer4.setSeriesStroke(0, new BasicStroke(1.0F));
 
 
                 }
             }
-            if (i == 3) {
+            else if (i == 3) {
             fourth = nor_model.get(key);
             for (int j= 0; j < fourth.size(); j++) {
                 XYDataset xydataset5 = createmodeDataset(fourth.get(j));
@@ -325,13 +325,13 @@ public class ChartPanelShowFI extends JPanel {
                 xylineandshaperenderer5.setSeriesOutlinePaint(0, Color.yellow);
                 xylineandshaperenderer5.setUseFillPaint(true);
                 xylineandshaperenderer5.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                xylineandshaperenderer5.setSeriesStroke(0, new BasicStroke(0.5F));
+                xylineandshaperenderer5.setSeriesStroke(0, new BasicStroke(1.0F));
 
 
             }
         }
-            if (i == 4) {
-                fourth = nor_model.get(key);
+            else  if (i == 4) {
+                fifth = nor_model.get(key);
                 for (int j= 0; j < fifth.size(); j++) {
                     XYDataset xydataset6 = createmodeDataset(fifth.get(j));
                     XYLineAndShapeRenderer xylineandshaperenderer6 = new XYLineAndShapeRenderer();
@@ -348,13 +348,13 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer6.setSeriesOutlinePaint(0, Color.black);
                     xylineandshaperenderer6.setUseFillPaint(true);
                     xylineandshaperenderer6.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer6.setSeriesStroke(0, new BasicStroke(0.5F));
+                    xylineandshaperenderer6.setSeriesStroke(0, new BasicStroke(1.0F));
 
 
                 }
             }
-            if (i == 5) {
-                fourth = nor_model.get(key);
+            else  if (i == 5) {
+                sixth = nor_model.get(key);
                 for (int j= 0; j < sixth.size(); j++) {
                     XYDataset xydataset7 = createmodeDataset(sixth.get(j));
                     XYLineAndShapeRenderer xylineandshaperenderer7 = new XYLineAndShapeRenderer();
@@ -371,7 +371,55 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer7.setSeriesOutlinePaint(0, Color.orange);
                     xylineandshaperenderer7.setUseFillPaint(true);
                     xylineandshaperenderer7.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer7.setSeriesStroke(0, new BasicStroke(0.5F));
+                    xylineandshaperenderer7.setSeriesStroke(0, new BasicStroke(1.0F));
+
+
+                }
+            }
+            
+            else  if (i == 6) {
+                seventh = nor_model.get(key);
+                for (int j= 0; j < seventh.size(); j++) {
+                    XYDataset xydataset7 = createmodeDataset(seventh.get(j));
+                    XYLineAndShapeRenderer xylineandshaperenderer7 = new XYLineAndShapeRenderer();
+                    xyplot.setDataset(j + 1 + one.size()+second.size()+third.size()+fourth.size()+fifth.size()+sixth.size(), xydataset7);
+                    xyplot.setRenderer(j + 1 + one.size()+second.size()+third.size()+fourth.size()+fifth.size()+sixth.size(), xylineandshaperenderer7);
+                    //设置不可见到点。
+                    xylineandshaperenderer7.setBaseShapesVisible(false);
+                    //设置可以看见线。
+                    xylineandshaperenderer7.setSeriesLinesVisible(0, true);
+                    xylineandshaperenderer7.setSeriesShape(0, double1);
+                    //设置线和点的颜色。
+                    xylineandshaperenderer7.setSeriesPaint(0, Color.white);
+                    xylineandshaperenderer7.setSeriesFillPaint(0, Color.white);
+                    xylineandshaperenderer7.setSeriesOutlinePaint(0, Color.white);
+                    xylineandshaperenderer7.setUseFillPaint(true);
+                    xylineandshaperenderer7.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+                    xylineandshaperenderer7.setSeriesStroke(0, new BasicStroke(1.0F));
+
+
+                }
+            }
+            
+            else  if (i == 7) {
+                eighth = nor_model.get(key);
+                for (int j= 0; j < eighth.size(); j++) {
+                    XYDataset xydataset7 = createmodeDataset(eighth.get(j));
+                    XYLineAndShapeRenderer xylineandshaperenderer7 = new XYLineAndShapeRenderer();
+                    xyplot.setDataset(j + 1 + one.size()+second.size()+third.size()+fourth.size()+fifth.size()+sixth.size()+seventh.size(), xydataset7);
+                    xyplot.setRenderer(j + 1 + one.size()+second.size()+third.size()+fourth.size()+fifth.size()+sixth.size()+seventh.size(), xylineandshaperenderer7);
+                    //设置不可见到点。
+                    xylineandshaperenderer7.setBaseShapesVisible(false);
+                    //设置可以看见线。
+                    xylineandshaperenderer7.setSeriesLinesVisible(0, true);
+                    xylineandshaperenderer7.setSeriesShape(0, double1);
+                    //设置线和点的颜色。
+                    xylineandshaperenderer7.setSeriesPaint(0, Color.cyan);
+                    xylineandshaperenderer7.setSeriesFillPaint(0, Color.cyan);
+                    xylineandshaperenderer7.setSeriesOutlinePaint(0, Color.cyan);
+                    xylineandshaperenderer7.setUseFillPaint(true);
+                    xylineandshaperenderer7.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+                    xylineandshaperenderer7.setSeriesStroke(0, new BasicStroke(1.0F));
 
 
                 }

@@ -224,15 +224,33 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 							last = Integer.parseInt(endString);
 						}
 						//System.out.println(first+" "+last);
-						for (int k = first; k <= last; k++) {
-							if (k == nor.getLength())
-								break;
-							DataItem tempItem = new DataItem();
-							tempItem.setTime(nor.getElementAt(k).getTime());
-							tempItem.setData(nor.getElementAt(k).getData());
-							nor_line.add1Data(tempItem);
-						}
-						nor_data.add(nor_line);
+//						for (int k = first; k <= last; k++) {
+//							if (k == nor.getLength())
+//								break;
+//							DataItem tempItem = new DataItem();
+//							tempItem.setTime(nor.getElementAt(k).getTime());
+//							tempItem.setData(nor.getElementAt(k).getData());
+//							nor_line.add1Data(tempItem);
+//						}
+						DataItem tempItem = new DataItem();
+						tempItem.setTime(nor.getElementAt(first).getTime());
+						tempItem.setData(nor.getElementAt(first).getData());
+
+						nor_line.add1Data(tempItem);
+					if(last!=nor.getLength()) {
+						tempItem.setTime(nor.getElementAt(last).getTime());
+						tempItem.setData(nor.getElementAt(last).getData());
+						nor_line.add1Data(tempItem);
+					}
+					else
+					{
+						tempItem.setTime(nor.getElementAt(last-1).getTime());
+						tempItem.setData(nor.getElementAt(last-1).getData());
+						nor_line.add1Data(tempItem);
+					}
+					nor_data.add(nor_line);
+
+//						nor_data.add(nor_line);
 					}
 					f_model_nor.put(key, nor_data);
 					if(f_model_nor.size()==nor_model.size())

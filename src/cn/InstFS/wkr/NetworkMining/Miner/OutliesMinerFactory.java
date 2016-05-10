@@ -45,7 +45,7 @@ public class OutliesMinerFactory {
 		String ip=dataFile.getName().substring(0, dataFile.getName().lastIndexOf("."));
 		//事先读取每一个IP上，每一个协议的DataItems
 		HashMap<String, DataItems> rawDataItems=
-				reader.readEachProtocolDataItems(dataFile.getAbsolutePath());
+				reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath());
 		int[] granularities={3600};
 		for(int granularity:granularities){
 			for(String protocol:rawDataItems.keySet()){
