@@ -12,6 +12,7 @@ public class PointSegment {
 	private ArrayList<Integer> pointsIndex;
 	private int length;
 	private List<SegPattern> patterns;
+	private double std;
 	
 	public PointSegment(DataItems dataItems,int ratio){
 		this.dataItems=dataItems;
@@ -19,6 +20,7 @@ public class PointSegment {
 		length=dataItems.getLength();
 		pointsIndex=new ArrayList<Integer>();
 		patterns=new ArrayList<SegPattern>();
+		setItemStd(dataItems);
 	}
 	
 	public List<SegPattern> getPatterns(){
@@ -104,7 +106,7 @@ public class PointSegment {
 		for(;i<(length-1);i++){
 			if(getItem(i)<getItem(iMin))
 				iMin=i;
-			if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-0.05)>=getItem(iMin)){
+			if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-0.2*std)>=getItem(iMin)){
 				pointsIndex.add(iMin);
 				break;
 			}
@@ -131,7 +133,7 @@ public class PointSegment {
 		for(;i<(length-1);i++){
 			if(getItem(i)>getItem(iMax))
 				iMax=i;
-			if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-0.05)){
+			if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-0.2*std)){
 				pointsIndex.add(iMax);
 				break;
 			}
@@ -183,5 +185,14 @@ public class PointSegment {
 			}
 		}
 		return i;
+	}
+	
+	private void setItemStd(DataItems dataItems){
+		List<String> datas=dataItems.getData();
+		DescriptiveStatistics statistics=new DescriptiveStatistics();
+		for(String data:datas){
+			statistics.addValue(Double.parseDouble(data));
+		}
+		std=statistics.getStandardDeviation();
 	}
 }

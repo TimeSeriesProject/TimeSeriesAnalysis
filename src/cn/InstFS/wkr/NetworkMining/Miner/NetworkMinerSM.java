@@ -173,12 +173,6 @@ class SMTimerTask extends TimerTask {
 			clusterItems=WavCluster.SelfCluster(segPatterns,dataItems, 24, task.getPatternNum(),task.getTaskName());
 		}
 		
-//		if(task.getPatternNum()==0){
-//			clusterItems=WavCluster.SelfCluster(dataItems, 24, 2,task.getTaskName());
-//		}else{
-//			clusterItems=WavCluster.SelfCluster(dataItems, 24, task.getPatternNum(),task.getTaskName());
-//		}
-		
 		//SequencePatterns sequencePattern=new SequencePatterns();
 		SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit();
 		sequencePattern.setDataItems(clusterItems);

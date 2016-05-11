@@ -636,6 +636,8 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 					task.setDiscreteDimension(Integer.parseInt(p.getValue().toString()));
 				else if(key.equalsIgnoreCase("range"))
 					task.setRange(p.getValue().toString());
+				else if(key.equalsIgnoreCase("protocol"))
+					task.setProtocol(p.getValue().toString());
 				else if(key.equalsIgnoreCase("taskRange")){
 					if(p.getValue().toString().equalsIgnoreCase("NodePairRange"))
 						task.setTaskRange(TaskRange.NodePairRange);
