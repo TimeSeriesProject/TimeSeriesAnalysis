@@ -2,10 +2,8 @@ package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import associationRules.ProtocolAssociationResult;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -15,7 +13,7 @@ public class ProtocolAssMinerFactory {
 	private static ProtocolAssMinerFactory inst;
 	public static boolean isMining=false;
 	public String dataPath="./tasks1/";
-	public HashMap<String, HashMap<String, DataItems>> eachProtocolItems;
+	public Map<String, HashMap<String, DataItems>> eachProtocolItems;
 	ProtocolAssMinerFactory(){
 		eachProtocolItems= new HashMap<String, HashMap<String,DataItems>>();
 	}
@@ -28,7 +26,7 @@ public class ProtocolAssMinerFactory {
 		return inst;
 	}
 	
-	public Map<String,List<ProtocolAssociationResult>> mineAllAssociations(){
+	public Map<String,List<ProtocolAssociationResult>> mineAllAssociations(double thresh,int whichAlogrithm){
 		if(isMining)
 			return null;
 		isMining=true;
@@ -42,45 +40,23 @@ public class ProtocolAssMinerFactory {
 				parseFile(dataDirs[i],reader);
 			}
 		}
-		
-		ProtocolAssociation pa = new ProtocolAssociation(eachProtocolItems, 0.6, false);
+		/**
+		 * 参数说明
+		 * 第一个参数为待处理的数据，第二个参数为阈值/支持度，第三个参数为选用的方法数，可选值为{1，2}。
+		 * 阈值的设置跟所选的方法有关，如果选择方法1，则阈值范围为[0,1]，选用方法2，理论上值为所有正数
+		 */
+		ProtocolAssociation pa = new ProtocolAssociation(eachProtocolItems, thresh, whichAlogrithm);
 		Map<String,List<ProtocolAssociationResult>> protocolResult = pa.miningAssociation();
 		return protocolResult;
+//		return null;
 	}
 	
 	
 	private void parseFile(File dataFile,nodePairReader reader){
 		String ip=dataFile.getName().substring(0, dataFile.getName().lastIndexOf("."));
+		//���ȶ�ȡÿһ��IP�ϣ�ÿһ��Э���DataItems
 		HashMap<String, DataItems> rawDataItems=
 						reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath());
 		eachProtocolItems.put(ip, rawDataItems);
-	}
-	
-	public static void main(String[] args){
-		inst=getInstance();
-		Map<String,List<ProtocolAssociationResult>> map=inst.mineAllAssociations();
-		Iterator<Entry<String, List<ProtocolAssociationResult>>> iterator=map.entrySet().iterator();
-		while(iterator.hasNext()){
-			Entry<String, List<ProtocolAssociationResult>> entry=iterator.next();
-			System.out.println(entry.getKey());
-			List<ProtocolAssociationResult> list=entry.getValue();
-			StringBuilder sb=new StringBuilder();
-			for(ProtocolAssociationResult result:list){
-				List<String> data1=result.dataItems1.getData();
-				List<String> data2=result.dataItems2.getData();
-				
-				sb.delete(0, sb.length());
-				for(String item:data1)
-					sb.append(",").append(item);
-				sb.deleteCharAt(0);
-				System.out.println(sb.toString());
-				sb.delete(0, sb.length());
-				for(String item:data2)
-					sb.append(",").append(item);
-				sb.deleteCharAt(0);
-				System.out.println(sb.toString());
-			}
-			
-		}
 	}
 }

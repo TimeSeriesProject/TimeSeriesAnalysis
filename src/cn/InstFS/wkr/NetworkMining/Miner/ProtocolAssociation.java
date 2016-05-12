@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import test.ProtocolAssociationTest;
 import associationRules.ProtocolAssociationResult;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
@@ -19,22 +18,6 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
  */
 public class ProtocolAssociation {
 
-	/**
-	 * 该主函数主要是为了测试使用，正式使用时，可以删掉该主函数
-	 * @param args
-	 */
-	public static void main(String[] args)
-	{
-//		ProtocolAssMinerFactory paf = ProtocolAssMinerFactory.getInstance();
-//		
-//		paf.mineAllAssociations();
-//		ProtocolAssociation pa = new ProtocolAssociation(paf.getData(),0.6,true);
-//		pa.miningAssociation();
-		String path = "D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\DiplomaProject\\data\\rawDataInput";
-		ProtocolAssociation pa = new ProtocolAssociation(ProtocolAssociationTest.getData(path),-1,2);
-		pa.miningAssociation();
-		
-	}
 	double[] supportThresh = {0.4,10};
 	int bias = 0;
 	int whichAlogrithm = 1;
