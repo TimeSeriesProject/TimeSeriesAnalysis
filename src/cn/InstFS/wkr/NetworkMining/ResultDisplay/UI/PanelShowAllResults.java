@@ -57,6 +57,12 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 			panel = new PanelShowResultsSM(task);
 		}else if (miningMethodName.equals(MiningMethod.MiningMethods_PeriodicityMining))
 			panel = new PanelShowResultsPM(task);
+		else  if( miningMethodName.equals(MiningMethod.MiningMethods_FrequenceItemMining))
+			panel= new PanelShowResultsFP(task);
+		else if(miningMethodName.equals(MiningMethod.MiningMethods_PathProbilityMining))
+			panel=new PanelShowResultsPP(task);
+		else if(miningMethodName.equals(MiningMethod.MiningMethods_Statistics))
+			panel = new PanelShowResultsStatistics(task);
 		if (panel != null){
 			add((JPanel)panel, task.getTaskName());
 			allPanels.put(task, panel);
@@ -92,7 +98,7 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 	}
 
 	@Override
-	public void onClosing() {	// TODO 这个函数没有用
+	public void onClosing() {	// TODO �������û����
 		TaskElement.removeTaskListener(this);
 	}
 

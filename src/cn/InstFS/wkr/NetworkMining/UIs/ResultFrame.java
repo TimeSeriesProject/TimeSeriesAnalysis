@@ -134,7 +134,7 @@ public abstract class ResultFrame extends JFrame {
 		// TODO Auto-generated method stub
 	public abstract void initModel();
 	
-	private void initialize() {
+    void initialize() {
 		
 		setBounds(100, 100, 1120, 763);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -236,7 +236,7 @@ public abstract class ResultFrame extends JFrame {
 			
 				});
 	}
-	private  void addPopup(Component component, final JPopupMenu popup,int index) {
+	  void addPopup(Component component, final JPopupMenu popup,int index) {
 		MouseListener popupListener ;
 		component.addMouseListener(popupListener=new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -254,7 +254,7 @@ public abstract class ResultFrame extends JFrame {
 
 	}
 
-	private  void delPopup(Component component,int index) {
+	  void delPopup(Component component,int index) {
 		
 		System.out.println("p"+popupListeners.size());
 		component.removeMouseListener(popupListeners.get(index));

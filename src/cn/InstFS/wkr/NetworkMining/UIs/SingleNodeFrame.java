@@ -24,13 +24,17 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 
 import javax.swing.JPopupMenu;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.border.StandardBorderPainter;
 import org.jvnet.substance.button.ClassicButtonShaper;
 import org.jvnet.substance.painter.StandardGradientPainter;
+import org.jvnet.substance.skin.SubstanceBusinessBlackSteelLookAndFeel;
 import org.jvnet.substance.skin.SubstanceSaharaLookAndFeel;
 import org.jvnet.substance.title.FlatTitlePainter;
+import org.jvnet.substance.title.MatteHeaderPainter;
 
 import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
@@ -198,5 +202,107 @@ public class SingleNodeFrame extends ResultFrame{
 		System.out.println("ff"+popupMenus.get(0).get(0).getComponentCount());
 		
 	}
+	@Override
+    void initialize() {
+//		this.setName("");
+		setBounds(100, 100, 1120, 763);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		try { 
+//			org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
+           
+			    UIManager.setLookAndFeel( new  SubstanceBusinessBlackSteelLookAndFeel());
+	            JFrame.setDefaultLookAndFeelDecorated(true);  
+	            //设置主题   
+//	            SubstanceLookAndFeel.setCurrentTheme(new SubstanceBottleGreenTheme());  
+	            //设置按钮外观  
+//	            SubstanceLookAndFeel.setSkin(new NebulaBrickWallSkin());
+//	            SubstanceLookAndFeel.setCurrentButtonShaper(new  org.jvnet.substance.button.ClassicButtonShaper());  
+//	            //设置水印  
+//	           // SubstanceLookAndFeel.setCurrentWatermark(new SubstanceBinaryWatermark());  
+//	            //设置边框  
+	           
+//                SubstanceSkin skin = new SaharaSkin().withWatermark(watermark); //初始化有水印的皮肤
+
+//                UIManager.setLookAndFeel(new SubstanceOfficeBlue2007LookAndFeel());
+//                SubstanceLookAndFeel.setSkin(skin); //设置皮肤
+              
+               
+	            SubstanceLookAndFeel.setCurrentBorderPainter(new StandardBorderPainter());  
+	            //设置渐变渲染   
+	            SubstanceLookAndFeel.setCurrentGradientPainter(new StandardGradientPainter());  
+	            //设置标题  
+	            SubstanceLookAndFeel.setCurrentTitlePainter( new MatteHeaderPainter());     
+			
+			 
+			
+			 
+   
+        } catch (Exception e) {  
+            System.out.println(e.getMessage());  
+        }
+//		this.getContentPane().setBackground(Color.RED);
+		this.getContentPane().setVisible(true);
+		getContentPane().setLayout(new BorderLayout(0, 0));
+//		
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setDividerLocation(200);
+		splitPane.setDividerSize(2);
+		JPanel leftPanel = new JPanel();
+		leftPanel.setLayout(null);
+		
+		splitPane.setLeftComponent(leftPanel);
+		
+		
+		for (int i=0;i<miningMethods.size();i++)  
+		{
+			MiningMethod method = miningMethods.get(i);
+			JButton button = new JButton(method.toString());
+			
+			button.setBounds(38, 51+i*100, 134, 27);
+			leftPanel.add(button);
+			
+			addPopup(button, popupMenus.get(miningObjectIndex).get(i),i);
+			buttons.add(button);
+		}
+            //System.out.println(s + ", ordinal " + s.ordinal());  
+		
+		getContentPane().add(splitPane);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		splitPane.setRightComponent(tabbedPane);
+		for(int i=0;i<miningObjects.size();i++)
+		{
+			JPanel panel = panelShowList.get(i);
+			tabbedPane.addTab(miningObjects.get(i), null, panel, null);
+			
+		}
 	
+		System.out.println(miningMethods.size());
+		tabbedPane.addChangeListener(new ChangeListener()
+				{
+
+					@Override
+					public void stateChanged(ChangeEvent e) {
+						// TODO Auto-generated method stub
+	
+						if(miningObjectIndex!=tabbedPane.getSelectedIndex())
+						{
+							miningObjectIndex=tabbedPane.getSelectedIndex();
+							for (int i=0;i<miningMethods.size();i++)  
+							{
+								System.out.println("ssss");
+								delPopup(buttons.get(i),i);
+							}
+							popupListeners.clear();
+							for (int i=0;i<miningMethods.size();i++)  
+							{
+								if(popupMenus.get(miningObjectIndex).get(i).getComponentCount()>0)
+									addPopup(buttons.get(i),popupMenus.get(miningObjectIndex).get(i),i);
+							}
+							
+						}
+						
+					}
+			
+				});
+	}	
 }
