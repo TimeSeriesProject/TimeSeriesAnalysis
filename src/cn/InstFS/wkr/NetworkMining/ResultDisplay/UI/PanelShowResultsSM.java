@@ -61,7 +61,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 //		gridBagLayout.columnWeights = new double[]{1.0, 0.4, Double.MIN_VALUE};
 //		gridBagLayout.rowWeights = new double[]{1.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
 //		setLayout(gridBagLayout);
-//		tblCurData = new TablePanelShowDataItems("��ǰֵ");
+//		tblCurData = new TablePanelShowDataItems("当前值");
 //		GridBagConstraints gbc_tblCurData = new GridBagConstraints();
 //		gbc_tblCurData.fill = GridBagConstraints.BOTH;
 //		gbc_tblCurData.insets = new Insets(0, 0, 5, 5);
@@ -69,7 +69,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 //		gbc_tblCurData.gridy = 0;
 ////		add(tblCurData, gbc_tblCurData);
 //
-//		tblShowAccuracy = new TablePanelShowPrecisionRecall("Ԥ����");
+//		tblShowAccuracy = new TablePanelShowPrecisionRecall("预测结果");
 //		GridBagConstraints gbc_panel = new GridBagConstraints();
 //		gbc_panel.gridheight = 4;
 //		gbc_panel.insets = new Insets(0, 0, 5, 0);
@@ -78,21 +78,21 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 //		gbc_panel.gridy = 0;
 ////		add(tblShowAccuracy, gbc_panel);
 //
-//		tblForcasts_curTime = new TablePanelShowDataItems("��ǰԤ��ֵ");
+//		tblForcasts_curTime = new TablePanelShowDataItems("当前预测值");
 //		GridBagConstraints gbc_tblForcasts_curTime = new GridBagConstraints();
 //		gbc_tblForcasts_curTime.fill = GridBagConstraints.BOTH;
 //		gbc_tblForcasts_curTime.insets = new Insets(0, 0, 5, 5);
 //		gbc_tblForcasts_curTime.gridx = 0;
 //		gbc_tblForcasts_curTime.gridy = 1;
 ////		add(tblForcasts_curTime, gbc_tblForcasts_curTime);
-//		tblForcasts_futureTime = new TablePanelShowDataItems("δ��Ԥ��ֵ");
+//		tblForcasts_futureTime = new TablePanelShowDataItems("未来预测值");
 //		GridBagConstraints gbc_tblForcasts_futureTime = new GridBagConstraints();
 //		gbc_tblForcasts_futureTime.fill = GridBagConstraints.BOTH;
 //		gbc_tblForcasts_futureTime.insets = new Insets(0, 0, 5, 5);
 //		gbc_tblForcasts_futureTime.gridx = 0;
 //		gbc_tblForcasts_futureTime.gridy = 2;
 ////		add(tblForcasts_futureTime, gbc_tblForcasts_futureTime);
-//		tblPatterns = new TablePanelShowDataItems("����ģʽ");
+//		tblPatterns = new TablePanelShowDataItems("序列模式");
 //		GridBagConstraints gbc_tblPatterns = new GridBagConstraints();
 //		gbc_tblPatterns.insets = new Insets(0, 0, 0, 5);
 //		gbc_tblPatterns.fill = GridBagConstraints.BOTH;
@@ -101,12 +101,12 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 ////		add(tblPatterns, gbc_tblPatterns);
 ////		InitChartScheme();
 		setLayout(new GridLayout(0, 1, 0, 0));
-//		chart1 = new ChartPanelShowTs("ԭʼֵ", "ʱ��", "ֵ", null);
-//		chart2 = new ChartPanelShowTs("Ԥ��ֵ", "ʱ��", "", null);
+//		chart1 = new ChartPanelShowTs("原始值", "时间", "值", null);
+//		chart2 = new ChartPanelShowTs("预测值", "时间", "", null);
 //
 //		add(chart1);
 //		add(chart2);
-		chart1 = new ChartPanelShowTs("Ƶ��ģʽ", "ʱ��", "ֵ", null);
+		chart1 = new ChartPanelShowTs("频繁模式", "时间", "值", null);
 		add(chart1);
 //
 		InitMiner(task);
@@ -192,7 +192,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 					}
 					nor_model.put(skey, astring);
 				}
-				//��ʾ���
+				//显示结果
 //				System.out.println("f-normal-model");
 //				for (String key : nor_model.keySet()) {
 //					System.out.println(key);

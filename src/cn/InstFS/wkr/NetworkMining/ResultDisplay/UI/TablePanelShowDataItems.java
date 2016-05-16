@@ -42,12 +42,12 @@ public class TablePanelShowDataItems extends JPanel {
 	public void showDataItems(DataItems datas){	
 		DefaultTableModel tmodel = new DefaultTableModel();
 		// Add columns
-		tmodel.addColumn("Ê±¼ä");
-		tmodel.addColumn("Öµ");
-		tmodel.addColumn("¸ÅÂÊ");
+		tmodel.addColumn("æ—¶é—´");
+		tmodel.addColumn("å€¼");
+		tmodel.addColumn("æ¦‚çŽ‡");
 		table.setCellSelectionEnabled(false);
-//		table.getColumn("Ê±¼ä").setCellRenderer(new MyTableDateCellRenderer());		
-//		table.getColumn("Ê±¼ä").setCellEditor(new DateEditor(new JTextField()));
+//		table.getColumn("æ—¶é—´").setCellRenderer(new MyTableDateCellRenderer());		
+//		table.getColumn("æ—¶é—´").setCellEditor(new DateEditor(new JTextField()));
 		// Add rows
 		if (datas == null || datas.getLength() == 0){
 			table.setModel(tmodel);
@@ -65,13 +65,13 @@ public class TablePanelShowDataItems extends JPanel {
 			return 	sdf.format(date);
 	}
 	public void hideColumnTime(){		
-		hideColumn("Ê±¼ä");
+		hideColumn("æ—¶é—´");
 	}
 	public void hideColumnData(){
-		hideColumn("Öµ");
+		hideColumn("å€¼");
 	}
 	public void hideColumnProb(){
-		hideColumn("¸ÅÂÊ");
+		hideColumn("æ¦‚çŽ‡");
 	}
 	private void hideColumn(String colName){
 		try{

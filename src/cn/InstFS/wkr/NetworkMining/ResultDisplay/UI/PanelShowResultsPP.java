@@ -60,14 +60,14 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
     public PanelShowResultsPP(TaskElement task) {
 //		pane.setLayout(new GridLayout(3, 3));
 //        setLayout(new GridLayout(2,3));
-//		chart1 = new ChartPanelShowTs("Ô­Ê¼Öµ", "Ê±¼ä", "Öµ", null);
-//		chart2 = new ChartPanelShowTs("Ô¤²âÖµ", "Ê±¼ä", "", null);
+//		chart1 = new ChartPanelShowTs("åŸå§‹å€¼", "æ—¶é—´", "å€¼", null);
+//		chart2 = new ChartPanelShowTs("é¢„æµ‹å€¼", "æ—¶é—´", "", null);
 //
 //		add(chart1);
 //		add(chart2);
         setLayout(new GridLayout(0, 1, 0, 0));
-        chart1 = new ChartPanelShowTs("Â·¾¶ÍÚ¾ò", "Ê±¼ä", "Öµ", null);
-//        chart2 =new ChartPanelShowTs("µÚ¶şÖÖÄ£Ê½","Ê±¼ä","Öµ",null);
+        chart1 = new ChartPanelShowTs("è·¯å¾„æŒ–æ˜", "æ—¶é—´", "å€¼", null);
+//        chart2 =new ChartPanelShowTs("ç¬¬äºŒç§æ¨¡å¼","æ—¶é—´","å€¼",null);
         add(chart1);
 //        add(chart2);
 //        add(chart1);
@@ -147,13 +147,13 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             int min=100000000;
             while (!period.isEmpty()) {
                 ArrayList<String> periodName=new ArrayList<>();
-                //ÕÒ³ö×îĞ¡ÖÜÆÚÖµ
+                //æ‰¾å‡ºæœ€å°å‘¨æœŸå€¼
                 for (String key : period.keySet()) {
                     int temp = period.get(key);
                     if (temp <= min)
                         min = temp;
                 }
-                //½«×îĞ¡ÖÜÆÚÖµËù¶ÔÓ¦µÄ½ÚµãÃû×Ö´¢´æÆğÀ´
+                //å°†æœ€å°å‘¨æœŸå€¼æ‰€å¯¹åº”çš„èŠ‚ç‚¹åå­—å‚¨å­˜èµ·æ¥
                 for(String key:period.keySet())
                 {
 
@@ -162,7 +162,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                         periodName.add(key);
                     }
                 }
-                //É¾³ı×îĞ¡ÖÜÆÚÖµ
+                //åˆ é™¤æœ€å°å‘¨æœŸå€¼
                 for(int i=0;i<periodName.size();i++)
                 {
                     period.remove(periodName.get(i));

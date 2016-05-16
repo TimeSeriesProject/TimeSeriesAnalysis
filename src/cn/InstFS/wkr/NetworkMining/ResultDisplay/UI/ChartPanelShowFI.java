@@ -45,15 +45,15 @@ public class ChartPanelShowFI extends JPanel {
     Shape itemShape; // = new Ellipse2D.Double(-2,-2, 4, 4);
 
     private ChartPanelShowFI() {
-        // ´´½¨Ö÷ÌâÑùÊ½
+        // åˆ›å»ºä¸»é¢˜æ ·å¼
         StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
-        // ÉèÖÃ±êÌâ×ÖÌå
-        standardChartTheme.setExtraLargeFont(new Font("Á¥Êé", Font.BOLD, 15));
-        // ÉèÖÃÍ¼ÀıµÄ×ÖÌå
-        standardChartTheme.setRegularFont(new Font("ËÎÊé", Font.PLAIN, 10));
-        // ÉèÖÃÖáÏòµÄ×ÖÌå
-        standardChartTheme.setLargeFont(new Font("ËÎÊé", Font.PLAIN, 10));
-        // Ó¦ÓÃÖ÷ÌâÑùÊ½
+        // è®¾ç½®æ ‡é¢˜å­—ä½“
+        standardChartTheme.setExtraLargeFont(new Font("éš¶ä¹¦", Font.BOLD, 15));
+        // è®¾ç½®å›¾ä¾‹çš„å­—ä½“
+        standardChartTheme.setRegularFont(new Font("å®‹ä¹¦", Font.PLAIN, 10));
+        // è®¾ç½®è½´å‘çš„å­—ä½“
+        standardChartTheme.setLargeFont(new Font("å®‹ä¹¦", Font.PLAIN, 10));
+        // åº”ç”¨ä¸»é¢˜æ ·å¼
         ChartFactory.setChartTheme(standardChartTheme);
 
         setLayout(new BorderLayout());
@@ -71,9 +71,9 @@ public class ChartPanelShowFI extends JPanel {
 //        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
 //
 //        renderer.setBaseShapesVisible(false);
-////		renderer.setBaseShape(itemShape);	// ºÃÏñ²»¹ÜÓÃ£¬±ØĞëÓÃsetSeriesShape
+////		renderer.setBaseShape(itemShape);	// å¥½åƒä¸ç®¡ç”¨ï¼Œå¿…é¡»ç”¨setSeriesShape
 //        renderer.setBaseLinesVisible(true);
-////		renderer.setBasePaint(new Color(0));	// ºÃÏñ²»¹ÜÓÃ£¬±ØĞëÓÃsetSeriesPaint
+////		renderer.setBasePaint(new Color(0));	// å¥½åƒä¸ç®¡ç”¨ï¼Œå¿…é¡»ç”¨setSeriesPaint
 //
 //        itemShape = ShapeUtilities.createDiamond((float) 3);
 //        renderer.setSeriesShape(0, itemShape);
@@ -107,7 +107,7 @@ public class ChartPanelShowFI extends JPanel {
             return;
         TimeSeriesCollection tsc = new TimeSeriesCollection();
 
-        TimeSeries ts = new TimeSeries("ĞòÁĞÖµ");
+        TimeSeries ts = new TimeSeries("åºåˆ—å€¼");
 
         int len = items.getLength();
         for (int i = 0; i < len; i++) {
@@ -121,19 +121,19 @@ public class ChartPanelShowFI extends JPanel {
     }
 
     public static XYDataset createNormalDataset(DataItems normal) {
-        //»ñÈ¡Õı³£Êı¾İµÄ³¤¶È¡¢
+        //è·å–æ­£å¸¸æ•°æ®çš„é•¿åº¦ã€
         
-        XYSeries xyseries = new XYSeries("Ô­Ê¼Öµ");
+        XYSeries xyseries = new XYSeries("åŸå§‹å€¼");
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
-        //ÎªÊı¾İ¼¯Ìí¼ÓÊı¾İ
+        //ä¸ºæ•°æ®é›†æ·»åŠ æ•°æ®
         if(normal!=null){
         	int length = normal.getLength();
         	for (int i = 0; i < length; i++) {
                 DataItem temp = new DataItem();
                 temp = normal.getElementAt(i);
-                xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData())); // ¶ÔÓ¦µÄºáÖá
+                xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData())); // å¯¹åº”çš„æ¨ªè½´
 
             }
         }
@@ -141,15 +141,15 @@ public class ChartPanelShowFI extends JPanel {
         return xyseriescollection;
     }
 
-    //¶ÔÒì³£µã½øĞĞ³õÊ¼»¯
-    public static XYDataset createAbnormalDataset(DataItems abnor) {  // Í³¼ÆÒì³£µãµÄ³¤¶È
+    //å¯¹å¼‚å¸¸ç‚¹è¿›è¡Œåˆå§‹åŒ–
+    public static XYDataset createAbnormalDataset(DataItems abnor) {  // ç»Ÿè®¡å¼‚å¸¸ç‚¹çš„é•¿åº¦
         int length = abnor.getLength();
-        XYSeries xyseries = new XYSeries("Æµ·±Ä£Ê½");
+        XYSeries xyseries = new XYSeries("é¢‘ç¹æ¨¡å¼");
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
 
-        //Ìí¼ÓÊı¾İÖµ
+        //æ·»åŠ æ•°æ®å€¼
 
         for (int i = 0; i < length; i++) {
 
@@ -164,19 +164,19 @@ public class ChartPanelShowFI extends JPanel {
     }
 
     public static XYDataset createmodeDataset(DataItems normal) {
-        //»ñÈ¡Õı³£Êı¾İµÄ³¤¶È¡¢
+        //è·å–æ­£å¸¸æ•°æ®çš„é•¿åº¦ã€
         int length = normal.getLength();
         int time[] = new int[length];
         XYSeries xyseries = new XYSeries(".");
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
-        //ÎªÊı¾İ¼¯Ìí¼ÓÊı¾İ
+        //ä¸ºæ•°æ®é›†æ·»åŠ æ•°æ®
 
         for (int i = 0; i < length; i++) {
             DataItem temp = new DataItem();
             temp = normal.getElementAt(i);
-            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData())); // ¶ÔÓ¦µÄºáÖá
+            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData())); // å¯¹åº”çš„æ¨ªè½´
 
         }
         xyseriescollection.addSeries(xyseries);
@@ -185,14 +185,14 @@ public class ChartPanelShowFI extends JPanel {
 
     public static JFreeChart createChart(HashMap<String, ArrayList<DataItems>> nor_model, DataItems nor) {
         XYDataset xydataset = createNormalDataset(nor);
-        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" Æµ·±Ïî¼¯ÍÚ¾ò½á¹û", "Ê±¼ä", "Öµ", xydataset);
+        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" é¢‘ç¹é¡¹é›†æŒ–æ˜ç»“æœ", "æ—¶é—´", "å€¼", xydataset);
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
         java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(-4D, -4D, 6D, 6D);
-        //ÉèÖÃÒì³£µãÌáÊ¾ºìµã´óĞ¡
+        //è®¾ç½®å¼‚å¸¸ç‚¹æç¤ºçº¢ç‚¹å¤§å°
         XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer) xyplot.getRenderer();
-        //ÉèÖÃ²»¿É¿´µ½µã¡£
+        //è®¾ç½®ä¸å¯çœ‹åˆ°ç‚¹ã€‚
         xylineandshaperenderer.setSeriesLinesVisible(0, false);
         xylineandshaperenderer.setBaseShapesVisible(false);
         xylineandshaperenderer.setSeriesShape(0, double1);
@@ -200,7 +200,7 @@ public class ChartPanelShowFI extends JPanel {
         xylineandshaperenderer.setSeriesFillPaint(0, Color.yellow);
         xylineandshaperenderer.setSeriesOutlinePaint(0, Color.gray);
         xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.1F));
-        //ÉèÖÃÏÔÊ¾Êı¾İµã
+        //è®¾ç½®æ˜¾ç¤ºæ•°æ®ç‚¹
 //        xylineandshaperenderer.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
 //        xylineandshaperenderer.setBaseItemLabelsVisible(true);
 
@@ -208,12 +208,12 @@ public class ChartPanelShowFI extends JPanel {
 //        XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
 //        xyplot.setDataset(1, xydataset1);
 //        xyplot.setRenderer(1, xylineandshaperenderer1);
-//        //ÉèÖÃ²»¿É¼ûµ½µã¡£
+//        //è®¾ç½®ä¸å¯è§åˆ°ç‚¹ã€‚
 //        xylineandshaperenderer1.setBaseShapesVisible(false);
-//        //ÉèÖÃ¿ÉÒÔ¿´¼ûÏß¡£
+//        //è®¾ç½®å¯ä»¥çœ‹è§çº¿ã€‚
 //        xylineandshaperenderer1.setSeriesLinesVisible(0, true);
 //        xylineandshaperenderer1.setSeriesShape(0, double1);
-//        //ÉèÖÃÏßºÍµãµÄÑÕÉ«¡£
+//        //è®¾ç½®çº¿å’Œç‚¹çš„é¢œè‰²ã€‚
 //        xylineandshaperenderer1.setSeriesPaint(0, Color.black);
 //        xylineandshaperenderer1.setSeriesFillPaint(0, Color.black);
 //        xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.black);
@@ -246,12 +246,12 @@ public class ChartPanelShowFI extends JPanel {
                     XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
                     xyplot.setDataset(j + 1, xydataset2);
                     xyplot.setRenderer(1 + j, xylineandshaperenderer2);
-                    //ÉèÖÃ²»¿É¼ûµ½µã¡£
+                    //è®¾ç½®ä¸å¯è§åˆ°ç‚¹ã€‚
                     xylineandshaperenderer2.setBaseShapesVisible(false);
-                    //ÉèÖÃ¿ÉÒÔ¿´¼ûÏß¡£
+                    //è®¾ç½®å¯ä»¥çœ‹è§çº¿ã€‚
                     xylineandshaperenderer2.setSeriesLinesVisible(0, true);
                     xylineandshaperenderer2.setSeriesShape(0, double1);
-                    //ÉèÖÃÏßºÍµãµÄÑÕÉ«¡£
+                    //è®¾ç½®çº¿å’Œç‚¹çš„é¢œè‰²ã€‚
                     xylineandshaperenderer2.setSeriesPaint(0, Color.red);
                     xylineandshaperenderer2.setSeriesFillPaint(0, Color.red);
                     xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.red);
@@ -268,12 +268,12 @@ public class ChartPanelShowFI extends JPanel {
                     XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
                     xyplot.setDataset(j + 1 + one.size(), xydataset3);
                     xyplot.setRenderer(j + 1 + one.size(), xylineandshaperenderer3);
-                    //ÉèÖÃ²»¿É¼ûµ½µã¡£
+                    //è®¾ç½®ä¸å¯è§åˆ°ç‚¹ã€‚
                     xylineandshaperenderer3.setBaseShapesVisible(false);
-                    //ÉèÖÃ¿ÉÒÔ¿´¼ûÏß¡£
+                    //è®¾ç½®å¯ä»¥çœ‹è§çº¿ã€‚
                     xylineandshaperenderer3.setSeriesLinesVisible(0, true);
                     xylineandshaperenderer3.setSeriesShape(0, double1);
-                    //ÉèÖÃÏßºÍµãµÄÑÕÉ«¡£
+                    //è®¾ç½®çº¿å’Œç‚¹çš„é¢œè‰²ã€‚
                     xylineandshaperenderer3.setSeriesPaint(0, Color.blue);
                     xylineandshaperenderer3.setSeriesFillPaint(0, Color.blue);
                     xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.blue);
@@ -291,12 +291,12 @@ public class ChartPanelShowFI extends JPanel {
                     XYLineAndShapeRenderer xylineandshaperenderer4 = new XYLineAndShapeRenderer();
                     xyplot.setDataset(j + 1 + one.size()+second.size(), xydataset4);
                     xyplot.setRenderer(j + 1 + one.size()+second.size(), xylineandshaperenderer4);
-                    //ÉèÖÃ²»¿É¼ûµ½µã¡£
+                    //è®¾ç½®ä¸å¯è§åˆ°ç‚¹ã€‚
                     xylineandshaperenderer4.setBaseShapesVisible(false);
-                    //ÉèÖÃ¿ÉÒÔ¿´¼ûÏß¡£
+                    //è®¾ç½®å¯ä»¥çœ‹è§çº¿ã€‚
                     xylineandshaperenderer4.setSeriesLinesVisible(0, true);
                     xylineandshaperenderer4.setSeriesShape(0, double1);
-                    //ÉèÖÃÏßºÍµãµÄÑÕÉ«¡£
+                    //è®¾ç½®çº¿å’Œç‚¹çš„é¢œè‰²ã€‚
                     xylineandshaperenderer4.setSeriesPaint(0, Color.green);
                     xylineandshaperenderer4.setSeriesFillPaint(0, Color.green);
                     xylineandshaperenderer4.setSeriesOutlinePaint(0, Color.green);
@@ -314,12 +314,12 @@ public class ChartPanelShowFI extends JPanel {
                 XYLineAndShapeRenderer xylineandshaperenderer5 = new XYLineAndShapeRenderer();
                 xyplot.setDataset(j + 1 + one.size()+second.size()+third.size(), xydataset5);
                 xyplot.setRenderer(j + 1 + one.size()+second.size()+third.size(), xylineandshaperenderer5);
-                //ÉèÖÃ²»¿É¼ûµ½µã¡£
+                //è®¾ç½®ä¸å¯è§åˆ°ç‚¹ã€‚
                 xylineandshaperenderer5.setBaseShapesVisible(false);
-                //ÉèÖÃ¿ÉÒÔ¿´¼ûÏß¡£
+                //è®¾ç½®å¯ä»¥çœ‹è§çº¿ã€‚
                 xylineandshaperenderer5.setSeriesLinesVisible(0, true);
                 xylineandshaperenderer5.setSeriesShape(0, double1);
-                //ÉèÖÃÏßºÍµãµÄÑÕÉ«¡£
+                //è®¾ç½®çº¿å’Œç‚¹çš„é¢œè‰²ã€‚
                 xylineandshaperenderer5.setSeriesPaint(0, Color.yellow);
                 xylineandshaperenderer5.setSeriesFillPaint(0, Color.yellow);
                 xylineandshaperenderer5.setSeriesOutlinePaint(0, Color.yellow);
@@ -337,12 +337,12 @@ public class ChartPanelShowFI extends JPanel {
                     XYLineAndShapeRenderer xylineandshaperenderer6 = new XYLineAndShapeRenderer();
                     xyplot.setDataset(j + 1 + one.size()+second.size()+third.size()+fourth.size(), xydataset6);
                     xyplot.setRenderer(j + 1 + one.size()+second.size()+third.size()+fourth.size(), xylineandshaperenderer6);
-                    //ÉèÖÃ²»¿É¼ûµ½µã¡£
+                    //è®¾ç½®ä¸å¯è§åˆ°ç‚¹ã€‚
                     xylineandshaperenderer6.setBaseShapesVisible(false);
-                    //ÉèÖÃ¿ÉÒÔ¿´¼ûÏß¡£
+                    //è®¾ç½®å¯ä»¥çœ‹è§çº¿ã€‚
                     xylineandshaperenderer6.setSeriesLinesVisible(0, true);
                     xylineandshaperenderer6.setSeriesShape(0, double1);
-                    //ÉèÖÃÏßºÍµãµÄÑÕÉ«¡£
+                    //è®¾ç½®çº¿å’Œç‚¹çš„é¢œè‰²ã€‚
                     xylineandshaperenderer6.setSeriesPaint(0, Color.black);
                     xylineandshaperenderer6.setSeriesFillPaint(0, Color.black);
                     xylineandshaperenderer6.setSeriesOutlinePaint(0, Color.black);
@@ -360,12 +360,12 @@ public class ChartPanelShowFI extends JPanel {
                     XYLineAndShapeRenderer xylineandshaperenderer7 = new XYLineAndShapeRenderer();
                     xyplot.setDataset(j + 1 + one.size()+second.size()+third.size()+fourth.size()+fifth.size(), xydataset7);
                     xyplot.setRenderer(j + 1 + one.size()+second.size()+third.size()+fourth.size()+fifth.size(), xylineandshaperenderer7);
-                    //ÉèÖÃ²»¿É¼ûµ½µã¡£
+                    //è®¾ç½®ä¸å¯è§åˆ°ç‚¹ã€‚
                     xylineandshaperenderer7.setBaseShapesVisible(false);
-                    //ÉèÖÃ¿ÉÒÔ¿´¼ûÏß¡£
+                    //è®¾ç½®å¯ä»¥çœ‹è§çº¿ã€‚
                     xylineandshaperenderer7.setSeriesLinesVisible(0, true);
                     xylineandshaperenderer7.setSeriesShape(0, double1);
-                    //ÉèÖÃÏßºÍµãµÄÑÕÉ«¡£
+                    //è®¾ç½®çº¿å’Œç‚¹çš„é¢œè‰²ã€‚
                     xylineandshaperenderer7.setSeriesPaint(0, Color.orange);
                     xylineandshaperenderer7.setSeriesFillPaint(0, Color.orange);
                     xylineandshaperenderer7.setSeriesOutlinePaint(0, Color.orange);

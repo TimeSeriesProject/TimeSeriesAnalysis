@@ -27,18 +27,18 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 		ChartPanelShowTs showTs=null;
 		switch(task.getMiningObject())
 		{
-		case "ÍøÂç´ØÏµÊı": 
-			 showTs= new ChartPanelShowTs(task.getMiningObject()+"Ê±¼äĞòÁĞ", "Ê±¼ä",task.getMiningObject(),null);
+		case "ç½‘ç»œç°‡ç³»æ•°": 
+			 showTs= new ChartPanelShowTs(task.getMiningObject()+"æ—¶é—´åºåˆ—", "æ—¶é—´",task.getMiningObject(),null);
 			 showTs.displayDataItems(dataItems);
 			 add(showTs);
 			 break;
-		case "ÍøÂçÖ±¾¶":
-			 showTs = new ChartPanelShowTs(task.getMiningObject()+"Ê±¼äĞòÁĞ", "Ê±¼ä", task.getMiningObject(),null);
+		case "ç½‘ç»œç›´å¾„":
+			 showTs = new ChartPanelShowTs(task.getMiningObject()+"æ—¶é—´åºåˆ—", "æ—¶é—´", task.getMiningObject(),null);
 			 add(showTs);
 			 showTs.displayDataItems(dataItems);
 			 break;
-		case "½áµã³öÏÖÏûÊ§":
-			 ChartPanelShowNodeFrequence showNF = new ChartPanelShowNodeFrequence(task.getMiningObject()+"Ê±¼äĞòÁĞ", "Ê±¼ä",task.getMiningObject(), task,dataItems);
+		case "ç»“ç‚¹å‡ºç°æ¶ˆå¤±":
+			 ChartPanelShowNodeFrequence showNF = new ChartPanelShowNodeFrequence(task.getMiningObject()+"æ—¶é—´åºåˆ—", "æ—¶é—´",task.getMiningObject(), task,dataItems);
 			 add(showNF);
 			 break;
 		}

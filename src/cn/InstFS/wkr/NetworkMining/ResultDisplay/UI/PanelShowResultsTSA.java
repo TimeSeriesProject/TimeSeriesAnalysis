@@ -41,7 +41,7 @@ import java.awt.GridLayout;
 import java.beans.PropertyVetoException;
 
 public class PanelShowResultsTSA extends JPanel implements IPanelShowResults {
-	private Date now;    // Ö¸Ê¾ÏÖÔÚÊ±¼ä£¬µ«ÓĞ¿ÉÄÜ²»ÊÇÕæÕıµÄÏÖÔÚÊ±¼ä
+	private Date now;    // æŒ‡ç¤ºç°åœ¨æ—¶é—´ï¼Œä½†æœ‰å¯èƒ½ä¸æ˜¯çœŸæ­£çš„ç°åœ¨æ—¶é—´
 	private INetworkMiner miner;
 	private Timer timer;
 	JDesktopPane desktopPane;
@@ -69,14 +69,14 @@ public class PanelShowResultsTSA extends JPanel implements IPanelShowResults {
 	private PanelShowResultsTSA() {
 		InitChartScheme();
 		setLayout(new GridLayout(0, 1, 0, 0));
-//		chart1 = new ChartPanelShowTs("Ô­Ê¼Öµ", "Ê±¼ä", "Öµ", null);
-//		chart2 = new ChartPanelShowTs("Ô¤²âÖµ", "Ê±¼ä", "", null);
+//		chart1 = new ChartPanelShowTs("åŸå§‹å€¼", "æ—¶é—´", "å€¼", null);
+//		chart2 = new ChartPanelShowTs("é¢„æµ‹å€¼", "æ—¶é—´", "", null);
 //
 //		add(chart1);
 //		add(chart2);
-		chart1 = new ChartPanelShowTs("Ô­Ê¼Öµ", "Ê±¼ä", "Öµ", null);
-		chart2 = new ChartPanelShowAb("Ô¤²âÖµ", "Ê±¼ä", "", null);
-		chart3= new ChartPanelShowTs("Ô¤²âÖµ", "Ê±¼ä", "", null);
+		chart1 = new ChartPanelShowTs("åŸå§‹å€¼", "æ—¶é—´", "å€¼", null);
+		chart2 = new ChartPanelShowAb("é¢„æµ‹å€¼", "æ—¶é—´", "", null);
+		chart3= new ChartPanelShowTs("é¢„æµ‹å€¼", "æ—¶é—´", "", null);
 		add(chart1);
 		add(chart3);
 
@@ -84,10 +84,10 @@ public class PanelShowResultsTSA extends JPanel implements IPanelShowResults {
 
 	private void InitChartScheme() {
 		StandardChartTheme sct = new StandardChartTheme("");
-		sct.setExtraLargeFont(new Font("ËÎÌå", 0, 20));
-		sct.setLargeFont(new Font("ËÎÌå", 0, 15));
-		sct.setRegularFont(new Font("ËÎÌå", 0, 12));
-		sct.setSmallFont(new Font("ËÎÌå", 0, 8));
+		sct.setExtraLargeFont(new Font("å®‹ä½“", 0, 20));
+		sct.setLargeFont(new Font("å®‹ä½“", 0, 15));
+		sct.setRegularFont(new Font("å®‹ä½“", 0, 12));
+		sct.setSmallFont(new Font("å®‹ä½“", 0, 8));
 		ChartFactory.setChartTheme(sct);
 	}
 
@@ -163,7 +163,7 @@ public class PanelShowResultsTSA extends JPanel implements IPanelShowResults {
 			if (ts.getItemCount() > 0) {
 				now = ts.getTimePeriod(ts.getItemCount() - 1).getEnd();
 			}
-			System.out.println("¹²ÏÔÊ¾" + ts.getItemCount() + "¸öÊı¾İµã£¡(ĞÂÔö" + numNewData + "¸ö)¡£");
+			System.out.println("å…±æ˜¾ç¤º" + ts.getItemCount() + "ä¸ªæ•°æ®ç‚¹ï¼(æ–°å¢" + numNewData + "ä¸ª)ã€‚");
 //			chart1.getXYPlot().setDataset(tsc);
 		}
 	}

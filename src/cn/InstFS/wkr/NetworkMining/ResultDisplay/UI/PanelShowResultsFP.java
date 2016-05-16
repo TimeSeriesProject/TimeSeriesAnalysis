@@ -57,16 +57,16 @@ public class PanelShowResultsFP extends JPanel implements IPanelShowResults {
      */
     public PanelShowResultsFP(TaskElement task) {
 //		pane.setLayout(new GridLayout(3, 3));
-//		chart1 = new ChartPanelShowTs("ԭʼֵ", "ʱ��", "ֵ", null);
-//		chart2 = new ChartPanelShowTs("Ԥ��ֵ", "ʱ��", "", null);
+//		chart1 = new ChartPanelShowTs("原始值", "时间", "值", null);
+//		chart2 = new ChartPanelShowTs("预测值", "时间", "", null);
 //
 //        setLayout(new GridLayout(2,3));
         setLayout(new GridLayout(0, 1, 0, 0));
 
 //		add(chart1);
 //		add(chart2);
-        chart1 = new ChartPanelShowTs("��һ��ģʽ", "ʱ��", "ֵ", null);
-//        chart2 =new ChartPanelShowTs("�ڶ���ģʽ","ʱ��","ֵ",null);
+        chart1 = new ChartPanelShowTs("第一种模式", "时间", "值", null);
+//        chart2 =new ChartPanelShowTs("第二种模式","时间","值",null);
         add(chart1);
 //        add(chart2);
 //        add(chart1);
@@ -156,7 +156,7 @@ public class PanelShowResultsFP extends JPanel implements IPanelShowResults {
                     nor_model.put(skey, astring);
 //				System.out.println("_____________________");
                 }
-                //��ʾ���
+                //显示结果
 //            for(String key:nor_model.keySet())
 //            {
 //                System.out.println(key);

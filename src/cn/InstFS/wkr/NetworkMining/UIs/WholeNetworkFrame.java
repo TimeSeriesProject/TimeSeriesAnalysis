@@ -54,7 +54,7 @@ public class WholeNetworkFrame extends JFrame{
 					NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
 					PeriodMinerFactory periodMinerFactory = PeriodMinerFactory.getInstance();
 					WholeNetworkFrame window = new WholeNetworkFrame();
-					window.setTitle("ÍøÂç¹æÂÉÍÚ¾ò");
+					window.setTitle("ç½‘ç»œè§„å¾‹æŒ–æ˜");
 //					window.setModel(networkMinerFactory.allMiners);
 					//window.loadModel();
 					
@@ -74,7 +74,7 @@ public class WholeNetworkFrame extends JFrame{
 	JTabbedPane tabbedPane;
 	protected int miniMethodIndex=0;
 	protected int miningObjectIndex=0;
-	Map<Integer,MouseListener> popupListeners= new   HashMap<Integer,MouseListener>(); //µ¯³ö²Ëµ¥¼àÌıÆ÷
+	Map<Integer,MouseListener> popupListeners= new   HashMap<Integer,MouseListener>(); //å¼¹å‡ºèœå•ç›‘å¬å™¨
 	ArrayList<JPanel> statisticsPanels = new ArrayList<JPanel>();
 	ArrayList<ArrayList<TaskElement>> taskList = new ArrayList<ArrayList<TaskElement>> ();
 	int ipIndex=0;
@@ -92,9 +92,9 @@ public class WholeNetworkFrame extends JFrame{
 //		miningMethods.add(MiningMethod.MiningMethods_FrequenceItemMining);
 //		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
 //		miningMethods.add(MiningMethod.MiningMethods_TsAnalysis);
-		miningObjects.add("ÍøÂç´ØÏµÊı");
-		miningObjects.add("ÍøÂçÖ±¾¶");
-		miningObjects.add("½áµã³öÏÖÏûÊ§");
+		miningObjects.add("ç½‘ç»œç°‡ç³»æ•°");
+		miningObjects.add("ç½‘ç»œç›´å¾„");
+		miningObjects.add("ç»“ç‚¹å‡ºç°æ¶ˆå¤±");
 	}
 
 	
@@ -105,10 +105,10 @@ public class WholeNetworkFrame extends JFrame{
 		Map<TaskElement, INetworkMiner> miners=new HashMap<TaskElement, INetworkMiner> ();
 		
 		
-		for(Map.Entry<TaskElement, INetworkMiner> entry:allMiners.entrySet()) //µÃµ½ĞèÒªµÄÈÎÎñ
+		for(Map.Entry<TaskElement, INetworkMiner> entry:allMiners.entrySet()) //å¾—åˆ°éœ€è¦çš„ä»»åŠ¡
 		{
 			TaskElement task = entry.getKey();
-			if(task.getTaskRange().compareTo(TaskRange.WholeNetworkRange)==0) //±È½ÏµÄÊÇË³Ğò
+			if(task.getTaskRange().compareTo(TaskRange.WholeNetworkRange)==0) //æ¯”è¾ƒçš„æ˜¯é¡ºåº
 			{
 				miners.put(entry.getKey(),entry.getValue());
 			}
@@ -143,7 +143,7 @@ public class WholeNetworkFrame extends JFrame{
 				{
 					Map<TaskElement, INetworkMiner> tmpminers=new HashMap<TaskElement, INetworkMiner> ();
 					
-					for(Map.Entry<TaskElement, INetworkMiner> entry:miners.entrySet()) //µÃµ½ĞèÒªµÄÈÎÎñ
+					for(Map.Entry<TaskElement, INetworkMiner> entry:miners.entrySet()) //å¾—åˆ°éœ€è¦çš„ä»»åŠ¡
 					{
 						
 						task = entry.getKey();
@@ -185,25 +185,25 @@ private void initialize() {
            
 			    UIManager.setLookAndFeel( new  SubstanceBusinessBlackSteelLookAndFeel());
 	            JFrame.setDefaultLookAndFeelDecorated(true);  
-	            //ÉèÖÃÖ÷Ìâ   
+	            //è®¾ç½®ä¸»é¢˜   
 //	            SubstanceLookAndFeel.setCurrentTheme(new SubstanceBottleGreenTheme());  
-	            //ÉèÖÃ°´Å¥Íâ¹Û  
+	            //è®¾ç½®æŒ‰é’®å¤–è§‚  
 //	            SubstanceLookAndFeel.setSkin(new NebulaBrickWallSkin());
 //	            SubstanceLookAndFeel.setCurrentButtonShaper(new  org.jvnet.substance.button.ClassicButtonShaper());  
-//	            //ÉèÖÃË®Ó¡  
+//	            //è®¾ç½®æ°´å°  
 //	           // SubstanceLookAndFeel.setCurrentWatermark(new SubstanceBinaryWatermark());  
-//	            //ÉèÖÃ±ß¿ò  
+//	            //è®¾ç½®è¾¹æ¡†  
 	           
-//                SubstanceSkin skin = new SaharaSkin().withWatermark(watermark); //³õÊ¼»¯ÓĞË®Ó¡µÄÆ¤·ô
+//                SubstanceSkin skin = new SaharaSkin().withWatermark(watermark); //åˆå§‹åŒ–æœ‰æ°´å°çš„çš®è‚¤
 
 //                UIManager.setLookAndFeel(new SubstanceOfficeBlue2007LookAndFeel());
-//                SubstanceLookAndFeel.setSkin(skin); //ÉèÖÃÆ¤·ô
+//                SubstanceLookAndFeel.setSkin(skin); //è®¾ç½®çš®è‚¤
               
                
 	            SubstanceLookAndFeel.setCurrentBorderPainter(new StandardBorderPainter());  
-	            //ÉèÖÃ½¥±ääÖÈ¾   
+	            //è®¾ç½®æ¸å˜æ¸²æŸ“   
 	            SubstanceLookAndFeel.setCurrentGradientPainter(new StandardGradientPainter());  
-	            //ÉèÖÃ±êÌâ  
+	            //è®¾ç½®æ ‡é¢˜  
 	            SubstanceLookAndFeel.setCurrentTitlePainter( new MatteHeaderPainter());     
 			
 			 

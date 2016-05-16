@@ -75,7 +75,7 @@ public class SingleNodeFrame extends ResultFrame{
 					
 					networkMinerFactory.startAllMiners();
 					SingleNodeFrame window = new SingleNodeFrame();
-					window.setTitle("网络规律挖掘");
+					window.setTitle("缃戠粶瑙勫緥鎸栨帢");
 //					window.setModel(networkMinerFactory.allMiners);
 					//window.loadModel();
 					
@@ -101,8 +101,8 @@ public class SingleNodeFrame extends ResultFrame{
 		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
 		miningMethods.add(MiningMethod.MiningMethods_TsAnalysis);
 		miningObjects.add("traffic");
-		miningObjects.add("通信次数");
-//		miningObjects.add("通信跳数");
+		miningObjects.add("閫氫俊娆℃暟");
+//		miningObjects.add("閫氫俊璺虫暟");
 	}
 
 	@Override
@@ -111,10 +111,10 @@ public class SingleNodeFrame extends ResultFrame{
 		NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
 		Map<TaskElement, INetworkMiner> allMiners = networkMinerFactory.allMiners;
 		Map<TaskElement, INetworkMiner> miners=new HashMap<TaskElement, INetworkMiner> ();
-		for(Map.Entry<TaskElement, INetworkMiner> entry:allMiners.entrySet()) //得到需要的任务
+		for(Map.Entry<TaskElement, INetworkMiner> entry:allMiners.entrySet()) //寰楀埌闇�瑕佺殑浠诲姟
 		{
 			TaskElement task = entry.getKey();
-			if(task.getTaskRange().compareTo(TaskRange.SingleNodeRange)==0) //比较的是顺序
+			if(task.getTaskRange().compareTo(TaskRange.SingleNodeRange)==0) //姣旇緝鐨勬槸椤哄簭
 			{
 				miners.put(entry.getKey(),entry.getValue());
 			}
@@ -133,7 +133,7 @@ public class SingleNodeFrame extends ResultFrame{
 				
 				Map<TaskElement, INetworkMiner> tmpminers=new HashMap<TaskElement, INetworkMiner> ();
 				TreeMap<String,TreeMap<String,TaskElement>> taskTree = new TreeMap<String,TreeMap<String,TaskElement>>();
-				for(Map.Entry<TaskElement, INetworkMiner> entry:miners.entrySet()) //得到需要的任务
+				for(Map.Entry<TaskElement, INetworkMiner> entry:miners.entrySet()) //寰楀埌闇�瑕佺殑浠诲姟
 				{
 					
 					TaskElement task = entry.getKey();
@@ -158,7 +158,7 @@ public class SingleNodeFrame extends ResultFrame{
 				for(Entry<String, TreeMap<String, TaskElement>>  entry:taskTree.entrySet())
 				{
 					String ip =entry.getKey();
-					int len =ip.length();   //字符居中对齐
+					int len =ip.length();   //瀛楃灞呬腑瀵归綈
 					int w =(28-len)/2;
 					String pad=String.format("%"+w+"s", " ");
 					String str =pad+ip+pad;
@@ -167,7 +167,7 @@ public class SingleNodeFrame extends ResultFrame{
 					for(Entry<String, TaskElement> subEntry:entry.getValue().entrySet())
 					{
 						String protocol =subEntry.getKey();
-						int len1 =protocol.length();   //字符居中对齐
+						int len1 =protocol.length();   //瀛楃灞呬腑瀵归綈
 						int w1 =(20-len1)/2;
 						String pad1=String.format("%"+w1+"s", " ");
 						String str1 =pad1+protocol+pad1;

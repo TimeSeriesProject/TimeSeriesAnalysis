@@ -1,12 +1,12 @@
 package cn.InstFS.wkr.NetworkMining.TaskConfigure;
 
 public enum MiningMethod {
-	MiningMethods_FrequenceItemMining("Æµ·±Ïî¼¯ÍÚ¾ò"),
-	MiningMethods_SequenceMining("ĞòÁĞÄ£Ê½ÍÚ¾ò"),
-	MiningMethods_PeriodicityMining("ÖÜÆÚÄ£Ê½·¢ÏÖ"),
-	MiningMethods_PathProbilityMining("Â·¾¶¸ÅÂÊ·¢ÏÖ"),
-	MiningMethods_TsAnalysis("Ê±¼äĞòÁĞ·ÖÎö"),
-	MiningMethods_Statistics("Í³¼ÆÍ¼");
+	MiningMethods_FrequenceItemMining("é¢‘ç¹é¡¹é›†æŒ–æ˜"),
+	MiningMethods_SequenceMining("åºåˆ—æ¨¡å¼æŒ–æ˜"),
+	MiningMethods_PeriodicityMining("å‘¨æœŸæ¨¡å¼å‘ç°"),
+	MiningMethods_PathProbilityMining("è·¯å¾„æ¦‚ç‡å‘ç°"),
+	MiningMethods_TsAnalysis("æ—¶é—´åºåˆ—åˆ†æ"),
+	MiningMethods_Statistics("ç»Ÿè®¡å›¾");
 	
 	private String value;
 	MiningMethod(String value) {

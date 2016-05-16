@@ -68,10 +68,10 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 		add(subPanel, gbc_panel_1);
 		
 		JPanel panel = new JPanel(new GridLayout(0, 3));
-		lblIsPeriod = new JLabel("ÊÇ·ñÖÜÆÚ:");
-		lblPeriodValue = new JLabel("ÖÜÆÚÖµ:");
-		lblFirstPossiblePeriod = new JLabel("×îĞ¡µÄ¿ÉÄÜÖÜÆÚ:");
-//		lblPeriodFeature = new JLabel("ÌØÕ÷Öµ:");
+		lblIsPeriod = new JLabel("æ˜¯å¦å‘¨æœŸ:");
+		lblPeriodValue = new JLabel("å‘¨æœŸå€¼:");
+		lblFirstPossiblePeriod = new JLabel("æœ€å°çš„å¯èƒ½å‘¨æœŸ:");
+//		lblPeriodFeature = new JLabel("ç‰¹å¾å€¼:");
 		panel.add(lblIsPeriod);
 		panel.add(lblPeriodValue);
 		panel.add(lblFirstPossiblePeriod);
@@ -83,7 +83,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 		gbc_panel.gridy = 1;
 		add(panel, gbc_panel);
 		
-		chckShowFeatureVal = new JCheckBox("ÏÔÊ¾ÌØÕ÷Öµ");
+		chckShowFeatureVal = new JCheckBox("æ˜¾ç¤ºç‰¹å¾å€¼");
 		panel.add(chckShowFeatureVal);
 		chckShowFeatureVal.addActionListener(new ActionListener() {			
 			@Override
@@ -92,7 +92,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 			}
 		});
 		
-		chartDistribute = new ChartPanelShowScatterPlot("ÖÜÆÚÄÚ·Ö²¼", "ÖÜÆÚÄÚµÄµã", "Öµ", null);
+		chartDistribute = new ChartPanelShowScatterPlot("å‘¨æœŸå†…åˆ†å¸ƒ", "å‘¨æœŸå†…çš„ç‚¹", "å€¼", null);
 		GridBagConstraints gbc_chartDistribute = new GridBagConstraints();
 		gbc_chartDistribute.fill = GridBagConstraints.BOTH;
 		gbc_chartDistribute.gridx = 0;
@@ -140,20 +140,20 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 			if (retPM == null)
 				return;
 			if(retPM.getHasPeriod()){
-				lblIsPeriod.setText("ÊÇ·ñÖÜÆÚ£ºÊÇ");
-				lblPeriodValue.setText("ÖÜÆÚÖµ£º"+retPM.getPeriod() + 
-						"(ÌØÕ÷Öµ:" + formatter.format(retPM.getFeatureValue()) + ")");
-				lblFirstPossiblePeriod.setText("×îĞ¡µÄ¿ÉÄÜÖÜÆÚ:" + retPM.getFirstPossiblePeriod() +
-						"(ÌØÕ÷Öµ:" + formatter.format(retPM.getFeatureValues()[retPM.getFirstPossiblePeriod() - 1]) + ")");
-//				lblPeriodFeature.setText("ÌØÕ÷Öµ£º" + formatter.format(retPM.getFeatureValue()) + 
-//						"£¨ÃÅÏŞ£º" + formatter.format(((ParamsPM)rets.getMiner().getTask().getMiningParams()).getPeriodThreshold()) + "£©");
+				lblIsPeriod.setText("æ˜¯å¦å‘¨æœŸï¼šæ˜¯");
+				lblPeriodValue.setText("å‘¨æœŸå€¼ï¼š"+retPM.getPeriod() + 
+						"(ç‰¹å¾å€¼:" + formatter.format(retPM.getFeatureValue()) + ")");
+				lblFirstPossiblePeriod.setText("æœ€å°çš„å¯èƒ½å‘¨æœŸ:" + retPM.getFirstPossiblePeriod() +
+						"(ç‰¹å¾å€¼:" + formatter.format(retPM.getFeatureValues()[retPM.getFirstPossiblePeriod() - 1]) + ")");
+//				lblPeriodFeature.setText("ç‰¹å¾å€¼ï¼š" + formatter.format(retPM.getFeatureValue()) + 
+//						"ï¼ˆé—¨é™ï¼š" + formatter.format(((ParamsPM)rets.getMiner().getTask().getMiningParams()).getPeriodThreshold()) + "ï¼‰");
 				DataItems items = retPM.getDistributePeriod();
 			}else{
-				lblIsPeriod.setText("ÊÇ·ñÖÜÆÚ£º·ñ");
-				lblPeriodValue.setText("ÖÜÆÚÖµ£ºÎŞ");
-				lblFirstPossiblePeriod.setText("×îĞ¡µÄ¿ÉÄÜÖÜÆÚ:");
-//				lblPeriodFeature.setText("ÌØÕ÷Öµ£º");
-				chartDistribute.displayDataItems(new DataItems(), new DataItems(),new DataItems(),"ÖÜÆÚ","×î´óÖµ","×îĞ¡Öµ");
+				lblIsPeriod.setText("æ˜¯å¦å‘¨æœŸï¼šå¦");
+				lblPeriodValue.setText("å‘¨æœŸå€¼ï¼šæ— ");
+				lblFirstPossiblePeriod.setText("æœ€å°çš„å¯èƒ½å‘¨æœŸ:");
+//				lblPeriodFeature.setText("ç‰¹å¾å€¼ï¼š");
+				chartDistribute.displayDataItems(new DataItems(), new DataItems(),new DataItems(),"å‘¨æœŸ","æœ€å¤§å€¼","æœ€å°å€¼");
 			}
 			refreshFeatureVal();
 			
@@ -164,9 +164,9 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 		if (rets == null)
 			return;
 		if (chckShowFeatureVal.isSelected())
-			chartDistribute.displayDataItems(rets.getRetPM().getFeatureValues(), "ÖÜÆÚĞÔÌØÕ÷Öµ");
+			chartDistribute.displayDataItems(rets.getRetPM().getFeatureValues(), "å‘¨æœŸæ€§ç‰¹å¾å€¼");
 		else
-			chartDistribute.displayDataItems(rets.getRetPM().getDistributePeriod(),rets.getRetPM().getMaxDistributePeriod(),rets.getRetPM().getMinDistributePeriod(), "ÖÜÆÚ","×î´óÖµ","×îĞ¡Öµ");
+			chartDistribute.displayDataItems(rets.getRetPM().getDistributePeriod(),rets.getRetPM().getMaxDistributePeriod(),rets.getRetPM().getMinDistributePeriod(), "å‘¨æœŸ","æœ€å¤§å€¼","æœ€å°å€¼");
 	}
 	@Override
 	public void displayMinerResults() {

@@ -15,9 +15,9 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.ITaskDisplayer;
 
 /**
- * ÏÈ´´½¨PanelShowResults
- * È»ºóµ÷ÓÃTaskElement.loadAllTasks£¬À´¸üĞÂTaskElement.allTasks
- * ×îºóµ÷ÓÃPanelShowresults.startAllTasksÀ´Æô¶¯ÍÚ¾òÈÎÎñ
+ * å…ˆåˆ›å»ºPanelShowResults
+ * ç„¶åè°ƒç”¨TaskElement.loadAllTasksï¼Œæ¥æ›´æ–°TaskElement.allTasks
+ * æœ€åè°ƒç”¨PanelShowresults.startAllTasksæ¥å¯åŠ¨æŒ–æ˜ä»»åŠ¡
  * @author wangshen
  *
  */
@@ -92,7 +92,7 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 	}
 
 	@Override
-	public void onClosing() {	// TODO Õâ¸öº¯ÊıÃ»ÓĞÓÃ
+	public void onClosing() {	// TODO è¿™ä¸ªå‡½æ•°æ²¡æœ‰ç”¨
 		TaskElement.removeTaskListener(this);
 	}
 

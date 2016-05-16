@@ -57,13 +57,13 @@ public class TablePanelShowPrecisionRecall extends JPanel {
 	public void showMinerResultsPrecisionAndRecall(MinerResults rets){	
 		DefaultTableModel tmodel = new DefaultTableModel();
 		// Add columns
-		tmodel.addColumn("Ê±¼ä");
-		tmodel.addColumn("ÕÙ»ØÂÊ");
-		tmodel.addColumn("×¼È·ÂÊ");
+		tmodel.addColumn("æ—¶é—´");
+		tmodel.addColumn("å¬å›ç‡");
+		tmodel.addColumn("å‡†ç¡®ç‡");
 		
 		table.setCellSelectionEnabled(false);
-//		table.getColumn("Ê±¼ä").setCellRenderer(new MyTableDateCellRenderer());		
-//		table.getColumn("Ê±¼ä").setCellEditor(new DateEditor(new JTextField()));
+//		table.getColumn("æ—¶é—´").setCellRenderer(new MyTableDateCellRenderer());		
+//		table.getColumn("æ—¶é—´").setCellEditor(new DateEditor(new JTextField()));
 		// Add rows
 		if (rets == null)
 			return;
@@ -71,19 +71,19 @@ public class TablePanelShowPrecisionRecall extends JPanel {
 		Double [] recall_precision = new Double[2];
 		recall_precision[0] = rets.getRetSM().getRecallRatio();
 		recall_precision[1] = rets.getRetSM().getAccuracyRatio();
-		// Ìí¼ÓÖÁMAP½á¹¹ÖĞ
+		// æ·»åŠ è‡³MAPç»“æ„ä¸­
 		if (d != null)
 			datas.put(d, recall_precision);
-		// ÏÔÊ¾µ½TABLEÖĞ
+		// æ˜¾ç¤ºåˆ°TABLEä¸­
 		insertDatas2TableModel(tmodel);
 		table.setModel(tmodel);
-		table.getColumn("Ê±¼ä").setPreferredWidth(200);
+		table.getColumn("æ—¶é—´").setPreferredWidth(200);
 	}
 	private void insertDatas2TableModel(DefaultTableModel tmodel){
 		if (datas.size() == 0)
 			return;
 		TreeSet <Date> datesNew = new TreeSet<Date>(datas.keySet());
-		// ÏÈ¼ÆËãÆ½¾ù×¼È·ÂÊºÍÕÙ»ØÂÊ£¬²¢¼ÓÖÁ±íÖĞ
+		// å…ˆè®¡ç®—å¹³å‡å‡†ç¡®ç‡å’Œå¬å›ç‡ï¼Œå¹¶åŠ è‡³è¡¨ä¸­
 		Collection<Double[]> vals = datas.values();
 		Double recall = 0.0;
 		Double accuracy = 0.0;
@@ -94,8 +94,8 @@ public class TablePanelShowPrecisionRecall extends JPanel {
 		}
 		recall /= size;
 		accuracy /= size;
-		tmodel.addRow(new Object []{"Æ½¾ù("+date2String(datesNew.last())+")", recall.toString(),accuracy.toString()});
-		// ÔÙ½«Ã¿Ìõ¼ÇÂ¼¼Ó½ø±íÖĞ
+		tmodel.addRow(new Object []{"å¹³å‡("+date2String(datesNew.last())+")", recall.toString(),accuracy.toString()});
+		// å†å°†æ¯æ¡è®°å½•åŠ è¿›è¡¨ä¸­
 		
 		for (Date d : datesNew){
 			Double []recall_precision = datas.get(d);

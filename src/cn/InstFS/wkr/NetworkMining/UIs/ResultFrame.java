@@ -96,7 +96,7 @@ public abstract class ResultFrame extends JFrame {
 					
 					networkMinerFactory.startAllMiners();
 					SingleNodeFrame window = new SingleNodeFrame();
-					window.setTitle("ÍøÂç¹æÂÉÍÚ¾ò");
+					window.setTitle("ç½‘ç»œè§„å¾‹æŒ–æ˜");
 //					window.setModel(networkMinerFactory.allMiners);
 					//window.loadModel();
 					
@@ -121,7 +121,7 @@ public abstract class ResultFrame extends JFrame {
     JTabbedPane tabbedPane;
     protected int miniMethodIndex=0;
     protected int miningObjectIndex=0;
-    Map<Integer,MouseListener> popupListeners= new   HashMap<Integer,MouseListener>(); //µ¯³ö²Ëµ¥¼àÌıÆ÷
+    Map<Integer,MouseListener> popupListeners= new   HashMap<Integer,MouseListener>(); //å¼¹å‡ºèœå•ç›‘å¬å™¨
     int ipIndex=0;
     int protocolIndex=0;
 	public ResultFrame() {
@@ -143,25 +143,25 @@ public abstract class ResultFrame extends JFrame {
            
 			    UIManager.setLookAndFeel( new  SubstanceBusinessBlackSteelLookAndFeel());
 	            JFrame.setDefaultLookAndFeelDecorated(true);  
-	            //ÉèÖÃÖ÷Ìâ   
+	            //è®¾ç½®ä¸»é¢˜   
 //	            SubstanceLookAndFeel.setCurrentTheme(new SubstanceBottleGreenTheme());  
-	            //ÉèÖÃ°´Å¥Íâ¹Û  
+	            //è®¾ç½®æŒ‰é’®å¤–è§‚  
 //	            SubstanceLookAndFeel.setSkin(new NebulaBrickWallSkin());
 //	            SubstanceLookAndFeel.setCurrentButtonShaper(new  org.jvnet.substance.button.ClassicButtonShaper());  
-//	            //ÉèÖÃË®Ó¡  
+//	            //è®¾ç½®æ°´å°  
 //	           // SubstanceLookAndFeel.setCurrentWatermark(new SubstanceBinaryWatermark());  
-//	            //ÉèÖÃ±ß¿ò  
+//	            //è®¾ç½®è¾¹æ¡†  
 	           
-//                SubstanceSkin skin = new SaharaSkin().withWatermark(watermark); //³õÊ¼»¯ÓĞË®Ó¡µÄÆ¤·ô
+//                SubstanceSkin skin = new SaharaSkin().withWatermark(watermark); //åˆå§‹åŒ–æœ‰æ°´å°çš„çš®è‚¤
 
 //                UIManager.setLookAndFeel(new SubstanceOfficeBlue2007LookAndFeel());
-//                SubstanceLookAndFeel.setSkin(skin); //ÉèÖÃÆ¤·ô
+//                SubstanceLookAndFeel.setSkin(skin); //è®¾ç½®çš®è‚¤
               
                
 	            SubstanceLookAndFeel.setCurrentBorderPainter(new StandardBorderPainter());  
-	            //ÉèÖÃ½¥±ääÖÈ¾   
+	            //è®¾ç½®æ¸å˜æ¸²æŸ“   
 	            SubstanceLookAndFeel.setCurrentGradientPainter(new StandardGradientPainter());  
-	            //ÉèÖÃ±êÌâ  
+	            //è®¾ç½®æ ‡é¢˜  
 	            SubstanceLookAndFeel.setCurrentTitlePainter( new MatteHeaderPainter());     
 			
 			 

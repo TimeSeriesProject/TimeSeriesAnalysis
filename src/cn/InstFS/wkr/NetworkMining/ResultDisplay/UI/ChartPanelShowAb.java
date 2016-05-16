@@ -42,15 +42,15 @@ public class ChartPanelShowAb extends JPanel{
     JFreeChart chart;
     Shape itemShape; // = new Ellipse2D.Double(-2,-2, 4, 4);
     private ChartPanelShowAb() {
-        // ´´½¨Ö÷ÌâÑùÊ½
+        // åˆ›å»ºä¸»é¢˜æ ·å¼
         StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
-        // ÉèÖÃ±êÌâ×ÖÌå
-        standardChartTheme.setExtraLargeFont(new Font("Á¥Êé", Font.BOLD, 15));
-        // ÉèÖÃÍ¼ÀıµÄ×ÖÌå
-        standardChartTheme.setRegularFont(new Font("ËÎÊé", Font.PLAIN, 10));
-        // ÉèÖÃÖáÏòµÄ×ÖÌå
-        standardChartTheme.setLargeFont(new Font("ËÎÊé", Font.PLAIN, 10));
-        // Ó¦ÓÃÖ÷ÌâÑùÊ½
+        // è®¾ç½®æ ‡é¢˜å­—ä½“
+        standardChartTheme.setExtraLargeFont(new Font("éš¶ä¹¦", Font.BOLD, 15));
+        // è®¾ç½®å›¾ä¾‹çš„å­—ä½“
+        standardChartTheme.setRegularFont(new Font("å®‹ä¹¦", Font.PLAIN, 10));
+        // è®¾ç½®è½´å‘çš„å­—ä½“
+        standardChartTheme.setLargeFont(new Font("å®‹ä¹¦", Font.PLAIN, 10));
+        // åº”ç”¨ä¸»é¢˜æ ·å¼
         ChartFactory.setChartTheme(standardChartTheme);
 
         setLayout(new BorderLayout());
@@ -67,9 +67,9 @@ public class ChartPanelShowAb extends JPanel{
 //        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
 //
 //        renderer.setBaseShapesVisible(false);
-////		renderer.setBaseShape(itemShape);	// ºÃÏñ²»¹ÜÓÃ£¬±ØĞëÓÃsetSeriesShape
+////		renderer.setBaseShape(itemShape);	// å¥½åƒä¸ç®¡ç”¨ï¼Œå¿…é¡»ç”¨setSeriesShape
 //        renderer.setBaseLinesVisible(true);
-////		renderer.setBasePaint(new Color(0));	// ºÃÏñ²»¹ÜÓÃ£¬±ØĞëÓÃsetSeriesPaint
+////		renderer.setBasePaint(new Color(0));	// å¥½åƒä¸ç®¡ç”¨ï¼Œå¿…é¡»ç”¨setSeriesPaint
 //
 //        itemShape = ShapeUtilities.createDiamond((float) 3);
 //        renderer.setSeriesShape(0, itemShape);
@@ -100,7 +100,7 @@ public class ChartPanelShowAb extends JPanel{
             return;
         TimeSeriesCollection tsc = new TimeSeriesCollection();
 
-        TimeSeries ts = new TimeSeries("ĞòÁĞÖµ");
+        TimeSeries ts = new TimeSeries("åºåˆ—å€¼");
 
         int len = items.getLength();
         for (int i = 0; i < len; i ++){
@@ -114,35 +114,35 @@ public class ChartPanelShowAb extends JPanel{
     }
     public static XYDataset createNormalDataset(DataItems normal)
     {
-        //»ñÈ¡Õı³£Êı¾İµÄ³¤¶È¡¢
+        //è·å–æ­£å¸¸æ•°æ®çš„é•¿åº¦ã€
         int length=normal.getLength();
         int time[] = new int[length];
-        XYSeries xyseries = new XYSeries("Õı³£µã");
+        XYSeries xyseries = new XYSeries("æ­£å¸¸ç‚¹");
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
-        //ÎªÊı¾İ¼¯Ìí¼ÓÊı¾İ
+        //ä¸ºæ•°æ®é›†æ·»åŠ æ•°æ®
 
         for (int i = 0; i <length; i++) {
             DataItem temp=new DataItem();
             temp=normal.getElementAt(i);
-            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData())); // ¶ÔÓ¦µÄºáÖá
+            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData())); // å¯¹åº”çš„æ¨ªè½´
 
         }
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
-    //¶ÔÒì³£µã½øĞĞ³õÊ¼»¯
+    //å¯¹å¼‚å¸¸ç‚¹è¿›è¡Œåˆå§‹åŒ–
     public static XYDataset createAbnormalDataset(DataItems abnor)
-    {  // Í³¼ÆÒì³£µãµÄ³¤¶È
+    {  // ç»Ÿè®¡å¼‚å¸¸ç‚¹çš„é•¿åº¦
         int length=abnor.getLength();
-        XYSeries xyseries = new XYSeries("Òì³£µã");
+        XYSeries xyseries = new XYSeries("å¼‚å¸¸ç‚¹");
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
 
 
-        //Ìí¼ÓÊı¾İÖµ
+        //æ·»åŠ æ•°æ®å€¼
 
         for (int i = 0; i < length; i++) {
 
@@ -158,11 +158,11 @@ public class ChartPanelShowAb extends JPanel{
     public static JFreeChart createChart(DataItems nor,DataItems abnor)
     {
         XYDataset xydataset = createNormalDataset(nor);
-        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("Òì³£µã¼ì²â", "Ê±¼ä", "Öµ", xydataset);
+        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("å¼‚å¸¸ç‚¹æ£€æµ‹", "æ—¶é—´", "å€¼", xydataset);
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
-        //ÉèÖÃÒì³£µãÌáÊ¾ºìµã´óĞ¡
+        //è®¾ç½®å¼‚å¸¸ç‚¹æç¤ºçº¢ç‚¹å¤§å°
         java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(-4D, -4D, 6D, 6D);
         XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer)xyplot.getRenderer();
         xylineandshaperenderer.setBaseShapesVisible(false);

@@ -21,7 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JCheckBox;
 /**
- * ¸ÃÃæ°åÓÃÓÚÏÔÊ¾¶àÀàÍÚ¾ò½á¹ûµÄÍ¨ÓÃĞÔĞÅÏ¢£¬ÈçÀëÉ¢»¯½Úµã¡¢Ê±¼äÁ£¶È¡¢Ô­Ê¼ĞòÁĞµÈ
+ * è¯¥é¢æ¿ç”¨äºæ˜¾ç¤ºå¤šç±»æŒ–æ˜ç»“æœçš„é€šç”¨æ€§ä¿¡æ¯ï¼Œå¦‚ç¦»æ•£åŒ–èŠ‚ç‚¹ã€æ—¶é—´ç²’åº¦ã€åŸå§‹åºåˆ—ç­‰
  * @author wangshen
  *
  */
@@ -45,7 +45,7 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		lblGranularity = new JLabel("Ê±¼äÁ£¶È£º");
+		lblGranularity = new JLabel("æ—¶é—´ç²’åº¦ï¼š");
 		GridBagConstraints gbc_lblGranularity = new GridBagConstraints();
 		gbc_lblGranularity.anchor = GridBagConstraints.WEST;
 		gbc_lblGranularity.gridwidth = 2;
@@ -54,7 +54,7 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 		gbc_lblGranularity.gridy = 0;
 		add(lblGranularity, gbc_lblGranularity);
 		
-//		chckShowOrigDataItems = new JCheckBox("ÏÔÊ¾Ô­Ê¼Êı¾İ£¨Âı£©");
+//		chckShowOrigDataItems = new JCheckBox("æ˜¾ç¤ºåŸå§‹æ•°æ®ï¼ˆæ…¢ï¼‰");
 		GridBagConstraints gbc_chckShowOrigDataItems = new GridBagConstraints();
 		gbc_chckShowOrigDataItems.anchor = GridBagConstraints.WEST;
 		gbc_chckShowOrigDataItems.insets = new Insets(0, 0, 0, 5);
@@ -68,7 +68,7 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 //			}
 //		});
 //		
-		chartTs = new ChartPanelShowTs("Êµ¼ÊÖµ","Ê±¼ä","Öµ",null);
+		chartTs = new ChartPanelShowTs("å®é™…å€¼","æ—¶é—´","å€¼",null);
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.gridheight = 2;
 		gbc_panel.fill = GridBagConstraints.BOTH;
@@ -76,7 +76,7 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 		gbc_panel.gridy = 2;
 		add(chartTs, gbc_panel);
 		
-		txtDiscreteNodes = new JTextArea("ÀëÉ¢»¯\r\nÇø¼äÓëÖµ£º\r\n");
+		txtDiscreteNodes = new JTextArea("ç¦»æ•£åŒ–\r\nåŒºé—´ä¸å€¼ï¼š\r\n");
 		txtDiscreteNodes.setEditable(false);
 		GridBagConstraints gbc_txtDiscreteNodes = new GridBagConstraints();
 		gbc_txtDiscreteNodes.gridheight = 3;
@@ -91,7 +91,7 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 		this.rslts = rets;
 		TaskElement task = rets.getMiner().getTask();
 		int granularity = task.getGranularity();
-		lblGranularity.setText("Ê±¼äÁ£¶È£º" + granularity + "(s)");
+		lblGranularity.setText("æ—¶é—´ç²’åº¦ï¼š" + granularity + "(s)");
 		
 		DataItems di = null;		
 //		if (chckShowOrigDataItems.isSelected()){
@@ -107,7 +107,7 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 			Double []nodes = di.getDiscreteNodes();
 			if (nodes != null){
 				int len = nodes.length;
-				sb.append("ÀëÉ¢»¯\r\nÇø¼äÓëÖµ£º\r\n");
+				sb.append("ç¦»æ•£åŒ–\r\nåŒºé—´ä¸å€¼ï¼š\r\n");
 				sb.append("<" + formatStrOrNumber(nodes[1]) + ":\t0\r\n");
 				for (int i = 1; i < len - 1; i ++){
 					sb.append("" + formatStrOrNumber(nodes[i]) + " ~ " + formatStrOrNumber(nodes[i+1]) + ":\t" + i + "\r\n");
@@ -116,7 +116,7 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 				txtDiscreteNodes.setText(sb.toString());
 			}else{
 				Map<String, String> mapStrs = di.getDiscreteStrings();
-				sb.append("ÀëÉ¢»¯\r\nÇø¼äÓëÖµ£º\r\n");
+				sb.append("ç¦»æ•£åŒ–\r\nåŒºé—´ä¸å€¼ï¼š\r\n");
 				for(Entry<String, String>mapStr : mapStrs.entrySet()){
 					sb.append(mapStr.getKey() + ":\t" + mapStr.getValue() +"\r\n");
 				}
