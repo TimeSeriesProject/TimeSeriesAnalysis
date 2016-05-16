@@ -70,7 +70,7 @@ public class ProcessBarShow extends JDialog implements Callable {
 //		super(jframe);
 		frame = new JFrame();
 		frame.setTitle("pcap包解析进度监控");
-		frame.setVisible(true);
+//		frame.setVisible(true);
 //		frame.setModal(true);
 //		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -119,6 +119,7 @@ public class ProcessBarShow extends JDialog implements Callable {
 		panelContainer.add(midPanel,BorderLayout.CENTER);
 		panelContainer.add(bottomPanel,BorderLayout.SOUTH);
 		frame.setContentPane(panelContainer);
+		frame.setLocationRelativeTo(null); //使对话框居中
 		frame.setVisible(true);
 	}
 
@@ -287,26 +288,35 @@ public class ProcessBarShow extends JDialog implements Callable {
 				// 以任务的当前完成量设置进度条的value
 				if(pp.pu.getStatus().name().compareTo("PREPARE") == 0) {
 					
-					currentPhrase = "正在准备";
+					currentPhrase = "即将开始";
 					System.out.println("当前处于准备阶段");
 				}
 				else if (pp.pu.getStatus().name().compareTo("PARSE") == 0) {
-					if (pp.pu.getParseSum() == 0) {
-						phrase = 0;
-						bar.setMaximum(100);
-						currentPhrase = "当前阶段为解析pecap包阶段 1/2";
+					
+//					phrase = 0;
+					if(phrase == 0)
+					{
+						bar.setMaximum(pp.pu.getParseSum());
 						System.out.println("任务总数："+pp.pu.getParseSum());
-//						jlable.setText(currentPhrase);
+						currentPhrase = "当前阶段为解析pecap包阶段 1/2";
+						phrase = 1;
 					}
 					
-					int num = (int) Math.round(pp.pu.getParsedNum()*1.0/pp.pu.getParseSum()*100);
+//					int num = (int) Math.round(pp.pu.getParsedNum()*1.0/pp.pu.getParseSum()*100);
+					int num = pp.pu.getParsedNum();
 					bar.setValue(num);
 					jlable.setText(currentPhrase);
 				} else if (pp.pu.getStatus().name().compareTo("GENROUTE") == 0) {
 					
-//					bar.setMaximum(100);
-					currentPhrase = "当前阶段为解析路由阶段 2/2";
-					int num = (int) Math.round(pp.pu.getGenedRouteNum()*1.0/pp.pu.getGenRouteSum()*100);
+					if(phrase == 0 || phrase == 1)
+					{
+						bar.setMaximum(pp.pu.getGenRouteSum());
+						currentPhrase = "当前阶段为解析路由阶段 2/2";
+						System.out.println("任务总数："+pp.pu.getGenRouteSum());
+					}
+					
+//					int num = (int) Math.round(pp.pu.getGenedRouteNum()*1.0/pp.pu.getGenRouteSum()*100);
+					int num = pp.pu.getGenedRouteNum();
 					bar.setValue(num);
 					jlable.setText(currentPhrase);
 				}

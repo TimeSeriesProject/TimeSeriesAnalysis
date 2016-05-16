@@ -209,10 +209,10 @@ public class ERPDistencePM implements IMinerPM {
 	 * 返回两条序列的ERP距离
 	 * @param seqX 第一条序列
 	 * @param seqY 第二条序列
-	 * @param offset 第二条序列是平移offset个单位得到的
+	 * @param matrix 存储已经计算完成的数据 
+	 * @param xSize ySize 充当数组指针
 	 * @return ERP距离
 	 */
-	
 	private double ERPDistance(List<String> seqX,List<String>seqY,int xSize,int ySize,double [][]matrix){
 		if(xSize<0&&ySize<0){
 			return 0;
@@ -243,7 +243,6 @@ public class ERPDistencePM implements IMinerPM {
 			matrix[xSize][ySize]=min;
 			return min;
 		}
-		
 	}
 	
 	/**

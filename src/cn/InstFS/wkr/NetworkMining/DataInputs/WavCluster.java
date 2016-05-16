@@ -19,9 +19,11 @@ import java.util.regex.Pattern;
 
 
 
+
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import WaveletUtil.CheByDistance;
+import WaveletUtil.VectorDistance;
 import weka.clusterers.SimpleKMeans;
 import weka.core.ChebyshevDistance;
 import weka.core.EuclideanDistance;
@@ -308,10 +310,10 @@ public class WavCluster {
 			Instances dataset	=	arffloader.getDataSet();
 //			DistanceFunction disFun = new ManhattanDistance();
 			
-			kMeans.setDistanceFunction(new CheByDistance() );
+			kMeans.setDistanceFunction(new VectorDistance() );
 			//kMeans.setDistanceFunction(new ManhattanDistance());
 			kMeans.setNumClusters(clusternum);
-			kMeans.setMaxIterations(100);
+			kMeans.setMaxIterations(1000);
 			kMeans.setPreserveInstancesOrder(preserveOrder);
 			kMeans.buildClusterer(dataset);
 			kMeans.clusterInstance(dataset.get(0));
@@ -548,6 +550,74 @@ public class WavCluster {
 				DataItem dataItem =new DataItem();	
 				dataItem.setData(String.valueOf(labels[i]));
 				dataItem.setTime(dataItems.getTime().get(i*size));
+				result.add1Data(dataItem);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			System.exit(0);
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * 对某段时间序列进行聚类，并返回聚类结果
+	 * @param patterns 聚类元数据
+	 * @param size 每一类时间段的长度
+	 * @param clusterNum 聚类的类标签数量
+	 * @return 聚类之后的结果
+	 */
+	public static DataItems SelfCluster(List<SegPattern>patterns,DataItems dataItems,int size,int clusterNum,String fileName)
+	{
+		DataItems result = new DataItems();
+		ArrayList<ArrayList<Double>> instances =new ArrayList<ArrayList<Double>>();
+		SimpleKMeans kMeans;
+		DescriptiveStatistics xStatistics=new DescriptiveStatistics();
+		DescriptiveStatistics yStatistics=new DescriptiveStatistics();
+		
+		for(int i=0;i<patterns.size();i++){
+			SegPattern pattern=patterns.get(i);
+			double xSpan=pattern.getEnd()-pattern.getStart()+1.0;
+			double ySpan=Double.parseDouble(dataItems.getData().get(pattern.getEnd()))-
+					Double.parseDouble(dataItems.getData().get(pattern.getStart()));
+			xStatistics.addValue(xSpan);
+			yStatistics.addValue(ySpan);
+		}
+		
+		double xMean=xStatistics.getMean();
+		double xStd=xStatistics.getStandardDeviation();
+		double yMean=yStatistics.getMean();
+		double yStd=yStatistics.getStandardDeviation();
+		
+		for(int i=0;i<patterns.size();i++)
+		{
+			SegPattern pattern=patterns.get(i);
+			ArrayList <Double> vector = new ArrayList<Double>();
+			double xSpan=pattern.getEnd()-pattern.getStart()+1.0;
+			double ySpan=Double.parseDouble(dataItems.getData().get(pattern.getEnd()))-
+					Double.parseDouble(dataItems.getData().get(pattern.getStart()));
+			vector.add((xSpan-xMean)/xStd);
+			vector.add((ySpan-yMean)/yStd);
+			instances.add(vector);
+
+		}
+		if(instances.size()==0)
+			return result;
+		kMeans = Kmeans(instances,clusterNum,fileName,true);
+		try
+		{
+			int labels[]=kMeans.getAssignments();
+			for(int label:labels)
+				System.out.println(label);
+			
+			for(int i=0;i<labels.length;i++)
+			{
+				
+				DataItem dataItem =new DataItem();	
+				dataItem.setData(String.valueOf(labels[i]));
+				dataItem.setTime(dataItems.getTime().get(patterns.get(i).getStart()));
 				result.add1Data(dataItem);
 			}
 		}

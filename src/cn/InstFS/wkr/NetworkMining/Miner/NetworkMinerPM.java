@@ -180,9 +180,6 @@ class PMTimerTask extends TimerTask{
 		DataItems oriDataItems=dataItems;
 		if(task.getDiscreteMethod().equals(DiscreteMethod.None))
     		dataItems=DataPretreatment.normalization(dataItems);
-//		for(int i=0;i<dataItems.getLength();i++){
-//			System.out.print(dataItems.getData().get(i).split("\\.")[0]+",");
-//		}
 		int dimension = task.getDiscreteDimension();
 		dimension = Math.max(task.getDiscreteDimension(), dataItems.getDiscretizedDimension());
 		IMinerPM pmMethod=null;
@@ -213,6 +210,11 @@ class PMTimerTask extends TimerTask{
 				System.out.println("周期值 "+pmMethod.getPredictPeriod());
 			}
 			retPmMap.put(MiningItem, retPM);
+			//检测是否存在局部周期
+			if(!retPM.getHasPeriod()){
+				PartialPM partialPM=new PartialPM(results,oriDataItems);
+				partialPM.miningPartialPM();
+			}
 		}else{
 			Set<String>itemSet=dataItems.getVarSet();
 			for(String item:itemSet){

@@ -29,55 +29,16 @@ import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;;
  *
  */
 public class SequencePatternsDontSplit {
-
-
+	
 	private DataItems dataItems;
 	private TaskElement task;
 	private List<ArrayList<String>> patterns;
 	private int winSize = 100; // 单位为秒
 	private int stepSize = 10;
-	private int clusterNum = 10;
 	private Date minDate = null;
 	private double threshold = 0.4;
-	private double freThreshold=0.5;
 	private boolean hasFreItems=false;
 
-	public static void main(String[] args) {
-		TaskElement task = new TaskElement();
-		task.setSourcePath("./configs/real-1-11.csv");
-		task.setDataSource("Text");
-		task.setTaskRange(TaskRange.NodePairRange);
-		task.setFilterCondition("protocol=" + "402");  //402 --- 410都可以
-		task.setGranularity(3600);
-		task.setMiningObject("traffic");
-
-		String ip[] = new String[] { "10.0.1.1", "10.0.1.2" };
-		IReader reader = new nodePairReader(task, ip);
-		DataItems tmp = reader.readInputByText();
-		DataItems dataItems = new DataItems();
-		DataItems clusterItems=new DataItems();
-		for (int k = 0; k < tmp.getLength(); k++) {
-			DataItem dataItem = tmp.getElementAt(k);
-			dataItem.setData(String.valueOf(Double.valueOf(dataItem.getData()) / 2));
-			dataItems.add1Data(dataItem);
-		}
-
-		dataItems = DataPretreatment.aggregateData(dataItems, 3600,
-				AggregateMethod.Aggregate_MEAN, false);
-		clusterItems = WavCluster.segmentSelfCluster(dataItems);
-		
-		List<ArrayList<String>> patternsResult = new ArrayList<ArrayList<String>>();
-		SequencePatternsDontSplit sp = new SequencePatternsDontSplit(clusterItems, task,
-				patternsResult);
-		
-		sp.patternMining();
-		sp.displayResult();
-
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
-		Date date = new Date();
-		System.out.println(date);
-	}
 	public SequencePatternsDontSplit() {
 	}
 	public SequencePatternsDontSplit(DataItems dataItems, TaskElement task,
@@ -96,19 +57,9 @@ public class SequencePatternsDontSplit {
 	 * @return 
 	 */
 	public List<ArrayList<String>> patternMining() {
-		Date max_date = getMaxDate();
-		Date min_date = getMinDate();
-		minDate = min_date;
 		HashSet<String> clusterLabel = getClusterNum(); // 得到序列聚类的个数
-		clusterNum = clusterLabel.size();
-//		System.out.println("clusterNum:" + clusterNum);
-//		System.out.println("dataItems.data.size():" + dataItems.data.size());
-		
 		String sliceSequence = getSliceSequence(); // 将一个样例以字符串形式给出
-		
 		ArrayList<String> basicSequence = convertHashSetToArray(clusterLabel); // 初始化长度串
-//		System.out.println("sequenceProb:" + basicSequence.size());
-
 		patterns = getFrequentItemSet(sliceSequence, basicSequence, threshold);
 		return patterns;
 	}
@@ -123,19 +74,14 @@ public class SequencePatternsDontSplit {
 			String sliceSequence,
 			ArrayList<String> BasicSequence, double thresh) {
 		
-		ArrayList<ArrayList<String>> FrequentItemSet = new ArrayList<ArrayList<String>>();
-
 		//计算各个频繁序列可能出现的位置
 		HashMap<String, ArrayList<Integer>> position = getItemSamplePosition(
 				sliceSequence, BasicSequence,thresh);                              //在读取位置时，直接把不满足条件的删掉
 		//得到满足条件的频繁项
-		ArrayList<String> sequenceResult = (ArrayList<String>) BasicSequence.clone();
-		ArrayList<String> NewestSequence = (ArrayList<String>) BasicSequence.clone();
-
-		int count = 0;
+		ArrayList<String> sequenceResult = new ArrayList<String>();
+		ArrayList<String> NewestSequence = (ArrayList<String>)BasicSequence.clone();
 		while (true) {
 			
-			//System.out.println("迭代次数："+(++count) +"  满足条件大小："+NewestSequence.size());
 			NewestSequence = getNewFrequentItemsAndJudge(BasicSequence,NewestSequence,
 					sliceSequence,position,thresh);
 			if(NewestSequence.size() == 0)
@@ -214,7 +160,6 @@ public class SequencePatternsDontSplit {
 			return false;
 		ArrayList<Integer> asi_list = new ArrayList<Integer>();
 		int m = 0;
-		int len=0;
 		int nextPos=-1;
 		for(int i = 0;i < ps.size();i++)
 		{
@@ -234,13 +179,9 @@ public class SequencePatternsDontSplit {
 			}
 			
 		}
-		len = first_item.length() + last_item.length()+1;
 		if(asi_list.size()*1.0 > thresh)
 		{
-			if(len>=9&&(asi_list.size()*len*1.0/sliceSequence.length()>freThreshold)){
-				hasFreItems=true;
-				System.out.println(first_item+","+last_item+":"+asi_list.size());
-			}
+			hasFreItems=true;
 			position.put(first_item+","+last_item, asi_list);
 			return true;
 		}
@@ -253,8 +194,7 @@ public class SequencePatternsDontSplit {
 	 * @param thresh
 	 * @return
 	 */
-	private HashMap<String, ArrayList<Integer>> getItemSamplePosition(
-			String sliceSequence,
+	private HashMap<String, ArrayList<Integer>> getItemSamplePosition(String sliceSequence,
 			ArrayList<String> basicSequence,double thresh) {
 
 		System.out.println("basic sequence.size:"+basicSequence.size());
@@ -347,7 +287,6 @@ public class SequencePatternsDontSplit {
 
 		HashSet<String> set = new HashSet<String>();
 		for (int i = 0; i < dataItems.data.size(); i++) {
-			
 			String data = dataItems.data.get(i);
 			set.add(data);
 		}

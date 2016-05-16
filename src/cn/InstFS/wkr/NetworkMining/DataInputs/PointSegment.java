@@ -8,17 +8,19 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 public class PointSegment {
 
 	private DataItems dataItems;
-	private double ratio;
+	private int ratio;
 	private ArrayList<Integer> pointsIndex;
 	private int length;
 	private List<SegPattern> patterns;
+	private double std;
 	
-	public PointSegment(DataItems dataItems,double ratio){
+	public PointSegment(DataItems dataItems,int ratio){
 		this.dataItems=dataItems;
 		this.ratio=ratio;
 		length=dataItems.getLength();
 		pointsIndex=new ArrayList<Integer>();
 		patterns=new ArrayList<SegPattern>();
+		setItemStd(dataItems);
 	}
 	
 	public List<SegPattern> getPatterns(){
@@ -69,8 +71,8 @@ public class PointSegment {
 //			}
 //		}
 		while(index<length-1){
-			index=findMaxinum(index, 5);
-			index=findMininum(index, 5);
+			index=findMaxinum(index, ratio);
+			index=findMininum(index, ratio);
 		}
 		pointsIndex.add(length-1);
 	}
@@ -104,9 +106,16 @@ public class PointSegment {
 		for(;i<(length-1);i++){
 			if(getItem(i)<getItem(iMin))
 				iMin=i;
-			if(getItem(i)>getItem(iMin)&&(i-iMin)>=span){
-				pointsIndex.add(iMin);
-				break;
+			if(std>1){
+				if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-0.1*getItem(i))>=getItem(iMin)){
+					pointsIndex.add(iMin);
+					break;
+				}
+			}else{
+				if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-0.1*std)>=getItem(iMin)){
+					pointsIndex.add(iMin);
+					break;
+				}
 			}
 		}
 		return i;
@@ -131,10 +140,18 @@ public class PointSegment {
 		for(;i<(length-1);i++){
 			if(getItem(i)>getItem(iMax))
 				iMax=i;
-			if(getItem(i)<getItem(iMax)&&(i-iMax)>=span){
-				pointsIndex.add(iMax);
-				break;
+			if(std>1){
+				if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-0.1*getItem(iMax))){
+					pointsIndex.add(iMax);
+					break;
+				}
+			}else{
+				if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-0.1*std)){
+					pointsIndex.add(iMax);
+					break;
+				}
 			}
+			
 		}
 		return i;
 	}
@@ -183,5 +200,14 @@ public class PointSegment {
 			}
 		}
 		return i;
+	}
+	
+	private void setItemStd(DataItems dataItems){
+		List<String> datas=dataItems.getData();
+		DescriptiveStatistics statistics=new DescriptiveStatistics();
+		for(String data:datas){
+			statistics.addValue(Double.parseDouble(data));
+		}
+		std=statistics.getStandardDeviation();
 	}
 }

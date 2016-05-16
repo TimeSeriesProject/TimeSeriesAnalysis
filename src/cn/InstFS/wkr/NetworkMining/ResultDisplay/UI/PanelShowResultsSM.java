@@ -165,7 +165,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		
 		HashMap<String,ArrayList<DataItems>> f_model_nor= new HashMap<>();
 		
-		
+		int cc=0;
 		Map<Integer, List<String>> freq = rslt.getRetSM().getFrequentItem();
 //		System.out.println("normal model");
 //		for (Integer key : freq.keySet()) {
@@ -181,6 +181,8 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		else if(count==0)
 		{
 			if(freq!=null&&count==0){
+				HashMap<String,ArrayList<DataItems>> f_model_nor_mode=new HashMap<>();
+
 				HashMap<String, ArrayList<String>> nor_model = new HashMap<>();
 				for (Integer key : freq.keySet()) {
 //				System.out.println(key);
@@ -204,6 +206,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				for (int i = 0; i < nor_model.size(); i++) {
 					String key = Integer.toString(i);
 					ArrayList<DataItems> nor_data = new ArrayList<DataItems>();
+					ArrayList<DataItems> nor_data_mode=new ArrayList<DataItems>();
 
 					ArrayList<String> model_line = nor_model.get(key);
 					for (int j = 0; j < model_line.size(); j++) {
@@ -215,6 +218,8 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 //						System.out.println(last);
 						DataItems nor_line = new DataItems();
 //					DataItems abnor_line=new DataItems();
+						DataItems nor_line_mode=new DataItems();
+
 						if (temp_processData[0] != null) {
 							String firstString = temp_processData[0];
 							first = Integer.parseInt(firstString);
@@ -224,21 +229,54 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 							last = Integer.parseInt(endString);
 						}
 						//System.out.println(first+" "+last);
-						for (int k = first; k <= last; k++) {
-							if (k == nor.getLength())
-								break;
-							DataItem tempItem = new DataItem();
-							tempItem.setTime(nor.getElementAt(k).getTime());
-							tempItem.setData(nor.getElementAt(k).getData());
-							nor_line.add1Data(tempItem);
+//						for (int k = first; k <= last; k++) {
+//							if (k == nor.getLength())
+//								break;
+//							DataItem tempItem = new DataItem();
+//							tempItem.setTime(nor.getElementAt(k).getTime());
+//							tempItem.setData(nor.getElementAt(k).getData());
+//							nor_line.add1Data(tempItem);
+//						}
+						DataItem tempItem = new DataItem();
+						tempItem.setTime(nor.getElementAt(first).getTime());
+						tempItem.setData(nor.getElementAt(first).getData());
+
+						nor_line.add1Data(tempItem);
+					if(last!=nor.getLength()) {
+						tempItem.setTime(nor.getElementAt(last).getTime());
+						tempItem.setData(nor.getElementAt(last).getData());
+						nor_line.add1Data(tempItem);
+					}
+					else {
+						tempItem.setTime(nor.getElementAt(last - 1).getTime());
+						tempItem.setData(nor.getElementAt(last - 1).getData());
+						nor_line.add1Data(tempItem);
+					}
+						if(i==3&&last!=nor.getLength())
+						{
+							System.out.println(++cc);
+							System.out.println("起始点时间"+  nor.getElementAt(first).getTime()+"     起始点数据"+nor.getElementAt(first).getData());
+							System.out.println("结束点时间"+  nor.getElementAt(last).getTime()+"     结束点数据"+nor.getElementAt(last).getData());
+							System.out.println("-----------");
 						}
-						nor_data.add(nor_line);
+					DataItem tempMode=new DataItem();
+					tempMode.setTime(nor.getElementAt((first + last) / 2).getTime());
+					tempMode.setData(Math.abs(Double.valueOf
+							(nor.getElementAt(last-1).getData())+Double.valueOf(nor.getElementAt(first).getData()))/2	+ "");
+					nor_line_mode.add1Data(tempMode);
+					nor_data.add(nor_line);
+					nor_data_mode.add(nor_line_mode);
+
+
+//						nor_data.add(nor_line);
 					}
 					f_model_nor.put(key, nor_data);
+					f_model_nor_mode.put(key,nor_data_mode);
+
 					if(f_model_nor.size()==nor_model.size())
 					{
 						//System.out.println("ppppppppp"+f_model_nor.size());
-						JFreeChart jf = ChartPanelShowFI.createChart(f_model_nor, nor);
+						JFreeChart jf = ChartPanelShowFI.createChart(f_model_nor, nor,f_model_nor_mode);
 						ChartPanel chartpanel = new ChartPanel(jf);
 						remove(chart1);
 						add(chartpanel);

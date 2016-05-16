@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
+import java.util.HashMap;
 import java.util.List;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -7,6 +8,7 @@ import cn.InstFS.wkr.NetworkMining.Params.ParamsPM;
 
 public class MinerResultsPM{
 	boolean hasPeriod;
+	boolean hasPartialPeriod;
 	ParamsPM params;	// 或者 java.util.Properties params;
 	long period;
 	private Double featureValue;	// 指标值
@@ -16,6 +18,7 @@ public class MinerResultsPM{
 	private DataItems maxDistributePeriod;
 	private int firstPossiblePeriod;
 	private double confidence;
+	private HashMap<Integer, List<List<Integer>>> partialPmMap;
 	
 	public MinerResultsPM(){}
 	
@@ -98,6 +101,22 @@ public class MinerResultsPM{
 
 	public void setMaxDistributePeriod(DataItems maxDistributePeriod) {
 		this.maxDistributePeriod = maxDistributePeriod;
+	}
+
+	public boolean isHasPartialPeriod() {
+		return hasPartialPeriod;
+	}
+
+	public void setHasPartialPeriod(boolean hasPartialPeriod) {
+		this.hasPartialPeriod = hasPartialPeriod;
+	}
+
+	public HashMap<Integer, List<List<Integer>>> getPartialPmMap() {
+		return partialPmMap;
+	}
+
+	public void setPartialPmMap(HashMap<Integer, List<List<Integer>>> partialPmMap) {
+		this.partialPmMap = partialPmMap;
 	}
 	
 	

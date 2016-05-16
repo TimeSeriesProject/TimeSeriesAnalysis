@@ -212,7 +212,8 @@ public class nodePairReader implements IReader {
 	@Override
 	public DataItems readInputByText() {
 		DataItems dataItems=new DataItems();
-		String minierObject=task.getMiningObject();
+		String minierObject=task.getMiningObject().trim();
+		String protocol=task.getProtocol().trim();
 		File sourceFile=null;
 		if(filePath==null||filePath.equals("")){
 			sourceFile=new File(task.getSourcePath());
@@ -221,11 +222,11 @@ public class nodePairReader implements IReader {
 			sourceFile=new File(filePath);
 		}
 		if(sourceFile.isFile()){
-			readFile(sourceFile.getAbsolutePath(), minierObject, dataItems);
+			readFile(sourceFile.getAbsolutePath(), minierObject,protocol, dataItems);
 		}else{
 			File[] files=sourceFile.listFiles();
 			for(File file:files){
-				readFile(file.getAbsolutePath(), minierObject, dataItems);
+				readFile(file.getAbsolutePath(), minierObject,protocol, dataItems);
 				System.out.println("read file "+file.getName());
 			}
 		}
@@ -378,11 +379,11 @@ public class nodePairReader implements IReader {
 	}
 	
 	/**
-	 * 读取指定IP文件中所有协议的DataItems
+	 * 读取指定IP文件中所有协议流量的DataItems
 	 * @param filePath IP文件地址
 	 * @return Map<String,DataItems> ,其中key值为协议，value值为DataItems
 	 */
-	public HashMap<String, DataItems> readEachProtocolDataItems(String filePath){
+	public HashMap<String, DataItems> readEachProtocolTrafficDataItems(String filePath){
 		
 		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
 		TextUtils textUtils=new TextUtils();
@@ -399,6 +400,12 @@ public class nodePairReader implements IReader {
 			String[] eachProtocol=protocolItems.split(";");
 			for(String protocol:eachProtocol){
 				String[] proAndTraffic=protocol.split(":");
+				if(proAndTraffic.length==1){
+					String traffic=proAndTraffic[0];
+					proAndTraffic=new String[2];
+					proAndTraffic[0]="1";
+					proAndTraffic[1]=traffic;
+				}
 				if(protocolDataItems.containsKey(proAndTraffic[0])){
 					DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
 					DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
@@ -417,6 +424,57 @@ public class nodePairReader implements IReader {
 					}
 					dataItems.add1Data(time, proAndTraffic[1]);
 					protocolDataItems.put(proAndTraffic[0], dataItems);
+				}
+			}
+			Collection<DataItems>values=protocolDataItems.values();
+			for(DataItems value:values){
+				if(value.getLength()<rows){
+					value.add1Data(time,"0");
+				}
+			}
+		}
+		return protocolDataItems;
+	}
+	
+	/**
+	 * 读取指定IP文件中所有协议通信次数的DataItems
+	 * @param filePath IP文件地址
+	 * @return Map<String,DataItems> ,其中key值为协议，value值为DataItems
+	 */
+	public HashMap<String, DataItems> readEachProtocolTimesDataItems(String filePath){
+		
+		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
+		TextUtils textUtils=new TextUtils();
+		textUtils.setTextPath(filePath);
+		textUtils.readByrow();
+		String line=null;
+		int rows=0;//记录总共读取的行数
+		while((line=textUtils.readByrow())!=null){
+			String[] items=line.split(",");
+			int timeSpan=Integer.parseInt(items[0]);
+			rows=timeSpan-0;
+			Date time=parseTime(timeSpan*3600);
+			String protocolItems=items[items.length-1];
+			String[] eachProtocol=protocolItems.split(";");
+			for(String protocolTraffic:eachProtocol){
+				String protocol=protocolTraffic.split(":")[0];
+				if(protocolDataItems.containsKey(protocol)){
+					DataItems dataItems=protocolDataItems.get(protocol);
+					DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
+					//合并同一个IP，同一个协议的通信的流量要合并
+					if(dataItem.getTime().toString().equals(time.toString())){
+						int times=Integer.parseInt(dataItem.getData());
+						dataItems.getData().set(dataItems.getLength()-1,(times+1)+"");
+					}else{
+						dataItems.add1Data(time, "1");
+					}	
+				}else{
+					DataItems dataItems=new DataItems();
+					for(int i=rows-1;i>=0;i--){
+						dataItems.add1Data(parseTime(timeSpan-i), "0");
+					}
+					dataItems.add1Data(time, "1");
+					protocolDataItems.put(protocol, dataItems);
 				}
 			}
 			Collection<DataItems>values=protocolDataItems.values();
@@ -558,13 +616,14 @@ public class nodePairReader implements IReader {
 	 * @param minierObject 要读取的属性
 	 * @param dataItems 读到的序列
 	 */
-	private void readFile(String filePath,String minierObject,DataItems dataItems){
+	private void readFile(String filePath,String minierObject,String protocol,DataItems dataItems){
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
 		String header=textUtils.readByrow();
 		String[] columns=header.split(",");
-		int minerObjectIndex=NameToIndex(minierObject, columns);
-		if(minerObjectIndex==-1){
+		int protocolIndex=NameToIndex(protocol, columns);
+		//int minerObjectIndex=NameToIndex(minierObject, columns);
+		if(protocolIndex==-1){
 			throw new RuntimeException("未找到挖掘对象");
 		}
 		int TimeColIndex=NameToIndex("Time(S)", columns);
@@ -577,6 +636,7 @@ public class nodePairReader implements IReader {
 		boolean fixCondition=true;
 
 		if(minierObject.toLowerCase().contains("path")){
+			int minerObjectIndex=NameToIndex(minierObject, columns);
 			dataItems.setIsAllDataDouble(-1);
 			List<Integer> nodeList=new ArrayList<Integer>();
 			List<Integer> hopsList=new ArrayList<Integer>();
@@ -669,11 +729,35 @@ public class nodePairReader implements IReader {
 				}
 				if(fixCondition){
 					int time=Integer.parseInt(columns[TimeColIndex])*3600;
-					dataItems.add1Data(parseTime(time), columns[minerObjectIndex]);
+					if(dataItems.getLength()==0){
+						if(minierObject.equals("traffic")){
+							dataItems.add1Data(parseTime(time), columns[protocolIndex]);
+						}else if(minierObject.equals("times")){
+							dataItems.add1Data(parseTime(time), "1");
+						}
+					}
+					else if(dataItems.getTime().get(dataItems.getLength()-1).toString().
+							equals(parseTime(time).toString())){
+						
+						if(minierObject.equals("traffic")){
+							int oriTraffic=Integer.parseInt(dataItems.getData().get(dataItems.getLength()-1));
+							int addTraffic=Integer.parseInt(columns[protocolIndex]);
+							dataItems.getData().set(dataItems.getLength()-1, (oriTraffic+addTraffic)+"");
+						}else if(minierObject.equals("times")){
+							int oriTimes=Integer.parseInt(dataItems.getData().get(dataItems.getLength()-1));
+							dataItems.getData().set(dataItems.getLength()-1, (oriTimes+1)+"");
+						}
+					}else{
+						
+						if(minierObject.equals("traffic")){
+							dataItems.add1Data(parseTime(time), columns[protocolIndex]);
+						}else if(minierObject.equals("times")){
+							dataItems.add1Data(parseTime(time), "1");
+						}
+					}
 				}
 			}
 		}
-		
 	}
 	
 	private void readFile(String filePath,String minierObject,Map<String,DataItems> ipPairItems,String[] conditions){
