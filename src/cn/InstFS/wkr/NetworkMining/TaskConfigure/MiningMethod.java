@@ -5,7 +5,8 @@ public enum MiningMethod {
 	MiningMethods_SequenceMining("序列模式挖掘"),
 	MiningMethods_PeriodicityMining("周期模式发现"),
 	MiningMethods_PathProbilityMining("路径概率发现"),
-	MiningMethods_TsAnalysis("时间序列分析");
+	MiningMethods_TsAnalysis("时间序列分析"),
+	MiningMethods_Statistics("统计图");
 	
 	private String value;
 	MiningMethod(String value) {
@@ -27,7 +28,9 @@ public enum MiningMethod {
 			return MiningMethods_SequenceMining;
 		}else if(str.equals(MiningMethods_PathProbilityMining.toString())){
 			return MiningMethods_PathProbilityMining;
-		}else{
+		}else if(str.equals(MiningMethods_Statistics.toString()))
+			return MiningMethods_Statistics;
+		else{
 			return MiningMethods_TsAnalysis;
 		}
 	}

@@ -39,7 +39,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 public class ChartPanelShowTs extends JPanel{
 	JFreeChart chart;
 	Shape itemShape; // = new Ellipse2D.Double(-2,-2, 4, 4);
-	private ChartPanelShowTs() {
+	public  ChartPanelShowTs() {
 		// 创建主题样式
 		StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
 		// 设置标题字体
@@ -54,7 +54,7 @@ public class ChartPanelShowTs extends JPanel{
 		setLayout(new BorderLayout());
 		
 	}
-	ChartPanelShowTs(String title, String timeAxisLabel, String valueAxisLabel, 
+	public ChartPanelShowTs(String title, String timeAxisLabel, String valueAxisLabel, 
 			XYDataset dataset/*, boolean legend, boolean tooltips, boolean urls*/){
 		this();
 		chart = ChartFactory.createTimeSeriesChart(title, timeAxisLabel, valueAxisLabel, dataset);
@@ -71,10 +71,10 @@ public class ChartPanelShowTs extends JPanel{
 		
 		itemShape = ShapeUtilities.createDiamond((float) 3);
 		renderer.setSeriesShape(0, itemShape);		
-		renderer.setSeriesPaint(0, new Color(0,0,0));
+		renderer.setSeriesPaint(0, new Color(0,255,0));
 
 		renderer.setSeriesShape(1, itemShape);		
-		renderer.setSeriesPaint(1, new Color(0,255,0));
+		renderer.setSeriesPaint(1, new Color(0,0,0));
 		
 		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0}:({1} , {2})", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), new DecimalFormat("#.00")));
 	}

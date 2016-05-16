@@ -31,7 +31,7 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 	JLabel lblGranularity;
 	JTextArea txtDiscreteNodes;
 	ChartPanelShowTs chartTs;
-	private JCheckBox chckShowOrigDataItems;
+//	private JCheckBox chckShowOrigDataItems;
 	
 	DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	/**
@@ -54,20 +54,20 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 		gbc_lblGranularity.gridy = 0;
 		add(lblGranularity, gbc_lblGranularity);
 		
-		chckShowOrigDataItems = new JCheckBox("显示原始数据（慢）");
+//		chckShowOrigDataItems = new JCheckBox("显示原始数据（慢）");
 		GridBagConstraints gbc_chckShowOrigDataItems = new GridBagConstraints();
 		gbc_chckShowOrigDataItems.anchor = GridBagConstraints.WEST;
 		gbc_chckShowOrigDataItems.insets = new Insets(0, 0, 0, 5);
 		gbc_chckShowOrigDataItems.gridx = 1;
 		gbc_chckShowOrigDataItems.gridy = 1;
-		add(chckShowOrigDataItems, gbc_chckShowOrigDataItems);
-		chckShowOrigDataItems.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				refreshInputData();
-			}
-		});
-		
+//		add(chckShowOrigDataItems, gbc_chckShowOrigDataItems);
+//		chckShowOrigDataItems.addActionListener(new ActionListener() {			
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				refreshInputData();
+//			}
+//		});
+//		
 		chartTs = new ChartPanelShowTs("实际值","时间","值",null);
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.gridheight = 2;
@@ -94,10 +94,10 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 		lblGranularity.setText("时间粒度：" + granularity + "(s)");
 		
 		DataItems di = null;		
-		if (chckShowOrigDataItems.isSelected()){
-			DataInputUtils diu = new DataInputUtils(task);
-			di = diu.readInput();
-		}else
+//		if (chckShowOrigDataItems.isSelected()){
+//			DataInputUtils diu = new DataInputUtils(task);
+//			di = diu.readInput();
+//		}else
 			di = rets.getInputData();		
 		if (di == null)
 			di = new DataItems();
@@ -135,10 +135,10 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 			return;
 		DataItems di = null;
 		TaskElement task = rslts.getMiner().getTask();
-		if (chckShowOrigDataItems.isSelected()){
-			DataInputUtils diu = new DataInputUtils(task);
-			di = diu.readInput(false, false);
-		}else
+//		if (chckShowOrigDataItems.isSelected()){
+//			DataInputUtils diu = new DataInputUtils(task);
+//			di = diu.readInput(false, false);
+//		}else
 			di = rslts.getInputData();	
 		chartTs.displayDataItems(di);
 	}

@@ -53,10 +53,10 @@ class NodeandHops implements Comparable
 }
 class Link implements Comparable
 {
-	int start;
-	int end;
+	String start;
+	String end;
 	int time;
-	public Link(int start,int end,int time)
+	public Link(String start,String end,int time)
 	{
 		this.start = start;
 		this.end   = end;
@@ -70,25 +70,38 @@ class Link implements Comparable
 		return result;
 	}
 }
-class Pair implements Comparable
+class Pair implements Comparable<Pair>
 {
-	int first;
-	int second;
-	public Pair(int first,int second)
+	String first;
+	String second;
+	public Pair(String first,String second)
 	{
 		this.first = first;
 		this.second = second;
 	}
 	@Override
-	public int compareTo(Object o) {
+	public int compareTo(Pair arg0) {
 		// TODO Auto-generated method stub
-		Pair tmp =(Pair)o;
-		int result = (first>tmp.first)?1:(first==tmp.first?0:-1);
-		result = result==0?((second>tmp.second)?1:(second==tmp.second?0:-1)):result;
-		return result;
+		if(first.compareTo(arg0.first)==0)
+			return second.compareTo(arg0.second);
+		return first.compareTo(arg0.first);
+		
 	}
-	
+	@Override
+	public boolean equals(Object o)
+	{
+		Pair another =(Pair)o;
+		
+		return first.equals(another.first)&&second.equals(another.second);
+	}
+	@Override
+	public  int hashCode()
+	{
+		return (first+second).hashCode();
+		
+	}
 }
+
 class TextReader
 {
 	private String path="";
@@ -142,15 +155,15 @@ public class CWNetworkReader  implements IReader{
 		TaskElement task = new TaskElement();
 		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\NetworkMiningSystem\\mergeNode");
 		
-		task.setMiningObject("ï¿½ï¿½Ïµï¿½ï¿½");
+		task.setMiningObject("ÍøÂçÖ±¾¶");
 		CWNetworkReader reader = new CWNetworkReader(task);
-		System.out.println("ï¿½ï¿½Ïµï¿½ï¿½");
+		System.out.println("ÍøÂçÖ±¾¶");
 //		System.out.println(reader.readClusterByText().getData());
 		System.out.println(reader.readInputByText().getData());
 	
-		task.setMiningObject("ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½");
+		task.setMiningObject("ÍøÂç´ØÏµÊý");
 		reader = new CWNetworkReader(task);
-		System.out.println("ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½");
+		System.out.println("ÍøÂç´ØÏµÊý");
 		System.out.println(reader.readInputByText().getData());
 //		System.out.println(reader.readInputByText().getData());
 		
@@ -158,6 +171,7 @@ public class CWNetworkReader  implements IReader{
 	public CWNetworkReader(TaskElement task)
 	{
 		this.task=task;
+		this.timeseg=task.getGranularity();
 	}
 	
 	private Date second2Date(int second)
@@ -181,65 +195,34 @@ public class CWNetworkReader  implements IReader{
 				
 				TextReader textReader = new TextReader(path+"/"+srcFiles.list()[i]);
 				String curLine="";
-				String header =textReader.readLine(); //ï¿½Ä¼ï¿½Í·ï¿½ï¿½
+				String header =textReader.readLine(); //¶ÁÈ¡ÎÄ¼þ
 				while((curLine=textReader.readLine())!=null)
 				{
-					Map<Integer,Double>	map = new HashMap<Integer,Double>();  //ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					
 					//List<Map.Entry<Integer,Double>> mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet());
-					ArrayList<Map.Entry<Integer,Double>> mappingList = null; 
-				    mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet()); 
 					
 					String seg[]=curLine.split(",");
 					/**
-					 * ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					 * ½âÎöÂ·¾¶
 					 */
-					for(int j=8;j<seg.length;j++)
+					String preNode =null;
+					int preHops =-1;
+					for(int j=5;j<seg.length;j++)
 					{
 						String str[] = seg[j].split(":");
-						int node = Integer.valueOf(str[0]);
-						int hops = Integer.valueOf(str[1]);
-						if(map.containsKey(node))
-						{
-							if(map.get(node)<(hops*1.0)){
-								map.remove(node);
-								map.put(node, hops*1.0);
-							}
-							//map.put(node, (map.get(node)+hops)/2);
-						}
-						else
-							map.put(node, 1.0*hops);
+						String node = str[0].split("-")[0]; //»ñÈ¡Â·ÓÉÆ÷ºÅ
 						
-
-					}
-					
-					/**
-					 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-					 */
-					mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet()); 
-//					ArrayList <Integer>tmpList =new ArrayList<Integer>();
-					Collections.sort(mappingList, new Comparator<Map.Entry<Integer,Double>>()
-					{
-						public int compare(Map.Entry<Integer,Double> mapping1,Map.Entry<Integer,Double> mapping2)
+						int hops = Integer.valueOf(str[1]);               //»ñÈ¡ÌøÊý
+						if(preNode!=null&&preHops==hops)
 						{
-							return mapping1.getValue().compareTo(mapping2.getValue());
-						}	
-					}); 
-					
-					/**
-					 * ï¿½ï¿½ï¿½Â·ï¿½ï¿½
-					 */
-					Iterator<Map.Entry<Integer,Double>> iter = mappingList.iterator();
-					if(mappingList.size() > 1)
-					{
-						int preNode = iter.next().getKey();
-						for(;iter.hasNext();)
-						{
-							int curNode =iter.next().getKey();
-							linkList.add(new Link(preNode,curNode,Integer.valueOf(seg[0])));
-							preNode = curNode;
-							
+							linkList.add(new Link(preNode,node,Integer.valueOf(seg[0])));
 						}
+						preNode=node;
+						preHops=hops;
+//	
 					}
+//					
+//					
 				}
 			}
 			Collections.sort(linkList);
@@ -257,42 +240,44 @@ public class CWNetworkReader  implements IReader{
 	}
 	
 	/**
-	 * ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½
+	 * ¼ÆËã´ØÏµÊý
 	 * @return
 	 */
-	private double calCluster(Map<Pair,Integer> matrix)
+	private double calCluster(Set<Pair> matrix)
 	{
 		double result=0.0;
-		Map<Integer,Set<Integer>> neighbourMap= new HashMap<Integer,Set<Integer>> ();
+		Map<String,Set<String>> neighbourMap= new HashMap<String,Set<String>> ();
 		/**
-		 * ï¿½ï¿½Ã½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¾ï¿½
+		 * µÃµ½ÁÚ¾Ó
 		 */
-		for(Map.Entry<Pair, Integer> entry:matrix.entrySet())
+		System.out.println("start");
+		for(Pair entry:matrix)
 		{
-			int st = entry.getKey().first;
-			int ed = entry.getKey().second;
+			String st = entry.first;
+			String ed = entry.second;
+			System.out.println(st+" " +ed);
 			if(!neighbourMap.containsKey(st))
 			{
-				Set<Integer> set = new HashSet<Integer> ();
+				Set<String> set = new HashSet<String> ();
 				neighbourMap.put(st, set);
 			}
 			if(!neighbourMap.containsKey(ed))
 			{
-				Set<Integer> set = new HashSet<Integer> ();
+				Set<String> set = new HashSet<String> ();
 				neighbourMap.put(ed, set);
 			}
 			neighbourMap.get(st).add(ed);
 			neighbourMap.get(ed).add(st);
 		}
 		/**
-		 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½
+		 * ¼ÆËã´ØÏµÊý
 		 */
-		for(Map.Entry<Integer,Set<Integer>> entry:neighbourMap.entrySet())
+		for(Map.Entry<String,Set<String>> entry:neighbourMap.entrySet())
 		{
 			int k = entry.getValue().size();
 			int edgenum=0;
-			Iterator<Integer> iter = entry.getValue().iterator();
-			ArrayList<Integer> list = new ArrayList<Integer>();
+			Iterator<String> iter = entry.getValue().iterator();
+			ArrayList<String> list = new ArrayList<String>();
 			while(iter.hasNext())
 			{
 				list.add(iter.next());
@@ -301,7 +286,7 @@ public class CWNetworkReader  implements IReader{
 			{
 				for( int j = i+1;j<list.size();j++)
 				{
-					if(matrix.get(new Pair(list.get(i),list.get(j))) != null||matrix.get(new Pair(list.get(j),list.get(i)))!=null)
+					if(matrix.contains(new Pair(list.get(i),list.get(j)))||matrix.contains(new Pair(list.get(j),list.get(i))))
 					{
 						edgenum++;
 					}
@@ -314,36 +299,36 @@ public class CWNetworkReader  implements IReader{
 			else
 				result += 2.0*edgenum/(k*(k-1));
 		}
-		result/=neighbourMap.size();   //Æ½ï¿½ï¿½ï¿½Ïµï¿½ï¿½
+		result/=neighbourMap.size();   //Æ½¾ù´ØÏµÊý
 //		System.out.println("neighbourMap"+neighbourMap.size());
 		return result;
 		
 	}
 	/**
-	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½
+	 * ¼ÆËãÖ±¾¶
 	 * @param matrix
 	 * @return
 	 */
-	private int calDiameter(Map<Pair, Integer> matrix)
+	private int calDiameter(Set<Pair> matrix)
 	{
 		// TODO Auto-generated method stub
 		int result = 0;
 		
-		Set<Integer> nodesSet = new TreeSet<Integer>();
-		for(Map.Entry<Pair, Integer> entry:matrix.entrySet())
+		Set<String> nodesSet = new HashSet<String>();
+		for(Pair entry:matrix)
 		{
-			nodesSet.add(entry.getKey().first);
-			nodesSet.add(entry.getKey().second);
+			nodesSet.add(entry.first);
+			nodesSet.add(entry.second);
 		}
-		Integer [] p =nodesSet.toArray(new Integer [nodesSet.size()]);
+		String [] p =nodesSet.toArray(new String [nodesSet.size()]);
 		int [][]dis = new int[p.length][p.length];
 		/**
-		 * floydï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		 * floyd¼ÆËã×î¶ÌÂ·
 		 */
 		for(int i=0;i<p.length;i++)
 			for(int j=0;j<p.length;j++)
 			{
-				if(matrix.get(new Pair(p[i],p[j]))==null)
+				if(!matrix.contains(new Pair(p[i],p[j])))
 					dis[i][j]=Integer.MAX_VALUE;
 				else if(i==j)
 					dis[i][j]=0;
@@ -362,7 +347,7 @@ public class CWNetworkReader  implements IReader{
 		for(int i=0;i<p.length;i++)
 			for(int j=0;j<p.length;j++)
 				result = dis[i][j]>result?dis[i][j]:result;
-		return result;
+		return result-1;
 	}
 	
 	private DataItems readNodeFrequenceByText(){
@@ -370,6 +355,9 @@ public class CWNetworkReader  implements IReader{
 		dataItems.setIsAllDataDouble(-1);
 		String path=task.getSourcePath();
 		File srcFiles=new File(path);
+		Map<Integer,Map<String,Integer>> timeMaps = new TreeMap<Integer,Map<String,Integer>>();
+		int min=Integer.MAX_VALUE;
+		int max =Integer.MIN_VALUE;
 		try
 		{
 			for(int i=0;i<srcFiles.list().length;i++)
@@ -382,29 +370,40 @@ public class CWNetworkReader  implements IReader{
 				{
 					Map<String,Integer>	map = new HashMap<String,Integer>();  
 					String seg[]=curLine.split(",");
-					Date time=second2Date(Integer.parseInt(seg[0]));
-					
+					int timeSegNum =(Integer.parseInt(seg[0])-start)/task.getGranularity();
 					/**
-					 * ï¿½ï¿½Â¼ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+					 * ½âÎöÎÄ¼þ
 					 */
-					for(int j=8;j<seg.length;j++)
+				
+					if(!timeMaps.containsKey(timeSegNum))
 					{
-						String str[] = seg[j].split(":");
-						if(!map.containsKey(str[0])){
-							map.put(str[0], 1);
-						}
-						dataItems.getVarSet().add(str[0]);
+						timeMaps.put(timeSegNum,new HashMap<String,Integer>());
 					}
-					dataItems.add1Data(time, map);
+					min=Math.min(min,timeSegNum);
+					max=Math.max(max, timeSegNum);
+					timeMaps.get(timeSegNum).put(seg[1], 1);
+					timeMaps.get(timeSegNum).put(seg[2], 1);
 				}
 			}
+			System.out.println(min+"wwwww"+max);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 			System.exit(0);
 		}
-		dataItems=DataItems.sortByTimeValue(dataItems);
+		//¶ÔÓÚÃ»ÓÐÍ¨ÐÅµÄÊ±¼ä¶Î²¹Ò»¸ö¿Õmap;
+		int pre=-1;
+		for(Map.Entry<Integer, Map<String,Integer>>entry:timeMaps.entrySet())
+		{
+			for(int i=pre+1;i<entry.getKey();i++)
+			{
+				dataItems.add1Data(second2Date(task.getGranularity()*i),new HashMap<String,Integer>());
+			}
+			
+			dataItems.add1Data(second2Date(task.getGranularity()*entry.getKey()),entry.getValue());
+			pre=entry.getKey();
+		}
 		return dataItems;
 	}
 	
@@ -413,12 +412,12 @@ public class CWNetworkReader  implements IReader{
 		
 		int presegnum=0;
 		int cursegnum;
-		Map<Pair,Integer> matrix =new TreeMap<Pair,Integer>();
-		
+		Set<Pair> matrix =new HashSet<Pair>();
+
 		getlinkList();
 		
 		/**
-		 * Ã¿ï¿½ï¿½Ê±ï¿½ï¿½Î¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		 * ¼ÆËã´ØÏµÊý
 		 */
 		for(int i=0;i<linkList.size();i++)
 		{
@@ -426,49 +425,57 @@ public class CWNetworkReader  implements IReader{
 			// System.out.println("cursegnum "+cursegnum);
 			 if(cursegnum>presegnum)
 			 {
-				 
-				 
 				// System.out.println("matrix "+matrix.size());
 				 Date date = second2Date(timeseg*presegnum);
 				 dataItems.add1Data(date, String.valueOf(calCluster(matrix)));
-				 matrix = new TreeMap<Pair,Integer>();
+				 for(int j=presegnum+1;j<cursegnum;j++)
+				 {
+					 date = second2Date(timeseg*j);
+					 dataItems.add1Data(date, "0");
+				 }
+				 matrix.clear();
 				 presegnum=cursegnum;
 			 }
-			 matrix.put(new Pair(linkList.get(i).start,linkList.get(i).end), 1);
-			 matrix.put(new Pair(linkList.get(i).end,linkList.get(i).start), 1);
+			 matrix.add(new Pair(linkList.get(i).start,linkList.get(i).end));
+			 matrix.add(new Pair(linkList.get(i).end,linkList.get(i).start));
 		}
-			
+		 Date date = second2Date(timeseg*presegnum);
+		 dataItems.add1Data(date, String.valueOf(calCluster(matrix)));
 		return dataItems;
 	}
 	private DataItems readDiameterByText()
 	{
 		int presegnum=0;
 		int cursegnum;
-		Map<Pair,Integer> matrix =new TreeMap<Pair,Integer>();
-	
+		Set<Pair> matrix =new HashSet<Pair>();
 		getlinkList();
 		
 		/**
-		 * Ã¿ï¿½ï¿½Ê±ï¿½ï¿½Î¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		 * ¼ÆËãÖ±¾¶
 		 */
 		for(int i=0;i<linkList.size();i++)
 		{
 			 cursegnum = (linkList.get(i).time-start)/timeseg;
 			 if(cursegnum>presegnum)
 			 {
-				
-				 
 				 Date date = second2Date(timeseg*presegnum);
 				 dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));
-//				 System.out.println("matrix "+matrix.size());
+//				 System.out.println("matrix "+matrix.size()); 
+				 for(int j=presegnum+1;j<cursegnum;j++)
+				 {
+					 date = second2Date(timeseg*j);
+					 dataItems.add1Data(date, "0");
+				 }
 				 presegnum=cursegnum;
-				 matrix = new TreeMap<Pair,Integer>();
+				 matrix.clear();
 			 }
-			 matrix.put(new Pair(linkList.get(i).start,linkList.get(i).end), 1);
-			 matrix.put(new Pair(linkList.get(i).end,linkList.get(i).start), 1);
+			 matrix.add(new Pair(linkList.get(i).start,linkList.get(i).end));
+			 matrix.add(new Pair(linkList.get(i).end,linkList.get(i).start));
 			
 		}
-		
+		 
+		Date date = second2Date(timeseg*presegnum);
+		dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));
 		return dataItems;
 	}
 	
@@ -487,9 +494,9 @@ public class CWNetworkReader  implements IReader{
 	{
 		switch(task.getMiningObject())
 		{
-		case "ï¿½ï¿½Ïµï¿½ï¿½": return readClusterByText();
-		case "ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½":return readDiameterByText();
-		case "ï¿½Úµï¿½ä»¯":return readNodeFrequenceByText();
+		case "ÍøÂç´ØÏµÊý": return readClusterByText();
+		case "ÍøÂçÖ±¾¶":return readDiameterByText();
+		case "½áµã³öÏÖÏûÊ§":return readNodeFrequenceByText();
 		default: return null;
 		}
 	}
@@ -499,8 +506,8 @@ public class CWNetworkReader  implements IReader{
 		
 		switch(task.getMiningObject())
 		{
-		case "ï¿½ï¿½Ïµï¿½ï¿½": return readClusterByText();
-		case "ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½":return readDiameterByText();
+		case "ÍøÂç´ØÏµÊý": return readClusterByText();
+		case "ÍøÂçÖ±¾¶":return readDiameterByText();
 		default: return null;
 		}
 		
