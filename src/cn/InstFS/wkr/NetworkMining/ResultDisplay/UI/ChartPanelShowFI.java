@@ -295,13 +295,13 @@ public class ChartPanelShowFI extends JPanel {
                     //设置不可见到点。
                     xylineandshaperenderer2_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
-                    xylineandshaperenderer2_mode.setSeriesLinesVisible(0, true);
+                    xylineandshaperenderer2_mode.setSeriesLinesVisible(0, false);
 //                    xylineandshaperenderer2.setSeriesShape(0, double1);
 //                    xylineandshaperenderer2.setSeriesShape(0, new java.awt.geom.Ellipse2D.Double(-2D, -2D, 4D, 4D));
                     //设置线和点的颜色。
                     GeneralPath generalpath = new GeneralPath();
-                    generalpath.moveTo(0.0F, -6F);
-                    generalpath.lineTo(0.0F, -12F);
+                    generalpath.moveTo(-3F, -6F);
+                    generalpath.lineTo(-3F, -12F);
 //                    generalpath.lineTo(-3F, 3F);
 //                    generalpath.closePath();
                     xylineandshaperenderer2_mode.setSeriesShape(0, generalpath);
@@ -423,8 +423,8 @@ public class ChartPanelShowFI extends JPanel {
                 {
                     XYDataset xydataset4_mode = createmodeDataset(third_mode.get(k));
                     XYLineAndShapeRenderer xylineandshaperenderer4_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size()+third.size(), xydataset4_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size()+third.size(), xylineandshaperenderer4_mode);
+                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size(), xydataset4_mode);
+                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size(), xylineandshaperenderer4_mode);
                     //设置不可见到点。
                     xylineandshaperenderer4_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
@@ -432,16 +432,16 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer4_mode.setSeriesLinesVisible(0, false);
                     //xylineandshaperenderer3.setSeriesShape(0, double1);
                     GeneralPath generalpath = new GeneralPath();
-                    generalpath.moveTo(0.0F, -12F);
-                    generalpath.lineTo(3F, -12F);
-                    generalpath.moveTo(3F, -12F);
-                    generalpath.lineTo(3F, -9F);
-                    generalpath.moveTo(3F, -9F);
-                    generalpath.lineTo(0F, -9F);
-                    generalpath.moveTo(3F, -9F);
-                    generalpath.lineTo(3F, -6F);
-                    generalpath.moveTo(3F,-6F);
-                    generalpath.lineTo(0F,-6F);
+                    generalpath.moveTo(-1.5F, -18F);
+                    generalpath.lineTo(1.5F, -18F);
+                    generalpath.moveTo(1.5F, -18F);
+                    generalpath.lineTo(1.5F, -15F);
+                    generalpath.moveTo(1.5F, -15F);
+                    generalpath.lineTo(-1.5F, -15F);
+                    generalpath.moveTo(1.5F, -15F);
+                    generalpath.lineTo(1.5F, -12F);
+                    generalpath.moveTo(1.5F,-12F);
+                    generalpath.lineTo(-1.5F,-12F);
 
                     xylineandshaperenderer4_mode.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
@@ -460,15 +460,30 @@ public class ChartPanelShowFI extends JPanel {
                 for (int j = 0; j < fourth.size(); j++) {
                     XYDataset xydataset5 = createmodeDataset(fourth.get(j));
                     XYLineAndShapeRenderer xylineandshaperenderer5 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size() + second.size()+second_mode.size() + third.size()
-                            +third_mode.size(), xydataset5);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size() + second.size()+second_mode.size() + third.size()
-                            +third_mode.size(), xylineandshaperenderer5);
+                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size(), xydataset5);
+                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size(), xylineandshaperenderer5);
                     //设置不可见到点。
                     xylineandshaperenderer5.setBaseShapesVisible(true);
                     //设置可以看见线。
+                    xylineandshaperenderer5.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
+
                     xylineandshaperenderer5.setSeriesLinesVisible(0, true);
                     xylineandshaperenderer5.setSeriesShape(0, double1);
+//                    GeneralPath generalpath = new GeneralPath();
+//                    generalpath.moveTo(0.0F, 6F);
+//                    generalpath.lineTo(3F, 6F);
+//                    generalpath.moveTo(3F, 6F);
+//                    generalpath.lineTo(3F, 3F);
+//                    generalpath.moveTo(3F, 3F);
+//                    generalpath.lineTo(0F, 3F);
+//                    generalpath.moveTo(0F, 3F);
+//                    generalpath.lineTo(0F, 0F);
+//                    generalpath.moveTo(0F,0F);
+//                    generalpath.lineTo(3F,0F);
+////                    generalpath.lineTo(-3F, 3F);
+////                    generalpath.closePath();
+//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
+                    //设置线和点的颜色。
                     xylineandshaperenderer5.setSeriesPaint(0, Color.black);
                     xylineandshaperenderer5.setSeriesFillPaint(0, Color.black);
                     xylineandshaperenderer5.setSeriesOutlinePaint(0, Color.black);
@@ -483,23 +498,23 @@ public class ChartPanelShowFI extends JPanel {
                 {
                     XYDataset xydataset5_mode = createmodeDataset(fourth_mode.get(k));
                     XYLineAndShapeRenderer xylineandshaperenderer5_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
+                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
                             +fourth.size(), xydataset5_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
+                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
                             +fourth.size(), xylineandshaperenderer5_mode);
                     //设置不可见到点。
                     xylineandshaperenderer5_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
 
-                    xylineandshaperenderer5_mode.setSeriesLinesVisible(0, true);
+                    xylineandshaperenderer5_mode.setSeriesLinesVisible(0, false);
                     //xylineandshaperenderer3.setSeriesShape(0, double1);
                     GeneralPath generalpath = new GeneralPath();
-                    generalpath.moveTo(0.0F, -12F);
-                    generalpath.lineTo(0.0F, -6F);
-                    generalpath.moveTo(-2F, -12F);
-                    generalpath.lineTo(-2F, -9F);
-                    generalpath.moveTo(-2F, -9F);
-                    generalpath.lineTo(2F, -9F);
+                    generalpath.moveTo(0.0F, -18F);
+                    generalpath.lineTo(0.0F, -12F);
+                    generalpath.moveTo(-2F, -18F);
+                    generalpath.lineTo(-2F, -15F);
+                    generalpath.moveTo(-2F, -15F);
+                    generalpath.lineTo(2F, -15F);
 
 
                     xylineandshaperenderer5_mode.setSeriesShape(0, generalpath);
@@ -520,16 +535,31 @@ public class ChartPanelShowFI extends JPanel {
                 for (int j = 0; j < fifth.size(); j++) {
                     XYDataset xydataset6 = createmodeDataset(fifth.get(j));
                     XYLineAndShapeRenderer xylineandshaperenderer6 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size() + second.size()+second.size() + third.size()+third_mode.size()
-                            + fourth.size()+fourth_mode.size(), xydataset6);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size() + second.size()+second.size() + third.size()+third_mode.size()
-                            + fourth.size()+fourth_mode.size(), xylineandshaperenderer6);
+                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+                            +fourth.size()+fourth_mode.size(), xydataset6);
+                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+                            +fourth.size()+fourth_mode.size(), xylineandshaperenderer6);
                     //设置不可见到点。
                     xylineandshaperenderer6.setBaseShapesVisible(true);
                     //设置可以看见线。
+                    xylineandshaperenderer6.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
+
                     xylineandshaperenderer6.setSeriesLinesVisible(0, true);
                     xylineandshaperenderer6.setSeriesShape(0, double1);
-
+//                    GeneralPath generalpath = new GeneralPath();
+//                    generalpath.moveTo(0.0F, 6F);
+//                    generalpath.lineTo(3F, 6F);
+//                    generalpath.moveTo(3F, 6F);
+//                    generalpath.lineTo(3F, 3F);
+//                    generalpath.moveTo(3F, 3F);
+//                    generalpath.lineTo(0F, 3F);
+//                    generalpath.moveTo(0F, 3F);
+//                    generalpath.lineTo(0F, 0F);
+//                    generalpath.moveTo(0F,0F);
+//                    generalpath.lineTo(3F,0F);
+////                    generalpath.lineTo(-3F, 3F);
+////                    generalpath.closePath();
+//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
                     xylineandshaperenderer6.setSeriesPaint(0, Color.black);
                     xylineandshaperenderer6.setSeriesFillPaint(0, Color.black);
@@ -545,10 +575,16 @@ public class ChartPanelShowFI extends JPanel {
                 {
                     XYDataset xydataset6_mode = createmodeDataset(fifth_mode.get(k));
                     XYLineAndShapeRenderer xylineandshaperenderer6_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth_mode.size(), xydataset6_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth.size(), xylineandshaperenderer6_mode);
+                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()
+                            +second.size()+second_mode.size()
+                            +third.size()+third_mode.size()
+                            +fourth.size()+fourth_mode.size()
+                            +fifth.size(), xydataset6_mode);
+                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()
+                            +second.size()+second_mode.size()
+                            +third.size()+third_mode.size()
+                            +fourth.size()+fourth_mode.size()
+                            +fifth.size(), xylineandshaperenderer6_mode);
                     //设置不可见到点。
                     xylineandshaperenderer6_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
@@ -584,16 +620,31 @@ public class ChartPanelShowFI extends JPanel {
                 for (int j = 0; j < sixth.size(); j++) {
                     XYDataset xydataset7 = createmodeDataset(sixth.get(j));
                     XYLineAndShapeRenderer xylineandshaperenderer7 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size() + second.size()+second.size() + third.size()+third_mode.size()
-                            + fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size(), xydataset7);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size() + second.size()+second.size() + third.size()+third_mode.size()
-                            + fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size(), xylineandshaperenderer7);
+                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size(), xydataset7);
+                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size(), xylineandshaperenderer7);
                     //设置不可见到点。
                     xylineandshaperenderer7.setBaseShapesVisible(true);
                     //设置可以看见线。
-                    xylineandshaperenderer7.setSeriesShape(0, double1);
+                    xylineandshaperenderer7.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
 
                     xylineandshaperenderer7.setSeriesLinesVisible(0, true);
+                    xylineandshaperenderer7.setSeriesShape(0, double1);
+//                    GeneralPath generalpath = new GeneralPath();
+//                    generalpath.moveTo(0.0F, 6F);
+//                    generalpath.lineTo(3F, 6F);
+//                    generalpath.moveTo(3F, 6F);
+//                    generalpath.lineTo(3F, 3F);
+//                    generalpath.moveTo(3F, 3F);
+//                    generalpath.lineTo(0F, 3F);
+//                    generalpath.moveTo(0F, 3F);
+//                    generalpath.lineTo(0F, 0F);
+//                    generalpath.moveTo(0F,0F);
+//                    generalpath.lineTo(3F,0F);
+////                    generalpath.lineTo(-3F, 3F);
+////                    generalpath.closePath();
+//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
                     xylineandshaperenderer7.setSeriesPaint(0, Color.black);
                     xylineandshaperenderer7.setSeriesFillPaint(0, Color.black);
@@ -609,10 +660,18 @@ public class ChartPanelShowFI extends JPanel {
                 {
                     XYDataset xydataset7_mode = createmodeDataset(sixth_mode.get(k));
                     XYLineAndShapeRenderer xylineandshaperenderer7_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size(), xydataset7_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth.size()+fifth_mode.size()+sixth.size(), xylineandshaperenderer7_mode);
+                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()
+                            +second.size()+second_mode.size()
+                            +third.size()+third_mode.size()
+                            +fourth.size()+fourth.size()
+                            +fifth.size()+fifth_mode.size()
+                            +sixth.size(), xydataset7_mode);
+                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()
+                            +second.size()+second_mode.size()
+                            +third.size()+third_mode.size()
+                            +fourth.size()+fourth.size()
+                            +fifth.size()+fifth_mode.size()
+                            +sixth.size(), xylineandshaperenderer7_mode);
                     //设置不可见到点。
                     xylineandshaperenderer7_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
@@ -654,17 +713,32 @@ public class ChartPanelShowFI extends JPanel {
                 for (int j = 0; j < seventh.size(); j++) {
                     XYDataset xydataset8 = createmodeDataset(seventh.get(j));
                     XYLineAndShapeRenderer xylineandshaperenderer8 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size() + second.size()+second.size() + third.size()+third_mode.size()
-                            + fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+ sixth.size()+sixth_mode.size(), xydataset8);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size() + second.size()+second.size() + third.size()+third_mode.size()
-                            + fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size(), xylineandshaperenderer8);
+                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size(), xydataset8);
+                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size(), xylineandshaperenderer8);
                     //设置不可见到点。
                     xylineandshaperenderer8.setBaseShapesVisible(true);
                     //设置可以看见线。
-                    xylineandshaperenderer8.setSeriesShape(0, double1);
+                    xylineandshaperenderer8.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
 
                     xylineandshaperenderer8.setSeriesLinesVisible(0, true);
-                    xylineandshaperenderer8.setSeriesShape(0, new java.awt.geom.Ellipse2D.Double(-2D, -2D, 4D, 4D));                    //设置线和点的颜色。
+                    xylineandshaperenderer8.setSeriesShape(0, double1);
+//                    GeneralPath generalpath = new GeneralPath();
+//                    generalpath.moveTo(0.0F, 6F);
+//                    generalpath.lineTo(3F, 6F);
+//                    generalpath.moveTo(3F, 6F);
+//                    generalpath.lineTo(3F, 3F);
+//                    generalpath.moveTo(3F, 3F);
+//                    generalpath.lineTo(0F, 3F);
+//                    generalpath.moveTo(0F, 3F);
+//                    generalpath.lineTo(0F, 0F);
+//                    generalpath.moveTo(0F,0F);
+//                    generalpath.lineTo(3F,0F);
+////                    generalpath.lineTo(-3F, 3F);
+////                    generalpath.closePath();
+//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
+                    //设置线和点的颜色。
                     xylineandshaperenderer8.setSeriesPaint(0, Color.black);
                     xylineandshaperenderer8.setSeriesFillPaint(0, Color.black);
                     xylineandshaperenderer8.setSeriesOutlinePaint(0, Color.black);
@@ -679,11 +753,19 @@ public class ChartPanelShowFI extends JPanel {
                 {
                     XYDataset xydataset8_mode = createmodeDataset(seventh_mode.get(k));
                     XYLineAndShapeRenderer xylineandshaperenderer8_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
+                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()
+                            +second.size()+second_mode.size()
+                            +third.size()+third_mode.size()
+                            +fourth.size()+fourth.size()
+                            +fifth.size()+fifth_mode.size()
+                            +sixth.size()+sixth_mode.size()
                             +seventh.size(), xydataset8_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
+                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()
+                            +second.size()+second_mode.size()
+                            +third.size()+third_mode.size()
+                            +fourth.size()+fourth.size()
+                            +fifth.size()+fifth_mode.size()
+                            +sixth.size()+sixth_mode.size()
                             +seventh.size(), xylineandshaperenderer8_mode);
                     //设置不可见到点。
                     xylineandshaperenderer8_mode.setBaseShapesVisible(true);
@@ -694,12 +776,12 @@ public class ChartPanelShowFI extends JPanel {
                     GeneralPath generalpath = new GeneralPath();
 
 
-                    generalpath.moveTo(0.0F, -12F);
-                    generalpath.lineTo(3.0F, -12F);
-                    generalpath.moveTo(3.0F, -12F);
-                    generalpath.lineTo(3.0F, -9F);
-                    generalpath.moveTo(3.0F, -9F);
-                    generalpath.lineTo(3.0F, -6F);
+                    generalpath.moveTo(-1.5F, -18F);
+                    generalpath.lineTo(1.5F, -18F);
+                    generalpath.moveTo(1.5F, -18F);
+                    generalpath.lineTo(1.5F, -15F);
+                    generalpath.moveTo(1.5F, -15F);
+                    generalpath.lineTo(1.5F, -12F);
                     xylineandshaperenderer8_mode.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
                     xylineandshaperenderer8_mode.setSeriesPaint(0, Color.black);
@@ -718,17 +800,33 @@ public class ChartPanelShowFI extends JPanel {
                 for (int j = 0; j < eighth.size(); j++) {
                     XYDataset xydataset9 = createmodeDataset(eighth.get(j));
                     XYLineAndShapeRenderer xylineandshaperenderer9 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size() + second.size()+second.size() + third.size()+third_mode.size()
-                            + fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+ sixth.size()+sixth_mode.size()
+                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
                             +seventh.size()+seventh_mode.size(), xydataset9);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size() + second.size()+second.size() + third.size()+third_mode.size()
-                            + fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+ sixth.size()+sixth_mode.size()
+                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
                             +seventh.size()+seventh_mode.size(), xylineandshaperenderer9);
                     //设置不可见到点。
                     xylineandshaperenderer9.setBaseShapesVisible(true);
                     //设置可以看见线。
+                    xylineandshaperenderer9.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
+
                     xylineandshaperenderer9.setSeriesLinesVisible(0, true);
                     xylineandshaperenderer9.setSeriesShape(0, double1);
+//                    GeneralPath generalpath = new GeneralPath();
+//                    generalpath.moveTo(0.0F, 6F);
+//                    generalpath.lineTo(3F, 6F);
+//                    generalpath.moveTo(3F, 6F);
+//                    generalpath.lineTo(3F, 3F);
+//                    generalpath.moveTo(3F, 3F);
+//                    generalpath.lineTo(0F, 3F);
+//                    generalpath.moveTo(0F, 3F);
+//                    generalpath.lineTo(0F, 0F);
+//                    generalpath.moveTo(0F,0F);
+//                    generalpath.lineTo(3F,0F);
+////                    generalpath.lineTo(-3F, 3F);
+////                    generalpath.closePath();
+//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
                     xylineandshaperenderer9.setSeriesPaint(0, Color.black);
                     xylineandshaperenderer9.setSeriesFillPaint(0, Color.black);
@@ -738,17 +836,28 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer9.setSeriesStroke(0, new BasicStroke(2F));
                     xylineandshaperenderer9.setBaseItemLabelsVisible(false);
 
+
                 }
                 for(int k=0;k<eighth_mode.size();k++)
                 {
                     XYDataset xydataset9_mode = createmodeDataset(eighth_mode.get(k));
                     XYLineAndShapeRenderer xylineandshaperenderer9_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size()+eighth.size(), xydataset9_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size()+eighth.size(), xylineandshaperenderer9_mode);
+                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()
+                            +second.size()+second_mode.size()
+                            +third.size()+third_mode.size()
+                            +fourth.size()+fourth.size()
+                            +fifth.size()+fifth_mode.size()
+                            +sixth.size()+sixth_mode.size()
+                            +seventh.size()+seventh_mode.size()
+                            +eighth.size(), xydataset9_mode);
+                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()
+                            +second.size()+second_mode.size()
+                            +third.size()+third_mode.size()
+                            +fourth.size()+fourth.size()
+                            +fifth.size()+fifth_mode.size()
+                            +sixth.size()+sixth_mode.size()
+                            +seventh.size()+seventh_mode.size()
+                            +eighth.size(), xylineandshaperenderer9_mode);
                     //设置不可见到点。
                     xylineandshaperenderer9_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
@@ -758,20 +867,20 @@ public class ChartPanelShowFI extends JPanel {
                     GeneralPath generalpath = new GeneralPath();
 
 
-                    generalpath.moveTo(0.0F, -12F);
-                    generalpath.lineTo(3.0F, -12F);
-                    generalpath.moveTo(0.0F, -12F);
-                    generalpath.lineTo(0.0F, -9F);
-                    generalpath.moveTo(0.0F, -9F);
-                    generalpath.lineTo(3.0F, -9F);
-                    generalpath.moveTo(3.0F,-9F);
-                    generalpath.lineTo(3.0F,-6F);
-                    generalpath.moveTo(3.0F,-6F);
-                    generalpath.lineTo(0.0F,-6F);
-                    generalpath.moveTo(0.0F,-6F);
-                    generalpath.lineTo(0.0F,-9F);
-                    generalpath.moveTo(3F,-12F);
-                    generalpath.lineTo(3F,-9F);
+                    generalpath.moveTo(-1.5F, -18F);
+                    generalpath.lineTo(1.5F, -18F);
+                    generalpath.moveTo(1.5F, -18F);
+                    generalpath.lineTo(1.5F, -15F);
+                    generalpath.moveTo(1.5F, -15F);
+                    generalpath.lineTo(-1.5F, -15F);
+                    generalpath.moveTo(-1.5F,-15F);
+                    generalpath.lineTo(-1.5F,-18F);
+                    generalpath.moveTo(-1.5F,-15F);
+                    generalpath.lineTo(-1.5F,-12F);
+                    generalpath.moveTo(-1.5F,-12F);
+                    generalpath.lineTo(1.5F,-12F);
+                    generalpath.moveTo(1.5F,-12F);
+                    generalpath.lineTo(1.5F,-15F);
 
                     xylineandshaperenderer9_mode.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
@@ -786,43 +895,67 @@ public class ChartPanelShowFI extends JPanel {
             }
             if (i==8)
             {
-                ninth = nor_model.get(key);
-                ninth_mode=nor_model_mode.get(key);
-                for (int j = 0; j < ninth.size(); j++) {
-                    XYDataset xydataset10 = createmodeDataset(ninth.get(j));
-                    XYLineAndShapeRenderer xylineandshaperenderer10 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size()+eighth.size()+eighth_mode.size(), xydataset10);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size()+eighth.size()+eighth_mode.size(), xylineandshaperenderer10);
+                second = nor_model.get(key);
+                second_mode=nor_model_mode.get(key);
+                for (int j = 0; j < second.size(); j++) {
+                    XYDataset xydataset3 = createmodeDataset(second.get(j));
+                    XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
+                    xyplot.setDataset(j + 1 + one.size()+one_mode.size(), xydataset3);
+                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size(), xylineandshaperenderer3);
                     //设置不可见到点。
-                    xylineandshaperenderer10.setBaseShapesVisible(true);
+                    xylineandshaperenderer3.setBaseShapesVisible(true);
                     //设置可以看见线。
-                    xylineandshaperenderer10.setSeriesShape(0, double1);
+                    xylineandshaperenderer3.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
 
-                    xylineandshaperenderer10.setSeriesLinesVisible(0, true);
-                                      //设置线和点的颜色。
-                    xylineandshaperenderer10.setSeriesPaint(0, Color.black);
-                    xylineandshaperenderer10.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer10.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer10.setUseFillPaint(true);
-                    xylineandshaperenderer10.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer10.setSeriesStroke(0, new BasicStroke(2F));
-                    xylineandshaperenderer10.setBaseItemLabelsVisible(false);
+                    xylineandshaperenderer3.setSeriesLinesVisible(0, true);
+                    xylineandshaperenderer3.setSeriesShape(0, double1);
+//                    GeneralPath generalpath = new GeneralPath();
+//                    generalpath.moveTo(0.0F, 6F);
+//                    generalpath.lineTo(3F, 6F);
+//                    generalpath.moveTo(3F, 6F);
+//                    generalpath.lineTo(3F, 3F);
+//                    generalpath.moveTo(3F, 3F);
+//                    generalpath.lineTo(0F, 3F);
+//                    generalpath.moveTo(0F, 3F);
+//                    generalpath.lineTo(0F, 0F);
+//                    generalpath.moveTo(0F,0F);
+//                    generalpath.lineTo(3F,0F);
+////                    generalpath.lineTo(-3F, 3F);
+////                    generalpath.closePath();
+//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
+                    //设置线和点的颜色。
+                    xylineandshaperenderer3.setSeriesPaint(0, Color.black);
+                    xylineandshaperenderer3.setSeriesFillPaint(0, Color.black);
+                    xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.black);
+                    xylineandshaperenderer3.setUseFillPaint(true);
+                    xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(2F));
+                    xylineandshaperenderer3.setBaseItemLabelsVisible(false);
+
 
                 }
                 for(int k=0;k<ninth_mode.size();k++)
                 {
                     XYDataset xydataset10_mode = createmodeDataset(ninth_mode.get(k));
                     XYLineAndShapeRenderer xylineandshaperenderer10_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size()+eighth.size()+eighth_mode.size()+ninth.size(), xydataset10_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size()+eighth.size()+eighth_mode.size()+ninth.size(), xylineandshaperenderer10_mode);
+                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()
+                            +second.size()+second_mode.size()
+                            +third.size()+third_mode.size()
+                            +fourth.size()+fourth.size()
+                            +fifth.size()+fifth_mode.size()
+                            +sixth.size()+sixth_mode.size()
+                            +seventh.size()+seventh_mode.size()
+                            +eighth.size()+eighth_mode.size()
+                            +ninth.size(), xydataset10_mode);
+                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()
+                            +second.size()+second_mode.size()
+                            +third.size()+third_mode.size()
+                            +fourth.size()+fourth.size()
+                            +fifth.size()+fifth_mode.size()
+                            +sixth.size()+sixth_mode.size()
+                            +seventh.size()+seventh_mode.size()
+                            +eighth.size()+eighth_mode.size()
+                            +ninth.size(), xylineandshaperenderer10_mode);
                     //设置不可见到点。
                     xylineandshaperenderer10_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
@@ -858,51 +991,75 @@ public class ChartPanelShowFI extends JPanel {
             }
             if (i==9)
             {
-                tenth = nor_model.get(key);
-                tenth_mode=nor_model_mode.get(key);
-                for (int j = 0; j < tenth.size(); j++) {
-                    XYDataset xydataset11 = createmodeDataset(tenth.get(j));
-                    XYLineAndShapeRenderer xylineandshaperenderer11 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size()+eighth.size()+eighth_mode.size()+ninth.size()
-                            +ninth_mode.size(), xydataset11);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                            +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size()+eighth.size()+eighth_mode.size()+ninth.size()
-                            +ninth_mode.size(), xylineandshaperenderer11);
+                second = nor_model.get(key);
+                second_mode=nor_model_mode.get(key);
+                for (int j = 0; j < second.size(); j++) {
+                    XYDataset xydataset3 = createmodeDataset(second.get(j));
+                    XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
+                    xyplot.setDataset(j + 1 + one.size()+one_mode.size(), xydataset3);
+                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size(), xylineandshaperenderer3);
                     //设置不可见到点。
-                    xylineandshaperenderer11.setBaseShapesVisible(true);
+                    xylineandshaperenderer3.setBaseShapesVisible(true);
                     //设置可以看见线。
-                    xylineandshaperenderer11.setSeriesLinesVisible(0, true);
-                    xylineandshaperenderer11.setSeriesShape(0, double1);
+                    xylineandshaperenderer3.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
+
+                    xylineandshaperenderer3.setSeriesLinesVisible(0, true);
+                    xylineandshaperenderer3.setSeriesShape(0, double1);
+//                    GeneralPath generalpath = new GeneralPath();
+//                    generalpath.moveTo(0.0F, 6F);
+//                    generalpath.lineTo(3F, 6F);
+//                    generalpath.moveTo(3F, 6F);
+//                    generalpath.lineTo(3F, 3F);
+//                    generalpath.moveTo(3F, 3F);
+//                    generalpath.lineTo(0F, 3F);
+//                    generalpath.moveTo(0F, 3F);
+//                    generalpath.lineTo(0F, 0F);
+//                    generalpath.moveTo(0F,0F);
+//                    generalpath.lineTo(3F,0F);
+////                    generalpath.lineTo(-3F, 3F);
+////                    generalpath.closePath();
+//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
-                    xylineandshaperenderer11.setSeriesPaint(0, Color.black );
-                    xylineandshaperenderer11.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer11.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer11.setUseFillPaint(true);
-                    xylineandshaperenderer11.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer11.setSeriesStroke(0, new BasicStroke(2F));
-                    xylineandshaperenderer11.setBaseItemLabelsVisible(false);
+                    xylineandshaperenderer3.setSeriesPaint(0, Color.black);
+                    xylineandshaperenderer3.setSeriesFillPaint(0, Color.black);
+                    xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.black);
+                    xylineandshaperenderer3.setUseFillPaint(true);
+                    xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(2F));
+                    xylineandshaperenderer3.setBaseItemLabelsVisible(false);
+
+
                 }
             }
             for(int k=0;k<tenth_mode.size();k++)
             {
                 XYDataset xydataset11_mode = createmodeDataset(tenth_mode.get(k));
                 XYLineAndShapeRenderer xylineandshaperenderer11_mode = new XYLineAndShapeRenderer();
-                xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                        +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
-                        +seventh.size()+seventh_mode.size()+eighth.size()+eighth_mode.size()+ninth.size()
-                        +ninth_mode.size()+tenth.size(), xydataset11_mode);
-                xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size()+third.size()+third_mode.size()
-                        +fourth.size()+fifth_mode.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
-                        +seventh.size()+seventh_mode.size()+eighth.size()+eighth_mode.size()+ninth.size()
-                        +ninth_mode.size()+tenth.size(), xylineandshaperenderer11_mode);
+                xyplot.setDataset(k + 1 + one.size()+one_mode.size()
+                        +second.size()+second_mode.size()
+                        +third.size()+third_mode.size()
+                        +fourth.size()+fourth.size()
+                        +fifth.size()+fifth_mode.size()
+                        +sixth.size()+sixth_mode.size()
+                        +seventh.size()+seventh_mode.size()
+                        +eighth.size()+eighth_mode.size()
+                        +ninth.size()+ninth_mode.size()
+                        +tenth.size(), xydataset11_mode);
+                xyplot.setRenderer(k + 1 + one.size()+one_mode.size()
+                        +second.size()+second_mode.size()
+                        +third.size()+third_mode.size()
+                        +fourth.size()+fourth.size()
+                        +fifth.size()+fifth_mode.size()
+                        +sixth.size()+sixth_mode.size()
+                        +seventh.size()+seventh_mode.size()
+                        +eighth.size()+eighth_mode.size()
+                        +ninth.size()+ninth_mode.size()
+                        +tenth.size(), xylineandshaperenderer11_mode);
                 //设置不可见到点。
                 xylineandshaperenderer11_mode.setBaseShapesVisible(true);
                 //设置可以看见线。
 
-                xylineandshaperenderer11_mode.setSeriesLinesVisible(0, true);
+                xylineandshaperenderer11_mode.setSeriesLinesVisible(0, false);
                 //xylineandshaperenderer3.setSeriesShape(0, double1);
                 GeneralPath generalpath = new GeneralPath();
                 generalpath.moveTo(0.0F, -12F);

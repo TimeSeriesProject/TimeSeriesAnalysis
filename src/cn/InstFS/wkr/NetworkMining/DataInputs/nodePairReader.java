@@ -400,6 +400,12 @@ public class nodePairReader implements IReader {
 			String[] eachProtocol=protocolItems.split(";");
 			for(String protocol:eachProtocol){
 				String[] proAndTraffic=protocol.split(":");
+				if(proAndTraffic.length==1){
+					String traffic=proAndTraffic[0];
+					proAndTraffic=new String[2];
+					proAndTraffic[0]="1";
+					proAndTraffic[1]=traffic;
+				}
 				if(protocolDataItems.containsKey(proAndTraffic[0])){
 					DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
 					DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);

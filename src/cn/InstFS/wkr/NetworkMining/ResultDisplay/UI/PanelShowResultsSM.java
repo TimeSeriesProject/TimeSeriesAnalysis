@@ -165,7 +165,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		
 		HashMap<String,ArrayList<DataItems>> f_model_nor= new HashMap<>();
 		
-		
+		int cc=0;
 		Map<Integer, List<String>> freq = rslt.getRetSM().getFrequentItem();
 //		System.out.println("normal model");
 //		for (Integer key : freq.keySet()) {
@@ -247,20 +247,26 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 						tempItem.setData(nor.getElementAt(last).getData());
 						nor_line.add1Data(tempItem);
 					}
-					else
-					{
-						tempItem.setTime(nor.getElementAt(last-1).getTime());
-						tempItem.setData(nor.getElementAt(last-1).getData());
+					else {
+						tempItem.setTime(nor.getElementAt(last - 1).getTime());
+						tempItem.setData(nor.getElementAt(last - 1).getData());
 						nor_line.add1Data(tempItem);
 					}
+						if(i==3&&last!=nor.getLength())
+						{
+							System.out.println(++cc);
+							System.out.println("起始点时间"+  nor.getElementAt(first).getTime()+"     起始点数据"+nor.getElementAt(first).getData());
+							System.out.println("结束点时间"+  nor.getElementAt(last).getTime()+"     结束点数据"+nor.getElementAt(last).getData());
+							System.out.println("-----------");
+						}
 					DataItem tempMode=new DataItem();
-					tempMode.setTime(nor.getElementAt((first+last)/2).getTime());
+					tempMode.setTime(nor.getElementAt((first + last) / 2).getTime());
 					tempMode.setData(Math.abs(Double.valueOf
 							(nor.getElementAt(last-1).getData())+Double.valueOf(nor.getElementAt(first).getData()))/2	+ "");
 					nor_line_mode.add1Data(tempMode);
 					nor_data.add(nor_line);
 					nor_data_mode.add(nor_line_mode);
-					nor_data.add(nor_line);
+
 
 //						nor_data.add(nor_line);
 					}

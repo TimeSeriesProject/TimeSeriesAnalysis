@@ -31,9 +31,9 @@ import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 public class DataItems {
 	public List<Date> time;
 	public List<String> data;
-	public List<Map<String, Integer>> NonNumData; //·ÇÊıÖµĞÍDataItems ¸÷Ê±¼äÁ£¶ÈµÄitems³öÏÖ´ÎÊı
+	public List<Map<String, Integer>> NonNumData; //éæ•°å€¼å‹DataItems å„æ—¶é—´ç²’åº¦çš„itemså‡ºç°æ¬¡æ•°
 	public List<Map<String, Double>>  probMap;
-	public Set<String> varSet;                    //·ÇÊıÖµĞÍDataItems items¼¯ºÏ
+	public Set<String> varSet;                    //éæ•°å€¼å‹DataItems itemsé›†åˆ
 
 	public List<Double> prob;
 	private int granularity;
@@ -106,7 +106,7 @@ public class DataItems {
 		return false;
 	}
 	
-	//·µ»ØDataItemsÎ¬¶È
+	//è¿”å›DataItemsç»´åº¦
 	public int getDiscretizedDimension(){
 		if(getDiscreteNodes() != null && getDiscreteNodes().length > 1)
 			return discreteNodes.length;
@@ -124,7 +124,7 @@ public class DataItems {
 		}else if(di.getProbData()!=null){
 			this.probMap.add(di.getProbData());
 		}else{
-			throw new RuntimeException("diºÍdataItems²»Æ¥Åä");
+			throw new RuntimeException("diå’ŒdataItemsä¸åŒ¹é…");
 		}
 		this.prob.add(di.getProb());
 	}
@@ -177,7 +177,7 @@ public class DataItems {
 		}else if(probMap.size()>i){
 			ii.setProbData(probMap.get(i));
 		}else{
-			throw new RuntimeException("get element at index i,i³¬³ödataite½çÏŞ");
+			throw new RuntimeException("get element at index i,iè¶…å‡ºdataiteç•Œé™");
 		}
 		ii.setProb(prob.get(i));
 		return ii;
@@ -201,7 +201,7 @@ public class DataItems {
 		this.prob = prob;
 	}
 	/**
-	 * ½«Ô´DataItemsÇå¿Õ£¬²¢ÌîÈëitems
+	 * å°†æºDataItemsæ¸…ç©ºï¼Œå¹¶å¡«å…¥items
 	 * @param items
 	 */
 	public void setItems(DataItem []items){
@@ -264,10 +264,10 @@ public class DataItems {
 	}
 	
 	/**
-	 * ÅĞ¶Ï¸ÃĞòÁĞÊÇ·ñÎªÀëÉ¢ÖµĞòÁĞ¡£
-	 * <p>Èç¹ûÊÇ£¬Ôò½«ÀëÉ¢Öµ¼°Æä¶ÔÓ¦µÄ±àºÅ´æÈëmapStrÖĞ£¬²¢·µ»Øtrue</p>
-	 * <p>·ñÔò£¬·µ»Øfalse</p>
-	 * @param mapStr	¿ÉÎª¿Õ
+	 * åˆ¤æ–­è¯¥åºåˆ—æ˜¯å¦ä¸ºç¦»æ•£å€¼åºåˆ—ã€‚
+	 * <p>å¦‚æœæ˜¯ï¼Œåˆ™å°†ç¦»æ•£å€¼åŠå…¶å¯¹åº”çš„ç¼–å·å­˜å…¥mapSträ¸­ï¼Œå¹¶è¿”å›true</p>
+	 * <p>å¦åˆ™ï¼Œè¿”å›false</p>
+	 * @param mapStr	å¯ä¸ºç©º
 	 * @return
 	 */
 	public boolean isDiscrete(){
@@ -291,7 +291,7 @@ public class DataItems {
 	}
 	
 	/**
-	 * »ñÈ¡ÀëÉ¢ºóµÄ½ÚµãÖµ
+	 * è·å–ç¦»æ•£åçš„èŠ‚ç‚¹å€¼
 	 * @return discrete Nodes in String type
 	 */
 	public String discreteNodes(){
@@ -308,7 +308,7 @@ public class DataItems {
 		return nodes.substring(0, nodes.length()-1);
 	}
 	
-	//µ±itemsÔ­±¾¾ÍÎªÀëÉ¢»¯Ìõ¼şÏÂ£¬Éú³ÉdiscreteNode
+	//å½“itemsåŸæœ¬å°±ä¸ºç¦»æ•£åŒ–æ¡ä»¶ä¸‹ï¼Œç”ŸæˆdiscreteNode
 	private void generateDiscreteNodes(){
 		Collection<String> nodes=getDiscreteStrings().keySet();
 		discreteNodes=new Double[nodes.size()];
@@ -320,10 +320,10 @@ public class DataItems {
 	}
 
 //	/**
-//	 * ÅĞ¶ÏvalËù´ú±íµÄÖµ´¦ÓÚÄÄ¸öÇø¼ä£¨0~len-1£©ÖĞ£¬²¢ÒÔ×Ö·û´®ĞÎÊ½·µ»ØÕâ¸öĞòºÅ
-//	 * @param discreteNodes	¶ËµãÖµ
-//	 * @param len	¶ËµãÊı£¨ÎªÁË±ÜÃâÃ¿´Îµ÷ÓÃº¯ÊıÊ±¶¼ÌáÈ¡Ò»ÏÂÊı×é³¤¶È£©
-//	 * @param val	Öµ
+//	 * åˆ¤æ–­valæ‰€ä»£è¡¨çš„å€¼å¤„äºå“ªä¸ªåŒºé—´ï¼ˆ0~len-1ï¼‰ä¸­ï¼Œå¹¶ä»¥å­—ç¬¦ä¸²å½¢å¼è¿”å›è¿™ä¸ªåºå·
+//	 * @param discreteNodes	ç«¯ç‚¹å€¼
+//	 * @param len	ç«¯ç‚¹æ•°ï¼ˆä¸ºäº†é¿å…æ¯æ¬¡è°ƒç”¨å‡½æ•°æ—¶éƒ½æå–ä¸€ä¸‹æ•°ç»„é•¿åº¦ï¼‰
+//	 * @param val	å€¼
 //	 * @return
 //	 */
 //	private String getIndexOfData(int len, double val){
@@ -337,26 +337,26 @@ public class DataItems {
 //		return getDiscreteNodes()[len-1]+"";
 //	}
 //	/**
-//	 * ¸ù¾İdiscreteMethod,¶Ô¸ÃÊı¾İ½øĞĞÀëÉ¢»¯
-//	 * @param discreteMethod	ÀëÉ¢»¯·½·¨
-//	 * @param numDims			ÀëÉ¢ºóµÄÎ¬Êı
-//	 * @param endNodes			×Ô¶¨Òå¶Ëµã£¬½öÔÚ×Ô¶¨ÒåÀëÉ¢»¯·½·¨Ìõ¼şÏÂÓĞĞ§
+//	 * æ ¹æ®discreteMethod,å¯¹è¯¥æ•°æ®è¿›è¡Œç¦»æ•£åŒ–
+//	 * @param discreteMethod	ç¦»æ•£åŒ–æ–¹æ³•
+//	 * @param numDims			ç¦»æ•£åçš„ç»´æ•°
+//	 * @param endNodes			è‡ªå®šä¹‰ç«¯ç‚¹ï¼Œä»…åœ¨è‡ªå®šä¹‰ç¦»æ•£åŒ–æ–¹æ³•æ¡ä»¶ä¸‹æœ‰æ•ˆ
 //	 * @return
 //	 */
 //	public DataItems toDiscreteNumbers(DiscreteMethod discreteMethod, int numDims, String endNodes){
 //		DataItems newDataItems = null;
 //		switch (discreteMethod) {
-//		case ¸÷Çø¼äÊıÖµ·¶Î§ÏàÍ¬:
+//		case å„åŒºé—´æ•°å€¼èŒƒå›´ç›¸åŒ:
 //			newDataItems = this.toDiscreteNumbersAccordingToMean3Sigma(numDims);
 //			break;
-//		case ¸÷Çø¼äÊı¾İµãÊıÏàÍ¬:
+//		case å„åŒºé—´æ•°æ®ç‚¹æ•°ç›¸åŒ:
 //			newDataItems = this.toDiscreteNumbersAccordingToPercentile(numDims);
 //			break;
-//		case ×Ô¶¨Òå¶Ëµã:
+//		case è‡ªå®šä¹‰ç«¯ç‚¹:
 //			newDataItems = this
 //					.toDiscreteNumbersAccordingToCustomNodes(endNodes);
 //			break;
-//		case None://²»×öÀëÉ¢»¯,Ö±½Ó·µ»Ø
+//		case None://ä¸åšç¦»æ•£åŒ–,ç›´æ¥è¿”å›
 //		default:
 //			newDataItems = this;
 //		}
@@ -367,9 +367,9 @@ public class DataItems {
 //	}
 //	
 //	/**
-//	 * ¸ù¾İÓÃ»§Ö¸¶¨µÄ½Úµã½øĞĞÀëÉ¢»¯
-//	 * @param endNodes ÓÃ»§Ö¸¶¨µÄ½çµã
-//	 * @return ÀëÉ¢»¯ºóµÄDataItems
+//	 * æ ¹æ®ç”¨æˆ·æŒ‡å®šçš„èŠ‚ç‚¹è¿›è¡Œç¦»æ•£åŒ–
+//	 * @param endNodes ç”¨æˆ·æŒ‡å®šçš„ç•Œç‚¹
+//	 * @return ç¦»æ•£åŒ–åçš„DataItems
 //	 */
 //	private DataItems toDiscreteNumbersAccordingToCustomNodes(String endNodes){
 //		DataItems newDataItems = new DataItems();
@@ -389,9 +389,9 @@ public class DataItems {
 //		return newDataItems;
 //	}
 //	/**
-//	 * ½«Çø¼ä[mean-3*sigma£¬mean+3*sigma]Æ½¾ù»®·ÖÎªnumDims¸öÇø¼ä£¬ÀëÉ¢»¯µÃµ½µÄdataItems¡£
-//	 * @param numDims	ÀëÉ¢ºóµÄÈ¡ÖµÊı
-//	 * @return	ÒÑ¾­ÀëÉ¢»¯µÄdataItemsÊı¾İ
+//	 * å°†åŒºé—´[mean-3*sigmaï¼Œmean+3*sigma]å¹³å‡åˆ’åˆ†ä¸ºnumDimsä¸ªåŒºé—´ï¼Œç¦»æ•£åŒ–å¾—åˆ°çš„dataItemsã€‚
+//	 * @param numDims	ç¦»æ•£åçš„å–å€¼æ•°
+//	 * @return	å·²ç»ç¦»æ•£åŒ–çš„dataItemsæ•°æ®
 //	 */
 //	private DataItems toDiscreteNumbersAccordingToMean3Sigma(int numDims){
 //		DataItems newDataItems=new DataItems();
@@ -400,18 +400,18 @@ public class DataItems {
 //		
 //		int length=this.getLength();
 //		List<String> datas=this.getData();
-//		// Ê×ÏÈ£¬ÅĞ¶ÏÈ¡Öµ¸öÊı£¬Èç¹û½öÎª20¸öÖµÒÔÏÂ£¬ÔòÖ±½Ó½«Öµ×÷ÎªÀëÉ¢Öµ
+//		// é¦–å…ˆï¼Œåˆ¤æ–­å–å€¼ä¸ªæ•°ï¼Œå¦‚æœä»…ä¸º20ä¸ªå€¼ä»¥ä¸‹ï¼Œåˆ™ç›´æ¥å°†å€¼ä½œä¸ºç¦»æ•£å€¼
 //		setDiscreteStrings(new HashMap<String, String>());
 //		boolean isDiscrete = isDiscrete();
 //				
-//		if (isDiscrete){	// Ö±½Óµ±ÀëÉ¢Öµ´¦Àí
+//		if (isDiscrete){	// ç›´æ¥å½“ç¦»æ•£å€¼å¤„ç†
 //			for (int i = 0; i < length; i ++){
 //				DataItem item = this.getElementAt(i);
 //				newDataItems.add1Data(item.getTime(), getDiscreteStrings().get(item.getData()));
 //			}
 //			generateDiscreteNodes();
-//		}else{				// Á¬ĞøÖµ£¬ĞèÒª½øĞĞÀëÉ¢»¯¡£
-//			// ÏÈ°ÑDOUBLE ĞÍÈ¡ÖµÈ¡³öÀ´
+//		}else{				// è¿ç»­å€¼ï¼Œéœ€è¦è¿›è¡Œç¦»æ•£åŒ–ã€‚
+//			// å…ˆæŠŠDOUBLE å‹å–å€¼å–å‡ºæ¥
 //			List<Double>doubles = new ArrayList<Double>();
 //			int numNonDouble = 0;
 //			for(String data:datas){
@@ -424,9 +424,9 @@ public class DataItems {
 //						break;
 //				}				
 //			}
-//			if (numNonDouble > 10)	// ËµÃ÷Õâ¾ÍÊÇ¸ö×Ö·û´®ĞòÁĞ£¨ÒòÎª·ÇÊıÖµĞÍÈ¡ÖµµÄ¸öÊı³¬¹ı20¸ö£©£¬Òò´Ë£¬²»½øĞĞÀëÉ¢»¯´¦Àí£¬Ö±½Ó·µ»ØÊäÈëÊı¾İ
+//			if (numNonDouble > 10)	// è¯´æ˜è¿™å°±æ˜¯ä¸ªå­—ç¬¦ä¸²åºåˆ—ï¼ˆå› ä¸ºéæ•°å€¼å‹å–å€¼çš„ä¸ªæ•°è¶…è¿‡20ä¸ªï¼‰ï¼Œå› æ­¤ï¼Œä¸è¿›è¡Œç¦»æ•£åŒ–å¤„ç†ï¼Œç›´æ¥è¿”å›è¾“å…¥æ•°æ®
 //				return this;
-//			// ÏÂÃæÒÔmean-3*sigma×÷Îª×îĞ¡Öµ£¬ÒÔmean+3*sigma×÷Îª×î´óÖµ
+//			// ä¸‹é¢ä»¥mean-3*sigmaä½œä¸ºæœ€å°å€¼ï¼Œä»¥mean+3*sigmaä½œä¸ºæœ€å¤§å€¼
 //			int numDouble = doubles.size();
 //			double mean1 = 0.0;
 //			double std1 = 0.0;
@@ -459,7 +459,7 @@ public class DataItems {
 //		return newDataItems;
 //	}
 //	/**
-//	 * ¸ù¾İ·ÖÎ»µãÀ´½øĞĞÀëÉ¢»¯
+//	 * æ ¹æ®åˆ†ä½ç‚¹æ¥è¿›è¡Œç¦»æ•£åŒ–
 //	 * @param numDims
 //	 * @return
 //	 */
@@ -468,16 +468,16 @@ public class DataItems {
 //		
 //		int length=this.getLength();
 //		
-//		// Ê×ÏÈ£¬ÅĞ¶ÏÈ¡Öµ¸öÊı£¬Èç¹û½öÎª20¸öÖµÒÔÏÂ£¬ÔòÖ±½Ó½«Öµ×÷ÎªÀëÉ¢Öµ
+//		// é¦–å…ˆï¼Œåˆ¤æ–­å–å€¼ä¸ªæ•°ï¼Œå¦‚æœä»…ä¸º20ä¸ªå€¼ä»¥ä¸‹ï¼Œåˆ™ç›´æ¥å°†å€¼ä½œä¸ºç¦»æ•£å€¼
 //		setDiscreteStrings(new HashMap<String, String>());
 //		boolean isDiscrete = isDiscrete(getDiscreteStrings());
-//		if (isDiscrete){	// Ö±½Óµ±ÀëÉ¢Öµ´¦Àí
+//		if (isDiscrete){	// ç›´æ¥å½“ç¦»æ•£å€¼å¤„ç†
 //			for (int i = 0; i < length; i ++){
 //				DataItem item = this.getElementAt(i);
 //				newDataItems.add1Data(item.getTime(), getDiscreteStrings().get(item.getData()));
 //			}
 //			generateDiscreteNodes();
-//		}else{				// Á¬ĞøÖµ£¬ĞèÒª½øĞĞÀëÉ¢»¯
+//		}else{				// è¿ç»­å€¼ï¼Œéœ€è¦è¿›è¡Œç¦»æ•£åŒ–
 //			int numNonDouble = 0;
 //			double step = 1.0 / numDims * length; 
 //			int ind = 0;
@@ -486,7 +486,7 @@ public class DataItems {
 //			DataItems sortedItems = DataInputUtils.sortByDoubleValue(this);
 //			List<String> datas=sortedItems.getData();
 //			discreteNodes[0] = Double.parseDouble(datas.get(0));
-//			// »ñÈ¡·ÖÎ»µã
+//			// è·å–åˆ†ä½ç‚¹
 //			for (int i = 0; i < length; i ++){
 //				try{
 //					Double val = Double.parseDouble(datas.get(i));
@@ -501,12 +501,12 @@ public class DataItems {
 //						break;
 //				}				
 //			}
-//			// µÃµ½ĞÂĞòÁĞÖµ
+//			// å¾—åˆ°æ–°åºåˆ—å€¼
 //			datas = this.getData();
 //			for (int i = 0; i < length; i ++){				
 //				newDataItems.add1Data(this.getTime().get(i), ""+getIndexOfData(numDims, Double.parseDouble(datas.get(i))));
 //			}
-//			if (numNonDouble > 10)	// ËµÃ÷Õâ¾ÍÊÇ¸öÈ¡ÖµÊı³¬¹ı20¸öµÄ×Ö·û´®ÀëÉ¢ÖµĞòÁĞ£¬²»´¦Àí
+//			if (numNonDouble > 10)	// è¯´æ˜è¿™å°±æ˜¯ä¸ªå–å€¼æ•°è¶…è¿‡20ä¸ªçš„å­—ç¬¦ä¸²ç¦»æ•£å€¼åºåˆ—ï¼Œä¸å¤„ç†
 //				return newDataItems;
 //		}
 //		return newDataItems;
@@ -526,7 +526,7 @@ public class DataItems {
 				items[i].setData(Double.parseDouble(vals.get(i)));
 			}
 		}catch(Exception e){
-			UtilsUI.appendOutput("×Ö·û´®×ª»»ÎªDoubleĞÍ±¨´í£¡");
+			UtilsUI.appendOutput("å­—ç¬¦ä¸²è½¬æ¢ä¸ºDoubleå‹æŠ¥é”™ï¼");
 			return output;
 		}
 		Arrays.sort(items);

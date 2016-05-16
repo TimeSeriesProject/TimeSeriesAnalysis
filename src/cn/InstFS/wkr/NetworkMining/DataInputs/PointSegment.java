@@ -106,9 +106,16 @@ public class PointSegment {
 		for(;i<(length-1);i++){
 			if(getItem(i)<getItem(iMin))
 				iMin=i;
-			if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-0.2*std)>=getItem(iMin)){
-				pointsIndex.add(iMin);
-				break;
+			if(std>1){
+				if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-0.1*getItem(i))>=getItem(iMin)){
+					pointsIndex.add(iMin);
+					break;
+				}
+			}else{
+				if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-0.1*std)>=getItem(iMin)){
+					pointsIndex.add(iMin);
+					break;
+				}
 			}
 		}
 		return i;
@@ -133,10 +140,18 @@ public class PointSegment {
 		for(;i<(length-1);i++){
 			if(getItem(i)>getItem(iMax))
 				iMax=i;
-			if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-0.2*std)){
-				pointsIndex.add(iMax);
-				break;
+			if(std>1){
+				if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-0.1*getItem(iMax))){
+					pointsIndex.add(iMax);
+					break;
+				}
+			}else{
+				if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-0.1*std)){
+					pointsIndex.add(iMax);
+					break;
+				}
 			}
+			
 		}
 		return i;
 	}
