@@ -64,7 +64,8 @@ public class OutliesMinerFactory {
 					task.setDiscreteMethod(DiscreteMethod.None);
 					task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
 					task.setMiningMethod(MiningMethod.MiningMethods_OutliesMining);
-					task.setMiningObject(protocol);
+					task.setMiningObject("流量");
+					task.setProtocol(protocol);
 					TaskElement.add1Task(task, false);
 					NetworkMinerFactory minerFactory=NetworkMinerFactory.getInstance();
 					INetworkMiner miner=minerFactory.allMiners.get(task);

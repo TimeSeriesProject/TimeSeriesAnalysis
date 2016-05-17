@@ -65,7 +65,8 @@ public class FrequentItemMinerFactory {
     					task.setRange(ip);
     					task.setDiscreteMethod(DiscreteMethod.None);
     					task.setMiningMethod(MiningMethod.MiningMethods_SequenceMining);
-    					task.setMiningObject(protocol);
+    					task.setProtocol(protocol);
+    					task.setMiningObject("流量");
     					TaskElement.add1Task(task, false);
     					NetworkMinerFactory minerFactory=NetworkMinerFactory.getInstance();
     					INetworkMiner miner=minerFactory.allMiners.get(task);

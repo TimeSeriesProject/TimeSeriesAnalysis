@@ -23,6 +23,7 @@ public class MinerResults {
 	private MinerResultsSM retSM; 
 	private MinerResultsFP retFP;
 	private MinerResultsFM retFM;
+	private MinerResultsStatistics retStatistics;
 	private MinerResultsPath retPath;
 	
 	
@@ -34,6 +35,7 @@ public class MinerResults {
 		retSM = new MinerResultsSM();
 		retFP = new MinerResultsFP();
 		retFM = new MinerResultsFM();
+		retStatistics=new MinerResultsStatistics();
 	}
 	
 	public MinerResultsFP getRetFP() {
@@ -109,6 +111,14 @@ public class MinerResults {
 
 	public void setRetFM(MinerResultsFM retFM) {
 		this.retFM = retFM;
+	}
+
+	public MinerResultsStatistics getRetStatistics() {
+		return retStatistics;
+	}
+
+	public void setRetStatistics(MinerResultsStatistics retStatistics) {
+		this.retStatistics = retStatistics;
 	}
 	
 	
