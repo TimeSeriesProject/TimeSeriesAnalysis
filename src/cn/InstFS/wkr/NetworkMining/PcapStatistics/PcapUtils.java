@@ -56,24 +56,24 @@ class Parser implements Callable
 {
 	InputStream is=null;
 	String file;
-	ConcurrentHashMap<RecordKey,Integer>records ;
+	ConcurrentHashMap<RecordKey,Integer>trafficRecords ;
 	private HashMap<String,BufferedWriter> bws;
 	String path;
 	PcapUtils pcapUtils ;
 	
-	Parser(PcapUtils pcapUtils,InputStream is,String file,ConcurrentHashMap<RecordKey,Integer>records,HashMap<String,BufferedWriter> bws,String path)
+	Parser(PcapUtils pcapUtils,InputStream is,String file,ConcurrentHashMap<RecordKey,Integer>trafficRecords,HashMap<String,BufferedWriter> bws,String path)
 	{
 		this.pcapUtils=pcapUtils;
 		this.is=is;
 		this.file=file;
-		this.records=records;
+		this.trafficRecords=trafficRecords;
 		this.bws=bws;
 		this.path=path;
 	}
 	public Boolean call()
 	{
 		try {
-			PcapParser.unpack(is,file,records,bws,path);
+			PcapParser.unpack(is,file,trafficRecords,bws,path);
 			pcapUtils.setParsedNum(pcapUtils.getParsedNum()+1);
 			System.out.println(pcapUtils.getParsedNum());
 			is.close();
@@ -89,31 +89,37 @@ class RouteGen implements Callable
 	
 	String path;
 	String outpath;
-	ConcurrentHashMap<RecordKey,Integer>records ;
+	ConcurrentHashMap<RecordKey,Integer>trafficRecords ;
+	ConcurrentHashMap<RecordKey,Integer>comRecords ;
 	TreeSet<PcapData> datas= new TreeSet<PcapData>();
 	PcapUtils pcapUtils;
-	RouteGen(PcapUtils pcapUtils,String path,String outpath,ConcurrentHashMap<RecordKey,Integer>records )
+	RouteGen(PcapUtils pcapUtils,String path,String outpath,ConcurrentHashMap<RecordKey,Integer>trafficRecords, ConcurrentHashMap<RecordKey, Integer> comRecords )
 	{
 		this.pcapUtils=pcapUtils;
 		this.path=path;
 		this.outpath=outpath;
-		this.records=records;
+		this.trafficRecords=trafficRecords;
+		this.comRecords=comRecords;
 	}
-	private void updaterecords(PcapData pre)
+	private void updateRecords(PcapData pre)
 	{
 		RecordKey tmpKey1= new RecordKey(pre.getSrcIP(),pre.getDstIP(),pre.getDstPort(),pre.getTime_s()/3600);
     	RecordKey tmpKey2= new RecordKey(pre.getDstIP(),pre.getSrcIP(),pre.getDstPort(),pre.getTime_s()/3600);
-//    	System.out.println(records);
-    	if(!records.containsKey(tmpKey1))
+//    	System.out.println(trafficRecords);
+    	if(!trafficRecords.containsKey(tmpKey1))
     	{
-    		records.put(tmpKey1, 0);
+    		trafficRecords.put(tmpKey1, 0);
+    		comRecords.put(tmpKey1, 0);
     	}
-    	if(!records.containsKey(tmpKey2))
+    	if(!trafficRecords.containsKey(tmpKey2))
     	{
-    		records.put(tmpKey2, 0);
+    		trafficRecords.put(tmpKey2, 0);
+    		comRecords.put(tmpKey2, 0);
     	}
-    	records.put(tmpKey1, records.get(tmpKey1)+pre.getTraffic());
-    	records.put(tmpKey2, records.get(tmpKey2)+pre.getTraffic());
+    	trafficRecords.put(tmpKey1, trafficRecords.get(tmpKey1)+pre.getTraffic());
+    	trafficRecords.put(tmpKey2, trafficRecords.get(tmpKey2)+pre.getTraffic());
+    	comRecords.put(tmpKey1, comRecords.get(tmpKey1)+1);
+    	comRecords.put(tmpKey2, comRecords.get(tmpKey2)+1);
 	}
 	private void gen() throws IOException
 	{
@@ -167,10 +173,10 @@ class RouteGen implements Callable
 				num=1;
 				continue;
 			}
-			
+			//记录每一次通信的通信路径，一次通信只记录一次流量。
 			if(!pre.getSrcIP().equals(data.getSrcIP())||!pre.getDstIP().equals(data.getDstIP())||pre.getSrcPort()!=data.getSrcPort()||pre.getDstPort()!=data.getDstPort())
 			{
-				updaterecords(pre);
+				updateRecords(pre);
 				StringBuilder sb=new StringBuilder();
 				sb.append(String.valueOf(pre.getTime_s())).append(",").append(pre.getSrcIP()).append(",").append(pre.getDstIP()).append(",").append(pre.getTraffic()).append(",").append(num);
 				Collections.sort(ttlList);
@@ -186,7 +192,7 @@ class RouteGen implements Callable
 			}
 			else if((double)data.getTime_s()+data.getTime_ms()/1000000.0>pre.getTime_s()+pre.getTime_ms()/1000000.0+2.0)
 			{
-				updaterecords(pre);
+				updateRecords(pre);
 		    	
 				StringBuilder sb=new StringBuilder();
 				sb.append(String.valueOf(pre.getTime_s())).append(",").append(pre.getSrcIP()).append(",").append(pre.getDstIP()).append(",").append(pre.getTraffic()).append(",").append(num);
@@ -207,7 +213,7 @@ class RouteGen implements Callable
 				num++;
 			}
 		}
-		updaterecords(pre);
+		updateRecords(pre);
 		
 		StringBuilder sb=new StringBuilder();
 		sb.append(String.valueOf(pre.getTime_s())).append(",").append(pre.getSrcIP()).append(",").append(pre.getDstIP()).append(",").append(pre.getTraffic()).append(",").append(num);
@@ -276,8 +282,9 @@ class RouteGen implements Callable
  */
 public class PcapUtils {
 	private boolean SessionLevel=true;   //判断读取的数据是否是业务层数据
-	private ConcurrentHashMap<RecordKey,Integer> records=new ConcurrentHashMap<RecordKey,Integer>();
-	TreeMap<RecordKey,Integer> sortedrecords=new TreeMap<RecordKey,Integer> ();
+	private ConcurrentHashMap<RecordKey,Integer> trafficRecords=new ConcurrentHashMap<RecordKey,Integer>(); //记录流量
+	private ConcurrentHashMap<RecordKey,Integer> comRecords=new ConcurrentHashMap<RecordKey,Integer>(); 
+	TreeMap<RecordKey,Integer> sortedtrafficRecords=new TreeMap<RecordKey,Integer> ();
 	private ArrayList<File> fileList=new ArrayList<File>();
 	private HashMap<String,BufferedWriter> bws=new HashMap<String,BufferedWriter>();
 	public enum Status{
@@ -379,7 +386,7 @@ public class PcapUtils {
 		for(int i=0;i<fileList.size();i++)
 		{
 //			System.out.println(fileList.get(i).getAbsolutePath());
-			RouteGen routeGen= new RouteGen(this,fileList.get(i).getAbsolutePath(),outPath,records); 
+			RouteGen routeGen= new RouteGen(this,fileList.get(i).getAbsolutePath(),outPath,trafficRecords,comRecords); 
 //			results.add(exec.submit(routeGen));
 			routeGen.call();
 		}
@@ -415,7 +422,7 @@ public class PcapUtils {
 			
 //			System.out.println(file);
 			
-			Parser parser= new Parser(this,is,file,records,bws,outpath);
+			Parser parser= new Parser(this,is,file,trafficRecords,bws,outpath);
 			results.add(exec.submit(parser));
 			
 		}
@@ -448,9 +455,9 @@ public class PcapUtils {
 	private void generateTraffic(String outpath)
 	{
 		
-		for(Map.Entry<RecordKey, Integer>entry:records.entrySet())
+		for(Map.Entry<RecordKey, Integer>entry:trafficRecords.entrySet())
 		{
-			sortedrecords.put(entry.getKey(),entry.getValue());
+			sortedtrafficRecords.put(entry.getKey(),entry.getValue());
 		}
 		for(Map.Entry<String, BufferedWriter>entry:bws.entrySet())
 		{
@@ -461,13 +468,14 @@ public class PcapUtils {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("sorted"+sortedrecords.size());
+		System.out.println("sorted"+sortedtrafficRecords.size());
 		RecordKey prekey = null;
 		OutputStreamWriter o =null;
 		BufferedWriter bw=null;
-		int sum=0;
+		int trafficsum=0;
+		int comsum=0;
 		StringBuilder curLine=new StringBuilder();
-		for(Map.Entry<RecordKey, Integer>entry:sortedrecords.entrySet())
+		for(Map.Entry<RecordKey, Integer>entry:sortedtrafficRecords.entrySet())
 		{
 			RecordKey key = entry.getKey();
 			 if(prekey==null||!prekey.getSrcIp().equals(key.getSrcIp())||!prekey.getTime().equals(key.getTime())||!prekey.getDstIp().equals(key.getDstIp()))
@@ -475,7 +483,7 @@ public class PcapUtils {
 			    try {
 			    	if(prekey!=null)
 			    	{
-				    	curLine.append("sum:"+sum);
+				    	curLine.append("sum:"+trafficsum+":"+comsum);
 						bw.write(curLine.toString());
 						bw.newLine();
 			    	}
@@ -483,7 +491,8 @@ public class PcapUtils {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				sum=0;
+			    trafficsum=0;
+			    comsum=0;
 				curLine.delete( 0, curLine.length() );
 				curLine.append(key.getTime()+","+key.getSrcIp()+","+key.getDstIp()+",");
 			}
@@ -503,13 +512,14 @@ public class PcapUtils {
 			}
 			
 		  
-			sum+=entry.getValue();
-			curLine.append(key.getProtocol()+":"+String.valueOf(entry.getValue())+";");
+			trafficsum+=entry.getValue();
+			comsum+=comRecords.get(entry.getKey());
+			curLine.append(key.getProtocol()+":"+String.valueOf(entry.getValue())+":"+String.valueOf(comRecords.get(entry.getKey()))+";");
 			prekey=key;
 		}
 		if(prekey!=null)
 		{
-			curLine.append("sum:"+sum);
+			curLine.append("sum:"+trafficsum+":"+comsum);
 			try {
 				bw.write(curLine.toString());
 				bw.newLine();

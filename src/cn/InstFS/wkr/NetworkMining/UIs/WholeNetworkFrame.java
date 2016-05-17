@@ -92,8 +92,8 @@ public class WholeNetworkFrame extends JFrame{
 //		miningMethods.add(MiningMethod.MiningMethods_FrequenceItemMining);
 //		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
 //		miningMethods.add(MiningMethod.MiningMethods_TsAnalysis);
-		miningObjects.add("网络簇系数");
-		miningObjects.add("网络直径");
+//		miningObjects.add("网络簇系数");
+//		miningObjects.add("网络直径");
 		miningObjects.add("结点出现消失");
 	}
 
@@ -133,7 +133,7 @@ public class WholeNetworkFrame extends JFrame{
 					task.setSourcePath("C:/data/out/route");
 					task.setMiningObject(miningObjects.get(i));
 					task.setMiningMethod(MiningMethod.MiningMethods_Statistics);
-					task.setGranularity(24*3600);
+					task.setGranularity(3600);
 					task.setTaskRange(TaskRange.WholeNetworkRange);
 					task.setTaskName(miningObjects.get(i)+"_"+MiningMethod.MiningMethods_Statistics+"_"+task.getGranularity());
 					panelShow.onTaskAdded(task);

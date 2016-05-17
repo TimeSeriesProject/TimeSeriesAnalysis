@@ -129,10 +129,27 @@ public class ChartPanelShowNodeFrequence extends JPanel {
 //		renderer.setBasePaint(new Color(0));	// 好像不管用，必须用setSeriesPaint
 		
 		itemShape = ShapeUtilities.createDiamond((float) 3);
+		int gap =(int)(255/dataset.getSeriesCount());
 		for(int i=0;i<dataset.getSeriesCount();i++)
 		{
 			renderer.setSeriesShape(i, itemShape);		
-			renderer.setSeriesPaint(i, Color.GREEN);
+			int r;
+			int g;
+			int b;
+//			renderer.setSeriesPaint(i,new Color(Color.HSBtoRGB(gap*i/400.0f, 0.8f, 0.3f)));
+			if(gap*i<255)
+			{
+				renderer.setSeriesPaint(i, new Color(gap*i,0,0));
+			}
+			else if(gap*i<255*2)
+			{
+				renderer.setSeriesPaint(i, new Color(255,(gap*i)%255,0));
+				Color a= new Color(Color.HSBtoRGB(gap*i, 50, 50));
+			}
+			else
+			{
+				renderer.setSeriesPaint(i, new Color(255,255,(gap*i)%255));
+			}
 		}
 		
 		renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0}:({1} , {2})", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), new DecimalFormat("#.00")));
