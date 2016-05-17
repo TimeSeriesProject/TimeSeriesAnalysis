@@ -36,14 +36,14 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
 /**
- * ²¨ĞÎ¾ÛÀà
+ * ï¿½ï¿½ï¿½Î¾ï¿½ï¿½ï¿½
  * @author chenwei
  *
  */
 public class WavCluster {
 	
 	/**
-	 * µÃµ½ËùÓĞ½áµã¶ÔµÄÍ¨ĞÅÊı¾İ
+	 * ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ğ½ï¿½ï¿½Ôµï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @param task
 	 * @param startDate
 	 * @param endDate
@@ -74,7 +74,7 @@ public class WavCluster {
 		return list;
 	}
 	/**
-	 * µÃµ½ËùÓĞµ¥½áµãµÄÍ¨ĞÅÊı¾İ
+	 * ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ğµï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @param task
 	 * @param startDate
 	 * @param endDate
@@ -109,7 +109,7 @@ public class WavCluster {
 		return list;
 	}
 	/**
-	 * ¶Ôµ¥½áµãÒÔ¼°½áµã¶ÔËùÓĞĞ­Òé·Ö±ğ½øĞĞÏß¶Î¾ÛÀàÑµÁ·
+	 * ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ­ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ï¿½ï¿½ß¶Î¾ï¿½ï¿½ï¿½Ñµï¿½ï¿½
 	 */
 	public static void segmentTrainAll()
 	{
@@ -118,7 +118,7 @@ public class WavCluster {
 		task.setDataSource("Text");
 		task.setMiningObject("traffic");
 		/**
-		 * ÉèÖÃÊ±¼ä
+		 * ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 		 */
 		Calendar cal=Calendar.getInstance();
 		cal.set(2014, 9, 1, 0, 0, 0);
@@ -140,7 +140,7 @@ public class WavCluster {
 		}
 	}
 	/*
-	 * ¶ÔÄ³¸öÊı¾İ¼¯½øĞĞÏß¶Î¾ÛÀàÑµÁ·
+	 * ï¿½ï¿½Ä³ï¿½ï¿½ï¿½ï¿½İ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¶Î¾ï¿½ï¿½ï¿½Ñµï¿½ï¿½
 	 */
 	public static void segmentTrain(TaskElement task,double compratio,int clusternum,Date startDate,Date endDate)
 	{
@@ -209,7 +209,7 @@ public class WavCluster {
 		}
 	}
 	/*
-	 * ¶Ôµ¥½áµãÒÔ¼°½áµã¶ÔËùÓĞĞ­Òé·Ö±ğ½øĞĞ²¨ĞÎ¾ÛÀàÑµÁ·
+	 * ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ­ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Ğ²ï¿½ï¿½Î¾ï¿½ï¿½ï¿½Ñµï¿½ï¿½
 	 */
 	public static void waveTrainAll()
 	{
@@ -218,7 +218,7 @@ public class WavCluster {
 		task.setDataSource("Text");
 		task.setMiningObject("traffic");
 		/**
-		 * ÉèÖÃÊ±¼ä
+		 * ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
 		 */
 		Calendar cal=Calendar.getInstance();
 		cal.set(2014, 9, 1, 0, 0, 0);
@@ -240,7 +240,7 @@ public class WavCluster {
 		}
 	}
 	/**
-	 * ¶ÔÄ³¸öÊı¾İ¼¯½øĞĞ²¨ĞÎ¾ÛÀàÑµÁ·
+	 * ï¿½ï¿½Ä³ï¿½ï¿½ï¿½ï¿½İ¼ï¿½ï¿½ï¿½ï¿½Ğ²ï¿½ï¿½Î¾ï¿½ï¿½ï¿½Ñµï¿½ï¿½
 	 * @param task
 	 * @param windowsize
 	 * @param clusternum
@@ -291,12 +291,12 @@ public class WavCluster {
 		Kmeans(instances,clusternum,fileName,false);
 	}
 	/**
-	 * kmeansÑµÁ·
+	 * kmeansÑµï¿½ï¿½
 	 * @param instances
 	 * @param clusternum
 	 * @param fileName
 	 * @param preserveOrder
-	 * @return kmeans¶ÔÏó
+	 * @return kmeansï¿½ï¿½ï¿½ï¿½
 	 */
 	public static SimpleKMeans Kmeans(ArrayList<ArrayList<Double>>instances,int clusternum,String fileName,boolean preserveOrder)
 	{
@@ -331,7 +331,7 @@ public class WavCluster {
 		return kMeans;
 	}
 	/**
-	 * ¶ÔÓÚÄ³¸öÊ±¼äĞòÁĞÓÃÑµÁ·ºÃµÄÏß¶Î¾ÛÀàÄ£ĞÍ²âÊÔ
+	 * ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñµï¿½ï¿½ï¿½Ãµï¿½ï¿½ß¶Î¾ï¿½ï¿½ï¿½Ä£ï¿½Í²ï¿½ï¿½ï¿½
 	 * @param dataItems
 	 * @param task
 	 * @return
@@ -399,7 +399,7 @@ public class WavCluster {
 		return result;
 	}
 	/**
-	 * ¶ÔÄ³¸öÊ±¼äĞòÁĞ£¬ÓÃ¶ÔÓ¦µÄÑµÁ·ºÃµÄ²¨ĞÎ¾ÛÀàÄ£ĞÍ²âÊÔ
+	 * ï¿½ï¿½Ä³ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ğ£ï¿½ï¿½Ã¶ï¿½Ó¦ï¿½ï¿½Ñµï¿½ï¿½ï¿½ÃµÄ²ï¿½ï¿½Î¾ï¿½ï¿½ï¿½Ä£ï¿½Í²ï¿½ï¿½ï¿½
 	 * @param dataItems
 	 * @param task
 	 * @return
@@ -464,7 +464,7 @@ public class WavCluster {
 		return result;
 	}
 	/**
-	 * ¶ÔÄ³¸öÊ±¼äĞòÁĞ½øĞĞÏß¶Î¾ÛÀà£¬²¢·µ»Ø¾ÛÀà½á¹û
+	 * ï¿½ï¿½Ä³ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ğ½ï¿½ï¿½ï¿½ï¿½ß¶Î¾ï¿½ï¿½à£¬ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @param dataItems
 	 * @param task
 	 * @return
@@ -511,11 +511,11 @@ public class WavCluster {
 	}
 	
 	/**
-	 * ¶ÔÄ³¶ÎÊ±¼äĞòÁĞ½øĞĞ¾ÛÀà£¬²¢·µ»Ø¾ÛÀà½á¹û
-	 * @param dataItems ¾ÛÀàÔªÊı¾İ
-	 * @param size Ã¿Ò»ÀàÊ±¼ä¶ÎµÄ³¤¶È
-	 * @param clusterNum ¾ÛÀàµÄÀà±êÇ©ÊıÁ¿
-	 * @return ¾ÛÀàÖ®ºóµÄ½á¹û
+	 * ï¿½ï¿½Ä³ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ğ½ï¿½ï¿½Ğ¾ï¿½ï¿½à£¬ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param dataItems ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½ï¿½
+	 * @param size Ã¿Ò»ï¿½ï¿½Ê±ï¿½ï¿½ÎµÄ³ï¿½ï¿½ï¿½
+	 * @param clusterNum ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç©ï¿½ï¿½ï¿½ï¿½
+	 * @return ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½Ä½ï¿½ï¿½
 	 */
 	public static DataItems SelfCluster(DataItems dataItems,int size,int clusterNum,String fileName)
 	{
@@ -563,13 +563,13 @@ public class WavCluster {
 	
 	
 	/**
-	 * ¶ÔÄ³¶ÎÊ±¼äĞòÁĞ½øĞĞ¾ÛÀà£¬²¢·µ»Ø¾ÛÀà½á¹û
-	 * @param patterns ¾ÛÀàÔªÊı¾İ
-	 * @param size Ã¿Ò»ÀàÊ±¼ä¶ÎµÄ³¤¶È
-	 * @param clusterNum ¾ÛÀàµÄÀà±êÇ©ÊıÁ¿
-	 * @return ¾ÛÀàÖ®ºóµÄ½á¹û
+	 * ï¿½ï¿½Ä³ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ğ½ï¿½ï¿½Ğ¾ï¿½ï¿½à£¬ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ï¿½ï¿½ï¿½ï¿½
+	 * @param patterns ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½ï¿½
+	 * @param size Ã¿Ò»ï¿½ï¿½Ê±ï¿½ï¿½ÎµÄ³ï¿½ï¿½ï¿½
+	 * @param clusterNum ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç©ï¿½ï¿½ï¿½ï¿½
+	 * @return ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½Ä½ï¿½ï¿½
 	 */
-	public static DataItems SelfCluster(List<SegPattern>patterns,DataItems dataItems,int size,int clusterNum,String fileName)
+	public static DataItems SelfCluster(List<SegPattern>patterns,DataItems dataItems,int clusterNum,String fileName)
 	{
 		DataItems result = new DataItems();
 		ArrayList<ArrayList<Double>> instances =new ArrayList<ArrayList<Double>>();
@@ -630,7 +630,7 @@ public class WavCluster {
 	}
 	
 	/**
-	 * µÃµ½¾ÛÀàºóµÄ½á¹û£¬ÒÔ¼°Ã¿¸ö·ûºÅ¶ÔÓ¦µÄÔ­Ê¼µãĞòÁĞ
+	 * ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½ï¿½ï¿½ï¿½Ô¼ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½Å¶ï¿½Ó¦ï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @param dataItems
 	 * @return
 	 */
@@ -683,7 +683,7 @@ public class WavCluster {
 		return result;
 	}
 	/**
-	 * ¶ÔÄ³¸öÊ±¼äĞòÁĞ½øĞĞ²¨ĞÎ¾ÛÀà£¬²¢·µ»Ø¾ÛÀà½á¹û
+	 * ï¿½ï¿½Ä³ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ğ½ï¿½ï¿½Ğ²ï¿½ï¿½Î¾ï¿½ï¿½à£¬ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * @param dataItems
 	 * @param task
 	 * @return
@@ -730,7 +730,7 @@ public class WavCluster {
 		return result;
 	}
 	/**
-	 * ½«ÑµÁ·¼¯×ª»»³ÉarffÎÄ¼ş
+	 * ï¿½ï¿½Ñµï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½arffï¿½Ä¼ï¿½
 	 * @param instances
 	 * @param path
 	 */
@@ -784,7 +784,7 @@ public class WavCluster {
 //		segmentTrainAll();
 //		waveTrainAll();
 		/**
-		 * ²âÊÔÓÃ³ÌĞò¶Î£¬Ôİ²»ÒªÉ¾³ı
+		 * ï¿½ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ï¿½Î£ï¿½ï¿½İ²ï¿½ÒªÉ¾ï¿½ï¿½
 		 */
 		TaskElement task = new TaskElement();
 		task.setSourcePath("E:/javaproject/NetworkMiningSystem/smtpPcap");

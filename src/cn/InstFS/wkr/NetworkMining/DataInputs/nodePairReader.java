@@ -457,23 +457,25 @@ public class nodePairReader implements IReader {
 			String protocolItems=items[items.length-1];
 			String[] eachProtocol=protocolItems.split(";");
 			for(String protocolTraffic:eachProtocol){
-				String protocol=protocolTraffic.split(":")[0];
+				String[] proAndTraffic=protocolTraffic.split(":");
+				String protocol=proAndTraffic[0];
 				if(protocolDataItems.containsKey(protocol)){
 					DataItems dataItems=protocolDataItems.get(protocol);
 					DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
 					//合并同一个IP，同一个协议的通信的流量要合并
 					if(dataItem.getTime().toString().equals(time.toString())){
 						int times=Integer.parseInt(dataItem.getData());
-						dataItems.getData().set(dataItems.getLength()-1,(times+1)+"");
+						int addTimes=Integer.parseInt(proAndTraffic[2]);
+						dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
 					}else{
-						dataItems.add1Data(time, "1");
+						dataItems.add1Data(time, proAndTraffic[2]);
 					}	
 				}else{
 					DataItems dataItems=new DataItems();
 					for(int i=rows-1;i>=0;i--){
 						dataItems.add1Data(parseTime(timeSpan-i), "0");
 					}
-					dataItems.add1Data(time, "1");
+					dataItems.add1Data(time, proAndTraffic[2]);
 					protocolDataItems.put(protocol, dataItems);
 				}
 			}

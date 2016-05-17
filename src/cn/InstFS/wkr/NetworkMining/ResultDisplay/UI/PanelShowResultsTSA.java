@@ -11,7 +11,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataInputUtils;
 import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerTSA;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 import java.awt.GridBagLayout;
@@ -171,7 +171,7 @@ public class PanelShowResultsTSA extends JPanel implements IPanelShowResults {
 	@Override
 	public void displayMinerResults(MinerResults rslts) {
 		if (rslts == null || rslts.getRetTSA() == null ||
-				!rslts.getMiner().getClass().equals(NetworkMinerTSA.class))
+				!rslts.getMiner().getClass().equals(NetworkMinerFM.class))
 			return;
 
 		DataItems outliesItems = rslts.getRetTSA().getOutlies();
