@@ -54,7 +54,7 @@ public class WholeNetworkFrame extends JFrame{
 					NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
 					PeriodMinerFactory periodMinerFactory = PeriodMinerFactory.getInstance();
 					WholeNetworkFrame window = new WholeNetworkFrame();
-					window.setTitle("网络规律挖掘");
+					
 //					window.setModel(networkMinerFactory.allMiners);
 					//window.loadModel();
 					
@@ -87,16 +87,17 @@ public class WholeNetworkFrame extends JFrame{
 	}
 	public void loadModel() {
 		// TODO Auto-generated method stub
+		
+		miningMethods.add(MiningMethod.MiningMethods_PeriodicityMining);
+		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
+		miningMethods.add(MiningMethod.MiningMethods_OutliesMining);
+		miningMethods.add(MiningMethod.MiningMethods_PredictionMining);
 		miningMethods.add(MiningMethod.MiningMethods_Statistics);
-//		miningMethods.add(MiningMethod.MiningMethods_PeriodicityMining);
-//		miningMethods.add(MiningMethod.MiningMethods_FrequenceItemMining);
-//		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
-//		miningMethods.add(MiningMethod.MiningMethods_TsAnalysis);
-//		miningObjects.add("网络簇系数");
-//		miningObjects.add("网络直径");
-		miningObjects.add("结点出现消失");
+		miningObjects.add("网络簇系数");
+		miningObjects.add("网络直径");
+//		miningObjects.add("结点出现消失");
 	}
-
+	
 	
 	public void initModel() {
 		// TODO Auto-generated method stub
@@ -137,6 +138,7 @@ public class WholeNetworkFrame extends JFrame{
 					task.setTaskRange(TaskRange.WholeNetworkRange);
 					task.setTaskName(miningObjects.get(i)+"_"+MiningMethod.MiningMethods_Statistics+"_"+task.getGranularity());
 					panelShow.onTaskAdded(task);
+					
 					System.out.println("get");
 				}
 				else
@@ -177,8 +179,8 @@ public class WholeNetworkFrame extends JFrame{
 	
 	}
 private void initialize() {
-		
-		setBounds(100, 100, 1120, 763);
+		this.setTitle("网络结构变化规律");
+		setBounds(100, 100, 1500, 900);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		try { 
 //			org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();

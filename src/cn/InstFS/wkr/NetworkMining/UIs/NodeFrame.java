@@ -36,8 +36,10 @@ import org.jvnet.substance.skin.SubstanceSaharaLookAndFeel;
 import org.jvnet.substance.title.FlatTitlePainter;
 import org.jvnet.substance.title.MatteHeaderPainter;
 
+import cn.InstFS.wkr.NetworkMining.Miner.FrequentItemMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.OutliesMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.PeriodMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
@@ -91,8 +93,26 @@ public class NodeFrame extends JFrame{
 //					periodMinerFactory.minerAllPeriods();
 					
 //					networkMinerFactory.startAllMiners();
+					
+					
+					PeriodMinerFactory periodMinerFactory=PeriodMinerFactory.getInstance();
+					periodMinerFactory.dataPath="C:/data/out/traffic/";
+					periodMinerFactory.minerAllPeriods();
+					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PeriodicityMining);
+					
+//					OutliesMinerFactory outliesMinerFactory =OutliesMinerFactory.getInstance();
+//					outliesMinerFactory.dataPath="C:/data/out/traffic/";
+//					outliesMinerFactory.detectOutlies();
+//					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_OutliesMining);
+					
+//					FrequentItemMinerFactory freItemsFactory=FrequentItemMinerFactory.getInstance();
+//					freItemsFactory.dataPath="C:/data/out/traffic/";
+//					freItemsFactory.detectFrequntItems();
+//					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_SequenceMining);
+
+					
 					NodeFrame window = new NodeFrame();
-					window.setTitle("网络规律挖掘");
+//					window.setTitle("网络规律挖掘");
 //					window.setModel(networkMinerFactory.allMiners);
 					//window.loadModel();
 					
@@ -121,11 +141,14 @@ public class NodeFrame extends JFrame{
 //		MiningMethod method = MiningMethod.MiningMethods_PeriodicityMining;
 //		miningMethods.add(method);
 		miningMethods.add(MiningMethod.MiningMethods_PeriodicityMining);
-		miningMethods.add(MiningMethod.MiningMethods_FrequenceItemMining);
-//		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
-		miningMethods.add(MiningMethod.MiningMethods_TsAnalysis);
+
+		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
+		miningMethods.add(MiningMethod.MiningMethods_OutliesMining);
+		miningMethods.add(MiningMethod.MiningMethods_PredictionMining);
+		miningMethods.add(MiningMethod.MiningMethods_Statistics);
 		miningObjects.add("traffic");
 		miningObjects.add("通信次数");
+		miningObjects.add("结点出现消失");
 //		miningObjects.add("通信跳数");
 	}
 
@@ -141,6 +164,7 @@ public class NodeFrame extends JFrame{
 			if(task.getTaskRange().compareTo(TaskRange.NodePairRange)==0) //比较的是顺序
 			{
 				miners.put(entry.getKey(),entry.getValue());
+//				System.out.println("????");
 			}
 		}
 		
@@ -148,7 +172,7 @@ public class NodeFrame extends JFrame{
 		System.out.println(miningMethods.size());
 		for(int i=0;i<miningObjects.size();i++)
 		{
-			ArrayList<JPopupMenu> list = new ArrayList<JPopupMenu>();
+			ArrayList<JPopupMenu> list = popupMenus.get(i);
 			final PanelShowAllResults   panelShow = panelShowList.get(i);
 			
 			for(int j=0;j<miningMethods.size();j++)
@@ -233,17 +257,17 @@ public class NodeFrame extends JFrame{
 			
 				list.add(popMenu);
 			}
-			popupMenus.add(list);
+		
 		}
 		for(int i=0;i<miningMethods.size();i++)
 		{
 			MiningMethod method = miningMethods.get(i);
 			JButton button = new JButton("结点对"+method.toString());
 			
-			button.setBounds(38, 51+buttons.size()*100, 180, 27);
+			button.setBounds(38, 51+buttons.size()*80, 150, 27);
 			
 			
-			addPopup(button, popupMenus.get(miningObjectIndex).get(i),i);
+			addPopup(button, popupMenus.get(miningObjectIndex).get(buttons.size()),buttons.size());
 			buttons.add(button);
 		}
 		System.out.println("ff"+popupMenus.get(0).get(0).getComponentCount());
@@ -342,10 +366,10 @@ public class NodeFrame extends JFrame{
 			MiningMethod method = miningMethods.get(i);
 			JButton button = new JButton("单结点"+method.toString());
 			
-			button.setBounds(38, 51+buttons.size()*100, 180, 27);
+			button.setBounds(38, 51+buttons.size()*80, 150, 27);
 			
 			
-			addPopup(button, popupMenus.get(miningObjectIndex).get(i),i);
+			addPopup(button, popupMenus.get(miningObjectIndex).get(buttons.size()),buttons.size());
 			buttons.add(button);
 		}
 		System.out.println("ff"+popupMenus.get(0).get(0).getComponentCount());
@@ -353,8 +377,8 @@ public class NodeFrame extends JFrame{
 	}
 	
     void initialize() {
-		this.setName("结点与链路属性规律");
-		setBounds(100, 100, 1120, 763);
+		this.setTitle(("结点与链路属性规律"));
+		setBounds(100, 100, 1500, 900);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		try { 
 //			org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
@@ -394,7 +418,7 @@ public class NodeFrame extends JFrame{
 		getContentPane().setLayout(new BorderLayout(0, 0));
 //		
 		JSplitPane splitPane = new JSplitPane();
-		splitPane.setDividerLocation(200);
+		splitPane.setDividerLocation(220);
 		splitPane.setDividerSize(2);
 		JPanel leftPanel = new JPanel();
 		leftPanel.setLayout(null);
@@ -430,13 +454,13 @@ public class NodeFrame extends JFrame{
 						if(miningObjectIndex!=tabbedPane.getSelectedIndex())
 						{
 							miningObjectIndex=tabbedPane.getSelectedIndex();
-							for (int i=0;i<miningMethods.size();i++)  
+							for (int i=0;i<buttons.size();i++)  
 							{
 								System.out.println("ssss");
 								delPopup(buttons.get(i),i);
 							}
 							popupListeners.clear();
-							for (int i=0;i<miningMethods.size();i++)  
+							for (int i=0;i<buttons.size();i++)  
 							{
 								if(popupMenus.get(miningObjectIndex).get(i).getComponentCount()>0)
 									addPopup(buttons.get(i),popupMenus.get(miningObjectIndex).get(i),i);

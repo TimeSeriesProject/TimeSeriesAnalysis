@@ -51,17 +51,19 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 		
 		MiningMethod miningMethodName = task.getMiningMethod();
 		IPanelShowResults panel = null;
-		if (miningMethodName.equals(MiningMethod.MiningMethods_TsAnalysis)){
-			panel = new PanelShowResultsTSA(task);
-		}else if (miningMethodName.equals(MiningMethod.MiningMethods_SequenceMining)){
+		if (miningMethodName.equals(MiningMethod.MiningMethods_OutliesMining)){
+			panel = new PanelShowResultsOM(task);
+		}else if (miningMethodName.equals(MiningMethod.MiningMethods_PredictionMining)) {
+			panel=new PanelShowResultsFM(task);
+		} else if (miningMethodName.equals(MiningMethod.MiningMethods_SequenceMining)) {
 			panel = new PanelShowResultsSM(task);
-		}else if (miningMethodName.equals(MiningMethod.MiningMethods_PeriodicityMining))
+		} else if (miningMethodName.equals(MiningMethod.MiningMethods_PeriodicityMining))
 			panel = new PanelShowResultsPM(task);
-		else  if( miningMethodName.equals(MiningMethod.MiningMethods_FrequenceItemMining))
-			panel= new PanelShowResultsFP(task);
-		else if(miningMethodName.equals(MiningMethod.MiningMethods_PathProbilityMining))
-			panel=new PanelShowResultsPP(task);
-		else if(miningMethodName.equals(MiningMethod.MiningMethods_Statistics))
+		else if (miningMethodName.equals(MiningMethod.MiningMethods_FrequenceItemMining))
+			panel = new PanelShowResultsFP(task);
+		else if (miningMethodName.equals(MiningMethod.MiningMethods_PathProbilityMining))
+			panel = new PanelShowResultsPP(task);
+		else if (miningMethodName.equals(MiningMethod.MiningMethods_Statistics))
 			panel = new PanelShowResultsStatistics(task);
 		if (panel != null){
 			add((JPanel)panel, task.getTaskName());

@@ -175,7 +175,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 //			System.out.println("");
 //		}
 //		System.out.println("freq size "+freq.size());
-		if (rslt == null || rslt.getRetTSA() == null ||
+		if (rslt == null || rslt.getRetSM() == null ||
 				!rslt.getMiner().getClass().equals(NetworkMinerSM.class))
 			return;
 		else if(count==0)

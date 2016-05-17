@@ -142,6 +142,7 @@ public class CWNetworkReader  implements IReader{
    
     private ArrayList<Link> linkList = new ArrayList<Link> ();
     //private Set<String> nodesSet	= new HashSet<String>();
+    private ArrayList<Set<Pair>> matrixList = new ArrayList<Set<Pair>> ();
     private TaskElement task = null;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
     private int start	=	0;
@@ -238,7 +239,66 @@ public class CWNetworkReader  implements IReader{
 			System.exit(0);
 		}
 	}
-	
+	private void getMatrixList()
+	{
+		String path=task.getSourcePath();
+		File srcFiles=new File(path);
+		try
+		{
+			for(int i=0;i<srcFiles.list().length;i++)
+			{
+				
+				TextReader textReader = new TextReader(path+"/"+srcFiles.list()[i]);
+				String curLine="";
+				String header =textReader.readLine(); //读取文件
+				while((curLine=textReader.readLine())!=null)
+				{
+					
+					//List<Map.Entry<Integer,Double>> mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet());
+					
+					String seg[]=curLine.split(",");
+					/**
+					 * 解析路径
+					 */
+					String preNode =null;
+					int preHops =-1;
+					for(int j=5;j<seg.length;j++)
+					{
+						String str[] = seg[j].split(":");
+						String node = str[0].split("-")[0]; //获取路由器号
+						
+						int hops = Integer.valueOf(str[1]);               //获取跳数
+						
+						if(preNode!=null&&preHops==hops)
+						{
+							while(Integer.valueOf(seg[0])/task.getGranularity()>=matrixList.size())
+							{
+								matrixList.add(new HashSet<Pair>());
+							}
+							matrixList.get(Integer.valueOf(seg[0])/task.getGranularity()).add(new Pair(preNode,node));
+							matrixList.get(Integer.valueOf(seg[0])/task.getGranularity()).add(new Pair(node,preNode));
+						}
+						preNode=node;
+						preHops=hops;
+//	
+					}
+//					
+//					
+				}
+			}
+//			Collections.sort(linkList);
+			
+//			for(int i=0;i<linkList.size();i++)
+//			{
+//				System.out.println(linkList.get(i).start+" "+linkList.get(i).end+" "+linkList.get(i).time);
+//			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			System.exit(0);
+		}
+	}
 	/**
 	 * 计算簇系数
 	 * @return
@@ -250,12 +310,12 @@ public class CWNetworkReader  implements IReader{
 		/**
 		 * 得到邻居
 		 */
-		System.out.println("start");
+//		System.out.println("start");
 		for(Pair entry:matrix)
 		{
 			String st = entry.first;
 			String ed = entry.second;
-			System.out.println(st+" " +ed);
+//			System.out.println(st+" " +ed);
 			if(!neighbourMap.containsKey(st))
 			{
 				Set<String> set = new HashSet<String> ();
@@ -385,7 +445,7 @@ public class CWNetworkReader  implements IReader{
 					timeMaps.get(timeSegNum).put(seg[2], 1);
 				}
 			}
-			System.out.println(min+"wwwww"+max);
+//			System.out.println(min+"wwwww"+max);
 		}
 		catch(Exception e)
 		{
@@ -410,72 +470,83 @@ public class CWNetworkReader  implements IReader{
 	private DataItems readClusterByText()
 	{
 		
-		int presegnum=0;
-		int cursegnum;
-		Set<Pair> matrix =new HashSet<Pair>();
+//		int presegnum=0;
+//		int cursegnum;
+//		Set<Pair> matrix =new HashSet<Pair>();
 
-		getlinkList();
+//		getlinkList();
 		
 		/**
 		 * 计算簇系数
 		 */
-		for(int i=0;i<linkList.size();i++)
+//		for(int i=0;i<linkList.size();i++)
+//		{
+//			 cursegnum = (linkList.get(i).time-start)/timeseg;
+//			// System.out.println("cursegnum "+cursegnum);
+//			 if(cursegnum>presegnum)
+//			 {
+//				// System.out.println("matrix "+matrix.size());
+//				 Date date = second2Date(timeseg*presegnum);
+//				 dataItems.add1Data(date, String.valueOf(calCluster(matrix)));
+//				 for(int j=presegnum+1;j<cursegnum;j++)
+//				 {
+//					 date = second2Date(timeseg*j);
+//					 dataItems.add1Data(date, "0");
+//				 }
+//				 matrix.clear();
+//				 presegnum=cursegnum;
+//			 }
+//			 matrix.add(new Pair(linkList.get(i).start,linkList.get(i).end));
+//			 matrix.add(new Pair(linkList.get(i).end,linkList.get(i).start));
+//		}
+		getMatrixList();
+		for(int i=0;i<matrixList.size();i++)
 		{
-			 cursegnum = (linkList.get(i).time-start)/timeseg;
-			// System.out.println("cursegnum "+cursegnum);
-			 if(cursegnum>presegnum)
-			 {
-				// System.out.println("matrix "+matrix.size());
-				 Date date = second2Date(timeseg*presegnum);
-				 dataItems.add1Data(date, String.valueOf(calCluster(matrix)));
-				 for(int j=presegnum+1;j<cursegnum;j++)
-				 {
-					 date = second2Date(timeseg*j);
-					 dataItems.add1Data(date, "0");
-				 }
-				 matrix.clear();
-				 presegnum=cursegnum;
-			 }
-			 matrix.add(new Pair(linkList.get(i).start,linkList.get(i).end));
-			 matrix.add(new Pair(linkList.get(i).end,linkList.get(i).start));
+			Date date = second2Date(task.getGranularity()*i);
+			dataItems.add1Data(date, String.valueOf(calCluster(matrixList.get(i))));
 		}
-		 Date date = second2Date(timeseg*presegnum);
-		 dataItems.add1Data(date, String.valueOf(calCluster(matrix)));
 		return dataItems;
 	}
 	private DataItems readDiameterByText()
 	{
-		int presegnum=0;
-		int cursegnum;
-		Set<Pair> matrix =new HashSet<Pair>();
-		getlinkList();
+//		int presegnum=0;
+//		int cursegnum;
+//		Set<Pair> matrix =new HashSet<Pair>();
+//		getlinkList();
 		
 		/**
 		 * 计算直径
 		 */
-		for(int i=0;i<linkList.size();i++)
+//		for(int i=0;i<linkList.size();i++)
+//		{
+//			 cursegnum = (linkList.get(i).time-start)/timeseg;
+//			 if(cursegnum>presegnum)
+//			 {
+//				 Date date = second2Date(timeseg*presegnum);
+//				 dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));
+////				 System.out.println("matrix "+matrix.size()); 
+//				 for(int j=presegnum+1;j<cursegnum;j++)
+//				 {
+//					 date = second2Date(timeseg*j);
+//					 dataItems.add1Data(date, "0");
+//				 }
+//				 presegnum=cursegnum;
+//				 matrix.clear();
+//			 }
+//			 matrix.add(new Pair(linkList.get(i).start,linkList.get(i).end));
+//			 matrix.add(new Pair(linkList.get(i).end,linkList.get(i).start));
+//			
+//		}
+//		 
+//		Date date = second2Date(timeseg*presegnum);
+//		dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));\
+		getMatrixList();
+		for(int i=0;i<matrixList.size();i++)
 		{
-			 cursegnum = (linkList.get(i).time-start)/timeseg;
-			 if(cursegnum>presegnum)
-			 {
-				 Date date = second2Date(timeseg*presegnum);
-				 dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));
-//				 System.out.println("matrix "+matrix.size()); 
-				 for(int j=presegnum+1;j<cursegnum;j++)
-				 {
-					 date = second2Date(timeseg*j);
-					 dataItems.add1Data(date, "0");
-				 }
-				 presegnum=cursegnum;
-				 matrix.clear();
-			 }
-			 matrix.add(new Pair(linkList.get(i).start,linkList.get(i).end));
-			 matrix.add(new Pair(linkList.get(i).end,linkList.get(i).start));
-			
+			Date date = second2Date(task.getGranularity()*i);
+			System.out.println(matrixList.get(i).size());
+			dataItems.add1Data(date, String.valueOf(calDiameter(matrixList.get(i))));
 		}
-		 
-		Date date = second2Date(timeseg*presegnum);
-		dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));
 		return dataItems;
 	}
 	
