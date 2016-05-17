@@ -23,8 +23,10 @@ public class PropertyUI_BaseSetting implements IObjectDescriptor<TaskElement> {
     PropertyUI_MiningParamsSM sm = null;
     PropertyUI_MiningParamsTSA tsa = null;
     PropertyUI_MiningParamsPM pm = null;
-    PropertyUI_MiningParamsFP fm=null;
+    PropertyUI_MiningParamsFP fp=null;
     PropertyUI_MiningParamsPP pp=null;
+    PropertyUI_MiningParamsFM fm=null;
+    PropertyUI_MiningParamsOM om=null;
     HashMap<String, String> displayNames = new HashMap<String,String>();
 
     String [] names = new String[]{"taskName", "comments", "miningObject",
@@ -199,13 +201,13 @@ public class PropertyUI_BaseSetting implements IObjectDescriptor<TaskElement> {
         if (core.getMiningMethod().equals(
                 MiningMethod.MiningMethods_OutliesMining)) {
 //			if (tsa == null)
-            tsa = new PropertyUI_MiningParamsTSA(core.getMiningParams());
+            om = new PropertyUI_MiningParamsOM(core.getMiningParams());
             return tsa;
         } else if (core.getMiningMethod().equals(
                 MiningMethod.MiningMethods_PredictionMining)) {
 //			if (tsa == null)
-            tsa = new PropertyUI_MiningParamsTSA(core.getMiningParams());
-            return tsa;
+            fm = new PropertyUI_MiningParamsFM(core.getMiningParams());
+            return fm;
         }
         else if (core.getMiningMethod().equals(MiningMethod.MiningMethods_SequenceMining)){
 //			if (sm == null)
@@ -219,8 +221,8 @@ public class PropertyUI_BaseSetting implements IObjectDescriptor<TaskElement> {
         }
         else if (core.getMiningMethod().equals(MiningMethod.MiningMethods_FrequenceItemMining))
         {
-            fm = new PropertyUI_MiningParamsFP(core.getMiningParams());
-            return fm;
+            fp = new PropertyUI_MiningParamsFP(core.getMiningParams());
+            return fp;
         }
         else  if(core.getMiningMethod().equals(MiningMethod.MiningMethods_PathProbilityMining))
         {

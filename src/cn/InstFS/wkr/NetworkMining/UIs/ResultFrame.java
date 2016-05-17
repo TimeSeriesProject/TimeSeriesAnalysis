@@ -70,7 +70,6 @@ import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsFP;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsPM;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsPP;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsSM;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsTSA;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;

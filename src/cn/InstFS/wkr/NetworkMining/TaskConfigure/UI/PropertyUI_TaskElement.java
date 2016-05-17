@@ -13,6 +13,7 @@ import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsFP;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 
+import com.l2fprod.common.propertysheet.Property;
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.descriptors.IObjectDescriptor;
 
@@ -23,7 +24,9 @@ public class PropertyUI_TaskElement implements IObjectDescriptor<TaskElement> {
 	PropertyUI_MiningParamsSM sm = null;
 	PropertyUI_MiningParamsTSA tsa = null;
 	PropertyUI_MiningParamsPM pm = null;
-	PropertyUI_MiningParamsFP fm=null;
+	PropertyUI_MiningParamsFP fp=null;
+	PropertyUI_MiningParamsOM om=null;
+	PropertyUI_MiningParamsFM fm=null;
 	HashMap<String, String> displayNames = new HashMap<String,String>();
 	
 	String [] names = new String[]{"taskName", "comments", "miningObject", 
@@ -194,10 +197,10 @@ public class PropertyUI_TaskElement implements IObjectDescriptor<TaskElement> {
 
 	public IObjectDescriptor getMiningParams() {
 		if (core.getMiningMethod().equals(
-				MiningMethod.MiningMethods_TsAnalysis)) {
+				MiningMethod.MiningMethods_OutliesMining)) {
 //			if (tsa == null)
-				tsa = new PropertyUI_MiningParamsTSA(core.getMiningParams());
-			return tsa;
+				om = new PropertyUI_MiningParamsOM(core.getMiningParams());
+			return om;
 		}
 		else if (core.getMiningMethod().equals(MiningMethod.MiningMethods_SequenceMining)){
 //			if (sm == null)
@@ -211,7 +214,12 @@ public class PropertyUI_TaskElement implements IObjectDescriptor<TaskElement> {
 		}
 		else if (core.getMiningMethod().equals(MiningMethod.MiningMethods_FrequenceItemMining))
 		{
-			fm = new PropertyUI_MiningParamsFP(core.getMiningParams());
+			fp = new PropertyUI_MiningParamsFP(core.getMiningParams());
+			return fp;
+		}
+		else if(core.getMiningMethod().equals(MiningMethod.MiningMethods_PredictionMining))
+		{
+			fm=new PropertyUI_MiningParamsFM(core.getMiningParams());
 			return fm;
 		}
 
