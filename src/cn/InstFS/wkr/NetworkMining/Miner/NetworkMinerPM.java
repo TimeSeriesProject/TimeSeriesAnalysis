@@ -212,7 +212,7 @@ class PMTimerTask extends TimerTask{
 			retPmMap.put(MiningItem, retPM);
 			//检测是否存在局部周期
 			if(!retPM.getHasPeriod()){
-				PartialPM partialPM=new PartialPM(results,oriDataItems);
+				PartialPM partialPM=new PartialPM(results,oriDataItems,task.getTaskName());
 				partialPM.miningPartialPM();
 			}
 		}else{

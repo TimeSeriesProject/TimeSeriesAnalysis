@@ -21,9 +21,9 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.MergeSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.Pattern;
-import cn.InstFS.wkr.NetworkMining.Miner.IMinerTSA;
+import cn.InstFS.wkr.NetworkMining.Miner.IMinerOM;
 
-public class TEOPartern implements IMinerTSA{
+public class TEOPartern implements IMinerOM{
 	private DataItems dataItems;     //时间序列 
 	private int boundraryMinlen;                 //边缘点最短距离
 	private int operatorLen;         //算子长度
@@ -556,10 +556,5 @@ public class TEOPartern implements IMinerTSA{
 	@Override
 	public DataItems getOutlies() {
 		return outlies;
-	}
-
-	@Override
-	public DataItems getPredictItems() {
-		return null;
 	}
 }

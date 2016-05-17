@@ -21,20 +21,23 @@ public class PartialPM{
 	private HashMap<Integer, List<List<Integer>>> partialPmMap;
 	private DataItems dataItems;
 	private MinerResults results;
+	private String arffFileName;
 	
-	public PartialPM(MinerResults results,DataItems dataItems) {
+	public PartialPM(MinerResults results,DataItems dataItems,String arffFileName) {
 		this.results = results;
 		clusterNum=8;
 		threshold=5;
 		this.dataItems=dataItems;
+		this.arffFileName=arffFileName;
 		partialPmMap=new HashMap<Integer, List<List<Integer>>>();
 	}
 	
-	public PartialPM(MinerResults results,int clusterNum,int threshold,DataItems dataItems) {
+	public PartialPM(MinerResults results,int clusterNum,int threshold,DataItems dataItems,String arffFileName) {
 		this.results = results;
 		this.clusterNum=clusterNum;
 		this.threshold=threshold;
 		this.dataItems=dataItems;
+		this.arffFileName=arffFileName;
 		partialPmMap=new HashMap<Integer, List<List<Integer>>>();
 	}
 	
@@ -43,7 +46,7 @@ public class PartialPM{
 		PointSegment segment=new PointSegment(dataItems, 5);
 		List<SegPattern> segPatterns=segment.getPatterns();
 		results.setInputData(dataItems);
-		DataItems clusterItems=WavCluster.SelfCluster(segPatterns,dataItems, 24,clusterNum,"");
+		DataItems clusterItems=WavCluster.SelfCluster(segPatterns,dataItems, clusterNum,arffFileName);
 		SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit();
 		sequencePattern.setDataItems(clusterItems);
 		sequencePattern.setStepSize(1);

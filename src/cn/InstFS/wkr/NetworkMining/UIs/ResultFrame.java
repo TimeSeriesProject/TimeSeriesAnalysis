@@ -95,7 +95,7 @@ public abstract class ResultFrame extends JFrame {
 					periodMinerFactory.minerAllPeriods();
 					
 					networkMinerFactory.startAllMiners();
-					SingleNodeFrame window = new SingleNodeFrame();
+					NodeFrame window = new NodeFrame();
 					window.setTitle("网络规律挖掘");
 //					window.setModel(networkMinerFactory.allMiners);
 					//window.loadModel();
