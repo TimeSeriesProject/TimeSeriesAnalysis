@@ -9,12 +9,11 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
-public class ARTSA implements IMinerTSA{
+public class ARTSA implements IMinerOM{
 	private TaskElement task;
 	private DataItems di;
 	private DataItems outlies;           //异常点
 	private int predictPeriod;           //预测的长度
-	private DataItems predictItems;
 	private Date endDate;                //序列中最后值的日期
 	
 	private double[] seq=null;           //存储平稳化后的序列
@@ -67,17 +66,6 @@ public class ARTSA implements IMinerTSA{
 		endDate=di.getLastTime();
 		Calendar calendar=Calendar.getInstance();
 		calendar.setTime(endDate);
-		predictItems=new DataItems();
-		for(int k=0;k<predictPeriod;k++){
-			getParams(seqSize-window+k, paramsφ);
-			double x1=seq[seqSize-1+k];
-			double x2=seq[seqSize-2+k];
-			seq[seqSize+k]=paramsφ[0]*x1+paramsφ[1]*x2;
-			//计算预测值
-			predictItems.getData().add((seq[seqSize+k]+seqMean+offset[(seqSize+k)%(offset.length)])+"");
-			calendar.add(Calendar.SECOND, task.getGranularity());
-			predictItems.getTime().add(calendar.getTime());
-		}
 		//将转换后的平稳序列还原至非平稳序列
 		for(int k=0;k<seqSize+predictPeriod;k++){
 			seq[k]=seq[k]+seqMean+offset[(k)%(offset.length)];
@@ -206,8 +194,4 @@ public class ARTSA implements IMinerTSA{
 		return outlies;
 	}
 	
-	@Override
-	public DataItems getPredictItems() {
-		return predictItems;
-	}
 }

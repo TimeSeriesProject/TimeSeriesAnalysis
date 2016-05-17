@@ -25,9 +25,9 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
-public class NetworkMinerTSA implements INetworkMiner {
+public class NetworkMinerFM implements INetworkMiner {
 	Timer timer;
-	TSATimerTask timerTask;
+	FMTimerTask timerTask;
 	MinerResults results;
 	IResultsDisplayer displayer;
 	
@@ -37,7 +37,7 @@ public class NetworkMinerTSA implements INetworkMiner {
 	IReader reader;
 	
 	
-	public NetworkMinerTSA(TaskElement task,IReader reader) {
+	public NetworkMinerFM(TaskElement task,IReader reader) {
 		this.task = task;
 		this.reader=reader;
 		results = new MinerResults(this);
@@ -54,7 +54,7 @@ public class NetworkMinerTSA implements INetworkMiner {
 			return false;
 		}
 		timer = new Timer();
-		timerTask = new TSATimerTask(task, results, displayer,reader,timer,isOver);
+		timerTask = new FMTimerTask(task, results, displayer,reader,timer,isOver);
 		timer.scheduleAtFixedRate(timerTask, new Date(), 2000);
 		isRunning = true;
 		task.setRunning(isRunning);
@@ -105,7 +105,7 @@ public class NetworkMinerTSA implements INetworkMiner {
 	}
 
 }
-class TSATimerTask extends TimerTask{
+class FMTimerTask extends TimerTask{
 	TaskElement task;
 	MinerResults results;
 	IResultsDisplayer displayer;
@@ -113,7 +113,7 @@ class TSATimerTask extends TimerTask{
 	private boolean isRunning = false;
 	private Boolean isOver;
 	IReader reader;
-	public TSATimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,IReader reader,Timer timer,Boolean isOver) {
+	public FMTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,IReader reader,Timer timer,Boolean isOver) {
 		this.task = task;
 		this.results = results;
 		this.displayer = displayer;
@@ -134,7 +134,7 @@ class TSATimerTask extends TimerTask{
 //		if (UtilsSimulation.instance.isPaused())
 //			return;
 		results.setDateProcess(UtilsSimulation.instance.getCurTime());
-		results.getRetTSA().setParamsTSA((ParamsTSA) task.getMiningParams());
+		results.getRetFM().setParamsTSA((ParamsTSA) task.getMiningParams());
 		isRunning = true;
 		ParamsTSA params = (ParamsTSA) task.getMiningParams();
 		
@@ -156,24 +156,9 @@ class TSATimerTask extends TimerTask{
 			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 					task.getDiscreteEndNodes());
 		}
-		IMinerTSA tsaMethod=null;
+		IMinerFM tsaMethod=null;
 		
-//		int dimension=Math.max(task.getDiscreteDimension(),dataItems.getDiscretizedDimension());
-		if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ARTSA)){
-			tsaMethod=new ARTSA(task, params.getPredictPeriod(),dataItems);
-		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
-			tsaMethod=new FastFourierOutliesDetection(dataItems);
-			((FastFourierOutliesDetection)tsaMethod).setAmplitudeRatio(0.7);
-			((FastFourierOutliesDetection)tsaMethod).setVarK(2.5);
-		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_GaussDetection)){
-			tsaMethod=new AnormalyDetection(dataItems);
-		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistTSA)){
-			tsaMethod=new ERPDistTSA(task,params.getPredictPeriod(),dataItems);
-		}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
-			//tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
-			tsaMethod=new PointPatternDetection(dataItems,2,10);
-			results.getRetTSA().setIslinkDegree(true);
-		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_NeuralNetworkTSA)){
+		if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_NeuralNetworkTSA)){
 			TextUtils textUtils=new TextUtils();
 			textUtils.setTextPath(task.getSourcePath()+task.getMiningObject());
 			textUtils.writeOutput(dataItems);
@@ -184,28 +169,7 @@ class TSATimerTask extends TimerTask{
 			throw new RuntimeException("方法不存在！");
 		}
 		tsaMethod.TimeSeriesAnalysis();
-		results.getRetTSA().setOutlies(tsaMethod.getOutlies());            //查找异常
-		results.getRetTSA().setPredictItems(tsaMethod.getPredictItems());  //预测
-		results.getRetTSA().setHasOutlies(false);
-		if(tsaMethod.getOutlies()!=null){
-			DataItems outlies=tsaMethod.getOutlies();
-			if(outlies.getLength()==dataItems.getLength()){
-				int confidence=0;
-				for(String item:outlies.getData()){
-					if(Double.parseDouble(item)>=8){
-						results.getRetTSA().setHasOutlies(true);
-						confidence++;
-					}
-				}
-				if(confidence!=0)
-					results.getRetTSA().setConfidence(confidence);
-			}else{
-				if(outlies.getLength()>0){
-					results.getRetTSA().setHasOutlies(true);
-					results.getRetTSA().setConfidence(outlies.getLength());
-				}
-			}
-		}
+		results.getRetFM().setPredictItems(tsaMethod.getPredictItems());  //预测
 		
 		isRunning = false;
 		isOver=true;

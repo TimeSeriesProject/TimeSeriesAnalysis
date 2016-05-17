@@ -12,9 +12,9 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.MergeSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.Pattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
-import cn.InstFS.wkr.NetworkMining.Miner.IMinerTSA;
+import cn.InstFS.wkr.NetworkMining.Miner.IMinerOM;
 
-public class PointPatternDetection implements IMinerTSA{
+public class PointPatternDetection implements IMinerOM{
 
 	private DataItems dataItems;     //时间序列 
 	private List<SegPattern> patterns;   //TEO 线段模式
@@ -193,10 +193,5 @@ public class PointPatternDetection implements IMinerTSA{
 	@Override
 	public DataItems getOutlies() {
 		return outlies;
-	}
-
-	@Override
-	public DataItems getPredictItems() {
-		return null;
 	}
 }

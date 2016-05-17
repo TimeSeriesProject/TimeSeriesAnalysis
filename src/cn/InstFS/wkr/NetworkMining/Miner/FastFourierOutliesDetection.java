@@ -18,11 +18,11 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.TextUtils;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 
-public class FastFourierOutliesDetection implements IMinerTSA {
+public class FastFourierOutliesDetection implements IMinerOM {
 
     private static FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
-    private static double[] original; // 未变换之前的数据
-    private static double[] denoisedslicezz;//变换之后的数据
+    private static double[] original; 
+    private static double[] denoisedslicezz;
     private static double varK = 3.0;
     private static double amplitudeRatio = 0.8;
     private DataItems di;
@@ -50,7 +50,7 @@ public class FastFourierOutliesDetection implements IMinerTSA {
         return result;
     }
 
-    //逆变换
+    //反傅里叶变换
     public Complex[] IFFT(Complex[] importantCoefficiants) {
         Complex [] denoised = fft.transform(importantCoefficiants, TransformType.INVERSE);
         return denoised;
@@ -77,10 +77,10 @@ public class FastFourierOutliesDetection implements IMinerTSA {
     
 
     /**
-     * 傅里叶滤波，过滤掉高频的波 只取前K个波
+     * 傅里叶变换
      * @param silce
-     * @param k 支取前K个波
-     * @return 过滤后的波
+     * @param k 取傅里叶变换之后的前K个分量
+     * @return 傅里叶变换之后的序列
      */
     public List<String> FFTfilter(List<String> silce,int k) {
         Complex[] result = FFT(silce);
@@ -101,7 +101,7 @@ public class FastFourierOutliesDetection implements IMinerTSA {
             result[i] = (Complex)iterator.next();
             i++;
         }
-        Complex[] denoised = IFFT(result);//反变换
+        Complex[] denoised = IFFT(result);//反傅里叶变换
         denoisedslicezz = new double[denoised.length];
         List<String> denoisedslice = new ArrayList<String>();
         for (int index = 0; index < denoised.length; index++){
@@ -115,14 +115,9 @@ public class FastFourierOutliesDetection implements IMinerTSA {
     public DataItems getOutlies() {
     	return outlies;
     }
-    @Override
-    public DataItems getPredictItems() {
-    	// TODO Auto-generated method stub
-    	return null;
-    }
 
     /**
-     * 滤波
+     * 傅里叶变换
      * @param silce
      * @param threshold
      * @return
@@ -131,7 +126,6 @@ public class FastFourierOutliesDetection implements IMinerTSA {
         Complex[] result = FFT(silce);
         double all = 0,sum=0,p=0;
         
-        // 注释
         for (int index = 0; index < result.length; index++)
         {
             double rr = (result[index].getReal());
@@ -171,7 +165,6 @@ public class FastFourierOutliesDetection implements IMinerTSA {
         }
         Complex[] denoised = IFFT(result);
         denoisedslicezz = new double[denoised.length];
-//        TreeMap<Long, Long> denoisedsilce = new TreeMap<Long, Long>();
         List<String> denoisedsilce = new ArrayList<String>();
         for (int index = 0; index < denoised.length; index++)
         {

@@ -1,12 +1,16 @@
 package cn.InstFS.wkr.NetworkMining.TaskConfigure;
 
+import org.apache.ibatis.jdbc.Null;
+
 public enum MiningMethod {
-	MiningMethods_FrequenceItemMining("频繁项集挖掘"),
+	MiningMethods_FrequenceItemMining("多元时间序列挖掘"),
 	MiningMethods_SequenceMining("序列模式挖掘"),
 	MiningMethods_PeriodicityMining("周期模式发现"),
 	MiningMethods_PathProbilityMining("路径概率发现"),
-	MiningMethods_TsAnalysis("时间序列分析"),
-	MiningMethods_Statistics("统计图");
+	MiningMethods_OutliesMining("序列异常检测"),
+	MiningMethods_PredictionMining("时间序列预测"),
+	MiningMethods_Statistics("统计图"),
+	MiningMethods_None("无");
 	
 	private String value;
 	MiningMethod(String value) {
@@ -18,9 +22,11 @@ public enum MiningMethod {
 	}
 	
 	public static MiningMethod fromString(String str){
-		if (str.equals(MiningMethods_TsAnalysis.toString()))
-			return MiningMethods_TsAnalysis;
-		else if (str.equals(MiningMethods_PeriodicityMining.toString()))
+		if (str.equals(MiningMethods_OutliesMining.toString()))
+			return MiningMethods_OutliesMining;
+		else if(str.equals(MiningMethods_PredictionMining.toString())){
+			return MiningMethods_PredictionMining;
+		}else if (str.equals(MiningMethods_PeriodicityMining.toString()))
 			return MiningMethods_PeriodicityMining;
 		else if(str.equals(MiningMethods_FrequenceItemMining.toString())){
 			return MiningMethods_FrequenceItemMining;
@@ -31,7 +37,7 @@ public enum MiningMethod {
 		}else if(str.equals(MiningMethods_Statistics.toString()))
 			return MiningMethods_Statistics;
 		else{
-			return MiningMethods_TsAnalysis;
+			return MiningMethods_None;
 		}
 	}
 }

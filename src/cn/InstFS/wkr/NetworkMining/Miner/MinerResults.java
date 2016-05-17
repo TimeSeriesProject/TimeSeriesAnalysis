@@ -19,9 +19,10 @@ public class MinerResults {
 	private boolean isAbnormal;	// 是否异常
 	DataItems di;
 	private MinerResultsPM retPM;
-	private MinerResultsTSA retTSA;
+	private MinerResultsOM retOM;
 	private MinerResultsSM retSM; 
 	private MinerResultsFP retFP;
+	private MinerResultsFM retFM;
 	private MinerResultsPath retPath;
 	
 	
@@ -29,9 +30,10 @@ public class MinerResults {
 		setMiner(miner);
 		//实例化，读取参数
 		retPM = new MinerResultsPM();
-		retTSA = new MinerResultsTSA();
+		retOM = new MinerResultsOM();
 		retSM = new MinerResultsSM();
-		retFP=new MinerResultsFP();
+		retFP = new MinerResultsFP();
+		retFM = new MinerResultsFM();
 	}
 	
 	public MinerResultsFP getRetFP() {
@@ -59,12 +61,6 @@ public class MinerResults {
 	}
 	public void setRetPM(MinerResultsPM retPM) {
 		this.retPM = retPM;
-	}
-	public MinerResultsTSA getRetTSA() {
-		return retTSA;
-	}
-	public void setRetTSA(MinerResultsTSA retTSA) {
-		this.retTSA = retTSA;
 	}
 	public boolean isAbnormal() {
 		return isAbnormal;
@@ -98,5 +94,23 @@ public class MinerResults {
 	public void setMiner(INetworkMiner miner) {
 		this.miner = miner;
 	}
+
+	public MinerResultsOM getRetOM() {
+		return retOM;
+	}
+
+	public void setRetOM(MinerResultsOM retOM) {
+		this.retOM = retOM;
+	}
+
+	public MinerResultsFM getRetFM() {
+		return retFM;
+	}
+
+	public void setRetFM(MinerResultsFM retFM) {
+		this.retFM = retFM;
+	}
+	
+	
 }
 

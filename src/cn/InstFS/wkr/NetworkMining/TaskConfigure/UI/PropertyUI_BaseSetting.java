@@ -197,7 +197,12 @@ public class PropertyUI_BaseSetting implements IObjectDescriptor<TaskElement> {
 
     public IObjectDescriptor getMiningParams() {
         if (core.getMiningMethod().equals(
-                MiningMethod.MiningMethods_TsAnalysis)) {
+                MiningMethod.MiningMethods_OutliesMining)) {
+//			if (tsa == null)
+            tsa = new PropertyUI_MiningParamsTSA(core.getMiningParams());
+            return tsa;
+        } else if (core.getMiningMethod().equals(
+                MiningMethod.MiningMethods_PredictionMining)) {
 //			if (tsa == null)
             tsa = new PropertyUI_MiningParamsTSA(core.getMiningParams());
             return tsa;

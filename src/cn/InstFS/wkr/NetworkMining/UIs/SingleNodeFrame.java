@@ -103,7 +103,7 @@ public class SingleNodeFrame extends ResultFrame{
 		miningMethods.add(MiningMethod.MiningMethods_PeriodicityMining);
 		miningMethods.add(MiningMethod.MiningMethods_FrequenceItemMining);
 		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
-		miningMethods.add(MiningMethod.MiningMethods_TsAnalysis);
+		miningMethods.add(MiningMethod.MiningMethods_OutliesMining);
 		miningObjects.add("traffic");
 		miningObjects.add("通信次数");
 //		miningObjects.add("通信跳数");

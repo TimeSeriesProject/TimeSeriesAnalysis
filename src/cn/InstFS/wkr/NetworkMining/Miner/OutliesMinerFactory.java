@@ -63,7 +63,7 @@ public class OutliesMinerFactory {
 					task.setRange(ip);
 					task.setDiscreteMethod(DiscreteMethod.None);
 					task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
-					task.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+					task.setMiningMethod(MiningMethod.MiningMethods_OutliesMining);
 					task.setMiningObject(protocol);
 					TaskElement.add1Task(task, false);
 					NetworkMinerFactory minerFactory=NetworkMinerFactory.getInstance();
