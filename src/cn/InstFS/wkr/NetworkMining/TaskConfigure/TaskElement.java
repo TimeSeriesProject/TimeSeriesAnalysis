@@ -123,7 +123,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSAExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
 		TSAExample.setFilterCondition("流量>100");
 		TSAExample.setGranularity(3600);
-		TSAExample.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+		TSAExample.setMiningMethod(MiningMethod.MiningMethods_OutliesMining);
 		TSAExample.setMiningAlgo(MiningAlgo.MiningAlgo_ARTSA);
 		TSAExample.setDataSource("File");
 		TSAExample.setSourcePath("./configs/real-1-1.csv");
@@ -160,7 +160,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSAExample1.setAggregateMethod(AggregateMethod.Aggregate_SUM);
 		TSAExample1.setFilterCondition("流量>100");
 		TSAExample1.setGranularity(3600);
-		TSAExample1.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+		TSAExample1.setMiningMethod(MiningMethod.MiningMethods_OutliesMining);
 		TSAExample1.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
 		TSAExample1.setDataSource("File");
 		TSAExample1.setSourcePath("./configs/real-1-37.csv");
@@ -179,7 +179,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSAExampleGauss.setAggregateMethod(AggregateMethod.Aggregate_SUM);
 		TSAExampleGauss.setFilterCondition("流量>100");
 		TSAExampleGauss.setGranularity(3600);
-		TSAExampleGauss.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+		TSAExampleGauss.setMiningMethod(MiningMethod.MiningMethods_OutliesMining);
 		TSAExampleGauss.setMiningAlgo(MiningAlgo.MiningAlgo_GaussDetection);
 		TSAExampleGauss.setDataSource("File");
 		TSAExampleGauss.setSourcePath("./configs/real-1-44.csv");
@@ -197,7 +197,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSAExampleFourier.setAggregateMethod(AggregateMethod.Aggregate_SUM);
 		TSAExampleFourier.setFilterCondition("流量>100");
 		TSAExampleFourier.setGranularity(3600);
-		TSAExampleFourier.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+		TSAExampleFourier.setMiningMethod(MiningMethod.MiningMethods_OutliesMining);
 		TSAExampleFourier.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
 		TSAExampleFourier.setDataSource("File");
 		TSAExampleFourier.setSourcePath("./configs/real-1-70.csv");
@@ -216,7 +216,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSAExampleARIMA.setAggregateMethod(AggregateMethod.Aggregate_SUM);
 		TSAExampleARIMA.setFilterCondition("流量>100");
 		TSAExampleARIMA.setGranularity(3600);
-		TSAExampleARIMA.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+		TSAExampleARIMA.setMiningMethod(MiningMethod.MiningMethods_PredictionMining);
 		TSAExampleARIMA.setMiningAlgo(MiningAlgo.MiningAlgo_ARIMATSA);
 		TSAExampleARIMA.setDataSource("File");
 		TSAExampleARIMA.setSourcePath("./configs/real-1-61.csv");
@@ -235,7 +235,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSANeutralExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
 		TSANeutralExample.setFilterCondition("流量>100");
 		TSANeutralExample.setGranularity(3600);
-		TSANeutralExample.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
+		TSANeutralExample.setMiningMethod(MiningMethod.MiningMethods_PredictionMining);
 		TSANeutralExample.setMiningAlgo(MiningAlgo.MiningAlgo_NeuralNetworkTSA);
 		TSANeutralExample.setDataSource("File");
 		TSANeutralExample.setSourcePath("./configs/real-1-68.csv");
@@ -778,7 +778,9 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		if (this.miningMethod != null && this.miningMethod.equals(miningMethod))
 			return;
 		this.miningMethod = miningMethod;
-		if (miningMethod.equals(MiningMethod.MiningMethods_TsAnalysis))
+		if (miningMethod.equals(MiningMethod.MiningMethods_PredictionMining))
+			this.setMiningParams(new ParamsTSA());
+		else if(miningMethod.equals(MiningMethod.MiningMethods_OutliesMining))
 			this.setMiningParams(new ParamsTSA());
 		else if (miningMethod.equals(MiningMethod.MiningMethods_SequenceMining))
 			this.setMiningParams(new ParamsSM());

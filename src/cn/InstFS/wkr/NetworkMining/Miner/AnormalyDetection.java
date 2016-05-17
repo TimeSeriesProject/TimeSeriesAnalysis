@@ -1,11 +1,9 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -13,7 +11,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 /**
  * Created by xzbang on 2015/3/24.
  */
-public class AnormalyDetection implements IMinerTSA {
+public class AnormalyDetection implements IMinerOM {
     private int initWindowSize = 30;
     private int maxWindowSize = 60;
     private int expWindowSize = 3;
@@ -104,7 +102,7 @@ public class AnormalyDetection implements IMinerTSA {
     }
 
     private long getmaxKey(HashMap<Long, Long> slice) {
-        Iterator iterator = slice.keySet().iterator();
+        Iterator<Long> iterator = slice.keySet().iterator();
         long max = 0;
         while(iterator.hasNext()){
             Long sliceid = (Long)iterator.next();
@@ -118,12 +116,6 @@ public class AnormalyDetection implements IMinerTSA {
     @Override
     public DataItems getOutlies() {
     	return outlies;
-    }
-    
-    @Override
-    public DataItems getPredictItems() {
-    	// TODO Auto-generated method stub
-    	return null;
     }
     
     public int getInitWindowSize() {

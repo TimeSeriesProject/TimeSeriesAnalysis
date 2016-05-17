@@ -18,7 +18,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 @SuppressWarnings("deprecation")
-public class NeuralNetwork implements IMinerTSA{
+public class NeuralNetwork implements IMinerFM{
 	private String inputFilePath;
 	private DataItems predictItems;
 	private int predictPeriod;
@@ -164,34 +164,6 @@ public class NeuralNetwork implements IMinerTSA{
 		return instances;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	
-
-	
-
 	public String getInputFilePath() {
 		return inputFilePath;
 	}
@@ -216,11 +188,4 @@ public class NeuralNetwork implements IMinerTSA{
 	public void setPredictPeriod(int predictPeriod) {
 		this.predictPeriod = predictPeriod;
 	}
-
-	@Override
-	public DataItems getOutlies() {
-		return null;
-	}
-	
-
 }

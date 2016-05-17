@@ -44,16 +44,20 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		}
 		if (task.getMiningMethod().equals(MiningMethod.MiningMethods_SequenceMining)){
 			miner = new NetworkMinerSM(task,reader);
-		}else if (task.getMiningMethod().equals(MiningMethod.MiningMethods_TsAnalysis)){
-			miner = new NetworkMinerTSA(task,reader);
+		}else if (task.getMiningMethod().equals(MiningMethod.MiningMethods_OutliesMining)){
+			miner = new NetworkMinerOM(task,reader);
+		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_PredictionMining)){
+			miner = new NetworkMinerFM(task,reader);
 		}else if (task.getMiningMethod().equals(MiningMethod.MiningMethods_PeriodicityMining)){
 			miner = new NetworkMinerPM(task, reader);
 		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_FrequenceItemMining)){
 			miner=new NetworkMinerFP(task, reader);
 		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_PathProbilityMining)){
 			miner=new NetwokerMinerPathProb(task, reader);
+		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_Statistics)){
+			//TODO Í³¼Æ
 		}else{
-			//TODO
+			
 		}
 		allMiners.put(task, miner);
 		return miner;

@@ -12,7 +12,7 @@ import WaveletUtil.Wavelet;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
-public class WaveletOutlierDetection implements IMinerTSA{
+public class WaveletOutlierDetection{
 	
 	private DataItems outlies;
 	private TaskElement task;
@@ -24,13 +24,12 @@ public class WaveletOutlierDetection implements IMinerTSA{
 	}
 	public WaveletOutlierDetection(){}
 	
-	@Override
+	
 	public void TimeSeriesAnalysis() {
 		// TODO Auto-generated method stub
 		
 	}
 	
-	@Override
 	public DataItems getPredictItems() {
 		Wavelet wavelet=Wavelet.WaveletFromString(Wavelet.Wavelet_db1.toString());
 		int layer=2;

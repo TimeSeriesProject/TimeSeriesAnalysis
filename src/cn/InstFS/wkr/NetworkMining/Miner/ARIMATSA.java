@@ -12,10 +12,9 @@ import RUtil.R;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
-public class ARIMATSA implements IMinerTSA{
+public class ARIMATSA implements IMinerFM{
 	private TaskElement task;
 	private DataItems di;
-	private DataItems outlies;           //异常点
 	private int predictPeriod;           //预测的长度
 	private DataItems predictItems;
 	private Date endDate;                //序列中最后值的日期
@@ -66,12 +65,6 @@ public class ARIMATSA implements IMinerTSA{
 			predictItems.add1Data(calendar.getTime(), item+"");
 		}
 		Renviroment.closeRserve();
-	}
-	
-	@Override
-	public DataItems getOutlies() {
-		// TODO Auto-generated method stub
-		return outlies;
 	}
 	
 	@Override

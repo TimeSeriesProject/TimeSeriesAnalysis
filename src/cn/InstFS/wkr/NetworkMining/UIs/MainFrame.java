@@ -205,7 +205,7 @@ public class MainFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				OutliesMinerFactory outliesFactory=OutliesMinerFactory.getInstance();
 				outliesFactory.detectOutlies();
-				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_TsAnalysis);
+				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_OutliesMining);
 				panelListAllEvents.refreshAllTasks();
 			}
 		});

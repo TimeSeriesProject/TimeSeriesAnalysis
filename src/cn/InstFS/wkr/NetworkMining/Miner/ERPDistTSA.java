@@ -6,7 +6,7 @@ import java.util.Date;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
-public class ERPDistTSA implements IMinerTSA {
+public class ERPDistTSA implements IMinerOM {
 	private DataItems outlies;          //异常点
 	private TaskElement task;
 	private int predictPeriod;          //预测的长度
@@ -82,10 +82,5 @@ public class ERPDistTSA implements IMinerTSA {
 	@Override
 	public DataItems getOutlies() {
 		return outlies;
-	}
-	
-	@Override
-	public DataItems getPredictItems() {
-		return predictItems;
 	}
 }
