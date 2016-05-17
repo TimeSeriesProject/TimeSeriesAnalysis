@@ -49,19 +49,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 //class Menu
-public class SingleNodeFrame extends ResultFrame{
+public class NodeFrame extends JFrame{
 	
 	//Map<TaskElement, INetworkMiner> model;
 //	private ArrayList<>
 	//private model;
 	
-  
+	protected ArrayList<MiningMethod> miningMethods = new ArrayList<MiningMethod>();
+    protected ArrayList<String>     miningObjects = new ArrayList<String>();
+    ArrayList<ArrayList<JPopupMenu>> popupMenus=new ArrayList<ArrayList<JPopupMenu>>();
+    ArrayList<JPopupMenu> currentPopupMenus=new ArrayList<JPopupMenu>();
+    ArrayList<JButton> buttons= new ArrayList<JButton>();
+    ArrayList<PanelShowAllResults> panelShowList = new ArrayList<PanelShowAllResults>();
+    JTabbedPane tabbedPane;
+    protected int miniMethodIndex=0;
+    protected int miningObjectIndex=0;
+    Map<Integer,MouseListener> popupListeners= new   HashMap<Integer,MouseListener>(); //弹出菜单监听器
+	int ipIndex=0;
+	int protocolIndex=0;
 	/**
 	 * Launch the application.
 	 */
@@ -73,12 +85,13 @@ public class SingleNodeFrame extends ResultFrame{
 					//frame.setVisible(true);
 					JFrame.setDefaultLookAndFeelDecorated(true); 
 					NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
-					PeriodMinerFactory periodMinerFactory = PeriodMinerFactory.getInstance();
-					periodMinerFactory.dataPath="C:/data/out/traffic/";
-					periodMinerFactory.minerAllPeriods();
 					
-					networkMinerFactory.startAllMiners();
-					SingleNodeFrame window = new SingleNodeFrame();
+//					PeriodMinerFactory periodMinerFactory = PeriodMinerFactory.getInstance();
+//					periodMinerFactory.dataPath="C:/data/out/traffic/";
+//					periodMinerFactory.minerAllPeriods();
+					
+//					networkMinerFactory.startAllMiners();
+					NodeFrame window = new NodeFrame();
 					window.setTitle("网络规律挖掘");
 //					window.setModel(networkMinerFactory.allMiners);
 					//window.loadModel();
@@ -94,23 +107,148 @@ public class SingleNodeFrame extends ResultFrame{
 	/**
 	 * Create the application.
 	 */
+	NodeFrame()
+	{
+		loadModel();
+		initSingleNodeModel();
+		initNodePairModel();
+		initialize();
+		System.out.println("ddddd");
+	}
 	
-	@Override
 	public void loadModel() {
 		// TODO Auto-generated method stub
 //		MiningMethod method = MiningMethod.MiningMethods_PeriodicityMining;
 //		miningMethods.add(method);
 		miningMethods.add(MiningMethod.MiningMethods_PeriodicityMining);
 		miningMethods.add(MiningMethod.MiningMethods_FrequenceItemMining);
-		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
+//		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
 		miningMethods.add(MiningMethod.MiningMethods_TsAnalysis);
 		miningObjects.add("traffic");
 		miningObjects.add("通信次数");
 //		miningObjects.add("通信跳数");
 	}
 
-	@Override
-	public void initModel()
+	public void initNodePairModel()
+	{
+		System.out.println("........");
+		NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
+		Map<TaskElement, INetworkMiner> allMiners = networkMinerFactory.allMiners;
+		Map<TaskElement, INetworkMiner> miners=new HashMap<TaskElement, INetworkMiner> ();
+		for(Map.Entry<TaskElement, INetworkMiner> entry:allMiners.entrySet()) //得到需要的任务
+		{
+			TaskElement task = entry.getKey();
+			if(task.getTaskRange().compareTo(TaskRange.NodePairRange)==0) //比较的是顺序
+			{
+				miners.put(entry.getKey(),entry.getValue());
+			}
+		}
+		
+		System.out.println(miningObjects.size());
+		System.out.println(miningMethods.size());
+		for(int i=0;i<miningObjects.size();i++)
+		{
+			ArrayList<JPopupMenu> list = new ArrayList<JPopupMenu>();
+			final PanelShowAllResults   panelShow = panelShowList.get(i);
+			
+			for(int j=0;j<miningMethods.size();j++)
+			{
+				JPopupMenu popMenu = new JPopupMenu(); 
+				
+				Map<TaskElement, INetworkMiner> tmpminers=new HashMap<TaskElement, INetworkMiner> ();
+				TreeMap<String,TreeMap<String,TreeMap<String,TaskElement>>> taskTree = new TreeMap<String,TreeMap<String,TreeMap<String,TaskElement>>>();
+				for(Map.Entry<TaskElement, INetworkMiner> entry:miners.entrySet()) //得到需要的任务
+				{
+					
+					TaskElement task = entry.getKey();
+					if(entry.getKey().getMiningObject().equals(miningObjects.get(i))&&entry.getKey().getMiningMethod().equals(miningMethods.get(j)))
+					{
+						tmpminers.put(entry.getKey(),entry.getValue());
+//						ipSet.add(task.getRange());
+					}
+				}
+			
+				for(Map.Entry<TaskElement, INetworkMiner> entry:tmpminers.entrySet()) 
+				{
+					TaskElement task = entry.getKey();
+					
+					String ip[]=task.getRange().split(",");
+					if(!taskTree.containsKey(ip[0]))
+					{
+						TreeMap<String,TreeMap<String,TaskElement>> subTaskTree = new TreeMap<String,TreeMap<String,TaskElement>>();
+						taskTree.put(task.getRange(),subTaskTree);
+					}
+					if(!taskTree.get(ip[0]).containsKey(ip[1]))
+					{
+						TreeMap<String,TaskElement> subsubTaskTree = new TreeMap<String,TaskElement>();
+					}
+					taskTree.get(ip[0]).get(ip[1]).put(task.getProtocol(), task);
+				}
+				
+				for(Entry<String, TreeMap<String,TreeMap<String, TaskElement>>>  entry:taskTree.entrySet())
+				{
+					String ip =entry.getKey();
+					int len =ip.length();   //字符居中对齐
+					int w =(28-len)/2;
+					String pad=String.format("%"+w+"s", " ");
+					String str =pad+ip+pad;
+					JMenu subMenu = new JMenu(str);
+
+					for(Entry<String,TreeMap<String, TaskElement>> subEntry:entry.getValue().entrySet())
+					{
+						String ip2 =subEntry.getKey();
+						int len1 =ip2.length();   //字符居中对齐
+						int w1 =(20-len1)/2;
+						String pad1=String.format("%"+w1+"s", " ");
+						String str1 =pad1+ip2+pad1;
+						JMenu subsubMenu = new JMenu(str);
+						for(Entry<String, TaskElement> subsubEntry:subEntry.getValue().entrySet())
+						{
+							String protocol =subsubEntry.getKey();
+							int len2 =protocol.length();   //字符居中对齐
+							int w2 =(20-len2)/2;
+							String pad2=String.format("%"+w2+"s", " ");
+							String str2 =pad2+protocol+pad2;
+							JMenuItem item = new JMenuItem(str2);
+							final TaskElement task = subsubEntry.getValue();
+							
+							panelShow.onTaskAdded(task);
+							
+							item.addActionListener(new ActionListener()
+							{
+	
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									// TODO Auto-generated method stub
+									panelShow.displayTask(task);
+	//							
+								}
+							});
+							subsubMenu.add(item);
+						}
+						subMenu.add(subsubMenu);
+					}
+					popMenu.add(subMenu);
+				}
+			
+				list.add(popMenu);
+			}
+			popupMenus.add(list);
+		}
+		for(int i=0;i<miningMethods.size();i++)
+		{
+			MiningMethod method = miningMethods.get(i);
+			JButton button = new JButton("结点对"+method.toString());
+			
+			button.setBounds(38, 51+buttons.size()*100, 180, 27);
+			
+			
+			addPopup(button, popupMenus.get(miningObjectIndex).get(i),i);
+			buttons.add(button);
+		}
+		System.out.println("ff"+popupMenus.get(0).get(0).getComponentCount());
+	}
+	public void initSingleNodeModel()
 	{
 		NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
 		Map<TaskElement, INetworkMiner> allMiners = networkMinerFactory.allMiners;
@@ -199,12 +337,23 @@ public class SingleNodeFrame extends ResultFrame{
 			}
 			popupMenus.add(list);
 		}
+		for(int i=0;i<miningMethods.size();i++)
+		{
+			MiningMethod method = miningMethods.get(i);
+			JButton button = new JButton("单结点"+method.toString());
+			
+			button.setBounds(38, 51+buttons.size()*100, 180, 27);
+			
+			
+			addPopup(button, popupMenus.get(miningObjectIndex).get(i),i);
+			buttons.add(button);
+		}
 		System.out.println("ff"+popupMenus.get(0).get(0).getComponentCount());
 		
 	}
-	@Override
+	
     void initialize() {
-//		this.setName("");
+		this.setName("结点与链路属性规律");
 		setBounds(100, 100, 1120, 763);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		try { 
@@ -253,16 +402,10 @@ public class SingleNodeFrame extends ResultFrame{
 		splitPane.setLeftComponent(leftPanel);
 		
 		
-		for (int i=0;i<miningMethods.size();i++)  
+		for (int i=0;i<buttons.size();i++)  
 		{
-			MiningMethod method = miningMethods.get(i);
-			JButton button = new JButton(method.toString());
 			
-			button.setBounds(38, 51+i*100, 134, 27);
-			leftPanel.add(button);
-			
-			addPopup(button, popupMenus.get(miningObjectIndex).get(i),i);
-			buttons.add(button);
+			leftPanel.add(buttons.get(i));
 		}
             //System.out.println(s + ", ordinal " + s.ordinal());  
 		
@@ -304,5 +447,30 @@ public class SingleNodeFrame extends ResultFrame{
 					}
 			
 				});
-	}	
+	}
+
+	  void addPopup(Component component, final JPopupMenu popup,int index) {
+			MouseListener popupListener ;
+			component.addMouseListener(popupListener=new MouseAdapter() {
+				public void mousePressed(MouseEvent e) {
+					showMenu(e);
+				}
+				public void mouseReleased(MouseEvent e) {
+					showMenu(e);
+				}
+				private void showMenu(MouseEvent e) {
+					popup.show(e.getComponent(), 0, e.getComponent().getHeight());
+					
+				}
+			});
+			popupListeners.put(index,popupListener);
+
+		}
+
+		  void delPopup(Component component,int index) {
+			
+			System.out.println("p"+popupListeners.size());
+			component.removeMouseListener(popupListeners.get(index));
+			
+		}
 }
