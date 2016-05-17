@@ -100,7 +100,7 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 	}
 
 	@Override
-	public void onClosing() {	// TODO �������û����
+	public void onClosing() {	
 		TaskElement.removeTaskListener(this);
 	}
 
