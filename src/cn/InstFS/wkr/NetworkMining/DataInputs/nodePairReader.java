@@ -20,6 +20,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sun.jna.platform.unix.X11.XClientMessageEvent.Data;
+
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.IPStreamPool;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
@@ -435,6 +437,151 @@ public class nodePairReader implements IReader {
 		}
 		return protocolDataItems;
 	}
+	
+	
+	/**
+	 * 读取指定IP文件每对接点中所有协议流量的DataItems
+	 * @param filePath IP文件地址
+	 * @return Map<String,Map<String, DataItems>> ,其中key值为ip地址对，value值为Map<Key,DataItems>
+	 * 其中key为协议  DataItems为时间序列
+	 */
+	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTrafficDataItems(String filePath){
+		
+		HashMap<String, Map<String, DataItems>>ipPairProtocolDataItems=new HashMap<String, Map<String,DataItems>>();
+		TextUtils textUtils=new TextUtils();
+		textUtils.setTextPath(filePath);
+		textUtils.readByrow();
+		String line=null;
+		int rows=0;//记录总共读取的行数
+		while((line=textUtils.readByrow())!=null){
+			String[] items=line.split(",");
+			int timeSpan=Integer.parseInt(items[0]);
+			rows=timeSpan-0;
+			Date time=parseTime(timeSpan*3600);
+			String protocolItems=items[items.length-1];
+			String[] eachProtocol=protocolItems.split(";");
+			String ipPair=items[1]+"-"+items[2];
+			for(String protocol:eachProtocol){
+				String[] proAndTraffic=protocol.split(":");
+				if(ipPairProtocolDataItems.containsKey(ipPair)){
+					Map<String, DataItems> protocolDataItems=ipPairProtocolDataItems.get(ipPair);
+					if(protocolDataItems.containsKey(proAndTraffic[0])){
+						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
+						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
+						if(dataItem.getTime().toString().equals(time.toString())){
+							int traffic=Integer.parseInt(dataItem.getData());
+							int addTraffic=Integer.parseInt(proAndTraffic[1]);
+							dataItems.getData().set(dataItems.getLength()-1,(traffic+addTraffic)+"");
+						}else{
+							dataItems.add1Data(time, proAndTraffic[1]);
+						}	
+					}else{
+						DataItems dataItems=new DataItems();
+						for(int i=rows-1;i>=0;i--){
+							dataItems.add1Data(parseTime(timeSpan-i), "0");
+						}
+						dataItems.add1Data(time, proAndTraffic[1]);
+						protocolDataItems.put(proAndTraffic[0], dataItems);
+					}
+				}else{
+					Map<String, DataItems> dataItemsMap=new HashMap<String, DataItems>();
+					DataItems dataItems=new DataItems();
+					for(int i=rows-1;i>=0;i--){
+						dataItems.add1Data(parseTime(timeSpan-i), "0");
+					}
+					dataItems.add1Data(time, proAndTraffic[1]);
+					dataItemsMap.put(proAndTraffic[0], dataItems);
+					ipPairProtocolDataItems.put(ipPair, dataItemsMap);
+				}
+			}
+			Iterator<Entry<String, Map<String, DataItems>>> iterator=
+					ipPairProtocolDataItems.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Map<String, DataItems> itemMap=iterator.next().getValue();
+				Iterator<Entry<String, DataItems>> mapIterator=itemMap.entrySet().iterator();
+				while(mapIterator.hasNext()){
+					DataItems item=mapIterator.next().getValue();
+					if(item.getLength()<rows){
+						item.add1Data(time,"0");
+					}
+				}
+			}
+		}
+		return ipPairProtocolDataItems;
+	}
+	
+	
+	/**
+	 * 读取指定IP文件每对接点中所有通信次数的DataItems
+	 * @param filePath IP文件地址
+	 * @return Map<String,Map<String, DataItems>> ,其中key值为ip地址对，value值为Map<Key,DataItems>
+	 * 其中key为协议  DataItems为通信次数时间序列
+	 */
+	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTimesDataItems(String filePath){
+		
+		HashMap<String, Map<String, DataItems>>ipPairProtocolDataItems=new HashMap<String, Map<String,DataItems>>();
+		TextUtils textUtils=new TextUtils();
+		textUtils.setTextPath(filePath);
+		textUtils.readByrow();
+		String line=null;
+		int rows=0;//记录总共读取的行数
+		while((line=textUtils.readByrow())!=null){
+			String[] items=line.split(",");
+			int timeSpan=Integer.parseInt(items[0]);
+			rows=timeSpan-0;
+			Date time=parseTime(timeSpan*3600);
+			String protocolItems=items[items.length-1];
+			String[] eachProtocol=protocolItems.split(";");
+			String ipPair=items[1]+"-"+items[2];
+			for(String protocol:eachProtocol){
+				String[] proAndTraffic=protocol.split(":");
+				if(ipPairProtocolDataItems.containsKey(ipPair)){
+					Map<String, DataItems> protocolDataItems=ipPairProtocolDataItems.get(ipPair);
+					if(protocolDataItems.containsKey(proAndTraffic[0])){
+						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
+						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
+						if(dataItem.getTime().toString().equals(time.toString())){
+							int times=Integer.parseInt(dataItem.getData());
+							int addTimes=Integer.parseInt(proAndTraffic[2]);
+							dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
+						}else{
+							dataItems.add1Data(time, proAndTraffic[2]);
+						}	
+					}else{
+						DataItems dataItems=new DataItems();
+						for(int i=rows-1;i>=0;i--){
+							dataItems.add1Data(parseTime(timeSpan-i), "0");
+						}
+						dataItems.add1Data(time, proAndTraffic[2]);
+						protocolDataItems.put(proAndTraffic[0], dataItems);
+					}
+				}else{
+					Map<String, DataItems> dataItemsMap=new HashMap<String, DataItems>();
+					DataItems dataItems=new DataItems();
+					for(int i=rows-1;i>=0;i--){
+						dataItems.add1Data(parseTime(timeSpan-i), "0");
+					}
+					dataItems.add1Data(time, proAndTraffic[2]);
+					dataItemsMap.put(proAndTraffic[0], dataItems);
+					ipPairProtocolDataItems.put(ipPair, dataItemsMap);
+				}
+			}
+			Iterator<Entry<String, Map<String, DataItems>>> iterator=
+					ipPairProtocolDataItems.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Map<String, DataItems> itemMap=iterator.next().getValue();
+				Iterator<Entry<String, DataItems>> mapIterator=itemMap.entrySet().iterator();
+				while(mapIterator.hasNext()){
+					DataItems item=mapIterator.next().getValue();
+					if(item.getLength()<rows){
+						item.add1Data(time,"0");
+					}
+				}
+			}
+		}
+		return ipPairProtocolDataItems;
+	}
+	
 	
 	/**
 	 * 读取指定IP文件中所有协议通信次数的DataItems
