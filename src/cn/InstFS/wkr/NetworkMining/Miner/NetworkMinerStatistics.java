@@ -150,9 +150,9 @@ class StatisticsTimerTask extends TimerTask  {
 //		if (UtilsSimulation.instance.isPaused())
 //			return;
 		results.setDateProcess(UtilsSimulation.instance.getCurTime());
-		results.getRetOM().setParamsTSA((ParamsTSA) task.getMiningParams());
+		//results.getRetOM().setParamsTSA((ParamsTSA) task.getMiningParams());
 		isRunning = true;
-		ParamsTSA params = (ParamsTSA) task.getMiningParams();
+		//ParamsTSA params = (ParamsTSA) task.getMiningParams();
 		
 		// 读取数据 当Miner Reuslts中存在数据时，则不再读取
 		DataItems dataItems = null;
@@ -174,6 +174,12 @@ class StatisticsTimerTask extends TimerTask  {
 		getMeanAndStd(dataItems);
 		LZComplex(dataItems);
 		sampleEntropy(dataItems);
+		isRunning = false;
+		isOver=true;
+		
+		if (displayer != null)
+			displayer.displayMinerResults(results);
+		timer.cancel();
 	}
 	
 	private void getMeanAndStd(DataItems di){
@@ -197,10 +203,12 @@ class StatisticsTimerTask extends TimerTask  {
 		splits=splitDataItems(splitM+1,di);
 		double entropy2=averageEntropy(splits);
 		double sampleEntropy=-(Math.log(entropy2/entropy1)/Math.log(Math.E));
+		System.out.println(sampleEntropy);
 		results.getRetStatistics().setSampleENtropy(sampleEntropy);
 	}
 	private void LZComplex(DataItems di){
-		List<String> data=di.getData();
+		DataItems disDI=DataPretreatment.toDiscreteNumbers(di, DiscreteMethod.各区间数值范围相同, 20, "");
+		List<String> data=disDI.getData();
 		int numN=data.size();
 		int numC=0;
 		List<String> listS=new ArrayList<String>();
@@ -212,11 +220,13 @@ class StatisticsTimerTask extends TimerTask  {
 			List<String> SQP=generateSQP(listS, listQ);
 			if(!isSubList(SQP, listQ)){
 				listS.addAll(listQ);
+				listQ.clear();
 				numC++;
 			}
 		}
 		double bn=(numN*1.0)/Math.log(numN*1.0);
 		double complex=(numC*1.0)/bn;
+		System.out.println(complex+" "+task.getTaskName());
 		results.getRetStatistics().setComplex(complex);
 	}
 	

@@ -511,7 +511,7 @@ public class DataPretreatment {
 			
 			Double[] discreteNodes=new Double[numDims];
 			for (int i = 0; i < numDims; i ++){
-				discreteNodes[i] = minVal + (maxVal - minVal) * i / numDims;
+				discreteNodes[i] = Math.ceil(minVal + (maxVal - minVal) * i / numDims);
 			}
 			for (int i = 0; i < length; i ++){
 				DataItem item = dataItems.getElementAt(i);
