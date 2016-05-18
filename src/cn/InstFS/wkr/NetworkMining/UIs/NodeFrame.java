@@ -36,10 +36,8 @@ import org.jvnet.substance.skin.SubstanceSaharaLookAndFeel;
 import org.jvnet.substance.title.FlatTitlePainter;
 import org.jvnet.substance.title.MatteHeaderPainter;
 
-import cn.InstFS.wkr.NetworkMining.Miner.FrequentItemMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.OutliesMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.SingleNodeOrNodePairMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
@@ -97,17 +95,20 @@ public class NodeFrame extends JFrame{
 					
 					SingleNodeOrNodePairMinerFactory periodMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
 					periodMinerFactory.dataPath="C:/data/out/traffic/";
-					periodMinerFactory.minerAllPeriods();
+					periodMinerFactory.setMethod(MiningMethod.MiningMethods_PeriodicityMining);
+					periodMinerFactory.detect();
 					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PeriodicityMining);
 					
-					OutliesMinerFactory outliesMinerFactory =OutliesMinerFactory.getInstance();
+					SingleNodeOrNodePairMinerFactory outliesMinerFactory =SingleNodeOrNodePairMinerFactory.getInstance();
 					outliesMinerFactory.dataPath="C:/data/out/traffic/";
-					outliesMinerFactory.detectOutlies();
+					outliesMinerFactory.setMethod(MiningMethod.MiningMethods_OutliesMining);
+					outliesMinerFactory.detect();
 					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_OutliesMining);
 					
-					FrequentItemMinerFactory freItemsFactory=FrequentItemMinerFactory.getInstance();
+					SingleNodeOrNodePairMinerFactory freItemsFactory=SingleNodeOrNodePairMinerFactory.getInstance();
 					freItemsFactory.dataPath="C:/data/out/traffic/";
-					freItemsFactory.detectFrequntItems();
+					freItemsFactory.setMethod(MiningMethod.MiningMethods_SequenceMining);
+					freItemsFactory.detect();
 					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_SequenceMining);
 
 					

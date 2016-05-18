@@ -91,7 +91,7 @@ public abstract class ResultFrame extends JFrame {
 					NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
 					SingleNodeOrNodePairMinerFactory periodMinerFactory = SingleNodeOrNodePairMinerFactory.getInstance();
 					periodMinerFactory.dataPath="C:/data/out/traffic/";
-					periodMinerFactory.minerAllPeriods();
+					periodMinerFactory.detect();
 					
 					networkMinerFactory.startAllMiners();
 					NodeFrame window = new NodeFrame();
