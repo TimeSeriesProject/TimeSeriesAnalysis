@@ -182,6 +182,15 @@ class PathProbTimerTask extends TimerTask{
 			while(iterator.hasNext()){
 				Entry<String, DataItems> entry=iterator.next();
 				pathPeriodDetect(entry.getValue());
+				getPrimaryPath(entry.getValue());
+			}
+		}else if(task.getMiningObject().toLowerCase().equals("allpathtraffic")){
+			task.setMiningObject("path:traffic");
+			Map<String, DataItems> dataMap=reader.readAllRoute();
+			Iterator<Entry<String, DataItems>> iterator=dataMap.entrySet().iterator();
+			while(iterator.hasNext()){
+				Entry<String, DataItems> entry=iterator.next();
+				pathPeriodDetect(entry.getValue());
 			}
 		}
 		isRunning = false;
@@ -192,17 +201,41 @@ class PathProbTimerTask extends TimerTask{
 	}
 	
 	private void pathPeriodDetect(DataItems dataItems){
-		DataPretreatment.translateProbilityOfData(dataItems);//将跳转概率保存到文件中
-		dataItems=DataPretreatment.changeDataToProb(dataItems); //计算每条路径的概率
+		List datas;
+		if (task.getMiningObject().equals("path:traffic")){
+			datas = dataItems.getNonNumData();
+		} else {
+			DataPretreatment.translateProbilityOfData(dataItems);//将跳转概率保存到文件中
+			dataItems = DataPretreatment.changeDataToProb(dataItems); //计算每条路径的概率
+			datas = dataItems.getProbMap();
+		}
 		results.setInputData(dataItems);
-		List<Map<String, Double>>datas=dataItems.getProbMap();
 		Set<String>varset=dataItems.getVarSet();
 		List<List<String>> seqs=new ArrayList<List<String>>();
 		for(String item:varset){
 			int row=0;
 			List<String>seq=new ArrayList<String>();
 			seq.add(item);
-			for(Map<String, Double>map:datas){
+			
+			Iterator iter = datas.iterator();
+			while(iter.hasNext()){
+				Map map = (Map) iter.next();
+				if(map.containsKey(item)) {
+					if(new Double(map.get(item).toString()) < 1){
+						int value=(int)((double)map.get(item)*1000);
+						seq.add(value+"");
+						row++;
+					}else{
+						int value = (int)((double)map.get(item));
+						seq.add(value+"");
+						row++;
+					}
+				}else{
+					seq.add("0");
+				}
+			}
+			
+			/*for(Map<String, Double>map:datas){
 				if(map.containsKey(item)){
 					int value=(int)(map.get(item)*1000);
 					seq.add(value+"");
@@ -210,7 +243,7 @@ class PathProbTimerTask extends TimerTask{
 				}else{
 					seq.add("0");
 				}
-			}
+			}*/
 			if(row<dataItems.getLength()*0.05)
 				continue;
 			seqs.add(seq);
@@ -235,5 +268,48 @@ class PathProbTimerTask extends TimerTask{
 			}
 		}
 		results.setRetPath(retPath);
+	}
+	
+	/**
+	 * 获取通信的主要路径
+	 * @param dataItems 含有NonNumData的dataItems，NonNumData记录各小时各路径上的通信次数/流量和
+	 * @return primaryPath
+     */
+	private String getPrimaryPath(DataItems dataItems){
+		String primaryPath = new String ();
+		List<Map<String, Integer>> NonNumData = dataItems.getNonNumData();
+		HashMap<String, Integer> total = new HashMap<>();
+
+		Iterator it = NonNumData.iterator();
+
+		//统计每条路径通信次数和
+		while (it.hasNext()){
+			HashMap<String, Integer> map = (HashMap<String,Integer>)it.next();
+			Iterator keys = map.keySet().iterator();
+
+			while (keys.hasNext()){
+				String key = (String) keys.next();
+				int value = map.get(key);
+				if (total.containsKey(key)) {
+					int oriValue = total.get(key);
+					total.put(key, value + oriValue);
+				} else
+					total.put(key, 0);
+			}
+		}
+
+		Iterator totalKeys = total.keySet().iterator();
+		int maxV = -1;
+		while (totalKeys.hasNext()){
+			String key = (String)totalKeys.next();
+			int value = total.get(key);
+
+			if (value > maxV) {
+				maxV = value;
+				primaryPath = key;
+			}
+		}
+		System.out.println("主要路径："+ primaryPath.toString() + "次数"+ total.get(primaryPath));
+		return primaryPath;
 	}
 }
