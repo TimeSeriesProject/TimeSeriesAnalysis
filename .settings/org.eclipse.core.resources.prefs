@@ -50,6 +50,7 @@ encoding//src/cn/InstFS/wkr/NetworkMining/ResultDisplay/UI/ChartPanelShowTs.java
 encoding//src/cn/InstFS/wkr/NetworkMining/ResultDisplay/UI/IPanelShowResults.java=UTF-8
 encoding//src/cn/InstFS/wkr/NetworkMining/ResultDisplay/UI/PanelShowAllResults.java=UTF-8
 encoding//src/cn/InstFS/wkr/NetworkMining/ResultDisplay/UI/PanelShowResultsFP.java=UTF-8
+encoding//src/cn/InstFS/wkr/NetworkMining/ResultDisplay/UI/PanelShowResultsOM.java=UTF-8
 encoding//src/cn/InstFS/wkr/NetworkMining/ResultDisplay/UI/PanelShowResultsPM.java=UTF-8
 encoding//src/cn/InstFS/wkr/NetworkMining/ResultDisplay/UI/PanelShowResultsPP.java=UTF-8
 encoding//src/cn/InstFS/wkr/NetworkMining/ResultDisplay/UI/PanelShowResultsSM.java=UTF-8
@@ -70,6 +71,7 @@ encoding//src/cn/InstFS/wkr/NetworkMining/TaskConfigure/UI/PanelDisplayTask.java
 encoding//src/cn/InstFS/wkr/NetworkMining/TaskConfigure/UI/PanelListAllTasks.java=GBK
 encoding//src/cn/InstFS/wkr/NetworkMining/TaskConfigure/UI/PropertyUI_BaseSetting.java=GBK
 encoding//src/cn/InstFS/wkr/NetworkMining/TaskConfigure/UI/PropertyUI_MiningParamsFP.java=GBK
+encoding//src/cn/InstFS/wkr/NetworkMining/TaskConfigure/UI/PropertyUI_MiningParamsOM.java=UTF-8
 encoding//src/cn/InstFS/wkr/NetworkMining/TaskConfigure/UI/PropertyUI_MiningParamsPM.java=GBK
 encoding//src/cn/InstFS/wkr/NetworkMining/TaskConfigure/UI/PropertyUI_MiningParamsPP.java=GBK
 encoding//src/cn/InstFS/wkr/NetworkMining/TaskConfigure/UI/PropertyUI_MiningParamsSM.java=GBK

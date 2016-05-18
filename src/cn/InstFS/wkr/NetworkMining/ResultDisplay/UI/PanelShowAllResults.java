@@ -64,7 +64,7 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 		else if (miningMethodName.equals(MiningMethod.MiningMethods_PathProbilityMining))
 			panel = new PanelShowResultsPP(task);
 		else if (miningMethodName.equals(MiningMethod.MiningMethods_Statistics))
-			panel = new PanelShowResultsStatistics(task);
+//			panel = new PanelShowResultsStatistics(task);
 		if (panel != null){
 			add((JPanel)panel, task.getTaskName());
 			allPanels.put(task, panel);

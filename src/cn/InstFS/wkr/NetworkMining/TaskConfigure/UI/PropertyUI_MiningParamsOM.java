@@ -20,8 +20,8 @@ public class PropertyUI_MiningParamsOM implements IObjectDescriptor<ParamsOM>{
 
     String [] names = new String[]{"dimension", "dimensionValues", "expWindowSize", "fftVarK",
             "initWindowSize", "maxWindowSize", "outlierThreshold", "periodThreshold", "windowVarK"};
-    String []CnNames = new String[]{"ÀëÉ¢Öµ¸öÊı", "ÀëÉ¢»¯µÄÇø¼ä(unused)", "expWindowSize", "fftVarK",
-            "³õÊ¼´°¿Ú´óĞ¡", "×î´ó´°¿Ú´óĞ¡", "Òì³£ÖµÃÅÏŞ(0~1???)", "ÖÜÆÚÃÅÏŞ(0~1)", "windowVarK"};
+    String []CnNames = new String[]{"ç¦»æ•£å€¼ä¸ªæ•°", "ç¦»æ•£åŒ–çš„åŒºé—´(unused)", "expWindowSize", "fftVarK",
+            "åˆå§‹çª—å£å¤§å°", "æœ€å¤§çª—å£å¤§å°", "å¼‚å¸¸å€¼é—¨é™(0~1???)", "å‘¨æœŸé—¨é™(0~1)", "windowVarK"};
     HashMap<String, String> displayNames = new HashMap<String,String>();
 
     public PropertyUI_MiningParamsOM(IParamsNetworkMining core) {
@@ -33,7 +33,7 @@ public class PropertyUI_MiningParamsOM implements IObjectDescriptor<ParamsOM>{
     }
     @Override
     public String getDisplayName() {
-        return "ÍÚ¾ò²ÎÊı";
+        return "æŒ–æ˜å‚æ•°";
     }
 
     @Override
