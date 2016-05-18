@@ -9,6 +9,8 @@ import java.util.Set;
 import javax.swing.JPanel;
 
 
+
+import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
@@ -116,6 +118,30 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 	@Override
 	public int getDisplayType() {
 		return ITaskDisplayer.DISPLAY_RESULTS;
+	}
+	
+	@Override
+	public void onTaskAdded(TaskCombination task) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onTaskDeleted(TaskCombination task) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onTaskModified(TaskCombination task, int modify_type) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onTaskToDisplay(TaskCombination task) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
