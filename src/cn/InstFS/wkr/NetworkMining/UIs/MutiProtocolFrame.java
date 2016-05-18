@@ -40,7 +40,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.FrequentItemMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.OutliesMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.PeriodMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.SingleNodeOrNodePairMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;

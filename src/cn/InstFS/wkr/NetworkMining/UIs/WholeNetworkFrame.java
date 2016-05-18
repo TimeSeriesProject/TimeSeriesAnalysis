@@ -34,7 +34,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.CWNetworkReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.PeriodMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.SingleNodeOrNodePairMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.ChartPanelShowNodeFrequence;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.ChartPanelShowTs;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
@@ -52,7 +52,7 @@ public class WholeNetworkFrame extends JFrame{
 					
 					JFrame.setDefaultLookAndFeelDecorated(true); 
 					NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
-					PeriodMinerFactory periodMinerFactory = PeriodMinerFactory.getInstance();
+					SingleNodeOrNodePairMinerFactory periodMinerFactory = SingleNodeOrNodePairMinerFactory.getInstance();
 					WholeNetworkFrame window = new WholeNetworkFrame();
 					
 //					window.setModel(networkMinerFactory.allMiners);

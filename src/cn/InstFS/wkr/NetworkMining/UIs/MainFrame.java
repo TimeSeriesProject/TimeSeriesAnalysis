@@ -17,15 +17,14 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 
-import cn.InstFS.wkr.NetworkMining.Miner.FrequentItemMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.OutliesMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.PathMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.PeriodMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.SingleNodeOrNodePairMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsSM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogConfigTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettingTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PanelConfigTask;
@@ -190,8 +189,11 @@ public class MainFrame extends JFrame {
 		minerPeriodRules.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PeriodMinerFactory periodMinerFactory=PeriodMinerFactory.getInstance();
-				periodMinerFactory.minerAllPeriods();
+				SingleNodeOrNodePairMinerFactory periodMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
+				periodMinerFactory.setMiningObject("通信次数");
+				periodMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
+				periodMinerFactory.setMethod(MiningMethod.MiningMethods_PeriodicityMining);
+				periodMinerFactory.detect();
 				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PeriodicityMining);
 				panelListAllEvents.refreshAllTasks();
 			}
@@ -203,8 +205,11 @@ public class MainFrame extends JFrame {
 		minerOutlies.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				OutliesMinerFactory outliesFactory=OutliesMinerFactory.getInstance();
-				outliesFactory.detectOutlies();
+				SingleNodeOrNodePairMinerFactory periodMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
+				periodMinerFactory.setMiningObject("通信次数");
+				periodMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
+				periodMinerFactory.setMethod(MiningMethod.MiningMethods_OutliesMining);
+				periodMinerFactory.detect();
 				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_OutliesMining);
 				panelListAllEvents.refreshAllTasks();
 			}
@@ -216,9 +221,12 @@ public class MainFrame extends JFrame {
 		minerFrequency.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				FrequentItemMinerFactory freItemsFactory=FrequentItemMinerFactory.getInstance();
-				freItemsFactory.detectFrequntItems();
-				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_SequenceMining);
+				SingleNodeOrNodePairMinerFactory periodMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
+				periodMinerFactory.setMiningObject("通信次数");
+				periodMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
+				periodMinerFactory.setMethod(MiningMethod.MiningMethods_FrequenceItemMining);
+				periodMinerFactory.detect();
+				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_FrequenceItemMining);
 				panelListAllEvents.refreshAllTasks();
 			}
 		});

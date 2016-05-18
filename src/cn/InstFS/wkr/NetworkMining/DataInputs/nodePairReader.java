@@ -20,8 +20,6 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.sun.jna.platform.unix.X11.XClientMessageEvent.Data;
-
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.IPStreamPool;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
@@ -438,7 +436,6 @@ public class nodePairReader implements IReader {
 		return protocolDataItems;
 	}
 	
-	
 	/**
 	 * 读取指定IP文件每对接点中所有协议流量的DataItems
 	 * @param filePath IP文件地址
@@ -582,7 +579,6 @@ public class nodePairReader implements IReader {
 		return ipPairProtocolDataItems;
 	}
 	
-	
 	/**
 	 * 读取指定IP文件中所有协议通信次数的DataItems
 	 * @param filePath IP文件地址
@@ -664,10 +660,12 @@ public class nodePairReader implements IReader {
 		textUtils.setTextPath(filePath);
 		String header=textUtils.readByrow();
 		String[] columns=header.split(",");
-		int minerObjectIndex=NameToIndex(minierObject, columns);
+		String[] miningObject = minierObject.split(":");  //miningObject针对路径次数与路径流量 若miningObject[1]为空，则指代路径次数
+		int minerObjectIndex=NameToIndex(miningObject[0], columns);
 		if(minerObjectIndex==-1){
 			throw new RuntimeException("未找到挖掘对象");
 		}
+		int TrafficColIndex=NameToIndex("traffic",columns);
 		int TimeColIndex=NameToIndex("Time(S)", columns);
 		int SIPColIndex=NameToIndex("srcIP", columns);
 		int DIPColIndex=NameToIndex("dstIP", columns);
@@ -726,19 +724,24 @@ public class nodePairReader implements IReader {
 			String path=sb.toString();
 			dataItems.getVarSet().add(path);
 			int len=dataItems.getLength();
+			int aggregateNum = 1;
+
+			if(miningObject.length > 1 && miningObject[1].toLowerCase().equals("traffic"))
+				aggregateNum = Integer.parseInt(columns[TrafficColIndex]);
+			
 			if(parseTime(time).before(deadDate)&&len>0){
 				Map<String, Integer> data=dataItems.getNonNumData().get(len-1);
 				if(data.containsKey(path)){
 					int originValue=data.get(path);
-					data.put(path, originValue+1);
+					data.put(path, originValue+aggregateNum);
 				}else{
-					data.put(path, 1);
+					data.put(path,aggregateNum);
 				}
 			}else{
 				if(len==0){
 					dataItems.getTime().add(parseTime(time));
 					Map<String, Integer> data=new HashMap<String, Integer>();
-					data.put(path, 1);
+					data.put(path, aggregateNum);
 					dataItems.getNonNumData().add(data);
 				}else{
 					while(!parseTime(time).before(deadDate)){
@@ -750,7 +753,7 @@ public class nodePairReader implements IReader {
 					}
 					int size=dataItems.getNonNumData().size();
 					Map<String, Integer> data=dataItems.getNonNumData().get(size-1);
-					data.put(path, 1);
+					data.put(path, aggregateNum);
 				}
 			}
 			sb.delete(0, sb.length());

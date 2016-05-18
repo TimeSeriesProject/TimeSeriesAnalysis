@@ -14,7 +14,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 public class PathMinerFactory {
 	private static PathMinerFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="F:\\parsePcap\\route";
+	public String dataPath="E:\\parsePcap\\route";
 	private PathMinerFactory(){}
 	public static PathMinerFactory getInstance(){
 		if(inst==null){
@@ -56,5 +56,12 @@ public class PathMinerFactory {
 		task.setMiningMethod(MiningMethod.MiningMethods_PathProbilityMining);
 		task.setSourcePath(file.getAbsolutePath());
 		TaskElement.add1Task(task, false);
+	}
+	
+	public static void main(String[] args) {
+		NetworkMinerFactory.getInstance();
+		PathMinerFactory pathFactory=PathMinerFactory.getInstance();
+		pathFactory.minerPathPeriod();
+		NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PathProbilityMining);
 	}
 }

@@ -63,7 +63,7 @@ import org.jvnet.substance.watermark.SubstanceImageWatermark;
 
 import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.PeriodMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.SingleNodeOrNodePairMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.IPanelShowResults;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsFP;
@@ -89,7 +89,7 @@ public abstract class ResultFrame extends JFrame {
 					//frame.setVisible(true);
 					JFrame.setDefaultLookAndFeelDecorated(true); 
 					NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
-					PeriodMinerFactory periodMinerFactory = PeriodMinerFactory.getInstance();
+					SingleNodeOrNodePairMinerFactory periodMinerFactory = SingleNodeOrNodePairMinerFactory.getInstance();
 					periodMinerFactory.dataPath="C:/data/out/traffic/";
 					periodMinerFactory.minerAllPeriods();
 					
