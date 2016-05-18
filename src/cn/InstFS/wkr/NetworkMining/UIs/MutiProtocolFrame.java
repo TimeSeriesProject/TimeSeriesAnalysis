@@ -58,7 +58,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 //class Menu
-public class NodeFrame extends JFrame{
+public class MutiProtocolFrame extends JFrame{
 	
 	//Map<TaskElement, INetworkMiner> model;
 //	private ArrayList<>
@@ -73,7 +73,7 @@ public class NodeFrame extends JFrame{
     JTabbedPane tabbedPane;
     protected int miniMethodIndex=0;
     protected int miningObjectIndex=0;
-    Map<Integer,MouseListener> popupListeners= new   HashMap<Integer,MouseListener>(); //å¼¹å‡ºèœå•ç›‘å¬å™¨
+    Map<Integer,MouseListener> popupListeners= new   HashMap<Integer,MouseListener>(); //µ¯³ö²Ëµ¥¼àÌıÆ÷
 	int ipIndex=0;
 	int protocolIndex=0;
 	/**
@@ -94,25 +94,25 @@ public class NodeFrame extends JFrame{
 					
 //					networkMinerFactory.startAllMiners();
 					
+//					
+//					PeriodMinerFactory periodMinerFactory=PeriodMinerFactory.getInstance();
+//					periodMinerFactory.dataPath="C:/data/out/traffic/";
+//					periodMinerFactory.minerAllPeriods();
+//					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PeriodicityMining);
 					
-					PeriodMinerFactory periodMinerFactory=PeriodMinerFactory.getInstance();
-					periodMinerFactory.dataPath="C:/data/out/traffic/";
-					periodMinerFactory.minerAllPeriods();
-					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PeriodicityMining);
+//					OutliesMinerFactory outliesMinerFactory =OutliesMinerFactory.getInstance();
+//					outliesMinerFactory.dataPath="C:/data/out/traffic/";
+//					outliesMinerFactory.detectOutlies();
+//					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_OutliesMining);
 					
-					OutliesMinerFactory outliesMinerFactory =OutliesMinerFactory.getInstance();
-					outliesMinerFactory.dataPath="C:/data/out/traffic/";
-					outliesMinerFactory.detectOutlies();
-					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_OutliesMining);
-					
-					FrequentItemMinerFactory freItemsFactory=FrequentItemMinerFactory.getInstance();
-					freItemsFactory.dataPath="C:/data/out/traffic/";
-					freItemsFactory.detectFrequntItems();
-					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_SequenceMining);
+//					FrequentItemMinerFactory freItemsFactory=FrequentItemMinerFactory.getInstance();
+//					freItemsFactory.dataPath="C:/data/out/traffic/";
+//					freItemsFactory.detectFrequntItems();
+//					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_SequenceMining);
 
 					
-					NodeFrame window = new NodeFrame();
-//					window.setTitle("ç½‘ç»œè§„å¾‹æŒ–æ˜");
+					MutiProtocolFrame window = new MutiProtocolFrame();
+//					window.setTitle("ÍøÂç¹æÂÉÍÚ¾ò");
 //					window.setModel(networkMinerFactory.allMiners);
 					//window.loadModel();
 					
@@ -127,11 +127,11 @@ public class NodeFrame extends JFrame{
 	/**
 	 * Create the application.
 	 */
-	NodeFrame()
+	MutiProtocolFrame()
 	{
 		loadModel();
-		initSingleNodeModel();
-		initNodePairModel();
+		initModel();
+		
 		initialize();
 		System.out.println("ddddd");
 	}
@@ -140,154 +140,29 @@ public class NodeFrame extends JFrame{
 		// TODO Auto-generated method stub
 //		MiningMethod method = MiningMethod.MiningMethods_PeriodicityMining;
 //		miningMethods.add(method);
-		miningMethods.add(MiningMethod.MiningMethods_PeriodicityMining);
-
-		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
-		miningMethods.add(MiningMethod.MiningMethods_OutliesMining);
-		miningMethods.add(MiningMethod.MiningMethods_PredictionMining);
-		miningMethods.add(MiningMethod.MiningMethods_Statistics);
-		miningObjects.add("æµé‡");
-		miningObjects.add("é€šä¿¡æ¬¡æ•°");
-		miningObjects.add("ç»“ç‚¹å‡ºç°æ¶ˆå¤±");
-//		miningObjects.add("é€šä¿¡è·³æ•°");
+		miningMethods.add(MiningMethod.MiningMethods_FrequenceItemMining);
+		miningObjects.add("traffic");
+		miningObjects.add("Í¨ĞÅ´ÎÊı");
+//		miningObjects.add("Í¨ĞÅÌøÊı");
 	}
 
-	public void initNodePairModel()
+	
+	public void initModel()
 	{
-		System.out.println("........");
 		NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
 		Map<TaskElement, INetworkMiner> allMiners = networkMinerFactory.allMiners;
 		Map<TaskElement, INetworkMiner> miners=new HashMap<TaskElement, INetworkMiner> ();
-		for(Map.Entry<TaskElement, INetworkMiner> entry:allMiners.entrySet()) //å¾—åˆ°éœ€è¦çš„ä»»åŠ¡
+		for(Map.Entry<TaskElement, INetworkMiner> entry:allMiners.entrySet()) //µÃµ½ĞèÒªµÄÈÎÎñ
 		{
 			TaskElement task = entry.getKey();
-			if(task.getTaskRange().compareTo(TaskRange.NodePairRange)==0) //æ¯”è¾ƒçš„æ˜¯é¡ºåº
+			if(task.getTaskRange().compareTo(TaskRange.SingleNodeRange)==0) //±È½ÏµÄÊÇË³Ğò
 			{
 				miners.put(entry.getKey(),entry.getValue());
-//				System.out.println("????");
 			}
 		}
 		
 		System.out.println(miningObjects.size());
 		System.out.println(miningMethods.size());
-		for(int i=0;i<miningObjects.size();i++)
-		{
-			ArrayList<JPopupMenu> list = popupMenus.get(i);
-			final PanelShowAllResults   panelShow = panelShowList.get(i);
-			
-			for(int j=0;j<miningMethods.size();j++)
-			{
-				JPopupMenu popMenu = new JPopupMenu(); 
-				
-				Map<TaskElement, INetworkMiner> tmpminers=new HashMap<TaskElement, INetworkMiner> ();
-				TreeMap<String,TreeMap<String,TreeMap<String,TaskElement>>> taskTree = new TreeMap<String,TreeMap<String,TreeMap<String,TaskElement>>>();
-				for(Map.Entry<TaskElement, INetworkMiner> entry:miners.entrySet()) //å¾—åˆ°éœ€è¦çš„ä»»åŠ¡
-				{
-					
-					TaskElement task = entry.getKey();
-					if(entry.getKey().getMiningObject().equals(miningObjects.get(i))&&entry.getKey().getMiningMethod().equals(miningMethods.get(j)))
-					{
-						tmpminers.put(entry.getKey(),entry.getValue());
-//						ipSet.add(task.getRange());
-					}
-				}
-			
-				for(Map.Entry<TaskElement, INetworkMiner> entry:tmpminers.entrySet()) 
-				{
-					TaskElement task = entry.getKey();
-					
-					String ip[]=task.getRange().split(",");
-					if(!taskTree.containsKey(ip[0]))
-					{
-						TreeMap<String,TreeMap<String,TaskElement>> subTaskTree = new TreeMap<String,TreeMap<String,TaskElement>>();
-						taskTree.put(task.getRange(),subTaskTree);
-					}
-					if(!taskTree.get(ip[0]).containsKey(ip[1]))
-					{
-						TreeMap<String,TaskElement> subsubTaskTree = new TreeMap<String,TaskElement>();
-					}
-					taskTree.get(ip[0]).get(ip[1]).put(task.getProtocol(), task);
-				}
-				
-				for(Entry<String, TreeMap<String,TreeMap<String, TaskElement>>>  entry:taskTree.entrySet())
-				{
-					String ip =entry.getKey();
-					int len =ip.length();   //å­—ç¬¦å±…ä¸­å¯¹é½
-					int w =(28-len)/2;
-					String pad=String.format("%"+w+"s", " ");
-					String str =pad+ip+pad;
-					JMenu subMenu = new JMenu(str);
-
-					for(Entry<String,TreeMap<String, TaskElement>> subEntry:entry.getValue().entrySet())
-					{
-						String ip2 =subEntry.getKey();
-						int len1 =ip2.length();   //å­—ç¬¦å±…ä¸­å¯¹é½
-						int w1 =(20-len1)/2;
-						String pad1=String.format("%"+w1+"s", " ");
-						String str1 =pad1+ip2+pad1;
-						JMenu subsubMenu = new JMenu(str);
-						for(Entry<String, TaskElement> subsubEntry:subEntry.getValue().entrySet())
-						{
-							String protocol =subsubEntry.getKey();
-							int len2 =protocol.length();   //å­—ç¬¦å±…ä¸­å¯¹é½
-							int w2 =(20-len2)/2;
-							String pad2=String.format("%"+w2+"s", " ");
-							String str2 =pad2+protocol+pad2;
-							JMenuItem item = new JMenuItem(str2);
-							final TaskElement task = subsubEntry.getValue();
-							
-							panelShow.onTaskAdded(task);
-							
-							item.addActionListener(new ActionListener()
-							{
-	
-								@Override
-								public void actionPerformed(ActionEvent e) {
-									// TODO Auto-generated method stub
-									panelShow.displayTask(task);
-	//							
-								}
-							});
-							subsubMenu.add(item);
-						}
-						subMenu.add(subsubMenu);
-					}
-					popMenu.add(subMenu);
-				}
-			
-				list.add(popMenu);
-			}
-		
-		}
-		for(int i=0;i<miningMethods.size();i++)
-		{
-			MiningMethod method = miningMethods.get(i);
-			JButton button = new JButton("ç»“ç‚¹å¯¹"+method.toString());
-			
-			button.setBounds(38, 51+buttons.size()*80, 150, 27);
-			
-			
-			addPopup(button, popupMenus.get(miningObjectIndex).get(buttons.size()),buttons.size());
-			buttons.add(button);
-		}
-		System.out.println("ff"+popupMenus.get(0).get(0).getComponentCount());
-	}
-	public void initSingleNodeModel()
-	{
-		NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
-		Map<TaskElement, INetworkMiner> allMiners = networkMinerFactory.allMiners;
-		Map<TaskElement, INetworkMiner> miners=new HashMap<TaskElement, INetworkMiner> ();
-		for(Map.Entry<TaskElement, INetworkMiner> entry:allMiners.entrySet()) //å¾—åˆ°éœ€è¦çš„ä»»åŠ¡
-		{
-			TaskElement task = entry.getKey();
-			if(task.getTaskRange().compareTo(TaskRange.SingleNodeRange)==0) //æ¯”è¾ƒçš„æ˜¯é¡ºåº
-			{
-				miners.put(entry.getKey(),entry.getValue());
-			}
-		}
-		
-		
-		System.out.println("miners "+miners.size());
 		for(int i=0;i<miningObjects.size();i++)
 		{
 			ArrayList<JPopupMenu> list = new ArrayList<JPopupMenu>();
@@ -299,14 +174,12 @@ public class NodeFrame extends JFrame{
 				
 				Map<TaskElement, INetworkMiner> tmpminers=new HashMap<TaskElement, INetworkMiner> ();
 				TreeMap<String,TreeMap<String,TaskElement>> taskTree = new TreeMap<String,TreeMap<String,TaskElement>>();
-				for(Map.Entry<TaskElement, INetworkMiner> entry:miners.entrySet()) //å¾—åˆ°éœ€è¦çš„ä»»åŠ¡
+				for(Map.Entry<TaskElement, INetworkMiner> entry:miners.entrySet()) //µÃµ½ĞèÒªµÄÈÎÎñ
 				{
 					
 					TaskElement task = entry.getKey();
-					System.out.println();
 					if(entry.getKey().getMiningObject().equals(miningObjects.get(i))&&entry.getKey().getMiningMethod().equals(miningMethods.get(j)))
 					{
-						System.out.println("aaaaa");
 						tmpminers.put(entry.getKey(),entry.getValue());
 //						ipSet.add(task.getRange());
 					}
@@ -326,7 +199,7 @@ public class NodeFrame extends JFrame{
 				for(Entry<String, TreeMap<String, TaskElement>>  entry:taskTree.entrySet())
 				{
 					String ip =entry.getKey();
-					int len =ip.length();   //å­—ç¬¦å±…ä¸­å¯¹é½
+					int len =ip.length();   //×Ö·û¾ÓÖĞ¶ÔÆë
 					int w =(28-len)/2;
 					String pad=String.format("%"+w+"s", " ");
 					String str =pad+ip+pad;
@@ -335,7 +208,7 @@ public class NodeFrame extends JFrame{
 					for(Entry<String, TaskElement> subEntry:entry.getValue().entrySet())
 					{
 						String protocol =subEntry.getKey();
-						int len1 =protocol.length();   //å­—ç¬¦å±…ä¸­å¯¹é½
+						int len1 =protocol.length();   //×Ö·û¾ÓÖĞ¶ÔÆë
 						int w1 =(20-len1)/2;
 						String pad1=String.format("%"+w1+"s", " ");
 						String str1 =pad1+protocol+pad1;
@@ -366,7 +239,7 @@ public class NodeFrame extends JFrame{
 		for(int i=0;i<miningMethods.size();i++)
 		{
 			MiningMethod method = miningMethods.get(i);
-			JButton button = new JButton("å•ç»“ç‚¹"+method.toString());
+			JButton button = new JButton(method.toString());
 			
 			button.setBounds(38, 51+buttons.size()*80, 150, 27);
 			
@@ -379,7 +252,7 @@ public class NodeFrame extends JFrame{
 	}
 	
     void initialize() {
-		this.setTitle(("ç»“ç‚¹ä¸é“¾è·¯å±æ€§è§„å¾‹"));
+		this.setTitle(("¶àÒµÎñ¹ØÁª·ÖÎö"));
 		setBounds(100, 100, 1500, 900);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		try { 
@@ -387,25 +260,25 @@ public class NodeFrame extends JFrame{
            
 			    UIManager.setLookAndFeel( new  SubstanceBusinessBlackSteelLookAndFeel());
 	            JFrame.setDefaultLookAndFeelDecorated(true);  
-	            //è®¾ç½®ä¸»é¢˜   
+	            //ÉèÖÃÖ÷Ìâ   
 //	            SubstanceLookAndFeel.setCurrentTheme(new SubstanceBottleGreenTheme());  
-	            //è®¾ç½®æŒ‰é’®å¤–è§‚  
+	            //ÉèÖÃ°´Å¥Íâ¹Û  
 //	            SubstanceLookAndFeel.setSkin(new NebulaBrickWallSkin());
 //	            SubstanceLookAndFeel.setCurrentButtonShaper(new  org.jvnet.substance.button.ClassicButtonShaper());  
-//	            //è®¾ç½®æ°´å°  
+//	            //ÉèÖÃË®Ó¡  
 //	           // SubstanceLookAndFeel.setCurrentWatermark(new SubstanceBinaryWatermark());  
-//	            //è®¾ç½®è¾¹æ¡†  
+//	            //ÉèÖÃ±ß¿ò  
 	           
-//                SubstanceSkin skin = new SaharaSkin().withWatermark(watermark); //åˆå§‹åŒ–æœ‰æ°´å°çš„çš®è‚¤
+//                SubstanceSkin skin = new SaharaSkin().withWatermark(watermark); //³õÊ¼»¯ÓĞË®Ó¡µÄÆ¤·ô
 
 //                UIManager.setLookAndFeel(new SubstanceOfficeBlue2007LookAndFeel());
-//                SubstanceLookAndFeel.setSkin(skin); //è®¾ç½®çš®è‚¤
+//                SubstanceLookAndFeel.setSkin(skin); //ÉèÖÃÆ¤·ô
               
                
 	            SubstanceLookAndFeel.setCurrentBorderPainter(new StandardBorderPainter());  
-	            //è®¾ç½®æ¸å˜æ¸²æŸ“   
+	            //ÉèÖÃ½¥±ääÖÈ¾   
 	            SubstanceLookAndFeel.setCurrentGradientPainter(new StandardGradientPainter());  
-	            //è®¾ç½®æ ‡é¢˜  
+	            //ÉèÖÃ±êÌâ  
 	            SubstanceLookAndFeel.setCurrentTitlePainter( new MatteHeaderPainter());     
 			
 			 
