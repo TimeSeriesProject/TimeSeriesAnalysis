@@ -22,6 +22,11 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 public class PanelShowResultsStatistics extends JPanel implements IPanelShowResults{
 
+	ChartPanelShowStatistics ts;
+	JLabel avg ;
+	JLabel std ;
+	JLabel entropy ;
+	JLabel complex ;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
@@ -41,7 +46,7 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 		gridBagLayout.rowWeights = new double[]{1.0, 0.0};
 		setLayout(gridBagLayout);
 		
-		JPanel ts= new ChartPanelShowStatistics("时间序列","时间",task.getMiningObject(),null);
+		ChartPanelShowStatistics ts= new ChartPanelShowStatistics("时间序列","时间",task.getMiningObject(),null);
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
 		gbc_panel_1.insets = new Insets(0, 0, 5, 0);
 		gbc_panel_1.fill = GridBagConstraints.BOTH;
@@ -53,11 +58,12 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 		JLabel avg = new JLabel("平均值:");
 		JLabel std= new JLabel("方差:");
 		JLabel entropy = new JLabel("样本熵:");
+		JLabel complex = new JLabel("复杂度");
 //		lblPeriodFeature = new JLabel("特征值:");
 		panel.add(avg);
 		panel.add(std);
 		panel.add(entropy);
-		
+		panel.add(complex);
 //		panel.add(lblPeriodFeature);
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.fill = GridBagConstraints.HORIZONTAL;
@@ -95,7 +101,11 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 	@Override
 	public void displayMinerResults(MinerResults rslt) {
 		// TODO Auto-generated method stub
-		
+		ts.displayDataItems(rslt.getInputData());
+		avg.setText("平均值："+rslt.getRetStatistics().getMean());
+		std.setText("方差   ："+rslt.getRetStatistics().getStd());
+		entropy.setText("样本熵："+rslt.getRetStatistics().getSampleENtropy());
+		complex.setText("复杂度："+rslt.getRetStatistics().getComplex());
 	}
 
 	@Override
