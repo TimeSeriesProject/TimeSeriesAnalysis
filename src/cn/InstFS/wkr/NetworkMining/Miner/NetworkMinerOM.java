@@ -32,7 +32,7 @@ public class NetworkMinerOM implements INetworkMiner {
 	IResultsDisplayer displayer;
 	
 	boolean isRunning=false;
-	Boolean isOver=false;
+	IsOver isOver=new IsOver();
 	TaskElement task;
 	IReader reader;
 	
@@ -87,7 +87,7 @@ public class NetworkMinerOM implements INetworkMiner {
 	
 	@Override
 	public boolean isOver() {
-		return isOver;
+		return isOver.isIsover();
 	}
 
 
@@ -111,9 +111,9 @@ class OMTimerTask extends TimerTask{
 	IResultsDisplayer displayer;
 	private Timer timer;
 	private boolean isRunning = false;
-	private Boolean isOver;
+	private IsOver isOver;
 	IReader reader;
-	public OMTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,IReader reader,Timer timer,Boolean isOver) {
+	public OMTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,IReader reader,Timer timer,IsOver isOver) {
 		this.task = task;
 		this.results = results;
 		this.displayer = displayer;
@@ -194,7 +194,7 @@ class OMTimerTask extends TimerTask{
 		}
 		
 		isRunning = false;
-		isOver=true;
+		isOver.setIsover(true);
 		if (displayer != null)
 			displayer.displayMinerResults(results);
 		timer.cancel();

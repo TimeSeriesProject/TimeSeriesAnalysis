@@ -31,18 +31,19 @@ public class NetworkMinerNode implements INetworkMiner{
 	private MinerResults results;
 	private IResultsDisplayer displayer;
 	boolean isRunning;
-	Boolean isOver=false;
+	IsOver Over;
 	
 	private TaskCombination taskCombination;
 	
 	public NetworkMinerNode(TaskCombination taskCombination) {
 		this.taskCombination=taskCombination;
 		results = new MinerResults(this);
+		Over=new IsOver();
 	}
 	
 	@Override
 	public boolean start() {
-		System.out.println("PanelShowResultsPM   timer starting");
+		//System.out.println("PanelShowResultsPM   timer starting");
 		if (timer != null){
 			UtilsUI.appendOutput(taskCombination.getName()+" -- already started");
 			return false;
@@ -53,7 +54,7 @@ public class NetworkMinerNode implements INetworkMiner{
 		}
 		timer = new Timer();
 		
-		timerTask = new NodeTimerTask(taskCombination,results, displayer,timer,isOver);
+		timerTask = new NodeTimerTask(taskCombination,results, displayer,timer,Over);
 		timer.scheduleAtFixedRate(timerTask, new Date(), UtilsSimulation.instance.getForcastWindowSizeInSeconds() * 1000);
 		isRunning = true;
 		return true;
@@ -82,7 +83,7 @@ public class NetworkMinerNode implements INetworkMiner{
 	}
 	@Override
 	public boolean isOver() {
-		return isOver;
+		return Over.isIsover();
 	}
 	@Override
 	public TaskElement getTask() {
@@ -103,10 +104,10 @@ class NodeTimerTask extends TimerTask{
 	Timer timer;
 	IResultsDisplayer displayer;
 	private boolean isRunning = false;
-	private Boolean isOver;
+	private IsOver isOver;
 	private TaskCombination taskCombination;
 	public NodeTimerTask(TaskCombination taskCombination, MinerResults results, IResultsDisplayer displayer,
-			Timer timer,Boolean isOver) {
+			Timer timer,IsOver isOver) {
 		this.taskCombination = taskCombination;
 		this.results = results;
 		this.displayer = displayer;
@@ -135,6 +136,7 @@ class NodeTimerTask extends TimerTask{
 		DataItems oriDataItems=dataItems;
 		results.setInputData(oriDataItems);
 		for(TaskElement task:tasks){
+			dataItems=oriDataItems;
 			if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
 				dataItems=DataPretreatment.aggregateData(oriDataItems, task.getGranularity(), task.getAggregateMethod(),
 						!dataItems.isAllDataIsDouble());
@@ -167,14 +169,14 @@ class NodeTimerTask extends TimerTask{
 				break;
 			case MiningMethods_OutliesMining:
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
-					tsaMethod=new FastFourierOutliesDetection(oriDataItems);
+					tsaMethod=new FastFourierOutliesDetection(dataItems);
 					((FastFourierOutliesDetection)tsaMethod).setAmplitudeRatio(0.7);
 					((FastFourierOutliesDetection)tsaMethod).setVarK(2.5);
 				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_GaussDetection)){
-					tsaMethod=new AnormalyDetection(oriDataItems);
+					tsaMethod=new AnormalyDetection(dataItems);
 				}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
 					//tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
-					tsaMethod=new PointPatternDetection(oriDataItems,2,10);
+					tsaMethod=new PointPatternDetection(dataItems,2,10);
 					results.getRetOM().setIslinkDegree(true);
 				}else{
 					throw new RuntimeException("方法不存在！");
@@ -183,12 +185,12 @@ class NodeTimerTask extends TimerTask{
 				setOMResults(results, tsaMethod);
 				break;
 			case MiningMethods_Statistics:
-				SeriesStatistics seriesStatistics=new SeriesStatistics(oriDataItems);
+				SeriesStatistics seriesStatistics=new SeriesStatistics(dataItems);
 				seriesStatistics.statistics();
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_SequenceMining:
-				PointSegment segment=new PointSegment(oriDataItems, 5);
+				PointSegment segment=new PointSegment(dataItems, 5);
 				DataItems clusterItems=null;
 				List<SegPattern> segPatterns=segment.getPatterns();
 				if(task.getPatternNum()==0){
@@ -212,8 +214,8 @@ class NodeTimerTask extends TimerTask{
 			}
 		}
 		isRunning = false;
-		isOver=true;
-		
+		isOver.setIsover(true);;
+		System.out.println(taskCombination.getName()+" over");
 		if (displayer != null)
 			displayer.displayMinerResults(results);
 		timer.cancel();

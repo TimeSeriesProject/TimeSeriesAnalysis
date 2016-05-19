@@ -170,7 +170,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 				continue;    //已经挖掘完的任务不需再次挖掘
 			miner.start();
 			try {
-				Thread.sleep(200);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -197,7 +197,6 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			}
 		}
 		return resultsMap;
-		
 	}
 	
 	private void autoTaskFilter(){

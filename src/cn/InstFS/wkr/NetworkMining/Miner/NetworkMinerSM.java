@@ -36,7 +36,7 @@ public class NetworkMinerSM implements INetworkMiner {
 	SMTimerTask timerTask;
 
 	boolean isStarted;
-	Boolean isOver=false;
+	IsOver isOver=new IsOver();
 	
 	IReader reader;
 
@@ -85,7 +85,7 @@ public class NetworkMinerSM implements INetworkMiner {
 	}
 	@Override
 	public boolean isOver() {
-		return isOver;
+		return isOver.isIsover();
 	}
 
 	@Override
@@ -114,14 +114,14 @@ class SMTimerTask extends TimerTask {
 	private IReader reader;
 	private boolean isRunning = false;
 	private Timer timer;
-	private Boolean isOver;
+	private IsOver isOver;
 	
 	/**
 	 * 本次处理数据的时间
 	 */
 	private Date lastRunTime;	
 
-	SMTimerTask(TaskElement task, MinerResults results,IResultsDisplayer displayer,IReader reader,Timer timer,Boolean isOver) {
+	SMTimerTask(TaskElement task, MinerResults results,IResultsDisplayer displayer,IReader reader,Timer timer,IsOver isOver) {
 		this.task = task;
 		this.results = results;
 		this.displayer=displayer;
@@ -199,7 +199,7 @@ class SMTimerTask extends TimerTask {
 				|| MainFrame.topFrame.getSelectedTask() == task
 				|| MainFrame.topFrame.getSelectedTask() == null)
 			//TaskElement.display1Task(task, ITaskDisplayer.DISPLAY_RESULTS);
-		isOver=true;
+		isOver.setIsover(true);
 		timer.cancel();
 	}
 }
