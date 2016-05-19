@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import lineAssociation.FileOutput;
+import test.ProtocolAssociationTest;
 import associationRules.ProtocolAssociationResult;
+import associationRules.ProtocolAssociationResultRate;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
 /**
@@ -18,9 +21,27 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
  */
 public class ProtocolAssociation {
 
+	/**
+	 * 该主函数主要是为了测试使用，正式使用时，可以删掉该主函数
+	 * @param args
+	 */
+	public static void main(String[] args)
+	{
+//		ProtocolAssMinerFactory paf = ProtocolAssMinerFactory.getInstance();
+//		
+//		paf.mineAllAssociations();
+//		ProtocolAssociation pa = new ProtocolAssociation(paf.getData(),0.6,true);
+//		pa.miningAssociation();
+		String path = "D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\DiplomaProject\\data\\rawDataInput";
+		ProtocolAssociation pa = new ProtocolAssociation(ProtocolAssociationTest.getData(path),-1,1);
+		pa.miningAssociation();
+		
+	}
 	double[] supportThresh = {0.4,10};
 	int bias = 0;
 	int whichAlogrithm = 1;
+	String path = "D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\DiplomaProject\\data\\MyResult";
+	String currentPath = "";
 	HashMap<String,ArrayList<ProtocolDataItems>> ip_proData ;
 	/**
 	 * 直接传入已经处理好的结果
@@ -71,6 +92,7 @@ public class ProtocolAssociation {
 				for(int j = i+1;j < proDataList.size();j++)
 				{
 					double thresh = caculateAssociation(proDataList.get(i).getDataItems(),proDataList.get(j).getDataItems(),whichAlogrithm);
+					currentPath = proDataList.get(i).protocolName+"_"+proDataList.get(j).protocolName;
 					System.out.format("计算 %s 下的协议 %s 和协议 %s 之间的关联度为 %f \t", 
 							ip,proDataList.get(i).protocolName,proDataList.get(j).protocolName,thresh);
 					if(thresh > supportThresh[whichAlogrithm-1])
@@ -79,7 +101,7 @@ public class ProtocolAssociation {
 						System.out.println("拒绝该关联");
 					if(thresh > supportThresh[whichAlogrithm-1])
 					{
-						ProtocolAssociationResult par = new ProtocolAssociationResult(proDataList.get(i).protocolName
+						ProtocolAssociationResultRate par = new ProtocolAssociationResultRate(proDataList.get(i).protocolName
 								,proDataList.get(j).protocolName,proDataList.get(i).getDataItems(),
 								proDataList.get(j).getDataItems(),thresh,bias);
 						resultList.add(par);
@@ -176,11 +198,13 @@ public class ProtocolAssociation {
 		{
 			num++;
 			double d = dataItems.get(i)/(0.01 + dataItems2.get(j));
+			
 			data.add(d);
 			sum += d;
 			i++;
 			j++;
 		}
+		FileOutput.writeRateData(data,path+"\\"+currentPath);
 		mean = sum/num;
 		double s = 0;
 		for(i = 0;i < data.size();i++)
