@@ -17,6 +17,8 @@ import lineAssociation.Linear;
 import lineAssociation.Rule;
 import lineAssociation.SymbolNode;
 import associationRules.ProtocolAssociationResult;
+import associationRules.ProtocolAssociationResultLine;
+import associationRules.ProtocolAssociationResultRate;
 
 public class ProtocolAssociationLine {
 
@@ -92,7 +94,7 @@ public class ProtocolAssociationLine {
 					symbolSeries.put(j,linesList.get(j));
 					FindRules findRules = new FindRules(symbolSeries);
 					findRules.run();
-					ProtocolAssociationResult par = new ProtocolAssociationResult(proDataList.get(i).getProtocolName(),
+					ProtocolAssociationResultLine par = new ProtocolAssociationResultLine(proDataList.get(i).getProtocolName(),
 							proDataList.get(j).getProtocolName(),
 							proDataList.get(i).getDataItems(),proDataList.get(j).getDataItems());
 					
@@ -176,9 +178,9 @@ public class ProtocolAssociationLine {
 						
 					}
 					symbolSeries.remove(j);
-					par.assA1 = assA1;
+					par.assA = assA1;
 //					par.assA2 = assA2;
-					par.assB1 = assB1;
+					par.assB = assB1;
 //					par.assB2 = assB2;
 					resultList.add(par);
 					System.out.println("*********************一轮结束****************************");
