@@ -2,6 +2,8 @@ package cn.InstFS.wkr.NetworkMining.TaskConfigure;
 
 import java.util.EventListener;
 
+import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
+
 public interface ITaskElementEventListener extends EventListener {
 	static int TASK_ADD = 1;
 	static int TASK_DEL = 2;
@@ -23,6 +25,11 @@ public interface ITaskElementEventListener extends EventListener {
 	public void onTaskDeleted(TaskElement task);
 	public void onTaskModified(TaskElement task, int modify_type);
 	public void onTaskToDisplay(TaskElement task);
+	
+	public void onTaskAdded(TaskCombination task);
+	public void onTaskDeleted(TaskCombination task);
+	public void onTaskModified(TaskCombination task, int modify_type);
+	public void onTaskToDisplay(TaskCombination task);
 	
 	public void onTaskMiningToStart(TaskElement task);
 	public void onTaskMiningToStop(TaskElement task);

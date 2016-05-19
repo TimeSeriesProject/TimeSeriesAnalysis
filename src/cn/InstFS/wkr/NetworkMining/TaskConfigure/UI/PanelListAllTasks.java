@@ -24,9 +24,9 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import oracle.net.aso.e;
-
 import cn.InstFS.wkr.NetworkMining.Miner.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
@@ -34,6 +34,7 @@ import cn.InstFS.wkr.NetworkMining.UIs.MainFrame;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
@@ -232,5 +233,27 @@ public class PanelListAllTasks extends JScrollPane implements ITaskElementEventL
 //				!task.equals(listConfigs.getSelectedValue()))
 //				listConfigs.setSelectedValue(task, true);
 	}
-
+	@Override
+	public void onTaskAdded(TaskCombination task) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onTaskDeleted(TaskCombination task) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onTaskModified(TaskCombination task, int modify_type) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onTaskToDisplay(TaskCombination task) {
+		// TODO Auto-generated method stub
+		
+	}
 }

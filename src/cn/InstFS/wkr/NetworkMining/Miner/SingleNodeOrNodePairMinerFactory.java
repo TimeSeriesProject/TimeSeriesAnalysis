@@ -86,7 +86,21 @@ public class SingleNodeOrNodePairMinerFactory {
 			for(String protocol:rawDataItems.keySet()){
 				DataItems dataItems=rawDataItems.get(protocol);
 				if(!isDataItemSparse(dataItems)){
-					generateTask(taskRange, granularity, dataFile, protocol, ip, dataItems,method);
+					TaskCombination taskCombination=new TaskCombination();
+					taskCombination.getTasks().add(generateTask(taskRange, granularity,
+							dataFile, protocol, ip, MiningMethod.MiningMethods_PeriodicityMining));
+					taskCombination.getTasks().add(generateTask(taskRange, granularity,
+							dataFile, protocol, ip, MiningMethod.MiningMethods_OutliesMining));
+					taskCombination.getTasks().add(generateTask(taskRange, granularity,
+							dataFile, protocol, ip, MiningMethod.MiningMethods_Statistics));
+					taskCombination.getTasks().add(generateTask(taskRange, granularity,
+							dataFile, protocol, ip, MiningMethod.MiningMethods_SequenceMining));
+					taskCombination.setMiningObject(miningObject);
+					taskCombination.setDataItems(dataItems);
+					taskCombination.setProtocol(protocol);
+					taskCombination.setRange(ip);
+					taskCombination.setName();
+					TaskElement.add1Task(taskCombination, false);
 				}
 			}
 		}else if(taskRange.toString().equals(TaskRange.NodePairRange.toString())){
@@ -101,15 +115,29 @@ public class SingleNodeOrNodePairMinerFactory {
 				for(String protocol:itemsMap.keySet()){
 					DataItems dataItems=itemsMap.get(protocol);
 					if(!isDataItemSparse(dataItems)){
-						generateTask(taskRange,granularity,dataFile,protocol,ipPair,dataItems,method);
+						TaskCombination taskCombination=new TaskCombination();
+						taskCombination.getTasks().add(generateTask(taskRange, granularity,
+								dataFile, protocol, ipPair, MiningMethod.MiningMethods_PeriodicityMining));
+						taskCombination.getTasks().add(generateTask(taskRange, granularity,
+								dataFile, protocol, ipPair, MiningMethod.MiningMethods_OutliesMining));
+						taskCombination.getTasks().add(generateTask(taskRange, granularity,
+								dataFile, protocol, ipPair, MiningMethod.MiningMethods_Statistics));
+						taskCombination.getTasks().add(generateTask(taskRange, granularity,
+								dataFile, protocol, ipPair, MiningMethod.MiningMethods_SequenceMining));
+						taskCombination.setMiningObject(miningObject);
+						taskCombination.setDataItems(dataItems);
+						taskCombination.setProtocol(protocol);
+						taskCombination.setRange(ipPair);
+						taskCombination.setName();
+						TaskElement.add1Task(taskCombination, false);
 					}
 				}
 			}
 		}
 	}
 	
-	public void generateTask(TaskRange taskRange,int granularity,File dataFile,String protocol,
-			String ipOrPair,DataItems dataItems,MiningMethod method){
+	public TaskElement generateTask(TaskRange taskRange,int granularity,File dataFile,String protocol,
+			String ipOrPair,MiningMethod method){
 		TaskElement task = new TaskElement();
 		task.setDataSource("File");
 		task.setGranularity(granularity);
@@ -146,10 +174,7 @@ public class SingleNodeOrNodePairMinerFactory {
 		}
 		task.setMiningObject(miningObject);
 		task.setProtocol(protocol);
-		TaskElement.add1Task(task, false);
-		NetworkMinerFactory minerFactory=NetworkMinerFactory.getInstance();
-		INetworkMiner miner=minerFactory.allMiners.get(task);
-		miner.getResults().setInputData(dataItems);
+		return task;
 	}
 	/**
 	 * 判断给定的时间序列是否稀疏，（稀疏即意味着时间序列大于50%的值都是0） 如果稀疏返回True

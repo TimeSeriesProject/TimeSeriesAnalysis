@@ -33,6 +33,7 @@ import javax.swing.event.EventListenerList;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.OracleUtils;
 import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
+import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Params.IParamsNetworkMining;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsFP;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsPM;
@@ -43,7 +44,8 @@ import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsClass;
 
 public class TaskElement extends JDialog implements Serializable, Comparable<TaskElement>{
 	public static String PATH_TO_SAVE_TASKS = "./tasks/";
-	public static List<TaskElement>allTasks ;	
+	public static List<TaskElement>allTasks ;
+	public static List<TaskCombination> allCombinationTasks;
 
 	private String taskName;
 	private Date dateStart;
@@ -562,6 +564,18 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		}
 		
 	}
+	public static boolean add1Task(TaskCombination task, boolean saveToFile){
+		if (allCombinationTasks == null)
+			allCombinationTasks = new ArrayList<TaskCombination>();
+		if (allCombinationTasks.contains(task)){
+			return modify1Task(task,ITaskElementEventListener.TASK_MODIFY_ELSE);
+		}else{
+			allCombinationTasks.add(task);
+			notifyTaskListener(ITaskElementEventListener.TASK_ADD, task, ITaskElementEventListener.TASK_MODIFY_ELSE);
+			return true;
+		}
+		
+	}
 	public static void del1Task(TaskElement task){
 		if (task == null)
 			return;
@@ -585,6 +599,17 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		return true;
 	}	
 	public static boolean display1Task(TaskElement task, int displayType){
+		notifyTaskListener(ITaskElementEventListener.TASK_DISPLAY, task,  ITaskElementEventListener.TASK_MODIFY_ELSE);
+		return true;
+	}	
+	
+	public static boolean modify1Task(TaskCombination task, int modify_type){
+		if (!allCombinationTasks.contains(task))
+			allCombinationTasks.add(task);
+		notifyTaskListener(ITaskElementEventListener.TASK_MODIFY, task, modify_type);		
+		return true;
+	}	
+	public static boolean display1Task(TaskCombination task, int displayType){
 		notifyTaskListener(ITaskElementEventListener.TASK_DISPLAY, task,  ITaskElementEventListener.TASK_MODIFY_ELSE);
 		return true;
 	}	
@@ -711,6 +736,20 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		listeners.remove(listener);
 	}
 	private static void notifyTaskListener(int taskEventType, TaskElement task, int modify_type){
+		Iterator<ITaskElementEventListener> it = listeners.iterator();
+		while(it.hasNext()){
+			ITaskElementEventListener listener = it.next();
+			if (taskEventType == ITaskElementEventListener.TASK_ADD)
+				listener.onTaskAdded(task);
+			else if (taskEventType == ITaskElementEventListener.TASK_DEL)
+				listener.onTaskDeleted(task);
+			else if (taskEventType == ITaskElementEventListener.TASK_DISPLAY)
+				listener.onTaskToDisplay(task);
+			else if (taskEventType == ITaskElementEventListener.TASK_MODIFY)
+				listener.onTaskModified(task, modify_type);
+		}
+	}
+	private static void notifyTaskListener(int taskEventType, TaskCombination task, int modify_type){
 		Iterator<ITaskElementEventListener> it = listeners.iterator();
 		while(it.hasNext()){
 			ITaskElementEventListener listener = it.next();

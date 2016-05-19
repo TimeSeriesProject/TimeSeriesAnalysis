@@ -28,6 +28,8 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	}
 	
 	public Map<TaskElement, INetworkMiner>allMiners = new HashMap<TaskElement, INetworkMiner>();
+	public Map<TaskCombination, INetworkMiner> allCombinationMiners=
+			new HashMap<TaskCombination, INetworkMiner>();
 	public INetworkMiner createMiner(TaskElement task){
 		IReader reader=null;
 		INetworkMiner miner = null;
@@ -62,17 +64,33 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		allMiners.put(task, miner);
 		return miner;
 	}
+	
+	public INetworkMiner createMiner(TaskCombination taskCombination){
+		if (taskCombination == null)
+			return null;
+		if (allCombinationMiners.containsKey(taskCombination))
+			return allCombinationMiners.get(allCombinationMiners);
+		NetworkMinerNode miner=new NetworkMinerNode(taskCombination);
+		allCombinationMiners.put(taskCombination, miner);
+		return miner;
+	}
 	public void removeMiner(TaskElement task){
 		if (allMiners.containsKey(task)){
 			allMiners.get(task).stop();
 			allMiners.remove(task);
 		}
 	}
+	public void removeMiner(TaskCombination taskCombination){
+		if (allCombinationMiners.containsKey(taskCombination)){
+			allCombinationMiners.get(taskCombination).stop();
+			allCombinationMiners.remove(taskCombination);
+		}
+	}
 	public void removeMiner(INetworkMiner miner){
 		if (allMiners.containsKey(miner.getTask())){
 			allMiners.get(miner.getTask()).stop();
 			allMiners.remove(miner.getTask());
-		}			
+		}
 	}
 	
 	public void startAllMiners(MiningMethod method){
@@ -119,7 +137,27 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			}
 		}
 		
+		for(INetworkMiner miner :allCombinationMiners.values()){
+			if(miner.isOver())
+				continue;    //已经挖掘完的任务不需再次挖掘
+			miner.start();
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		for(INetworkMiner miner :allMiners.values()){
+			if(!miner.isOver()){
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		for(INetworkMiner miner :allCombinationMiners.values()){
 			if(!miner.isOver()){
 				try {
 					Thread.sleep(100);
@@ -182,9 +220,21 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	public void onTaskAdded(TaskElement task) {
 		createMiner(task);
 	}
+	
+	@Override
+	public void onTaskAdded(TaskCombination task) {
+		createMiner(task);
+	}
+	
 	@Override
 	public void onTaskDeleted(TaskElement task) {
 		removeMiner(task);
+	}
+	
+	@Override
+	public void onTaskDeleted(TaskCombination task) {
+		removeMiner(task);
+		
 	}
 	@Override
 	public void onTaskModified(TaskElement task, int modify_type) {
@@ -202,8 +252,29 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			}
 		}
 	}
+	
+	@Override
+	public void onTaskModified(TaskCombination task, int modify_type) {
+		if (allCombinationMiners.containsKey(task)){
+			INetworkMiner miner = allCombinationMiners.get(task);
+			if (miner.isAlive())
+			{
+				miner.stop();
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				miner.start();
+			}
+		}
+	}
 	@Override
 	public void onTaskToDisplay(TaskElement task) {
+		
+	}
+	@Override
+	public void onTaskToDisplay(TaskCombination task) {
 		
 	}
 	@Override
