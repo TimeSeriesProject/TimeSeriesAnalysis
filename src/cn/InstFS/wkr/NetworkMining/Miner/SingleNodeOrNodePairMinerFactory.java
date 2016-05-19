@@ -177,10 +177,12 @@ public class SingleNodeOrNodePairMinerFactory {
 			name=ipOrPair+"_"+protocol+"_auto_频繁模式挖掘";
 			task.setTaskName(name);
 			task.setComments("挖掘  "+ipOrPair+" 上,协议为"+protocol+"的频繁模式");
+			break;
 		case MiningMethods_Statistics:
 			name=ipOrPair+"_"+protocol+"_统计_auto";
 			task.setTaskName(name);
 			task.setComments("挖掘  "+ipOrPair+" 上,协议"+protocol+"的统计");
+			break;
 		default:
 			break;
 		}

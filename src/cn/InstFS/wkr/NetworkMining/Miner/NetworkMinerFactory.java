@@ -11,6 +11,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.Exception.NoneSuchMinerMethod;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerPM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
@@ -193,6 +194,42 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 					System.out.println(task.getName()+" not over");
 				}else{
 					resultsMap.put(task, miner.getResults().getRetNode());
+				}
+			}
+		}
+		
+		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<TaskCombination, INetworkMiner> entry=iterator.next();
+			TaskCombination taskCombination=entry.getKey();
+			for(TaskElement task:taskCombination.getTasks()){
+				switch (task.getMiningMethod()) {
+				case MiningMethods_OutliesMining:
+					NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
+					minerOM.results.setRetOM(resultsMap.get(taskCombination).getRetOM());
+					minerOM.isOver.setIsover(true);
+					allMiners.put(task, minerOM);
+					break;
+				case MiningMethods_PeriodicityMining:
+					NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
+					minerPM.results.setRetPM(resultsMap.get(taskCombination).getRetPM());
+					minerPM.isOver.setIsover(true);
+					allMiners.put(task, minerPM);
+					break;
+				case MiningMethods_SequenceMining:
+					NetworkMinerSM minerSM=new NetworkMinerSM(task, null);
+					minerSM.results.setRetSM(resultsMap.get(taskCombination).getRetSM());
+					minerSM.isOver.setIsover(true);
+					allMiners.put(task, minerSM);
+					break;
+				case MiningMethods_Statistics:
+					NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
+					statistics.results.setRetStatistics(resultsMap.get(taskCombination).getRetStatistics());
+					statistics.isOver.setIsover(true);
+					allMiners.put(task, statistics);
+					break;
+				default:
+					break;
 				}
 			}
 		}
