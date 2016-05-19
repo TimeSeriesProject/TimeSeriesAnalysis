@@ -207,6 +207,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 				case MiningMethods_OutliesMining:
 					NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
 					minerOM.results.setRetOM(resultsMap.get(taskCombination).getRetOM());
+					minerOM.results.di=taskCombination.getDataItems();
 					minerOM.isOver.setIsover(true);
 					allMiners.put(task, minerOM);
 					break;
@@ -214,18 +215,21 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 					NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
 					minerPM.results.setRetPM(resultsMap.get(taskCombination).getRetPM());
 					minerPM.isOver.setIsover(true);
+					minerPM.results.di=taskCombination.getDataItems();
 					allMiners.put(task, minerPM);
 					break;
 				case MiningMethods_SequenceMining:
 					NetworkMinerSM minerSM=new NetworkMinerSM(task, null);
 					minerSM.results.setRetSM(resultsMap.get(taskCombination).getRetSM());
 					minerSM.isOver.setIsover(true);
+					minerSM.results.di=taskCombination.getDataItems();
 					allMiners.put(task, minerSM);
 					break;
 				case MiningMethods_Statistics:
 					NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
 					statistics.results.setRetStatistics(resultsMap.get(taskCombination).getRetStatistics());
 					statistics.isOver.setIsover(true);
+					statistics.results.di=taskCombination.getDataItems();
 					allMiners.put(task, statistics);
 					break;
 				default:
