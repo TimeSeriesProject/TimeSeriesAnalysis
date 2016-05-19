@@ -20,10 +20,10 @@ public class NetworkFactory {
 	private static NetworkFactory inst;
 	public static boolean isMining=false;
 	public String dataPath="./tasks1/";
-	public static HashMap<String, HashMap<String, DataItems>> eachProtocolItems;
+
 	
 	NetworkFactory(){
-		eachProtocolItems= new HashMap<String, HashMap<String,DataItems>>();
+		
 	}
 	
 	public static NetworkFactory getInstance(){
@@ -33,7 +33,7 @@ public class NetworkFactory {
 		}
 		return inst;
 	}
-	public void mineNetworkRule(){
+	public DataItems mineNetworkDiameterRule(){
 
 		/**
 		 * 网络直径挖掘
@@ -44,17 +44,22 @@ public class NetworkFactory {
 		CWNetworkReader reader = new CWNetworkReader(diameter_task);
 		System.out.println("网络直径");
 		DataItems diameter_dataItems = reader.readInputByText();
-//		System.out.println();
-	
+		return diameter_dataItems;
+		
+	}
+	public DataItems mineNetworkClusterRule(){
+
 		/**
 		 * 网络簇系数挖掘
 		 */
 		TaskElement cluster_task = new TaskElement();
 		cluster_task.setSourcePath(dataPath);
 		cluster_task.setMiningObject("网络簇系数");
+		CWNetworkReader reader = new CWNetworkReader(cluster_task);
 		reader = new CWNetworkReader(cluster_task);
 		System.out.println("网络簇系数");
 		DataItems cluster_dataItems = reader.readInputByText();
+		return cluster_dataItems;
 		
 		
 	}
