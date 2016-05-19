@@ -10,6 +10,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
@@ -17,7 +18,7 @@ public class SingleNodeOrNodePairMinerFactory {
 	private static SingleNodeOrNodePairMinerFactory inst;
 	public static boolean isMining=false;
 	public String dataPath="./tasks1/";
-	private String miningObject;
+	private MiningObject miningObject;
 	private TaskRange taskRange;
 	private MiningMethod method;
 	
@@ -43,10 +44,10 @@ public class SingleNodeOrNodePairMinerFactory {
 	public void setTaskRange(TaskRange taskRange) {
 		this.taskRange = taskRange;
 	}
-	public String getMiningObject() {
+	public MiningObject getMiningObject() {
 		return miningObject;
 	}
-	public void setMiningObject(String miningObject) {
+	public void setMiningObject(MiningObject miningObject) {
 		this.miningObject = miningObject;
 	}
 	public String getDataPath() {
@@ -78,10 +79,15 @@ public class SingleNodeOrNodePairMinerFactory {
 		int granularity=3600;
 		if(taskRange.toString().equals(TaskRange.SingleNodeRange.toString())){
 			HashMap<String, DataItems> rawDataItems=null;
-			if(miningObject.equals("流量"))
+			switch (miningObject) {
+			case MiningObject_Traffic:
 				rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath());
-			else if (miningObject.equals("通信次数")) {
+				break;
+			case MiningObject_Times:
 				rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath());
+				break;
+			default:
+				break;
 			}
 			for(String protocol:rawDataItems.keySet()){
 				DataItems dataItems=rawDataItems.get(protocol);
@@ -95,7 +101,7 @@ public class SingleNodeOrNodePairMinerFactory {
 							dataFile, protocol, ip, MiningMethod.MiningMethods_Statistics));
 					taskCombination.getTasks().add(generateTask(taskRange, granularity,
 							dataFile, protocol, ip, MiningMethod.MiningMethods_SequenceMining));
-					taskCombination.setMiningObject(miningObject);
+					taskCombination.setMiningObject(miningObject.toString());
 					taskCombination.setDataItems(dataItems);
 					taskCombination.setProtocol(protocol);
 					taskCombination.setRange(ip);
@@ -105,11 +111,17 @@ public class SingleNodeOrNodePairMinerFactory {
 			}
 		}else if(taskRange.toString().equals(TaskRange.NodePairRange.toString())){
 			HashMap<String, Map<String, DataItems>> ipPairRawDataItems=null;
-			if(miningObject.equals("流量"))
+			switch (miningObject) {
+			case MiningObject_Traffic:
 				ipPairRawDataItems=reader.readEachIpPairProtocolTrafficDataItems(dataFile.getAbsolutePath());
-			else if (miningObject.equals("通信次数")) {
+				break;
+			case MiningObject_Times:
 				ipPairRawDataItems=reader.readEachIpPairProtocolTimesDataItems(dataFile.getAbsolutePath());
+				break;
+			default:
+				break;
 			}
+			
 			for(String ipPair:ipPairRawDataItems.keySet()){
 				Map<String, DataItems> itemsMap=ipPairRawDataItems.get(ipPair);
 				for(String protocol:itemsMap.keySet()){
@@ -124,7 +136,7 @@ public class SingleNodeOrNodePairMinerFactory {
 								dataFile, protocol, ipPair, MiningMethod.MiningMethods_Statistics));
 						taskCombination.getTasks().add(generateTask(taskRange, granularity,
 								dataFile, protocol, ipPair, MiningMethod.MiningMethods_SequenceMining));
-						taskCombination.setMiningObject(miningObject);
+						taskCombination.setMiningObject(miningObject.toString());
 						taskCombination.setDataItems(dataItems);
 						taskCombination.setProtocol(protocol);
 						taskCombination.setRange(ipPair);
@@ -172,7 +184,7 @@ public class SingleNodeOrNodePairMinerFactory {
 		default:
 			break;
 		}
-		task.setMiningObject(miningObject);
+		task.setMiningObject(miningObject.toString());
 		task.setProtocol(protocol);
 		return task;
 	}
