@@ -23,15 +23,17 @@ public class ProtocolAssociationResultRate extends ProtocolAssociationResult{
 //	public List<String> assB2 = new ArrayList<String>();
 	public ProtocolAssociationResultRate(String p1,String p2,DataItems data1,DataItems data2){
 		
-		protocol1 = p1;
-		protocol2 = p2;
-		dataItems1 = data1;
-		dataItems2 = data2;
-		alogrithmType = 0;
+		super(p1,p2,data1,data2,0);
+//		protocol1 = p1;
+//		protocol2 = p2;
+//		dataItems1 = data1;
+//		dataItems2 = data2;
+//		alogrithmType = 0;
 	}
 	
 	public ProtocolAssociationResultRate(String p1,String p2,DataItems data1,DataItems data2,double s,int k)
 	{
+		super();
 		protocol1 = p1;
 		protocol2 = p2;
 		dataItems1 = data1;
