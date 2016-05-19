@@ -609,8 +609,8 @@ public class WavCluster {
 		try
 		{
 			int labels[]=kMeans.getAssignments();
-			for(int label:labels)
-				System.out.println(label);
+//			for(int label:labels)
+//				System.out.println(label);
 			
 			for(int i=0;i<labels.length;i++)
 			{

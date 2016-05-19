@@ -44,7 +44,7 @@ public class NetworkMinerFP implements INetworkMiner {
 	TaskElement task;
 	MinerResults results;
 	IResultsDisplayer displayer;
-	private Boolean isOver=false;
+	private IsOver isOver=new IsOver();
 	Timer timer;
 	FPTimerTask timerTask;
 	
@@ -90,7 +90,7 @@ public class NetworkMinerFP implements INetworkMiner {
 	
 	@Override
 	public boolean isOver() {
-		return isOver;
+		return isOver.isIsover();
 	}
 	@Override
 	public boolean isAlive() {
@@ -120,10 +120,10 @@ class FPTimerTask extends TimerTask{
 	private IResultsDisplayer displayer;
 	private IReader reader;
 	private boolean isRunning = false;
-	private Boolean isOver;
+	private IsOver isOver;
 	private Timer timer;
 
-	FPTimerTask(TaskElement task, MinerResults results,IResultsDisplayer displayer,IReader reader,Timer timer,Boolean isOver){
+	FPTimerTask(TaskElement task, MinerResults results,IResultsDisplayer displayer,IReader reader,Timer timer,IsOver isOver){
 		this.task = task;
 		this.results = results;
 		this.displayer=displayer;
@@ -193,7 +193,7 @@ class FPTimerTask extends TimerTask{
 				MainFrame.topFrame.getSelectedTask() == task||
 				MainFrame.topFrame.getSelectedTask() == null)
 			TaskElement.display1Task(task, ITaskDisplayer.DISPLAY_RESULTS);
-		isOver=true;
+		isOver.setIsover(true);
 		timer.cancel();
 	}		
 }

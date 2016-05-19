@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.print.attribute.standard.MediaSize.ISO;
+
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -30,7 +33,7 @@ public class NetworkMinerStatistics implements INetworkMiner {
 	IResultsDisplayer displayer;
 	
 	boolean isRunning=false;
-	Boolean isOver=false;
+	IsOver isOver=new IsOver();
 	TaskElement task;
 	IReader reader;
 	
@@ -84,7 +87,7 @@ public class NetworkMinerStatistics implements INetworkMiner {
 	
 	@Override
 	public boolean isOver() {
-		return isOver;
+		return isOver.isIsover();
 	}
 
 
@@ -112,10 +115,10 @@ class StatisticsTimerTask extends TimerTask  {
 	IResultsDisplayer displayer;
 	private Timer timer;
 	private boolean isRunning = false;
-	private Boolean isOver;
+	private IsOver isOver;
 	IReader reader;
 	public StatisticsTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,
-			IReader reader,Timer timer,Boolean isOver) {
+			IReader reader,Timer timer,IsOver isOver) {
 		this.task = task;
 		this.results = results;
 		this.displayer = displayer;
@@ -126,7 +129,7 @@ class StatisticsTimerTask extends TimerTask  {
 		this.ratio=0.2;
 	}
 	public StatisticsTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,
-			IReader reader,Timer timer,Boolean isOver,int splitM,double ratio){
+			IReader reader,Timer timer,IsOver isOver,int splitM,double ratio){
 		this.task = task;
 		this.results = results;
 		this.displayer = displayer;
@@ -180,7 +183,7 @@ class StatisticsTimerTask extends TimerTask  {
 		results.getRetStatistics().setSpan(statistics.getTimeSpan());
 		results.getRetStatistics().setStd(statistics.getStd());
 		isRunning = false;
-		isOver=true;
+		isOver.setIsover(true);
 		
 		if (displayer != null)
 			displayer.displayMinerResults(results);
