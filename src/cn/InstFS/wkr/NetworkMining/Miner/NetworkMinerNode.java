@@ -128,12 +128,12 @@ class NodeTimerTask extends TimerTask{
 		
 		isRunning = true;
 		// ¶ÁÈ¡Êý¾Ý
-		Map<String, MinerResultsPM> retPmMap=new HashMap<String, MinerResultsPM>();
-		PMDetect(taskCombination.getDataItems(),retPmMap,taskCombination.getTasks());
+		PMDetect(taskCombination.getDataItems(),taskCombination.getTasks());
 	}
 	
-	private void PMDetect(DataItems dataItems,Map<String, MinerResultsPM> retPmMap,List<TaskElement>tasks){
+	private void PMDetect(DataItems dataItems,List<TaskElement>tasks){
 		DataItems oriDataItems=dataItems;
+		results.setInputData(oriDataItems);
 		for(TaskElement task:tasks){
 			if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
 				dataItems=DataPretreatment.aggregateData(oriDataItems, task.getGranularity(), task.getAggregateMethod(),
