@@ -17,17 +17,17 @@ import lineAssociation.Linear;
 import lineAssociation.Rule;
 import lineAssociation.SymbolNode;
 import associationRules.ProtocolAssociationResult;
-import associationRules.ProtocolAssociationResultLine;
-import associationRules.ProtocolAssociationResultRate;
 
 public class ProtocolAssociationLine {
 
+	/**
 	public static void main(String[] args)
 	{
 		String path = "D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\DiplomaProject\\data\\rawDataInput";
 		ProtocolAssociationLine pal = new ProtocolAssociationLine(ProtocolAssociationTest.getData(path));
 		pal.miningAssociation();
 	}
+	*/
 	HashMap<String,ArrayList<ProtocolDataItems>> ip_proData ;
 	public ProtocolAssociationLine(HashMap<String,ArrayList<ProtocolDataItems>> pdi){
 		
