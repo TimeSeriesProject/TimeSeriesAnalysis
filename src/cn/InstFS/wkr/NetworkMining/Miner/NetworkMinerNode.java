@@ -205,9 +205,10 @@ class NodeTimerTask extends TimerTask{
 				sequencePattern.setWinSize(paramsSM.getSizeWindow());
 				sequencePattern.setThreshold(paramsSM.getMinSupport());
 				sequencePattern.setStepSize(paramsSM.getStepWindow());
-				sequencePattern.printClusterLabelTOLines(clusterItems, dataItems);
+				Map<Integer, List<String>>frequentItem=sequencePattern.
+						printClusterLabelTOLines(clusterItems, dataItems);
 				sequencePattern.patternMining();
-				setFrequentResults(results, sequencePattern);
+				setFrequentResults(results, sequencePattern,frequentItem);
 				break;
 			default:
 				break;
@@ -237,10 +238,12 @@ class NodeTimerTask extends TimerTask{
 		results.getRetNode().getRetOM().setOutlies(tsaMethod.getOutlies());    //≤È’““Ï≥£
 		if(tsaMethod.getOutlies()!=null){
 			DataItems outlies=tsaMethod.getOutlies();
-			if(outlies.getLength()==taskCombination.getDataItems().getLength()){
+			int outliesLen=outlies.getLength();
+			int itemLen=taskCombination.getDataItems().getLength();
+			if(Math.abs(outliesLen-itemLen)<=1){
 				int confidence=0;
 				for(String item:outlies.getData()){
-					if(Double.parseDouble(item)>=8){
+					if(Double.parseDouble(item)>=8000){
 						results.getRetNode().getRetOM().setHasOutlies(true);
 						confidence++;
 					}
@@ -249,8 +252,8 @@ class NodeTimerTask extends TimerTask{
 					results.getRetNode().getRetOM().setConfidence(confidence);
 			}else{
 				if(outlies.getLength()>0){
-					results.getRetOM().setHasOutlies(true);
-					results.getRetOM().setConfidence(outlies.getLength());
+					results.getRetNode().getRetOM().setHasOutlies(true);
+					results.getRetNode().getRetOM().setConfidence(outlies.getLength());
 				}
 			}
 		}
@@ -263,13 +266,16 @@ class NodeTimerTask extends TimerTask{
 		results.getRetNode().getRetStatistics().setSampleENtropy(statistics.getSampleEntropy());
 	}
 	
-	private void setFrequentResults(MinerResults results,SequencePatternsDontSplit sequencePattern){
+	private void setFrequentResults(MinerResults results,SequencePatternsDontSplit sequencePattern,
+			Map<Integer, List<String>>frequentItem){
 		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
 		if(sequencePattern.isHasFreItems()){
-			results.getRetSM().setPatters(patterns);
-			results.getRetSM().setHasFreItems(true);
+			results.getRetNode().getRetSM().setPatters(patterns);
+			results.getRetNode().getRetSM().setHasFreItems(true);
+			results.getRetNode().getRetSM().setFrequentItem(frequentItem);
+			System.out.println(taskCombination.getName()+" has freitems");
 		}else{
-			results.getRetSM().setHasFreItems(false);
+			results.getRetNode().getRetSM().setHasFreItems(false);
 		}
 	}
 }

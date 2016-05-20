@@ -68,8 +68,9 @@ public class MinerResultsSM {
 		StringBuilder sb=new StringBuilder();
 		for(List<String> itemList:items){
 			for(String item:itemList){
-				sb.append(item);
+				sb.append(",").append(item);
 			}
+			sb.deleteCharAt(0);
 			data.add(sb.toString());
 			sb.delete(0, sb.length());
 		}

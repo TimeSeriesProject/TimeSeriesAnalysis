@@ -215,6 +215,11 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 					NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
 					minerPM.results.setRetPM(resultsMap.get(taskCombination).getRetPM());
 					minerPM.isOver.setIsover(true);
+//					if(minerPM.results.getRetPM().getHasPeriod()){
+//						System.out.println(minerPM.results.getRetPM().getConfidence());
+//					}else{
+//						System.out.println("none period "+minerPM.results.getRetPM().getConfidence());
+//					}
 					minerPM.results.di=taskCombination.getDataItems();
 					allMiners.put(task, minerPM);
 					break;
@@ -222,6 +227,11 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 					NetworkMinerSM minerSM=new NetworkMinerSM(task, null);
 					minerSM.results.setRetSM(resultsMap.get(taskCombination).getRetSM());
 					minerSM.isOver.setIsover(true);
+					if(minerSM.results.getRetSM().isHasFreItems()){
+						System.out.println(minerSM.results.getRetSM().getPatterns().getData().size());
+					}else{
+						System.out.println(taskCombination.getName()+" none freitems");
+					}
 					minerSM.results.di=taskCombination.getDataItems();
 					allMiners.put(task, minerSM);
 					break;
