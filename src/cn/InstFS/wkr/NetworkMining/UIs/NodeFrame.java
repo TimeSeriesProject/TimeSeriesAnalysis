@@ -20,6 +20,7 @@ import java.awt.BorderLayout;
 import javax.swing.BoxLayout;
 
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 
@@ -93,23 +94,23 @@ public class NodeFrame extends JFrame{
 //					networkMinerFactory.startAllMiners();
 					
 					
-					SingleNodeOrNodePairMinerFactory periodMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-					periodMinerFactory.dataPath="C:/data/out/traffic/";
-					periodMinerFactory.setMethod(MiningMethod.MiningMethods_PeriodicityMining);
-					periodMinerFactory.detect();
-					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PeriodicityMining);
-					
-					SingleNodeOrNodePairMinerFactory outliesMinerFactory =SingleNodeOrNodePairMinerFactory.getInstance();
-					outliesMinerFactory.dataPath="C:/data/out/traffic/";
-					outliesMinerFactory.setMethod(MiningMethod.MiningMethods_OutliesMining);
-					outliesMinerFactory.detect();
-					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_OutliesMining);
-					
-					SingleNodeOrNodePairMinerFactory freItemsFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-					freItemsFactory.dataPath="C:/data/out/traffic/";
-					freItemsFactory.setMethod(MiningMethod.MiningMethods_SequenceMining);
-					freItemsFactory.detect();
-					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_SequenceMining);
+//					SingleNodeOrNodePairMinerFactory periodMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
+//					periodMinerFactory.dataPath="C:/data/out/traffic/";
+//					periodMinerFactory.setMethod(MiningMethod.MiningMethods_PeriodicityMining);
+//					periodMinerFactory.detect();
+//					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PeriodicityMining);
+//					
+//					SingleNodeOrNodePairMinerFactory outliesMinerFactory =SingleNodeOrNodePairMinerFactory.getInstance();
+//					outliesMinerFactory.dataPath="C:/data/out/traffic/";
+//					outliesMinerFactory.setMethod(MiningMethod.MiningMethods_OutliesMining);
+//					outliesMinerFactory.detect();
+//					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_OutliesMining);
+//					
+//					SingleNodeOrNodePairMinerFactory freItemsFactory=SingleNodeOrNodePairMinerFactory.getInstance();
+//					freItemsFactory.dataPath="C:/data/out/traffic/";
+//					freItemsFactory.setMethod(MiningMethod.MiningMethods_SequenceMining);
+//					freItemsFactory.detect();
+//					NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_SequenceMining);
 
 					
 					NodeFrame window = new NodeFrame();
@@ -269,6 +270,8 @@ public class NodeFrame extends JFrame{
 			
 			
 			addPopup(button, popupMenus.get(miningObjectIndex).get(buttons.size()),buttons.size());
+			button.setBackground(Color.RED);
+//			 button.putClientProperty(SubstanceLookAndFeel., new Double(0.8)); 
 			buttons.add(button);
 		}
 		System.out.println("ff"+popupMenus.get(0).get(0).getComponentCount());
