@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import test.ProtocolAssociationTest;
 import lineAssociation.BottomUpLinear;
 import lineAssociation.ClusterWrapper;
 import lineAssociation.DPCluster;
@@ -17,6 +16,7 @@ import lineAssociation.Linear;
 import lineAssociation.Rule;
 import lineAssociation.SymbolNode;
 import associationRules.ProtocolAssociationResult;
+import associationRules.ProtocolAssociationResultLine;
 
 public class ProtocolAssociationLine {
 
