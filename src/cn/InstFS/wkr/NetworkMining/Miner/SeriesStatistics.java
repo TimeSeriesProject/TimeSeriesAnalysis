@@ -59,7 +59,7 @@ public class SeriesStatistics {
 		this.sampleEntropy=sampleEntropy;
 	}
 	private void LZComplex(DataItems di){
-		DataItems disDI=DataPretreatment.toDiscreteNumbers(di, DiscreteMethod.¸÷Çø¼äÊıÖµ·¶Î§ÏàÍ¬, 20, "");
+		DataItems disDI=DataPretreatment.toDiscreteNumbers(di, DiscreteMethod.å„åŒºé—´æ•°å€¼èŒƒå›´ç›¸åŒ, 20, "");
 		List<String> data=disDI.getData();
 		int numN=data.size();
 		int numC=0;
