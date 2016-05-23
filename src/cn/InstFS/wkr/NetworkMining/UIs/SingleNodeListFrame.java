@@ -14,6 +14,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,10 +32,14 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 
 import oracle.net.aso.a;
 
@@ -77,7 +82,7 @@ public class SingleNodeListFrame extends JFrame {
 	HashMap<TaskCombination, MinerNodeResults> resultMap;
 	HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>> resultMaps;
 	ArrayList<Map.Entry<TaskCombination, MinerNodeResults> >resultList;
-	String sortMethod ="按周期规律";
+	String sortMethod ="按周期置信度";
 	/**
 	 * Launch the application.
 	 */
@@ -126,52 +131,92 @@ public class SingleNodeListFrame extends JFrame {
 		System.out.println("排序"+sortMethod);
 		switch(sortMethod)
 		{
-		case "按周期规律":
+		case "按ip":
+			sortByIP();
+			break;
+		case "按协议":
+			sortByProtocol();
+			break;
+		case "按周期置信度":
 			sortByPeriodicity();
 			System.out.println("排序"+sortMethod);
 			break;
-		case "按异常规律":
+		case "按异常度":
 			sortByOutlies();
 			System.out.println("排序"+sortMethod);
 			break;
-		case "按频繁规律":
-			sortBySequence();
-			System.out.println("排序"+sortMethod);
-			break;
+//		case "按频繁规律":
+//			sortBySequence();
+//			System.out.println("排序"+sortMethod);
+//			break;
 		}
+	}
+	private void sortByIP()
+	{
+		Collections.sort(resultList,new Comparator<Map.Entry<TaskCombination, MinerNodeResults> >()
+				{
+					@Override
+					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
+						System.out.println(o1.getValue().getRetPM().getConfidence());
+						System.out.println(o2.getValue().getRetPM().getConfidence());
+						return o1.getKey().getRange().compareTo(o2.getKey().getRange());
+					}
+				});
+	}
+	private void sortByProtocol()
+	{
+		Collections.sort(resultList,new Comparator<Map.Entry<TaskCombination, MinerNodeResults> >()
+				{
+					@Override
+					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
+						System.out.println(o1.getValue().getRetPM().getConfidence());
+						System.out.println(o2.getValue().getRetPM().getConfidence());
+						return o1.getKey().getProtocol().compareTo(o2.getKey().getProtocol());
+					}
+				});
 	}
 	private void sortByPeriodicity()
 	{
 		System.out.println("why"+sortMethod);
 		Collections.sort(resultList,new Comparator<Map.Entry<TaskCombination, MinerNodeResults> >()
 				{
+					@Override
 					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
 						System.out.println(o1.getValue().getRetPM().getConfidence());
 						System.out.println(o2.getValue().getRetPM().getConfidence());
-						return (o1.getValue().getRetPM().getConfidence()-o2.getValue().getRetPM().getConfidence())>0?-1:1;
+						if(o1.getValue().getRetPM().getConfidence()>o2.getValue().getRetPM().getConfidence())
+							return -1;
+						else if(o1.getValue().getRetPM().getConfidence()<o2.getValue().getRetPM().getConfidence())
+							return 1;
+						return 0;
 					}
 				});
 	}
-	private void sortBySequence()
-	{
-		Collections.sort(resultList,new Comparator<Map.Entry<TaskCombination, MinerNodeResults> >()
-				{
-					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
-						System.out.println(o1.getValue().getRetPM().getConfidence());
-						System.out.println(o2.getValue().getRetPM().getConfidence());
-						return (o1.getValue().getRetSM().getAccuracyRatio()-o2.getValue().getRetSM().getAccuracyRatio())>0?-1:1;
-					}
-				});
-	}
+//	private void sortBySequence()
+//	{
+//		Collections.sort(resultList,new Comparator<Map.Entry<TaskCombination, MinerNodeResults> >()
+//				{
+//					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
+//						System.out.println(o1.getValue().getRetPM().getConfidence());
+//						System.out.println(o2.getValue().getRetPM().getConfidence());
+//						return (o1.getValue().getRetSM().getAccuracyRatio()-o2.getValue().getRetSM().getAccuracyRatio())>0?-1:1;
+//					}
+//				});
+//	}
 	private void sortByOutlies()
 	{
 		System.out.println("why"+sortMethod);
 		Collections.sort(resultList,new Comparator<Map.Entry<TaskCombination, MinerNodeResults> >()
 				{
+					@Override
 					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
 						System.out.println(o1.getValue().getRetPM().getConfidence());
 						System.out.println(o2.getValue().getRetPM().getConfidence());
-						return (o1.getValue().getRetOM().getConfidence()-o2.getValue().getRetOM().getConfidence())>0?-1:1;
+						if(o1.getValue().getRetOM().getConfidence()>o2.getValue().getRetOM().getConfidence())
+							return -1;
+						else if(o1.getValue().getRetOM().getConfidence()<o2.getValue().getRetOM().getConfidence())
+							return 1;
+						return 0;
 					}
 				});
 	}
@@ -179,30 +224,61 @@ public class SingleNodeListFrame extends JFrame {
 	{
 		System.out.println("更新");
 		if(listTable!=null)
-		scrollPane.remove(listTable);
+		{
+//		scrollPane.remove(listTable);
+		System.out.println("remove");
+		}
 		resultList=new ArrayList<Map.Entry<TaskCombination, MinerNodeResults>>(resultMap.entrySet());
 		sort();
 		createTable();
+		
 	}
+	public void fitTableColumns(JTable myTable)
+    {
+         myTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+         JTableHeader header = myTable.getTableHeader();
+         int rowCount = myTable.getRowCount();
+         Enumeration columns = myTable.getColumnModel().getColumns();
+         while(columns.hasMoreElements())
+         {
+             TableColumn column = (TableColumn)columns.nextElement();
+             int col = header.getColumnModel().getColumnIndex(column.getIdentifier());
+             int width = (int)header.getDefaultRenderer().getTableCellRendererComponent
+             (myTable, column.getIdentifier(), false, false, -1, col).getPreferredSize().getWidth();
+             for(int row = 0; row < rowCount; row++)
+             {
+                 int preferedWidth = (int)myTable.getCellRenderer(row, col).getTableCellRendererComponent
+                 (myTable, myTable.getValueAt(row, col), false, false, row, col).getPreferredSize().getWidth();
+                 width = Math.max(width, preferedWidth);
+             }
+             header.setResizingColumn(column); // 此行很重要
+             column.setWidth(width+myTable.getIntercellSpacing().width);
+         }
+    }
+    
 	private void createTable()
 	{
-		String data[][]=new String[resultList.size()][8];
+		String data[][]=new String[resultList.size()][10];
 		for(int i=0;i<resultList.size();i++)
 		{
 			TaskCombination taskCom =resultList.get(i).getKey();
 			MinerNodeResults results = resultList.get(i).getValue();
-			data[i][0]="ip "+taskCom.getRange()+"protocol "+taskCom.getProtocol();
-			data[i][1]=String.valueOf(results.getRetStatistics().getMean());
-			data[i][2]=String.valueOf(results.getRetStatistics().getStd());
-			data[i][3]=String.valueOf(results.getRetStatistics().getSampleENtropy());
-			data[i][4]=String.valueOf(results.getRetStatistics().getComplex());
-			data[i][5]=String.valueOf(results.getRetPM().getPeriod());
-			data[i][6]=String.valueOf(results.getRetOM().isHasOutlies()==true?"是":"否");
-			data[i][7]=String.valueOf(results.getRetSM().isHasFreItems()==true?"是":"否");
+			data[i][0]="ip: "+taskCom.getRange()+" protocol: "+taskCom.getProtocol();
+			data[i][1]=String.format("%5.3f",results.getRetStatistics().getMean());
+			data[i][2]=String.format("%5.3f",results.getRetStatistics().getStd());
+			data[i][3]=String.format("%5.3f",results.getRetStatistics().getSampleENtropy());
+			data[i][4]=String.format("%5.3f",results.getRetStatistics().getComplex());
+			data[i][5]=String.format("%d",results.getRetPM().getPeriod());
+			if(results.getRetPM().getPeriod()<=0)
+				data[i][5]="无";
+			data[i][6]=String.format("%5.3f",results.getRetPM().getConfidence());
+			data[i][7]=String.valueOf(results.getRetOM().isHasOutlies()==true?"是":"否");
+			data[i][8]=String.format("%5d",results.getRetOM().getConfidence());
+			data[i][9]=String.valueOf(results.getRetSM().isHasFreItems()==true?"是":"否");
 			
 			
 		}
-	    String colNames[]={"时间序列名","平均值","标准差","样本熵","复杂度","周期","是否有异常","是否存在频繁项"};
+	    String colNames[]={"时间序列","平均值","标准差","样本熵","复杂度","周期","周期置信度","是否有异常","异常度","是否存在频繁项"};
 	   
 	 
 	    DefaultTableModel model=new DefaultTableModel(data,colNames){
@@ -212,7 +288,12 @@ public class SingleNodeListFrame extends JFrame {
 	         };
 	     
 	      };    
+	     
 	    listTable = new JTable(model);
+	    listTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+	    listTable.setAutoscrolls(true);
+	    listTable.getColumnModel().getColumn(0).setPreferredWidth(180);
+//	    listTable.setRowHeight(35);
 	    listTable.addMouseListener(new MouseAdapter(){
 	       
 	    public void mouseClicked(MouseEvent e) {
@@ -259,7 +340,11 @@ public class SingleNodeListFrame extends JFrame {
                 }
             }
         });  
-		   
+//		scrollPane.add(listTable); 
+		scrollPane.setViewportView(listTable);
+//		scrollPane.updateUI();
+//		scrollPane.repaint();
+		
 	}
 	public void initModel()
 	{
@@ -270,7 +355,7 @@ public class SingleNodeListFrame extends JFrame {
 		miningObjectComboBox.addItem("流量");
 		miningObjectComboBox.addItem("通信次数");
 		miningObjectComboBox.setSelectedIndex(1);
-//		miningObjectComboBox.addItem("结点出现消失");
+		miningObjectComboBox.addItem("结点出现消失");
 		miningObjectComboBox.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent event)
@@ -304,10 +389,11 @@ public class SingleNodeListFrame extends JFrame {
 		
 		JLabel sortLabel= new JLabel("选择排序方式");
 		sortTypeComboBox = new JComboBox<String>();
-		sortTypeComboBox.addItem("按周期规律");
-		sortTypeComboBox.addItem("按异常规律");
-		sortTypeComboBox.addItem("按频繁规律");
-		sortTypeComboBox.setSelectedIndex(0);
+		sortTypeComboBox.addItem("按ip");
+		sortTypeComboBox.addItem("按协议");
+		sortTypeComboBox.addItem("按周期置信度");
+		sortTypeComboBox.addItem("按异常度");
+		sortTypeComboBox.setSelectedIndex(2);
 		sortTypeComboBox.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent event)
@@ -330,15 +416,15 @@ public class SingleNodeListFrame extends JFrame {
 		selectPanel.add(sortTypeComboBox);
 	    scrollPane = new JScrollPane();
 	   
-	    createTable();	  
-	    scrollPane.setViewportView(listTable);
+	   update();	  
 	}
 	
 	public void tableChanged()
 	 {
 	  int row=listTable.getSelectedRow();    
 	  //得到所在行的第一个列的值，作为下面事件传递的参数
-	  SingleNodeFrame SingleNodeFrame=new SingleNodeFrame(resultList.get(row).getKey());
+	  NodeDetailFrame SingleNodeFrame=new NodeDetailFrame(resultList.get(row).getKey());
+	  SingleNodeFrame.setTitle( "ip: "+resultList.get(row).getKey().getRange()+" protocol: "+resultList.get(row).getKey().getProtocol()+" "+resultList.get(row).getKey().getMiningObject()+"规律");
 	  SingleNodeFrame.setVisible(true);
 	  System.out.println("selectrow:"+row);
 	 }

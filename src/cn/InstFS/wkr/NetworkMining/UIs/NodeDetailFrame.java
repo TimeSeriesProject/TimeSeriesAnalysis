@@ -44,7 +44,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
-public class SingleNodeFrame extends JFrame{
+public class NodeDetailFrame extends JFrame{
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -77,7 +77,7 @@ public class SingleNodeFrame extends JFrame{
 	TaskCombination taskCombination;
 	PanelShowAllResults   panelShow = new PanelShowAllResults();
 	ArrayList<JButton> buttons= new ArrayList<JButton>();
-	public SingleNodeFrame(TaskCombination taskCombination)
+	public NodeDetailFrame(TaskCombination taskCombination)
 	{
 		this.taskCombination=taskCombination;
 		
@@ -94,6 +94,8 @@ public class SingleNodeFrame extends JFrame{
 		
 		for(int i=0;i<taskList.size();i++)
 		{
+//			if(taskList.get(i).getMiningMethod()==MiningMethod.MiningMethods_OutliesMining||taskList.get(i).getMiningMethod()==MiningMethod.MiningMethods_Statistics)
+//				continue;
 			final TaskElement task = taskList.get(i);
 			panelShow.onTaskAdded(task);
 			JButton button = new JButton(taskList.get(i).getMiningMethod().toString());
@@ -109,32 +111,15 @@ public class SingleNodeFrame extends JFrame{
 		}
 	}
 private void initialize() {
-		this.setTitle("结点属性变化规律");
+//		this.setTitle("结点属性变化规律");
 		setBounds(100, 100, 1500, 900);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		try { 
-//			org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
-           
-			    UIManager.setLookAndFeel( new  SubstanceBusinessBlackSteelLookAndFeel());
-	            JFrame.setDefaultLookAndFeelDecorated(true);  
-	            SubstanceLookAndFeel.setCurrentBorderPainter(new StandardBorderPainter());  
-	            //设置渐变渲染   
-	            SubstanceLookAndFeel.setCurrentGradientPainter(new StandardGradientPainter());  
-	            //设置标题  
-	            SubstanceLookAndFeel.setCurrentTitlePainter( new MatteHeaderPainter());     
-			
-			 
-			
-			 
-   
-        } catch (Exception e) {  
-            System.out.println(e.getMessage());  
-        }
-//		this.getContentPane().setBackground(Color.RED);
+
+
 		
 		this.getContentPane().setVisible(true);
 		getContentPane().setLayout(new BorderLayout(0, 0));
-//		
+////		
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setDividerLocation(200);
 		splitPane.setDividerSize(2);
@@ -151,7 +136,6 @@ private void initialize() {
 			button.setBounds(38, 51+i*100, 134, 27);
 			leftPanel.add(button);
 		}
-            //System.out.println(s + ", ordinal " + s.ordinal());  
 		splitPane.setRightComponent(panelShow);;
 		getContentPane().add(splitPane);
 		

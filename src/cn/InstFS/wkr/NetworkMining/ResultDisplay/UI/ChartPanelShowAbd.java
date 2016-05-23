@@ -175,8 +175,8 @@ public class ChartPanelShowAbd extends JPanel{
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
         XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
-        xyplot.setDataset(1, xydataset1);
-        xyplot.setRenderer(1, xylineandshaperenderer1);
+        xyplot.setDataset(0, xydataset1);
+        xyplot.setRenderer(0, xylineandshaperenderer1);
         xylineandshaperenderer1.setSeriesShapesVisible(0,false);
         xylineandshaperenderer1.setSeriesLinesVisible(0, true);
         xylineandshaperenderer1.setSeriesShape(0, double1);

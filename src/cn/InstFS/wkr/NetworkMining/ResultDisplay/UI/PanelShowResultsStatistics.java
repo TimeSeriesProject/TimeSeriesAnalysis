@@ -1,6 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -18,6 +19,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.CWNetworkReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.MinerResults;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 public class PanelShowResultsStatistics extends JPanel implements IPanelShowResults{
@@ -27,17 +29,19 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 	JLabel std ;
 	JLabel entropy ;
 	JLabel complex ;
+	private INetworkMiner miner;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 	}
+	
+	private void InitMiner(TaskElement task){
+		this.miner = NetworkMinerFactory.getInstance().createMiner(task);
+		miner.setResultsDisplayer(this);
+	}
 	PanelShowResultsStatistics(TaskElement task)
 	{
-		this.setLayout(new BorderLayout());
-		CWNetworkReader reader =new CWNetworkReader(task);
-		DataItems dataItems =reader.readInputByText();
-		dataItems.setGranularity(task.getGranularity());
-		
+		InitMiner(task);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{450, 0};
@@ -46,7 +50,7 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 		gridBagLayout.rowWeights = new double[]{1.0, 0.0};
 		setLayout(gridBagLayout);
 		
-		ChartPanelShowStatistics ts= new ChartPanelShowStatistics("时间序列","时间",task.getMiningObject(),null);
+		ts= new ChartPanelShowStatistics("时间序列","时间",task.getMiningObject(),null);
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
 		gbc_panel_1.insets = new Insets(0, 0, 5, 0);
 		gbc_panel_1.fill = GridBagConstraints.BOTH;
@@ -54,11 +58,11 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 		gbc_panel_1.gridy = 0;
 		add(ts, gbc_panel_1);
 		
-		JPanel panel = new JPanel(new GridLayout(2, 2));
-		JLabel avg = new JLabel("平均值:");
-		JLabel std= new JLabel("方差:");
-		JLabel entropy = new JLabel("样本熵:");
-		JLabel complex = new JLabel("复杂度");
+		JPanel panel = new JPanel(new FlowLayout());
+		avg = new JLabel("平均值:");
+		std= new JLabel("标准差:");
+		entropy = new JLabel("样本熵:");
+		complex = new JLabel("复杂度");
 //		lblPeriodFeature = new JLabel("特征值:");
 		panel.add(avg);
 		panel.add(std);
@@ -71,26 +75,6 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 		gbc_panel.gridx = 0;
 		gbc_panel.gridy = 1;
 		add(panel, gbc_panel);
-		
-		
-		
-		switch(task.getMiningObject())
-		{
-//		case "网络簇系数": 
-//			 showTs= new ChartPanelShowTs(task.getMiningObject()+"时间序列", "时间",task.getMiningObject(),null);
-//			 showTs.displayDataItems(dataItems);
-//			 add(showTs);
-//			 break;
-//		case "网络直径":
-//			 showTs = new ChartPanelShowTs(task.getMiningObject()+"时间序列", "时间", task.getMiningObject(),null);
-//			 add(showTs);
-//			 showTs.displayDataItems(dataItems);
-//			 break;
-//		case "结点出现消失":
-//			 ChartPanelShowNodeFrequence showNF = new ChartPanelShowNodeFrequence(task.getMiningObject()+"时间序列", "时间",task.getMiningObject(), task,dataItems);
-//			 add(showNF);
-//			 break;
-		}
 	}
 	public XYDataset createDataSet(TaskElement task)
 	{
@@ -102,16 +86,21 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 	public void displayMinerResults(MinerResults rslt) {
 		// TODO Auto-generated method stub
 		ts.displayDataItems(rslt.getInputData());
-		avg.setText("平均值："+rslt.getRetStatistics().getMean());
-		std.setText("方差   ："+rslt.getRetStatistics().getStd());
-		entropy.setText("样本熵："+rslt.getRetStatistics().getSampleENtropy());
-		complex.setText("复杂度："+rslt.getRetStatistics().getComplex());
+		String pad="";
+		for(int i=0;i<10;i++)
+			pad+=" ";
+		avg.setText("平均值 ："+String.format("  %.3f",rslt.getRetStatistics().getMean())+pad);
+		std.setText("标准差 ："+String.format("  %.3f",rslt.getRetStatistics().getStd())+pad);
+		entropy.setText("样本熵 ："+String.format("  %.3f",rslt.getRetStatistics().getSampleENtropy())+pad);
+		complex.setText("复杂度 ："+String.format("  %.3f",rslt.getRetStatistics().getComplex())+pad);
+		updateUI();
 	}
 
 	@Override
 	public void displayMinerResults() {
 		// TODO Auto-generated method stub
-		
+		MinerResults rslt = miner.getResults();
+		displayMinerResults(rslt);
 	}
 
 	@Override
