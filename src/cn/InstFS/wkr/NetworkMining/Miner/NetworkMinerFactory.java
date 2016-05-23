@@ -54,7 +54,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		}else if (task.getMiningMethod().equals(MiningMethod.MiningMethods_PeriodicityMining)){
 			miner = new NetworkMinerPM(task, reader);
 		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_FrequenceItemMining)){
-			miner=new NetworkMinerFP(task, reader);
+			miner=new NetworkMinerFM(task, reader);
 		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_PathProbilityMining)){
 			miner=new NetwokerMinerPathProb(task, reader);
 		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_Statistics)){
@@ -71,7 +71,17 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			return null;
 		if (allCombinationMiners.containsKey(taskCombination))
 			return allCombinationMiners.get(allCombinationMiners);
-		NetworkMinerNode miner=new NetworkMinerNode(taskCombination);
+		INetworkMiner miner=null;
+		switch (taskCombination.getMinerType()) {
+		case MiningType_SinglenodeOrNodePair:
+			miner=new NetworkMinerNode(taskCombination);
+			break;
+		case MiningType_ProtocolAssociation:
+			miner=new ProtocolAssMiner(taskCombination);
+			break;
+		default:
+			break;
+		}
 		allCombinationMiners.put(taskCombination, miner);
 		return miner;
 	}

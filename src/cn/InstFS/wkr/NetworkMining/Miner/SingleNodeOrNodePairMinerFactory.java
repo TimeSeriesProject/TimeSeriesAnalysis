@@ -8,6 +8,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
@@ -106,6 +107,7 @@ public class SingleNodeOrNodePairMinerFactory {
 					taskCombination.setProtocol(protocol);
 					taskCombination.setRange(ip);
 					taskCombination.setName();
+					taskCombination.setMinerType(MinerType.MiningType_SinglenodeOrNodePair);
 					TaskElement.add1Task(taskCombination, false);
 				}
 			}
@@ -163,23 +165,23 @@ public class SingleNodeOrNodePairMinerFactory {
 		switch (method) {
 		case MiningMethods_OutliesMining:
 			task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
-			name=ipOrPair+"_"+protocol+"_异常检测_auto";
+			name=ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_异常检测_auto";
 			task.setTaskName(name);
 			task.setComments("挖掘  "+ipOrPair+" 上,协议"+protocol+"的异常");
 			break;
 		case MiningMethods_PeriodicityMining:
 			task.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
-			name = ipOrPair+"_"+protocol+"_"+granularity+"_周期挖掘_auto";
+			name = ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_周期挖掘_auto";
 			task.setTaskName(name);
 			task.setComments("挖掘  "+ipOrPair+",粒度为"+granularity+"s 的协议"+protocol+"的周期规律");
 			break;
 		case MiningMethods_SequenceMining:
-			name=ipOrPair+"_"+protocol+"_auto_频繁模式挖掘";
+			name=ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_auto_频繁模式挖掘";
 			task.setTaskName(name);
 			task.setComments("挖掘  "+ipOrPair+" 上,协议为"+protocol+"的频繁模式");
 			break;
 		case MiningMethods_Statistics:
-			name=ipOrPair+"_"+protocol+"_统计_auto";
+			name=ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_统计_auto";
 			task.setTaskName(name);
 			task.setComments("挖掘  "+ipOrPair+" 上,协议"+protocol+"的统计");
 			break;

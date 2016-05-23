@@ -12,6 +12,9 @@ public enum MiningAlgo {
 	MiningAlgo_TEOTSA("TEO线段异常检测"),
 	MiningAlgo_NeuralNetworkTSA("神经网络预测"),
 	MiningAlgo_ARIMATSA("ARIMA模型预测"),
+	MiningAlgo_LineProtocolASS("线段化多元序列关联"),
+	MiningAlgo_SimilarityProtocolASS("DTW相似度多元序列关联"),
+	MiningAlgo_RtreeProtocolASS("Rtree相似度多元序列关联"),
 	MiningAlgo_NULL("无");
 	
 	private String value;
