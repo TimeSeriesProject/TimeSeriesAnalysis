@@ -36,14 +36,14 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
 /**
- * ���ξ���
+ * 波形聚类
  * @author chenwei
  *
  */
 public class WavCluster {
 	
 	/**
-	 * �õ����н��Ե�ͨ�����
+	 * 得到所有结点对的通信数据
 	 * @param task
 	 * @param startDate
 	 * @param endDate
@@ -74,7 +74,7 @@ public class WavCluster {
 		return list;
 	}
 	/**
-	 * �õ����е�����ͨ�����
+	 * 得到所有单结点的通信数据
 	 * @param task
 	 * @param startDate
 	 * @param endDate
@@ -109,7 +109,7 @@ public class WavCluster {
 		return list;
 	}
 	/**
-	 * �Ե�����Լ���������Э��ֱ�����߶ξ���ѵ��
+	 * 对单结点以及结点对所有协议分别进行线段聚类训练
 	 */
 	public static void segmentTrainAll()
 	{
@@ -118,7 +118,7 @@ public class WavCluster {
 		task.setDataSource("Text");
 		task.setMiningObject("traffic");
 		/**
-		 * ����ʱ��
+		 * 设置时间
 		 */
 		Calendar cal=Calendar.getInstance();
 		cal.set(2014, 9, 1, 0, 0, 0);
@@ -140,7 +140,7 @@ public class WavCluster {
 		}
 	}
 	/*
-	 * ��ĳ����ݼ������߶ξ���ѵ��
+	 * 对某个数据集进行线段聚类训练
 	 */
 	public static void segmentTrain(TaskElement task,double compratio,int clusternum,Date startDate,Date endDate)
 	{
@@ -209,7 +209,7 @@ public class WavCluster {
 		}
 	}
 	/*
-	 * �Ե�����Լ���������Э��ֱ���в��ξ���ѵ��
+	 * 对单结点以及结点对所有协议分别进行波形聚类训练
 	 */
 	public static void waveTrainAll()
 	{
@@ -218,7 +218,7 @@ public class WavCluster {
 		task.setDataSource("Text");
 		task.setMiningObject("traffic");
 		/**
-		 * ����ʱ��
+		 * 设置时间
 		 */
 		Calendar cal=Calendar.getInstance();
 		cal.set(2014, 9, 1, 0, 0, 0);
@@ -240,7 +240,7 @@ public class WavCluster {
 		}
 	}
 	/**
-	 * ��ĳ����ݼ����в��ξ���ѵ��
+	 * 对某个数据集进行波形聚类训练
 	 * @param task
 	 * @param windowsize
 	 * @param clusternum
@@ -291,12 +291,12 @@ public class WavCluster {
 		Kmeans(instances,clusternum,fileName,false);
 	}
 	/**
-	 * kmeansѵ��
+	 * kmeans训练
 	 * @param instances
 	 * @param clusternum
 	 * @param fileName
 	 * @param preserveOrder
-	 * @return kmeans����
+	 * @return kmeans对象
 	 */
 	public static SimpleKMeans Kmeans(ArrayList<ArrayList<Double>>instances,int clusternum,String fileName,boolean preserveOrder)
 	{
@@ -331,7 +331,7 @@ public class WavCluster {
 		return kMeans;
 	}
 	/**
-	 * ����ĳ��ʱ��������ѵ���õ��߶ξ���ģ�Ͳ���
+	 * 对于某个时间序列用训练好的线段聚类模型测试
 	 * @param dataItems
 	 * @param task
 	 * @return
@@ -399,7 +399,7 @@ public class WavCluster {
 		return result;
 	}
 	/**
-	 * ��ĳ��ʱ�����У��ö�Ӧ��ѵ���õĲ��ξ���ģ�Ͳ���
+	 * 对某个时间序列，用对应的训练好的波形聚类模型测试
 	 * @param dataItems
 	 * @param task
 	 * @return
@@ -464,7 +464,7 @@ public class WavCluster {
 		return result;
 	}
 	/**
-	 * ��ĳ��ʱ�����н����߶ξ��࣬�����ؾ�����
+	 * 对某个时间序列进行线段聚类，并返回聚类结果
 	 * @param dataItems
 	 * @param task
 	 * @return
@@ -511,11 +511,11 @@ public class WavCluster {
 	}
 	
 	/**
-	 * ��ĳ��ʱ�����н��о��࣬�����ؾ�����
-	 * @param dataItems ����Ԫ���
-	 * @param size ÿһ��ʱ��εĳ���
-	 * @param clusterNum ��������ǩ����
-	 * @return ����֮��Ľ��
+	 * 对某段时间序列进行聚类，并返回聚类结果
+	 * @param dataItems 聚类元数据
+	 * @param size 每一类时间段的长度
+	 * @param clusterNum 聚类的类标签数量
+	 * @return 聚类之后的结果
 	 */
 	public static DataItems SelfCluster(DataItems dataItems,int size,int clusterNum,String fileName)
 	{
@@ -563,11 +563,11 @@ public class WavCluster {
 	
 	
 	/**
-	 * ��ĳ��ʱ�����н��о��࣬�����ؾ�����
-	 * @param patterns ����Ԫ���
-	 * @param size ÿһ��ʱ��εĳ���
-	 * @param clusterNum ��������ǩ����
-	 * @return ����֮��Ľ��
+	 * 对某段时间序列进行聚类，并返回聚类结果
+	 * @param patterns 聚类元数据
+	 * @param size 每一类时间段的长度
+	 * @param clusterNum 聚类的类标签数量
+	 * @return 聚类之后的结果
 	 */
 	public static DataItems SelfCluster(List<SegPattern>patterns,DataItems dataItems,int clusterNum,String fileName)
 	{
@@ -630,7 +630,7 @@ public class WavCluster {
 	}
 	
 	/**
-	 * �õ������Ľ���Լ�ÿ����Ŷ�Ӧ��ԭʼ������
+	 * 得到聚类后的结果，以及每个符号对应的原始点序列
 	 * @param dataItems
 	 * @return
 	 */
@@ -683,7 +683,7 @@ public class WavCluster {
 		return result;
 	}
 	/**
-	 * ��ĳ��ʱ�����н��в��ξ��࣬�����ؾ�����
+	 * 对某个时间序列进行波形聚类，并返回聚类结果
 	 * @param dataItems
 	 * @param task
 	 * @return
@@ -730,7 +730,7 @@ public class WavCluster {
 		return result;
 	}
 	/**
-	 * ��ѵ����ת����arff�ļ�
+	 * 将训练集转换成arff文件
 	 * @param instances
 	 * @param path
 	 */
@@ -784,7 +784,7 @@ public class WavCluster {
 //		segmentTrainAll();
 //		waveTrainAll();
 		/**
-		 * �����ó���Σ��ݲ�Ҫɾ��
+		 * 测试用程序段，暂不要删除
 		 */
 		TaskElement task = new TaskElement();
 		task.setSourcePath("E:/javaproject/NetworkMiningSystem/smtpPcap");
