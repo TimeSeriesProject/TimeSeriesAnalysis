@@ -128,7 +128,7 @@ class NodeTimerTask extends TimerTask{
 		results.setDateProcess(UtilsSimulation.instance.getCurTime());
 		
 		isRunning = true;
-		// 读取数据
+		// 璇诲彇鏁版嵁
 		PMDetect(taskCombination.getDataItems(),taskCombination.getTasks());
 	}
 	
@@ -160,7 +160,7 @@ class NodeTimerTask extends TimerTask{
 				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
 					pmMethod=new ERPDistencePM();
 				}else{
-					throw new RuntimeException("方法不存在！");
+					throw new RuntimeException("鏂规硶涓嶅瓨鍦紒");
 				}
 				pmMethod.setOriginDataItems(oriDataItems);
 				pmMethod.setDataItems(dataItems);
@@ -179,7 +179,7 @@ class NodeTimerTask extends TimerTask{
 					tsaMethod=new PointPatternDetection(dataItems,2,10);
 					results.getRetOM().setIslinkDegree(true);
 				}else{
-					throw new RuntimeException("方法不存在！");
+					throw new RuntimeException("鏂规硶涓嶅瓨鍦紒");
 				}
 				tsaMethod.TimeSeriesAnalysis();
 				setOMResults(results, tsaMethod);
@@ -230,12 +230,12 @@ class NodeTimerTask extends TimerTask{
 		results.getRetNode().getRetPM().setMaxDistributePeriod(pmMethod.getMaxItemsInPeriod());
 		results.getRetNode().getRetPM().setFeatureValue(pmMethod.getMinEntropy());
 		results.getRetNode().getRetPM().setFeatureValues(pmMethod.getEntropies());
-		results.getRetNode().getRetPM().setFirstPossiblePeriod(pmMethod.getFirstPossiblePeriod());//找出第一个呈现周期性的周期
+		results.getRetNode().getRetPM().setFirstPossiblePeriod(pmMethod.getFirstPossiblePeriod());//鎵惧嚭绗竴涓憟鐜板懆鏈熸�х殑鍛ㄦ湡
 		results.getRetNode().getRetPM().setConfidence(pmMethod.getConfidence());
 	}
 	
 	private void setOMResults(MinerResults results,IMinerOM tsaMethod){
-		results.getRetNode().getRetOM().setOutlies(tsaMethod.getOutlies());    //查找异常
+		results.getRetNode().getRetOM().setOutlies(tsaMethod.getOutlies());    //鏌ユ壘寮傚父
 		if(tsaMethod.getOutlies()!=null){
 			DataItems outlies=tsaMethod.getOutlies();
 			int outliesLen=outlies.getLength();

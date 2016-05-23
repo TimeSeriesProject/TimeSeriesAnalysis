@@ -9,7 +9,7 @@ import javax.swing.JTextField;
 public class JStringTextField extends JTextField {
 	String value;
 	char []allowedChars = new char[]{0,1,2,3,4,5,6,7,8,9};
-	Field field;	// 类的成员
+	Field field;	// 绫荤殑鎴愬憳
 	public JStringTextField(Field field) {
 		this.field = field;
 		setColumns(10);

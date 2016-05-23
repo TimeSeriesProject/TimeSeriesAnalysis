@@ -58,9 +58,9 @@ public class NetworkMinerFP implements INetworkMiner {
 	}
 	@Override
 	public boolean start() {
-		System.out.println("PanelShowResultsSM   timer¿ªÊ¼");
+		System.out.println("PanelShowResultsSM   timerå¼€å§‹");
 		if (timer != null){
-			UtilsUI.appendOutput(task.getTaskName() + " -- ÔçÒÑÆô¶¯£¡");
+			UtilsUI.appendOutput(task.getTaskName() + " -- æ—©å·²å¯åŠ¨ï¼");
 			return false;
 		}
 		timer = new Timer();
@@ -69,7 +69,7 @@ public class NetworkMinerFP implements INetworkMiner {
 		isStarted = true;
 		task.setRunning(true);
 //		TaskElement.modify1Task(task);		
-		UtilsUI.appendOutput(task.getTaskName() + " -- Æô¶¯³É¹¦£¡");
+		UtilsUI.appendOutput(task.getTaskName() + " -- å¯åŠ¨æˆåŠŸï¼");
 		return true;
 	}
 

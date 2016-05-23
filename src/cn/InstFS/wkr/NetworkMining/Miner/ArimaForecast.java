@@ -25,13 +25,13 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 public class ArimaForecast {
 	
 	/**
-	 * ²ÉÓÃarima¶ÔÊäÈëÊı¾İdataItems½øĞĞÔ¤²â
-	 * ÊäÈëµÄdataItemsĞèÒª¾­¹ıÔ¤´¦ÀíÎª¾ùÔÈÊ±¼ä·Ö²¼µÄÊ±¼äĞòÁĞ
-	 * ²ÉÓÃĞéÄâÊ±¼ä½øĞĞ·â×°£¬ÒÔÊÊÓ¦Íâ²¿°ü
+	 * é‡‡ç”¨arimaå¯¹è¾“å…¥æ•°æ®dataItemsè¿›è¡Œé¢„æµ‹
+	 * è¾“å…¥çš„dataItemséœ€è¦ç»è¿‡é¢„å¤„ç†ä¸ºå‡åŒ€æ—¶é—´åˆ†å¸ƒçš„æ—¶é—´åºåˆ—
+	 * é‡‡ç”¨è™šæ‹Ÿæ—¶é—´è¿›è¡Œå°è£…ï¼Œä»¥é€‚åº”å¤–éƒ¨åŒ…
 	 * 
-	 * @param dataItems ÑµÁ·Êı¾İ
-	 * @param backCount ĞèÒªÔ¤²âµÄÎ´À´½á¹ûÊı
-	 * @return DataItems Ô¤²â½á¹û
+	 * @param dataItems è®­ç»ƒæ•°æ®
+	 * @param backCount éœ€è¦é¢„æµ‹çš„æœªæ¥ç»“æœæ•°
+	 * @return DataItems é¢„æµ‹ç»“æœ
 	 */
 	public static DataItems forecast(DataItems dataItems,int backCount){
 		if(dataItems==null||backCount==0){
@@ -42,11 +42,11 @@ public class ArimaForecast {
 		for(int i=0;i<size;i++){
 			values[i] = Double.parseDouble(dataItems.getData().get(i));
 		}
-		//´ıÔ¤²âÊı¾İ²¿·ÖÉèÎª0
+		//å¾…é¢„æµ‹æ•°æ®éƒ¨åˆ†è®¾ä¸º0
 		for(int i=0;i<backCount;i++){
 			values[size+i]=0;
 		}
-		//¹¹ÔìÊ±¼äĞòÁĞ£¬Éú³ÉĞéÄâÊ±¼ä±êÇ©
+		//æ„é€ æ—¶é—´åºåˆ—ï¼Œç”Ÿæˆè™šæ‹Ÿæ—¶é—´æ ‡ç­¾
 //		Day day = Day.toDay();
 //		TsPeriod start = new TsPeriod(TsFrequency.Undefined,day);
 //		TsPeriod start = TsPeriod.year(2014);
@@ -59,7 +59,7 @@ public class ArimaForecast {
         xTerror.check(tsData);
         double[] forecastData = xTerror.getForecastsValues();
         
-        //¼ÆËãÊ±¼äÁ£¶È
+        //è®¡ç®—æ—¶é—´ç²’åº¦
         Date date1 = dataItems.getTime().get(size-1);
 		Calendar cur1 = Calendar.getInstance();
 		cur1.setTime(date1);
@@ -71,7 +71,7 @@ public class ArimaForecast {
 		Long curLong2 = cur2.getTimeInMillis();
         long particle = curLong1-curLong2;
         
-        //×éºÏÊä³ö½á¹û
+        //ç»„åˆè¾“å‡ºç»“æœ
         DataItems forecastDataItems = new DataItems();
         List<Date> fTime = new ArrayList<Date>();
         List<String> fData = new ArrayList<String>();
@@ -98,18 +98,18 @@ public class ArimaForecast {
 	
 	public static void main(String[] args){
 		
-		//²âÊÔÊı¾İÂ·¾¶
+		//æµ‹è¯•æ•°æ®è·¯å¾„
 		String textPath = "D:\\Java\\workspace\\TestPro\\conf\\test.csv";
 		
-		//³õÊ¼»¯²âÊÔÊı¾İ
+		//åˆå§‹åŒ–æµ‹è¯•æ•°æ®
 		DataItems dataItems = getDataItems(textPath);
-		//Ô¤²â½á¹û¸öÊı
+		//é¢„æµ‹ç»“æœä¸ªæ•°
 		int backCount = 5;
-		//·Ö¸îµÃµ½ÑµÁ·Êı¾İ£¬×îºóbackCount¸öÊı¾İÓÃÓÚ¼ìÑéÔ¤²â½á¹û
+		//åˆ†å‰²å¾—åˆ°è®­ç»ƒæ•°æ®ï¼Œæœ€åbackCountä¸ªæ•°æ®ç”¨äºæ£€éªŒé¢„æµ‹ç»“æœ
 		DataItems trainDataItems = cutDataItems(dataItems,backCount);
-		//»ñÈ¡Ô¤²â½á¹û
+		//è·å–é¢„æµ‹ç»“æœ
 		DataItems fDataItems = forecast(trainDataItems, backCount);
-		//Êä³ö²¢±È½ÏÔ¤²â½á¹û
+		//è¾“å‡ºå¹¶æ¯”è¾ƒé¢„æµ‹ç»“æœ
 		printResult(trainDataItems,fDataItems);
 	}
 
@@ -120,8 +120,8 @@ public class ArimaForecast {
 	
 	
 	/**
-	 * ²âÊÔ³ÌĞò
-	 * ÓÃÓÚÁôÏÂ×îºó¼¸Î»ÓÃÓÚÓë²âÊÔ½á¹û±È½Ï
+	 * æµ‹è¯•ç¨‹åº
+	 * ç”¨äºç•™ä¸‹æœ€åå‡ ä½ç”¨äºä¸æµ‹è¯•ç»“æœæ¯”è¾ƒ
 	 * 
 	 * @param dataItems
 	 * @param backCount
@@ -155,8 +155,8 @@ public class ArimaForecast {
 	}
 
 	/**
-	 * ²âÊÔ³ÌĞò
-	 * Êä³ö²¢±È½ÏÔ¤²â½á¹û
+	 * æµ‹è¯•ç¨‹åº
+	 * è¾“å‡ºå¹¶æ¯”è¾ƒé¢„æµ‹ç»“æœ
 	 * @param trainDataItems
 	 * @param fDataItems
 	 */
@@ -171,7 +171,7 @@ public class ArimaForecast {
 		int tSize = tData.size();
 		int fSize = fData.size();
 		
-		System.out.println("Ô­Ê¼Öµ	Ô¤²âÖµ");
+		System.out.println("åŸå§‹å€¼	é¢„æµ‹å€¼");
 		System.out.println("--------------------------");
 		for(int i=0;i<fSize;i++){
 			System.out.println(tData.get(tSize-fSize+i)+"\t"+fData.get(i));
@@ -181,21 +181,21 @@ public class ArimaForecast {
 
 	/**
 	 * 
-	 * ²âÊÔ³ÌĞò
-	 * ÓÃÓÚÉú³É²âÊÔ³ÌĞòĞèÒªµÄdataItems
-	 * @param textPath ²âÊÔÊı¾İµÄÂ·¾¶
+	 * æµ‹è¯•ç¨‹åº
+	 * ç”¨äºç”Ÿæˆæµ‹è¯•ç¨‹åºéœ€è¦çš„dataItems
+	 * @param textPath æµ‹è¯•æ•°æ®çš„è·¯å¾„
 	 * @return
 	 */
 	private static DataItems getDataItems(String textPath) {
 		DataItems dataItems = new DataItems();
 		
-		//³õÊ¼»¯²âÊÔÊı¾İ
+		//åˆå§‹åŒ–æµ‹è¯•æ•°æ®
 		TreeMap<String,Double> treeMap = new TreeMap<String,Double>();
 		String line=null;
 		try {
 			FileInputStream is=new FileInputStream(new File(textPath));
 			BufferedReader reader=new BufferedReader(new InputStreamReader(is));
-			reader.readLine();//Ìø¹ı±êÌâ
+			reader.readLine();//è·³è¿‡æ ‡é¢˜
 			while((line=reader.readLine())!=null){
 				String[] values=line.split(",");
 //				System.out.println("line: "+line);

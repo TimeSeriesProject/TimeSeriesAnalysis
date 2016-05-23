@@ -19,7 +19,7 @@ public abstract class IParamsNetworkMining {
 	
 	public static IParamsNetworkMining fromString(String str){
 		
-		IParamsNetworkMining params = new ParamsPM();//Ä¬ÈÏ
+		IParamsNetworkMining params = new ParamsPM();//é»˜è®¤
 
 		String []strs = str.split(spliter);
 		for (int i = 0; i < strs.length; i++){

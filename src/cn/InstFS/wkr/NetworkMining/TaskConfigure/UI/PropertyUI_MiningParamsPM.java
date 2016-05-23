@@ -23,7 +23,7 @@ public class PropertyUI_MiningParamsPM implements IObjectDescriptor<ParamsPM>{
 	
 	
 	String [] names = new String[]{"dimension", "periodThreshold", "endNodes", "discreteMethod"};
-	String []CnNames = new String[]{"ÀëÉ¢Öµ¸öÊı", "¼ì²âÃÅÏŞ", "Çø¼ä¶Ëµã£¨¶ººÅ¸ô¿ª£©", "ÀëÉ¢»¯·½·¨"};
+	String []CnNames = new String[]{"ç¦»æ•£å€¼ä¸ªæ•°", "æ£€æµ‹é—¨é™", "åŒºé—´ç«¯ç‚¹ï¼ˆé€—å·éš”å¼€ï¼‰", "ç¦»æ•£åŒ–æ–¹æ³•"};
 	HashMap<String, String> displayNames = new HashMap<String,String>();
 	
 	public PropertyUI_MiningParamsPM(IParamsNetworkMining core) {
@@ -43,16 +43,16 @@ public class PropertyUI_MiningParamsPM implements IObjectDescriptor<ParamsPM>{
 	}
 	@Override
 	public String getDisplayName() {
-		return "ÍÚ¾ò²ÎÊı";
+		return "æŒ–æ˜å‚æ•°";
 	}
 
 	@Override
 	public List<EnhancedPropertyDescriptor> getProperties() {
 		List<EnhancedPropertyDescriptor> props = new ArrayList<EnhancedPropertyDescriptor>();
-		props.add(getPropDesc("periodThreshold", 0, "ÖÜÆÚĞÔ¼ì²âÃÅÏŞ"));
-//		props.add(getPropDesc("dimension", 0, "ÈôÊäÈëÖµÎªÀëÉ¢£¬Ôò´ËÖµÎŞĞ§<br>·ñÔò£¬½«ÊäÈëÖµÀëÉ¢»¯Îª¶à¸öÇø¼ä"));
-//		props.add(getPropDesc("discreteMethod", 0, "ÀëÉ¢»¯·½·¨:<br>1.Ê¹µÃ¸÷Çø¼äÊıÖµ·¶Î§ÏàÍ¬<br>2.Ê¹µÃ¸÷Çø¼äÊı¾İµãÊıÏàÍ¬<br>3.×Ô¶¨Òå¶Ëµã"));
-//		props.add(getPropDesc("endNodes", 0, "ÀëÉ¢»¯Ê±ËùÊ¹ÓÃµÄÊıÖµÇø¼ä¶Ëµã£¬¶ººÅ¸ô¿ª<br>×¢Òâ£º½öÔÚ²ÉÓÃ×Ô¶¨ÒåÀëÉ¢»¯·½·¨Ê±ÓĞĞ§£¡"));
+		props.add(getPropDesc("periodThreshold", 0, "å‘¨æœŸæ€§æ£€æµ‹é—¨é™"));
+//		props.add(getPropDesc("dimension", 0, "è‹¥è¾“å…¥å€¼ä¸ºç¦»æ•£ï¼Œåˆ™æ­¤å€¼æ— æ•ˆ<br>å¦åˆ™ï¼Œå°†è¾“å…¥å€¼ç¦»æ•£åŒ–ä¸ºå¤šä¸ªåŒºé—´"));
+//		props.add(getPropDesc("discreteMethod", 0, "ç¦»æ•£åŒ–æ–¹æ³•:<br>1.ä½¿å¾—å„åŒºé—´æ•°å€¼èŒƒå›´ç›¸åŒ<br>2.ä½¿å¾—å„åŒºé—´æ•°æ®ç‚¹æ•°ç›¸åŒ<br>3.è‡ªå®šä¹‰ç«¯ç‚¹"));
+//		props.add(getPropDesc("endNodes", 0, "ç¦»æ•£åŒ–æ—¶æ‰€ä½¿ç”¨çš„æ•°å€¼åŒºé—´ç«¯ç‚¹ï¼Œé€—å·éš”å¼€<br>æ³¨æ„ï¼šä»…åœ¨é‡‡ç”¨è‡ªå®šä¹‰ç¦»æ•£åŒ–æ–¹æ³•æ—¶æœ‰æ•ˆï¼"));
 		return props;
 	}
 	

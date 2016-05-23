@@ -12,15 +12,15 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 public class ARTSA implements IMinerOM{
 	private TaskElement task;
 	private DataItems di;
-	private DataItems outlies;           //Òì³£µã
-	private int predictPeriod;           //Ô¤²âµÄ³¤¶È
-	private Date endDate;                //ĞòÁĞÖĞ×îºóÖµµÄÈÕÆÚ
+	private DataItems outlies;           //å¼‚å¸¸ç‚¹
+	private int predictPeriod;           //é¢„æµ‹çš„é•¿åº¦
+	private Date endDate;                //åºåˆ—ä¸­æœ€åå€¼çš„æ—¥æœŸ
 	
-	private double[] seq=null;           //´æ´¢Æ½ÎÈ»¯ºóµÄĞòÁĞ
-	private double seqMean;              //¼ÇÂ¼Æ½ÎÈÇ°ĞòÁĞµÄÆ½¾ùÖµ     
-	private double[] offset;             //¼ÇÂ¼Ò»ÌìÖĞÃ¿¸öÊ±¿ÌµÄÆ«²î
-	private double[] params¦Õ=null;       //´æ´¢ARĞòÁĞµÄ²ÎÊı
-	private final int window=20;         //AR µÄ´°¿Ú³¤¶È 
+	private double[] seq=null;           //å­˜å‚¨å¹³ç¨³åŒ–åçš„åºåˆ—
+	private double seqMean;              //è®°å½•å¹³ç¨³å‰åºåˆ—çš„å¹³å‡å€¼     
+	private double[] offset;             //è®°å½•ä¸€å¤©ä¸­æ¯ä¸ªæ—¶åˆ»çš„åå·®
+	private double[] paramsÏ†=null;       //å­˜å‚¨ARåºåˆ—çš„å‚æ•°
+	private final int window=20;         //AR çš„çª—å£é•¿åº¦ 
 	
 	public ARTSA(TaskElement task,int predictPeriod,DataItems di){
 		this.task=task;
@@ -38,27 +38,27 @@ public class ARTSA implements IMinerOM{
 			transToStationarySeq();
 		}
 		int seqSize=di.getData().size();
-		int window=20;//AR´°¿Ú=20  ÉèAR½×Îª 2;¼´Xt=¦Õ1*Xt-1+¦Õ2*Xt-2+et  etÎª°×ÔëÉù  Çó³ö¦Õ1ºÍ¦Õ2
-		//Öğ¸öÕÒµ½Ã¿Ò»¸öÒì³£Öµ
-		params¦Õ=new double[2];
+		int window=20;//ARçª—å£=20  è®¾ARé˜¶ä¸º 2;å³Xt=Ï†1*Xt-1+Ï†2*Xt-2+et  etä¸ºç™½å™ªå£°  æ±‚å‡ºÏ†1å’ŒÏ†2
+		//é€ä¸ªæ‰¾åˆ°æ¯ä¸€ä¸ªå¼‚å¸¸å€¼
+		paramsÏ†=new double[2];
 		for(int i=0;i<seqSize-window;i++){
-			getParams(i,params¦Õ);//»ñÈ¡params¦Õ²ÎÊı
-			double e=0.0;//Æ«²î  ´°¿ÚÖĞ¸÷¸öÊ±¿ÌAR¹À¼ÆÖµºÍÊµ¼ÊÖµµÃÆ«²î
+			getParams(i,paramsÏ†);//è·å–paramsÏ†å‚æ•°
+			double e=0.0;//åå·®  çª—å£ä¸­å„ä¸ªæ—¶åˆ»ARä¼°è®¡å€¼å’Œå®é™…å€¼å¾—åå·®
 			for(int j=i+2;j<i+window;j++){
-				e=seq[j]-params¦Õ[0]*seq[j-1]-params¦Õ[1]*seq[j-2];
+				e=seq[j]-paramsÏ†[0]*seq[j-1]-paramsÏ†[1]*seq[j-2];
 				statistics.addValue(e);
 			}
-			e=seq[i+window]-(params¦Õ[0]*seq[i+window-1]-params¦Õ[1]*seq[i+window-2]);
+			e=seq[i+window]-(paramsÏ†[0]*seq[i+window-1]-paramsÏ†[1]*seq[i+window-2]);
 			double mean=statistics.getMean();
 			double standardDeviation=statistics.getStandardDeviation();
 			statistics.clear();
 			if(e>(mean+3.5*standardDeviation)||mean<(mean-3.5*standardDeviation)){
 				System.out.print(i+window+",");
 				e=mean;
-				//±£´æÒì³£µã
+				//ä¿å­˜å¼‚å¸¸ç‚¹
 				outlies.add1Data(di.getTime().get(i+window),di.getData().get(i+window)); 
-				//ĞŞ¸´Òì³£ÖµÊ¹µÃ³ÌĞò¿ÉÒÔÔ¤²âÏÂÒ»¸öÖµÊÇ·ñÒì³£
-				//seq[i+window]=params¦Õ[0]*seq[i+window-1]+params¦Õ[1]*seq[i+window-2]+e;
+				//ä¿®å¤å¼‚å¸¸å€¼ä½¿å¾—ç¨‹åºå¯ä»¥é¢„æµ‹ä¸‹ä¸€ä¸ªå€¼æ˜¯å¦å¼‚å¸¸
+				//seq[i+window]=paramsÏ†[0]*seq[i+window-1]+paramsÏ†[1]*seq[i+window-2]+e;
 				seq[i+window]=seq[i+window-1];
 				
 			}
@@ -66,14 +66,14 @@ public class ARTSA implements IMinerOM{
 		endDate=di.getLastTime();
 		Calendar calendar=Calendar.getInstance();
 		calendar.setTime(endDate);
-		//½«×ª»»ºóµÄÆ½ÎÈĞòÁĞ»¹Ô­ÖÁ·ÇÆ½ÎÈĞòÁĞ
+		//å°†è½¬æ¢åçš„å¹³ç¨³åºåˆ—è¿˜åŸè‡³éå¹³ç¨³åºåˆ—
 		for(int k=0;k<seqSize+predictPeriod;k++){
 			seq[k]=seq[k]+seqMean+offset[(k)%(offset.length)];
 		}
 	}
 	
 	/**
-	 * ½«Êı¾İdataItems×ª»»³ÉÆ½ÎÈĞòÁĞ£¬ÒÔÂú×ãARÆ½ÎÈĞÔÒªÇó
+	 * å°†æ•°æ®dataItemsè½¬æ¢æˆå¹³ç¨³åºåˆ—ï¼Œä»¥æ»¡è¶³ARå¹³ç¨³æ€§è¦æ±‚
 	 */
 	private void transToStationarySeq(){
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
@@ -86,22 +86,22 @@ public class ARTSA implements IMinerOM{
 		}
 		
 		seqMean=statistics.getMean();
-		int recordsOfDay=(3600*24*1000)/(task.getGranularity()*1000);  //Ò»ÌìÖĞµÄ¼ÇÂ¼Êı
+		int recordsOfDay=(3600*24*1000)/(task.getGranularity()*1000);  //ä¸€å¤©ä¸­çš„è®°å½•æ•°
 
-		int recordDays=seqSize/recordsOfDay;                //×ÜÌìÊı
-		offset=new double[recordsOfDay];           //¼ÇÂ¼Ò»ÌìÖĞÃ¿¸öÊ±¿ÌµÄÆ«²î
+		int recordDays=seqSize/recordsOfDay;                //æ€»å¤©æ•°
+		offset=new double[recordsOfDay];           //è®°å½•ä¸€å¤©ä¸­æ¯ä¸ªæ—¶åˆ»çš„åå·®
 		for(int i=0;i<recordsOfDay;i++){
 			double sum=0.0;
 			for(int j=0;j<recordDays;j++){
 				sum+=seq[i+j*recordsOfDay];
 			}
 			sum=(sum/recordDays)-seqMean;
-			offset[i]=sum;  //±íÊ¾Ã¿ÌìµÄµÚiÊ±¿ÌºÍ×ÜµÄmeanÆ«²î
+			offset[i]=sum;  //è¡¨ç¤ºæ¯å¤©çš„ç¬¬iæ—¶åˆ»å’Œæ€»çš„meanåå·®
 		}
 		
 		statistics.clear();
-		//½«ĞòÁĞÆ½ÎÈ»¯   ¼´È¥³ıÆ½¾ùÖµºÍÖÜÆÚĞÔ
-		System.out.println("Æ½ÎÈĞòÁĞ");
+		//å°†åºåˆ—å¹³ç¨³åŒ–   å³å»é™¤å¹³å‡å€¼å’Œå‘¨æœŸæ€§
+		System.out.println("å¹³ç¨³åºåˆ—");
 		for(int i=0;i<seqSize;i++){
 			seq[i]=(seq[i]-seqMean-offset[i%recordsOfDay]);
 			int snumber=(int)(seq[i]*100);
@@ -111,7 +111,7 @@ public class ARTSA implements IMinerOM{
 		}
 		System.out.println("");
 		
-		//0¾ùÖµ»¯£¬¼´¾ùÖµÎªÁã
+		//0å‡å€¼åŒ–ï¼Œå³å‡å€¼ä¸ºé›¶
 	 	double mean=statistics.getMean();
 		for(int i=0;i<seqSize;i++){
 			seq[i]-=mean;
@@ -119,13 +119,13 @@ public class ARTSA implements IMinerOM{
 	}
 	
 	/**
-	 * Çó³öÃ¿¶ÎARµÄĞòÁĞ¦Õ1ºÍ¦Õ2²ÎÊı
-	 * @param index ÔÚĞòÁĞÖĞµÄÏÂ±ê
-	 * @param params¦Õ  °üº¬¦Õ1ºÍ¦Õ2²ÎÊı²¢·µ»Ø¸øµ÷ÓÃº¯Êı
+	 * æ±‚å‡ºæ¯æ®µARçš„åºåˆ—Ï†1å’ŒÏ†2å‚æ•°
+	 * @param index åœ¨åºåˆ—ä¸­çš„ä¸‹æ ‡
+	 * @param paramsÏ†  åŒ…å«Ï†1å’ŒÏ†2å‚æ•°å¹¶è¿”å›ç»™è°ƒç”¨å‡½æ•°
 	 */
-	private void getParams(int index,double[] params¦Õ){
+	private void getParams(int index,double[] paramsÏ†){
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
-		//ÕÒµ½ ¶şÎ¬¾ØÕóX*XTµÄÄæ¾ØÕó
+		//æ‰¾åˆ° äºŒç»´çŸ©é˜µX*XTçš„é€†çŸ©é˜µ
 		double a11=0.0;
 		double a12=0.0;
 		double a21=0.0;
@@ -139,7 +139,7 @@ public class ARTSA implements IMinerOM{
 			a22+=(seq[j]*seq[j]);
 		}
 		
-		double matrixNorm=a11*a22-a12*a21;//¾ØÕó·¶Êı  µ±¾ØÕó·¶Êı²»ÎªÁãÊ±£¬¾ØÕó´æÔÚÄæ¾ØÕó
+		double matrixNorm=a11*a22-a12*a21;//çŸ©é˜µèŒƒæ•°  å½“çŸ©é˜µèŒƒæ•°ä¸ä¸ºé›¶æ—¶ï¼ŒçŸ©é˜µå­˜åœ¨é€†çŸ©é˜µ
 		if(matrixNorm!=0){
 			double temp;
 			temp=a11;
@@ -148,17 +148,17 @@ public class ARTSA implements IMinerOM{
 			a12=-(a12/matrixNorm);
 			a21=-(a21/matrixNorm);
 			
-			//¾ØÕó XT*Y
+			//çŸ©é˜µ XT*Y
 			double b11=0.0;
 			double b21=0.0;
 			for(int j=index+2;j<index+window;j++){
 				b11+=(seq[j]*seq[j-1]);
 				b21+=(seq[j]*seq[j-2]);
 			}
-			double ¦Õ1=(a11*b11+a12*b21);
-			double ¦Õ2=(a21*b11+a22*b21);
-			params¦Õ[0]=¦Õ1;
-			params¦Õ[1]=¦Õ2;
+			double Ï†1=(a11*b11+a12*b21);
+			double Ï†2=(a21*b11+a22*b21);
+			paramsÏ†[0]=Ï†1;
+			paramsÏ†[1]=Ï†2;
 			statistics.clear();
 		}else{
 			return;

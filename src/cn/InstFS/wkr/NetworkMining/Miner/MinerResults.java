@@ -16,7 +16,7 @@ public class MinerResults {
 	private INetworkMiner miner;
 	
 	private Date dateProcess;
-	private boolean isAbnormal;	// 是否异常
+	private boolean isAbnormal;	// 鏄惁寮傚父
 	DataItems di;
 	private MinerResultsPM retPM;
 	private MinerResultsOM retOM;
@@ -30,7 +30,7 @@ public class MinerResults {
 	
 	public MinerResults(INetworkMiner miner) {
 		setMiner(miner);
-		//实例化，读取参数
+		//瀹炰緥鍖栵紝璇诲彇鍙傛暟
 		retPM = new MinerResultsPM();
 		retOM = new MinerResultsOM();
 		retSM = new MinerResultsSM();

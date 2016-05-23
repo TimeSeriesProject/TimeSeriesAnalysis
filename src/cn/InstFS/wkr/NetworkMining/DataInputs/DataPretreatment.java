@@ -62,7 +62,7 @@ import cn.InstFS.wkr.NetworkMining.UIs.MainFrame;
 
 public class DataPretreatment {
 	
-	//»ñÈ¡¸ø¶¨ºÁÃëÊıÖ®ºóµÄÊ±¼ä
+	//è·å–ç»™å®šæ¯«ç§’æ•°ä¹‹åçš„æ—¶é—´
 	public static Date getDateAfter(Date curTime, int milliSeconds){
 		Calendar cal = Calendar.getInstance();
 		try{
@@ -74,10 +74,10 @@ public class DataPretreatment {
 		return cal.getTime();
 	}
 	/**
-	 * Êı¾İ¾ÛºÏ
-	 * @param valsArrayD Êı¾İÊı×é
-	 * @param method ¾ÛºÏ·½·¨
-	 * @return ¾ÛºÏºóµÄÊı¾İ
+	 * æ•°æ®èšåˆ
+	 * @param valsArrayD æ•°æ®æ•°ç»„
+	 * @param method èšåˆæ–¹æ³•
+	 * @return èšåˆåçš„æ•°æ®
 	 */
 	static private Double aggregateDoubleVals(Double[] valsArrayD,
 			AggregateMethod method) {
@@ -100,10 +100,10 @@ public class DataPretreatment {
 	}
 	
 	/**
-	 * ÅĞ¶ÏvalËù´ú±íµÄÖµ´¦ÓÚÄÄ¸öÇø¼ä£¨0~len-1£©ÖĞ£¬²¢ÒÔ×Ö·û´®ĞÎÊ½·µ»ØÕâ¸öĞòºÅ
-	 * @param discreteNodes	¶ËµãÖµ
-	 * @param len	¶ËµãÊı£¨ÎªÁË±ÜÃâÃ¿´Îµ÷ÓÃº¯ÊıÊ±¶¼ÌáÈ¡Ò»ÏÂÊı×é³¤¶È£©
-	 * @param val	Öµ
+	 * åˆ¤æ–­valæ‰€ä»£è¡¨çš„å€¼å¤„äºå“ªä¸ªåŒºé—´ï¼ˆ0~len-1ï¼‰ä¸­ï¼Œå¹¶ä»¥å­—ç¬¦ä¸²å½¢å¼è¿”å›è¿™ä¸ªåºå·
+	 * @param discreteNodes	ç«¯ç‚¹å€¼
+	 * @param len	ç«¯ç‚¹æ•°ï¼ˆä¸ºäº†é¿å…æ¯æ¬¡è°ƒç”¨å‡½æ•°æ—¶éƒ½æå–ä¸€ä¸‹æ•°ç»„é•¿åº¦ï¼‰
+	 * @param val	å€¼
 	 * @return
 	 */
 	private static String getIndexOfData(int len, double val, Double[] discreteNodes){
@@ -118,7 +118,7 @@ public class DataPretreatment {
 	}
 	
 	/**
-	 * ½«Â·¾¶ĞÅÏ¢×ª»»ÎªÂ·¾¶¸ÅÂÊĞÅÏ¢  ¼´Ã¿¸öÊ±¼ä¶ÎÖĞÃ¿ÌõÂ·¾¶¾­¹ıµÄ¸ÅÂÊ
+	 * å°†è·¯å¾„ä¿¡æ¯è½¬æ¢ä¸ºè·¯å¾„æ¦‚ç‡ä¿¡æ¯  å³æ¯ä¸ªæ—¶é—´æ®µä¸­æ¯æ¡è·¯å¾„ç»è¿‡çš„æ¦‚ç‡
 	 * @param dataItems
 	 * @return
 	 */
@@ -149,10 +149,10 @@ public class DataPretreatment {
 		return dataOut;
 	}
 	/**
-	 * »ñÈ¡DataItemsÂ·¾¶ÖĞÂ·ÓÉÆ÷µÄ×ªÒÆ¸ÅÂÊ,²¢´æ´¢×ªÒÆ¸ÅÂÊµ½ÎÄ¼şÖĞ£¬
-	 * ÎÄ¼şÃûÎªÂ·¾¶µÄ¡°Ô´IP-Ä¿µÄIP¡±
+	 * è·å–DataItemsè·¯å¾„ä¸­è·¯ç”±å™¨çš„è½¬ç§»æ¦‚ç‡,å¹¶å­˜å‚¨è½¬ç§»æ¦‚ç‡åˆ°æ–‡ä»¶ä¸­ï¼Œ
+	 * æ–‡ä»¶åä¸ºè·¯å¾„çš„â€œæºIP-ç›®çš„IPâ€
 	 * @param dataItems
-	 * @return ×ªÒÆ¸ÅÂÊ
+	 * @return è½¬ç§»æ¦‚ç‡
 	 */
 	public static Map<String, Double> translateProbilityOfData(DataItems dataItems){
 		Map<String, Double> transProbMap=new HashMap<String, Double>();
@@ -185,9 +185,9 @@ public class DataPretreatment {
 		return transProbMap;
 	}
 	/**
-	 * Çó³öËùÓĞÍ¨ĞÅÂ·¾¶ÖĞµÄ×´Ì¬×ªÒÆ¸ÅÂÊ
-	 * @param map Í¨ĞÅÂ·¾¶Map Ã¿ÌõÂ·¾¶ÊÇKeyÖµ£¬Â·¾¶³öÏÖµÄ´ÎÊıÊÇValueÖµ
-	 * @param probMap ·µ»ØµÄÂ·ÓÉ½Úµã×ªÒÆ¸ÅÂÊ ÈçEntry<"A,B",0.5>  ±íÊ¾´ÓAÂ·ÓÉµ½BÂ·ÓÉµÄ¸ÅÂÊÎª0.5
+	 * æ±‚å‡ºæ‰€æœ‰é€šä¿¡è·¯å¾„ä¸­çš„çŠ¶æ€è½¬ç§»æ¦‚ç‡
+	 * @param map é€šä¿¡è·¯å¾„Map æ¯æ¡è·¯å¾„æ˜¯Keyå€¼ï¼Œè·¯å¾„å‡ºç°çš„æ¬¡æ•°æ˜¯Valueå€¼
+	 * @param probMap è¿”å›çš„è·¯ç”±èŠ‚ç‚¹è½¬ç§»æ¦‚ç‡ å¦‚Entry<"A,B",0.5>  è¡¨ç¤ºä»Aè·¯ç”±åˆ°Bè·¯ç”±çš„æ¦‚ç‡ä¸º0.5
 	 */
 	private static void transPathMapTotranslateProbMap(Map<String, Integer> map,Map<String, Double> probMap){
 		int sum=sumMap(map);
@@ -198,8 +198,8 @@ public class DataPretreatment {
 			if(((entry.getValue()*1.0)/(sum*1.0))<0.005){
 				continue;
 			}
-			String[] pathNodes=path.split(","); //Â·¾¶ÉÏµÄ½Úµã
-			//Â·¾¶¸ÅÂÊ¼ÆËã·ş´ÓÒ»½×MarkovÄ£ĞÍ ËùÒÔ P(A,B,C,D,E)=P(A)*P(B|A)*P(C|B)*P(D|C)*P(E|D)
+			String[] pathNodes=path.split(","); //è·¯å¾„ä¸Šçš„èŠ‚ç‚¹
+			//è·¯å¾„æ¦‚ç‡è®¡ç®—æœä»ä¸€é˜¶Markovæ¨¡å‹ æ‰€ä»¥ P(A,B,C,D,E)=P(A)*P(B|A)*P(C|B)*P(D|C)*P(E|D)
 			StringBuilder sb=new StringBuilder();
 			for(int i=0;i<pathNodes.length-1;i++){
 				sb.delete(0, sb.length());
@@ -220,14 +220,14 @@ public class DataPretreatment {
 	}
 	
 	/**
-	 * ¸ù¾İÀúÊ·Â·¾¶ĞÅÏ¢£¬¼ÆËã¸ø¶¨Â·¾¶³öÏÖµÄ¸ÅÂÊ
-	 * @param map Â·¾¶µÄhashMap ÀúÊ·Â·¾¶
-	 * @param path Òª¼ÆËã³öÏÖ¸ÅÂÊµÄÂ·¾¶
-	 * @return ¸ÃÂ·¾¶µÄ¸ÅÂÊ
+	 * æ ¹æ®å†å²è·¯å¾„ä¿¡æ¯ï¼Œè®¡ç®—ç»™å®šè·¯å¾„å‡ºç°çš„æ¦‚ç‡
+	 * @param map è·¯å¾„çš„hashMap å†å²è·¯å¾„
+	 * @param path è¦è®¡ç®—å‡ºç°æ¦‚ç‡çš„è·¯å¾„
+	 * @return è¯¥è·¯å¾„çš„æ¦‚ç‡
 	 */
 	public static double getPathProb(Map<String, Double> map,String path){
-		String[] pathNodes=path.split(","); //Â·¾¶ÉÏµÄ½Úµã
-		//Â·¾¶¸ÅÂÊ¼ÆËã·ş´ÓÒ»½×MarkovÄ£ĞÍ ËùÒÔ P(A,B,C,D,E)=P(A)*P(B|A)*P(C|B)*P(D|C)*P(E|D)
+		String[] pathNodes=path.split(","); //è·¯å¾„ä¸Šçš„èŠ‚ç‚¹
+		//è·¯å¾„æ¦‚ç‡è®¡ç®—æœä»ä¸€é˜¶Markovæ¨¡å‹ æ‰€ä»¥ P(A,B,C,D,E)=P(A)*P(B|A)*P(C|B)*P(D|C)*P(E|D)
 		StringBuilder sb=new StringBuilder();
 		double prob=1.0;
 		for(int i=0;i<pathNodes.length-1;i++){
@@ -248,10 +248,10 @@ public class DataPretreatment {
 	}
 	
 	/**
-	 * ÅĞ¶ÏÖ¸¶¨Â·¾¶½ÚµãÔÚËùÓĞÂ·¾¶ÖĞ³öÏÖµÄ´ÎÊı
-	 * @param map Â·¾¶ map
-	 * @param node Ö¸¶¨µÄÂ·¾¶½Úµã
-	 * @return ½ÚµãÔÚÂ·¾¶ÖĞ³öÏÖ
+	 * åˆ¤æ–­æŒ‡å®šè·¯å¾„èŠ‚ç‚¹åœ¨æ‰€æœ‰è·¯å¾„ä¸­å‡ºç°çš„æ¬¡æ•°
+	 * @param map è·¯å¾„ map
+	 * @param node æŒ‡å®šçš„è·¯å¾„èŠ‚ç‚¹
+	 * @return èŠ‚ç‚¹åœ¨è·¯å¾„ä¸­å‡ºç°
 	 */
 	private static int containsNodesPathNum(Map<String, Integer>map,String node){
 		int pathsNum=0;
@@ -260,11 +260,11 @@ public class DataPretreatment {
 		Iterator<Map.Entry<String, Integer>> iterator=map.entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<String, Integer>entry=iterator.next();
-			String key=entry.getKey();  //Â·¾¶
+			String key=entry.getKey();  //è·¯å¾„
 			int value=entry.getValue();
 			String[] pathNodes=key.split(",");   
 			
-			//²âÊÔÂ·¾¶keyÖĞÊÇ·ñ°üº¬¸ø¶¨µÄ½Úµã@node
+			//æµ‹è¯•è·¯å¾„keyä¸­æ˜¯å¦åŒ…å«ç»™å®šçš„èŠ‚ç‚¹@node
 			isContain=false;
 			for(int i=0;i<pathNodes.length-nodes.length+1;i++){
 				for(int j=0;j<nodes.length;j++){
@@ -286,9 +286,9 @@ public class DataPretreatment {
 	}
 	
 	/**
-	 * ÅĞ¶ÏËùÓĞÂ·¾¶µÄÌõÊı
-	 * @param map ´æ´¢Â·¾¶µÄhashMap
-	 * @return Â·¾¶×ÜÌõÊı
+	 * åˆ¤æ–­æ‰€æœ‰è·¯å¾„çš„æ¡æ•°
+	 * @param map å­˜å‚¨è·¯å¾„çš„hashMap
+	 * @return è·¯å¾„æ€»æ¡æ•°
 	 */
 	private static int sumMap(Map<String, Integer> map){
 		Iterator<Map.Entry<String, Integer>> iter=map.entrySet().iterator();
@@ -299,9 +299,9 @@ public class DataPretreatment {
 		return sum;
 	}
 	/**
-	 * ¼ÆËãÂ·¾¶ÖĞ¾­¹ı¶àÉÙ¸öÎ»ÖÃÂ·ÓÉÆ÷½Úµã
-	 * @param path ¾­¹ıµÄÂ·¾¶
-	 * @return Î»ÖÃÂ·ÓÉÆ÷½ÚµãÊı
+	 * è®¡ç®—è·¯å¾„ä¸­ç»è¿‡å¤šå°‘ä¸ªä½ç½®è·¯ç”±å™¨èŠ‚ç‚¹
+	 * @param path ç»è¿‡çš„è·¯å¾„
+	 * @return ä½ç½®è·¯ç”±å™¨èŠ‚ç‚¹æ•°
 	 */
 	private static int blankRouteNum(String path){
 		String[] nodes=path.split(",");
@@ -334,7 +334,7 @@ public class DataPretreatment {
 		dataout.setData(normData);
 		return dataout;
 	}
-	//datItemsÔÚÏàÍ¬µÄÊ±¼äÁ£¶ÈÉÏµÄ¾ÛºÏ
+	//datItemsåœ¨ç›¸åŒçš„æ—¶é—´ç²’åº¦ä¸Šçš„èšåˆ
 	public static DataItems aggregateData(DataItems di,int granularity,
 			AggregateMethod method,boolean isDiscreteOrNonDouble){	
 		
@@ -348,11 +348,11 @@ public class DataPretreatment {
 		List<String> datas = di.getData();
 		Date t1 = times.get(0);
 		Date t2 = getDateAfter(t1, granularity * 1000);
-		Map<String,Integer> valsStr = new HashMap<String, Integer>(); // ×Ö·û´®µÄ¾ÛºÏ½á¹û
-		Set<String> varSet=new HashSet<String>();                     //×Ö·û´®µÄ¼¯ºÏ
-		List<Double> vals = new ArrayList<Double>(); 	// ÊıÖµµÄ¾ÛºÏ½á¹û
+		Map<String,Integer> valsStr = new HashMap<String, Integer>(); // å­—ç¬¦ä¸²çš„èšåˆç»“æœ
+		Set<String> varSet=new HashSet<String>();                     //å­—ç¬¦ä¸²çš„é›†åˆ
+		List<Double> vals = new ArrayList<Double>(); 	// æ•°å€¼çš„èšåˆç»“æœ
 		
-//		Date t = t1;									// ¾ÛºÏºóµÄÊ±¼äµã
+//		Date t = t1;									// èšåˆåçš„æ—¶é—´ç‚¹
 		int i=0;
 		int  flag=0;
 		for(;!t1.after(times.get(times.size()-1));t1=t2,t2 = getDateAfter(t2, granularity * 1000))
@@ -361,8 +361,8 @@ public class DataPretreatment {
 			while(i<times.size()&&times.get(i).before(t2))
 			{
 				if(i>0&&times.get(i).before(times.get(i-1)))
-					JOptionPane.showMessageDialog(MainFrame.topFrame, "ĞòÁĞÎ´ÅÅĞò");
-				if (isDiscreteOrNonDouble){	// ÀëÉ¢Öµ»ò×Ö·û´®
+					JOptionPane.showMessageDialog(MainFrame.topFrame, "åºåˆ—æœªæ’åº");
+				if (isDiscreteOrNonDouble){	// ç¦»æ•£å€¼æˆ–å­—ç¬¦ä¸²
 					if(valsStr.containsKey(datas.get(i))){
 						int originValue=valsStr.get(datas.get(i));
 						valsStr.remove(datas.get(i));
@@ -373,7 +373,7 @@ public class DataPretreatment {
 					}
 					varSet.add(datas.get(i));
 				}
-				else{			// ÈôÎªÁ¬ĞøÖµ£¬Ôò¼ÓÖÁvalsÖĞ£¬ºóĞøÒ»Æğ¾ÛºÏ
+				else{			// è‹¥ä¸ºè¿ç»­å€¼ï¼Œåˆ™åŠ è‡³valsä¸­ï¼Œåç»­ä¸€èµ·èšåˆ
 					try{
 						double data= Double.parseDouble(datas.get(i));
 						vals.add(data);
@@ -381,7 +381,7 @@ public class DataPretreatment {
 				}
 				i++;
 			}
-			//Ò»¸öÊ±¼äÁ£¶ÈÄÚµÄÖµ¶ÁÍêÁË£¬Ôò½¨Á¢ĞÂµÄÖµ
+			//ä¸€ä¸ªæ—¶é—´ç²’åº¦å†…çš„å€¼è¯»å®Œäº†ï¼Œåˆ™å»ºç«‹æ–°çš„å€¼
 			if(isDiscreteOrNonDouble){
 //				StringBuilder sb = new StringBuilder();
 //				for (String valStr : valsStr)
@@ -414,25 +414,25 @@ public class DataPretreatment {
 	}
 	
 	/**
-	 * ¸ù¾İdiscreteMethod,¶Ô¸ÃÊı¾İ½øĞĞÀëÉ¢»¯
-	 * @param discreteMethod	ÀëÉ¢»¯·½·¨
-	 * @param numDims			ÀëÉ¢ºóµÄÎ¬Êı
-	 * @param endNodes			×Ô¶¨Òå¶Ëµã£¬½öÔÚ×Ô¶¨ÒåÀëÉ¢»¯·½·¨Ìõ¼şÏÂÓĞĞ§
+	 * æ ¹æ®discreteMethod,å¯¹è¯¥æ•°æ®è¿›è¡Œç¦»æ•£åŒ–
+	 * @param discreteMethod	ç¦»æ•£åŒ–æ–¹æ³•
+	 * @param numDims			ç¦»æ•£åçš„ç»´æ•°
+	 * @param endNodes			è‡ªå®šä¹‰ç«¯ç‚¹ï¼Œä»…åœ¨è‡ªå®šä¹‰ç¦»æ•£åŒ–æ–¹æ³•æ¡ä»¶ä¸‹æœ‰æ•ˆ
 	 * @return
 	 */
 	public static DataItems toDiscreteNumbers(DataItems dataItems,DiscreteMethod discreteMethod, int numDims, String endNodes){
 		DataItems newDataItems = null;
 		switch (discreteMethod) {
-		case ¸÷Çø¼äÊıÖµ·¶Î§ÏàÍ¬:
+		case å„åŒºé—´æ•°å€¼èŒƒå›´ç›¸åŒ:
 			newDataItems = toDiscreteNumbersAccordingToMean3Sigma(dataItems,numDims);
 			break;
-		case ¸÷Çø¼äÊı¾İµãÊıÏàÍ¬:
+		case å„åŒºé—´æ•°æ®ç‚¹æ•°ç›¸åŒ:
 			newDataItems = toDiscreteNumbersAccordingToPercentile(dataItems,numDims);
 			break;
-		case ×Ô¶¨Òå¶Ëµã:
+		case è‡ªå®šä¹‰ç«¯ç‚¹:
 			newDataItems = toDiscreteNumbersAccordingToCustomNodes(dataItems,endNodes);
 			break;
-		case None://²»×öÀëÉ¢»¯,Ö±½Ó·µ»Ø
+		case None://ä¸åšç¦»æ•£åŒ–,ç›´æ¥è¿”å›
 		default:
 			newDataItems = dataItems;
 		}
@@ -441,9 +441,9 @@ public class DataPretreatment {
 	}
 	
 	/**
-	 * ¸ù¾İÓÃ»§Ö¸¶¨µÄ½Úµã½øĞĞÀëÉ¢»¯
-	 * @param endNodes ÓÃ»§Ö¸¶¨µÄ½çµã
-	 * @return ÀëÉ¢»¯ºóµÄDataItems
+	 * æ ¹æ®ç”¨æˆ·æŒ‡å®šçš„èŠ‚ç‚¹è¿›è¡Œç¦»æ•£åŒ–
+	 * @param endNodes ç”¨æˆ·æŒ‡å®šçš„ç•Œç‚¹
+	 * @return ç¦»æ•£åŒ–åçš„DataItems
 	 */
 	private static DataItems toDiscreteNumbersAccordingToCustomNodes(DataItems dataItems,String endNodes){
 		DataItems newDataItems = new DataItems();
@@ -477,9 +477,9 @@ public class DataPretreatment {
 		return newDataItems;
 	}
 	/**
-	 * ½«Çø¼ä[mean-3*sigma£¬mean+3*sigma]Æ½¾ù»®·ÖÎªnumDims¸öÇø¼ä£¬ÀëÉ¢»¯µÃµ½µÄdataItems¡£
-	 * @param numDims	ÀëÉ¢ºóµÄÈ¡ÖµÊı
-	 * @return	ÒÑ¾­ÀëÉ¢»¯µÄdataItemsÊı¾İ
+	 * å°†åŒºé—´[mean-3*sigmaï¼Œmean+3*sigma]å¹³å‡åˆ’åˆ†ä¸ºnumDimsä¸ªåŒºé—´ï¼Œç¦»æ•£åŒ–å¾—åˆ°çš„dataItemsã€‚
+	 * @param numDims	ç¦»æ•£åçš„å–å€¼æ•°
+	 * @return	å·²ç»ç¦»æ•£åŒ–çš„dataItemsæ•°æ®
 	 */
 	private static DataItems toDiscreteNumbersAccordingToMean3Sigma(DataItems dataItems,int numDims){
 		DataItems newDataItems=new DataItems();
@@ -490,13 +490,13 @@ public class DataPretreatment {
 		List<String> datas=dataItems.getData();
 		int length=datas.size();
 		
-		// Ê×ÏÈ£¬ÅĞ¶ÏÈ¡Öµ¸öÊı£¬Èç¹û½öÎª20¸öÖµÒÔÏÂ£¬ÔòÖ±½Ó½«Öµ×÷ÎªÀëÉ¢Öµ
+		// é¦–å…ˆï¼Œåˆ¤æ–­å–å€¼ä¸ªæ•°ï¼Œå¦‚æœä»…ä¸º20ä¸ªå€¼ä»¥ä¸‹ï¼Œåˆ™ç›´æ¥å°†å€¼ä½œä¸ºç¦»æ•£å€¼
 		boolean isDiscrete = dataItems.isDiscrete();
 		
-		// Ö±½Óµ±ÀëÉ¢Öµ´¦Àí
+		// ç›´æ¥å½“ç¦»æ•£å€¼å¤„ç†
 		if (!isDiscrete){
 			if(!dataItems.isAllDataIsDouble()){
-				throw new RuntimeException("·ÇÊıÖµĞÍÊı¾İ²»ÄÜÀëÉ¢»¯");
+				throw new RuntimeException("éæ•°å€¼å‹æ•°æ®ä¸èƒ½ç¦»æ•£åŒ–");
 			}
 			DescriptiveStatistics statistics=new DescriptiveStatistics();
 			double mean = 0.0;
@@ -530,7 +530,7 @@ public class DataPretreatment {
 		
 	}
 	/**
-	 * ¸ù¾İ·ÖÎ»µãÀ´½øĞĞÀëÉ¢»¯
+	 * æ ¹æ®åˆ†ä½ç‚¹æ¥è¿›è¡Œç¦»æ•£åŒ–
 	 * @param numDims
 	 * @return
 	 */
@@ -541,9 +541,9 @@ public class DataPretreatment {
 		int length=datas.size();
 		
 		boolean isDiscrete = dataItems.isDiscrete();
-		if (isDiscrete){	// Ö±½Óµ±ÀëÉ¢Öµ´¦Àí
+		if (isDiscrete){	// ç›´æ¥å½“ç¦»æ•£å€¼å¤„ç†
 			return dataItems;
-		}else{				// Á¬ĞøÖµ£¬ĞèÒª½øĞĞÀëÉ¢»¯
+		}else{				// è¿ç»­å€¼ï¼Œéœ€è¦è¿›è¡Œç¦»æ•£åŒ–
 			double step = 1.0 / numDims * length; 
 			int ind = 0;
 			int ind_step = (int) ((ind + 1) * step - 1);
@@ -551,7 +551,7 @@ public class DataPretreatment {
 			DataItems sortedItems = DataItems.sortByDoubleValue(dataItems);
 			discreteNodes[0] = Double.parseDouble(datas.get(0));
 			if(!dataItems.isAllDataIsDouble()){
-				throw new RuntimeException("·ÇÊıÖµĞÍÊı¾İ²»ÄÜÀëÉ¢»¯");
+				throw new RuntimeException("éæ•°å€¼å‹æ•°æ®ä¸èƒ½ç¦»æ•£åŒ–");
 			}
 			datas=sortedItems.getData();
 			for (int i = 0; i < length; i ++){

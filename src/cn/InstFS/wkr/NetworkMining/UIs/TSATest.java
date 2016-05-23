@@ -30,7 +30,7 @@ public class TSATest extends JPanel  implements IResultsDisplayer{
 	
 	public TSATest(){
 		setLayout(new GridLayout());
-		JButton btnPM = new JButton("²âÊÔTSA");
+		JButton btnPM = new JButton("æµ‹è¯•TSA");
 		add(btnPM);
 		btnPM.addActionListener(new ActionListener() {			
 			@Override
@@ -45,7 +45,7 @@ public class TSATest extends JPanel  implements IResultsDisplayer{
 		TaskElement.add1Task(task,false);	
 		//TaskElement.add1Task(task, false);
 		INetworkMiner miner = NetworkMinerFactory.getInstance().createMiner(task);
-		miner.setResultsDisplayer(this);//ÉèÖÃresult display
+		miner.setResultsDisplayer(this);//è®¾ç½®result display
 		miner.start();
 	}
 	

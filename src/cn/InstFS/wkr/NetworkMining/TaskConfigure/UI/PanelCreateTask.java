@@ -89,7 +89,7 @@ public class PanelCreateTask extends TaskElement {
     JList<String> TosingleList = new JList<String>();
     JLabel TosingleTitle = new JLabel();
     JTextField TaskNameText = new JTextField(40);
-    JButton saveButton = new JButton("±£´æ");
+    JButton saveButton = new JButton("ä¿å­˜");
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -188,7 +188,7 @@ public class PanelCreateTask extends TaskElement {
        JPanel panel = new JPanel();
        add(panel);
        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-        JButton btnSave = new JButton("±£´æ");
+        JButton btnSave = new JButton("ä¿å­˜");
         btnSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -206,7 +206,7 @@ public class PanelCreateTask extends TaskElement {
 //        TaskNew.setLayout(new BorderLayout(0, 0));
 //        setContentPane(TaskNew);
 //
-//        setTitle("ÊÂ¼şÅäÖÃ±í");
+//        setTitle("äº‹ä»¶é…ç½®è¡¨");
 //
 //        configPanel.setLayout(new BorderLayout());
 //        contentpanel.setDividerLocation(0);
@@ -225,7 +225,7 @@ public class PanelCreateTask extends TaskElement {
 //            ipNumber++;
 //
 //        }
-//        singleTitle.setText("<html><font face=\"ËÎÌå\";style=font:20pt>" + " Ô´ip" + "</font>");
+//        singleTitle.setText("<html><font face=\"å®‹ä½“\";style=font:20pt>" + " æºip" + "</font>");
 //        sourceIpPanel.add(Box.createVerticalStrut(10));
 //        singleList.setListData(ip);
 //        sourceIpPanel.add(singleList);
@@ -233,7 +233,7 @@ public class PanelCreateTask extends TaskElement {
 //        JScrollPane jsp = new JScrollPane(singleList);
 //        jsp.setPreferredSize(new Dimension(80, 500));
 //        sourceIpPanel.add(jsp);
-//        TosingleTitle.setText("<html><font face=\"ËÎÌå\";style=font:20pt>" + " Ä¿µÄip" + "</font>");
+//        TosingleTitle.setText("<html><font face=\"å®‹ä½“\";style=font:20pt>" + " ç›®çš„ip" + "</font>");
 //        toIpPanel.add(Box.createVerticalStrut(10));
 //        TosingleList.setListData(toip);
 //        toIpPanel.add(TosingleTitle);
@@ -248,20 +248,20 @@ public class PanelCreateTask extends TaskElement {
 //       // leftPanel.add(sourceIpPanel);
 //       // leftPanel.add(toIpPanel);
 //
-//        //********************************ÉèÖÃÓÒ±ßµÄÅäÖÃ¿ò********************//
+//        //********************************è®¾ç½®å³è¾¹çš„é…ç½®æ¡†********************//
 //        rightPanel.setLayout(new BorderLayout(0, 0));
 //
 //
 //        JLabel TaskNameTitle = new JLabel();
-//        TaskNameTitle.setText("<html><font face=\"ËÎÌå\";style=font:15pt>" + "ÈÎÎñÃû×Ö" + "</font>");
+//        TaskNameTitle.setText("<html><font face=\"å®‹ä½“\";style=font:15pt>" + "ä»»åŠ¡åå­—" + "</font>");
 //        JPanel textPanel = new JPanel();
 //        //textPanel.setLayout(new GridLayout(10,2));
 //        textPanel.add(TaskNameTitle);
 //        textPanel.add(TaskNameText);
 //        rightPanel.add(textPanel, BorderLayout.CENTER);
-//        String miningObject[] = new String[]{"ÍÚ¾ò¶ÔÏó", "Á÷Á¿", "Í¨ĞÅ´ÎÊı"};
+//        String miningObject[] = new String[]{"æŒ–æ˜å¯¹è±¡", "æµé‡", "é€šä¿¡æ¬¡æ•°"};
 //        final JComboBox<String> minObChooser = new JComboBox<String>(miningObject);
-//        final String busiStyle[] = new String[]{"ÍÚ¾òÒµÎñ", "Òì³£", "Ô¤²â", "ÖÜÆÚ","Æµ·±Ä£Ê½","¶àÔª¹ØÁª"};
+//        final String busiStyle[] = new String[]{"æŒ–æ˜ä¸šåŠ¡", "å¼‚å¸¸", "é¢„æµ‹", "å‘¨æœŸ","é¢‘ç¹æ¨¡å¼","å¤šå…ƒå…³è”"};
 //        final JComboBox<String> busiStyleChooser = new JComboBox<String>(busiStyle);
 //        JPanel bottomPanel = new JPanel();
 //        bottomPanel.add(minObChooser);
@@ -272,7 +272,7 @@ public class PanelCreateTask extends TaskElement {
 //        rightPanel.add(bottomPanel, BorderLayout.SOUTH);
 //        TaskNew.add(configPanel);
 //        TaskNew.setVisible(true);
-//        /**ÎªÔ´Ä¿µÄipÃæ°åÉèÖÃ¼àÌıÆ÷**/
+//        /**ä¸ºæºç›®çš„ipé¢æ¿è®¾ç½®ç›‘å¬å™¨**/
 //        class iplistener implements ListSelectionListener {
 //            public void valueChanged(ListSelectionEvent e) {
 //                Object selected = singleList.getModel().getElementAt(singleList.getSelectedIndex());
@@ -283,7 +283,7 @@ public class PanelCreateTask extends TaskElement {
 //
 //
 //        singleList.addListSelectionListener(new iplistener());
-//        /**ÎªÄ¿µÄipÃæ°åÉèÖÃ¼àÌıÆ÷**/
+//        /**ä¸ºç›®çš„ipé¢æ¿è®¾ç½®ç›‘å¬å™¨**/
 //        class Toiplistener implements ListSelectionListener {
 //            public void valueChanged(ListSelectionEvent e) {
 //                Object selected = TosingleList.getModel().getElementAt(TosingleList.getSelectedIndex());
@@ -293,7 +293,7 @@ public class PanelCreateTask extends TaskElement {
 //        }
 //
 //        TosingleList.addListSelectionListener(new Toiplistener());
-//        /**ÎªÍÚ¾ò¶ÔÏóÉèÖÃ¼àÌıÆ÷**/
+//        /**ä¸ºæŒ–æ˜å¯¹è±¡è®¾ç½®ç›‘å¬å™¨**/
 //        class miningObjectListener implements ItemListener {
 //
 //            public void itemStateChanged(ItemEvent e) {
@@ -305,7 +305,7 @@ public class PanelCreateTask extends TaskElement {
 //
 //        }
 //        minObChooser.addItemListener(new miningObjectListener());
-//        /**ÎªÍÚ¾òÒµÎñÉèÖÃ¼àÌıÆ÷**/
+//        /**ä¸ºæŒ–æ˜ä¸šåŠ¡è®¾ç½®ç›‘å¬å™¨**/
 //        class busiStyleListener implements ItemListener {
 //
 //            public void itemStateChanged(ItemEvent e) {
@@ -319,39 +319,39 @@ public class PanelCreateTask extends TaskElement {
 //        busiStyleChooser.addItemListener(new busiStyleListener());
 //
 //        /**
-//         * ***Îª±£´æ°´Å¥ÉèÖÃ¼àÌıÆ÷******
+//         * ***ä¸ºä¿å­˜æŒ‰é’®è®¾ç½®ç›‘å¬å™¨******
 //         */
 //        class SavebuttonListener implements ActionListener {
 //            public void actionPerformed(ActionEvent e) {
 //
 //                NewTask.setTaskName(TaskNameText.getText());
 //                NewTask.setMiningObject(digObject);
-//                if(businessStyle.equals("Æµ·±Ä£Ê½"))
+//                if(businessStyle.equals("é¢‘ç¹æ¨¡å¼"))
 //                {
 //                    NewTask.setMiningMethod(MiningMethod.MiningMethods_SequenceMining);
 //                }
-//                if (businessStyle.equals("ÖÜÆÚ")) {
+//                if (businessStyle.equals("å‘¨æœŸ")) {
 //                    {
 //                        NewTask.setMiningMethod(MiningMethod.MiningMethods_PeriodicityMining);
 //
 //                    }
 //
 //                }
-//                if (businessStyle.equals("Ô¤²â")) {
+//                if (businessStyle.equals("é¢„æµ‹")) {
 //                    // System.out.println(businessStyle);
 //                    NewTask.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
 //                }
-//                if (businessStyle.equals("Òì³£")) {
+//                if (businessStyle.equals("å¼‚å¸¸")) {
 //                    NewTask.setMiningMethod(MiningMethod.MiningMethods_TsAnalysis);
 //
 //                }
-//                if(businessStyle.equals("¶àÔª¹ØÁª"))
+//                if(businessStyle.equals("å¤šå…ƒå…³è”"))
 //                    NewTask.setMiningMethod(MiningMethod.MiningMethods_FrequenceItemMining);
 //                System.out.println(NewTask.getTaskName()+" "+NewTask.getMiningObject().toString()+" "+NewTask.getMiningMethod().toString());
 //                add1Task(NewTask, true);
 //                TaskNameText.setText("");
-//                minObChooser.setSelectedItem("ÍÚ¾ò¶ÔÏó");
-//                busiStyleChooser.setSelectedItem("ÍÚ¾òÒµÎñ");
+//                minObChooser.setSelectedItem("æŒ–æ˜å¯¹è±¡");
+//                busiStyleChooser.setSelectedItem("æŒ–æ˜ä¸šåŠ¡");
 //
 //
 //            }

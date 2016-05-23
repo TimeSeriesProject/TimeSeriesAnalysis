@@ -26,7 +26,7 @@ import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 
 
 /**
- * ½Úµã¶ÔµÄ¶ÁÈ¡Àà
+ * èŠ‚ç‚¹å¯¹çš„è¯»å–ç±»
  * @author wsc
  */
 public class nodePairReader implements IReader {
@@ -53,7 +53,7 @@ public class nodePairReader implements IReader {
 			textSource=false;
 			conn=new OracleUtils();
 			if(!conn.tryConnect()){
-				throw new RuntimeException("Êı¾İ¿âÎŞ·¨Á¬½Ó");
+				throw new RuntimeException("æ•°æ®åº“æ— æ³•è¿æ¥");
 			}
 		}else{
 			textSource=true;
@@ -80,10 +80,10 @@ public class nodePairReader implements IReader {
 		Calendar cal = Calendar.getInstance();
 		cal.set(1, 0, 1, 0, 0, 0);
 		
-		// Èç¹ûÃ»ÓĞÉèÖÃÔÚÈÎÎñÀïÉèÖÃÊ±¼ä£¬Ôò²ÉÓÃÈí¼ş×ÜÌåµÄÅäÖÃ
+		// å¦‚æœæ²¡æœ‰è®¾ç½®åœ¨ä»»åŠ¡é‡Œè®¾ç½®æ—¶é—´ï¼Œåˆ™é‡‡ç”¨è½¯ä»¶æ€»ä½“çš„é…ç½®
 		if (task.getDateStart()==null||task.getDateStart().equals(cal.getTime()))	
 			dStart = UtilsSimulation.instance.getStartTime();
-		else	// Èç¹ûÔÚÈÎÎñÀïÉèÖÃÁËÆğÊ¼Ê±¼ä£¬Ôò°´ÈÎÎñµÄÀ´
+		else	// å¦‚æœåœ¨ä»»åŠ¡é‡Œè®¾ç½®äº†èµ·å§‹æ—¶é—´ï¼Œåˆ™æŒ‰ä»»åŠ¡çš„æ¥
 			dStart = task.getDateStart();
 		
 		return readInputBetween(dStart, date);
@@ -91,9 +91,9 @@ public class nodePairReader implements IReader {
 	
 	
 	/**
-	 * ¶ÁÈ¡Á½¸öÊ±¼ä¶ÎÖ®¼äµÄÊı¾İ
-	 * @param date1 ÆğÊ¼Ê±¼ä
-	 * @param date2 ½áÊøÊ±¼ä
+	 * è¯»å–ä¸¤ä¸ªæ—¶é—´æ®µä¹‹é—´çš„æ•°æ®
+	 * @param date1 èµ·å§‹æ—¶é—´
+	 * @param date2 ç»“æŸæ—¶é—´
 	 * @return
 	 */
 	public DataItems readInputBetween(Date date1, Date date2){
@@ -112,8 +112,8 @@ public class nodePairReader implements IReader {
 			conditions[1]=("Time(S)<="+endTime);
 			return readInputByText(conditions);
 		}else{
-			String filter = "ÊÂ¼ş·¢ÉúÊ±¼ä>'" + sdf.format(date1) + "' and " +
-					"ÊÂ¼ş·¢ÉúÊ±¼ä<='" + sdf.format(date2) + "'";
+			String filter = "äº‹ä»¶å‘ç”Ÿæ—¶é—´>'" + sdf.format(date1) + "' and " +
+					"äº‹ä»¶å‘ç”Ÿæ—¶é—´<='" + sdf.format(date2) + "'";
 			return readInputBySql(filter);
 		}
 	}
@@ -127,7 +127,7 @@ public class nodePairReader implements IReader {
 			sqlsb.append(task.getFilterCondition()).append(" and ");
 		}
 		sqlsb.append(generateFilterSql(ipPair));
-		sqlsb.append("1=1 order by ÊÂ¼ş·¢ÉúÊ±¼ä asc");
+		sqlsb.append("1=1 order by äº‹ä»¶å‘ç”Ÿæ—¶é—´ asc");
 		if(!conn.isOpen()){
 			conn.openConn();
 		}
@@ -157,8 +157,8 @@ public class nodePairReader implements IReader {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println("¹²" + numRecords + "Ìõ¼ÇÂ¼£¡");
-		System.out.println("¶ÁÈ¡Íê±Ï:" + data.getLength() + "Ìõ¼ÇÂ¼£¡");
+		System.out.println("å…±" + numRecords + "æ¡è®°å½•ï¼");
+		System.out.println("è¯»å–å®Œæ¯•:" + data.getLength() + "æ¡è®°å½•ï¼");
 		conn.closeConn();
 		return DataItems.sortByTimeValue(data);
 	}
@@ -166,14 +166,14 @@ public class nodePairReader implements IReader {
 	@Override
 	public DataItems readInputBySql(String condition) {
 		StringBuilder sqlsb=new StringBuilder();
-		sqlsb.append("SELECT ÊÂ¼ş·¢ÉúÊ±¼ä,").append(task.getMiningObject()).append(" from ")
+		sqlsb.append("SELECT äº‹ä»¶å‘ç”Ÿæ—¶é—´,").append(task.getMiningObject()).append(" from ")
 		     .append(conn.DB_TABLE).append(" where ");
 		sqlsb.append(condition).append(" and ");
 		if(task.getFilterCondition().length()>0){
 			sqlsb.append(task.getFilterCondition()).append(" and ");
 		}
 		sqlsb.append(generateFilterSql(ipPair));
-		sqlsb.append("1=1 order by ÊÂ¼ş·¢ÉúÊ±¼ä asc");
+		sqlsb.append("1=1 order by äº‹ä»¶å‘ç”Ÿæ—¶é—´ asc");
 		if(!conn.isOpen()){
 			conn.openConn();
 		}
@@ -203,8 +203,8 @@ public class nodePairReader implements IReader {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println("¹²" + numRecords + "Ìõ¼ÇÂ¼£¡");
-		System.out.println("¶ÁÈ¡Íê±Ï:" + data.getLength() + "Ìõ¼ÇÂ¼£¡");
+		System.out.println("å…±" + numRecords + "æ¡è®°å½•ï¼");
+		System.out.println("è¯»å–å®Œæ¯•:" + data.getLength() + "æ¡è®°å½•ï¼");
 		conn.closeConn();
 		return DataItems.sortByTimeValue(data);
 	}
@@ -234,8 +234,8 @@ public class nodePairReader implements IReader {
 		
 	}
 	/**
-	 * »ñÈ¡ÎÄ¼şÏÂËùÓĞÍ¨ĞÅ½Úµã¶ÔÂ·¾¶
-	 * @return ËùÓĞÍ¨ĞÅ½Úµã¶ÔÂ·¾¶
+	 * è·å–æ–‡ä»¶ä¸‹æ‰€æœ‰é€šä¿¡èŠ‚ç‚¹å¯¹è·¯å¾„
+	 * @return æ‰€æœ‰é€šä¿¡èŠ‚ç‚¹å¯¹è·¯å¾„
 	 */
 	public Map<String, DataItems> readAllRoute(){
 		Map<String, DataItems> dataMap=new HashMap<String, DataItems>();
@@ -363,10 +363,10 @@ public class nodePairReader implements IReader {
 	}
 	
 	/**
-	 * ÕÒµ½×Ö·û´®Êı×éÖĞÄ³¸ö×Ö·û´®µÄÎ»ÖÃ
-	 * @param name ×Ö·û´®
-	 * @param names ×Ö·û´®Êı×é
-	 * @return ×Ö·û´®ÔÚÊı×éÖĞµÄÎ»ÖÃ  -1´ú±íÃ»ÕÒµ½
+	 * æ‰¾åˆ°å­—ç¬¦ä¸²æ•°ç»„ä¸­æŸä¸ªå­—ç¬¦ä¸²çš„ä½ç½®
+	 * @param name å­—ç¬¦ä¸²
+	 * @param names å­—ç¬¦ä¸²æ•°ç»„
+	 * @return å­—ç¬¦ä¸²åœ¨æ•°ç»„ä¸­çš„ä½ç½®  -1ä»£è¡¨æ²¡æ‰¾åˆ°
 	 */
 	private int NameToIndex(String name,String[] names){
 		int length=names.length;
@@ -379,9 +379,9 @@ public class nodePairReader implements IReader {
 	}
 	
 	/**
-	 * ¶ÁÈ¡Ö¸¶¨IPÎÄ¼şÖĞËùÓĞĞ­ÒéÁ÷Á¿µÄDataItems
-	 * @param filePath IPÎÄ¼şµØÖ·
-	 * @return Map<String,DataItems> ,ÆäÖĞkeyÖµÎªĞ­Òé£¬valueÖµÎªDataItems
+	 * è¯»å–æŒ‡å®šIPæ–‡ä»¶ä¸­æ‰€æœ‰åè®®æµé‡çš„DataItems
+	 * @param filePath IPæ–‡ä»¶åœ°å€
+	 * @return Map<String,DataItems> ,å…¶ä¸­keyå€¼ä¸ºåè®®ï¼Œvalueå€¼ä¸ºDataItems
 	 */
 	public HashMap<String, DataItems> readEachProtocolTrafficDataItems(String filePath){
 		
@@ -390,7 +390,7 @@ public class nodePairReader implements IReader {
 		textUtils.setTextPath(filePath);
 		textUtils.readByrow();
 		String line=null;
-		int rows=0;//¼ÇÂ¼×Ü¹²¶ÁÈ¡µÄĞĞÊı
+		int rows=0;//è®°å½•æ€»å…±è¯»å–çš„è¡Œæ•°
 		while((line=textUtils.readByrow())!=null){
 			String[] items=line.split(",");
 			int timeSpan=Integer.parseInt(items[0]);
@@ -409,7 +409,7 @@ public class nodePairReader implements IReader {
 				if(protocolDataItems.containsKey(proAndTraffic[0])){
 					DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
 					DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
-					//ºÏ²¢Í¬Ò»¸öIP£¬Í¬Ò»¸öĞ­ÒéµÄÍ¨ĞÅµÄÁ÷Á¿ÒªºÏ²¢
+					//åˆå¹¶åŒä¸€ä¸ªIPï¼ŒåŒä¸€ä¸ªåè®®çš„é€šä¿¡çš„æµé‡è¦åˆå¹¶
 					if(dataItem.getTime().toString().equals(time.toString())){
 						int traffic=Integer.parseInt(dataItem.getData());
 						int addTraffic=Integer.parseInt(proAndTraffic[1]);
@@ -437,10 +437,10 @@ public class nodePairReader implements IReader {
 	}
 	
 	/**
-	 * ¶ÁÈ¡Ö¸¶¨IPÎÄ¼şÃ¿¶Ô½ÓµãÖĞËùÓĞĞ­ÒéÁ÷Á¿µÄDataItems
-	 * @param filePath IPÎÄ¼şµØÖ·
-	 * @return Map<String,Map<String, DataItems>> ,ÆäÖĞkeyÖµÎªipµØÖ·¶Ô£¬valueÖµÎªMap<Key,DataItems>
-	 * ÆäÖĞkeyÎªĞ­Òé  DataItemsÎªÊ±¼äĞòÁĞ
+	 * è¯»å–æŒ‡å®šIPæ–‡ä»¶æ¯å¯¹æ¥ç‚¹ä¸­æ‰€æœ‰åè®®æµé‡çš„DataItems
+	 * @param filePath IPæ–‡ä»¶åœ°å€
+	 * @return Map<String,Map<String, DataItems>> ,å…¶ä¸­keyå€¼ä¸ºipåœ°å€å¯¹ï¼Œvalueå€¼ä¸ºMap<Key,DataItems>
+	 * å…¶ä¸­keyä¸ºåè®®  DataItemsä¸ºæ—¶é—´åºåˆ—
 	 */
 	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTrafficDataItems(String filePath){
 		
@@ -449,7 +449,7 @@ public class nodePairReader implements IReader {
 		textUtils.setTextPath(filePath);
 		textUtils.readByrow();
 		String line=null;
-		int rows=0;//¼ÇÂ¼×Ü¹²¶ÁÈ¡µÄĞĞÊı
+		int rows=0;//è®°å½•æ€»å…±è¯»å–çš„è¡Œæ•°
 		while((line=textUtils.readByrow())!=null){
 			String[] items=line.split(",");
 			int timeSpan=Integer.parseInt(items[0]);
@@ -509,10 +509,10 @@ public class nodePairReader implements IReader {
 	
 	
 	/**
-	 * ¶ÁÈ¡Ö¸¶¨IPÎÄ¼şÃ¿¶Ô½ÓµãÖĞËùÓĞÍ¨ĞÅ´ÎÊıµÄDataItems
-	 * @param filePath IPÎÄ¼şµØÖ·
-	 * @return Map<String,Map<String, DataItems>> ,ÆäÖĞkeyÖµÎªipµØÖ·¶Ô£¬valueÖµÎªMap<Key,DataItems>
-	 * ÆäÖĞkeyÎªĞ­Òé  DataItemsÎªÍ¨ĞÅ´ÎÊıÊ±¼äĞòÁĞ
+	 * è¯»å–æŒ‡å®šIPæ–‡ä»¶æ¯å¯¹æ¥ç‚¹ä¸­æ‰€æœ‰é€šä¿¡æ¬¡æ•°çš„DataItems
+	 * @param filePath IPæ–‡ä»¶åœ°å€
+	 * @return Map<String,Map<String, DataItems>> ,å…¶ä¸­keyå€¼ä¸ºipåœ°å€å¯¹ï¼Œvalueå€¼ä¸ºMap<Key,DataItems>
+	 * å…¶ä¸­keyä¸ºåè®®  DataItemsä¸ºé€šä¿¡æ¬¡æ•°æ—¶é—´åºåˆ—
 	 */
 	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTimesDataItems(String filePath){
 		
@@ -521,7 +521,7 @@ public class nodePairReader implements IReader {
 		textUtils.setTextPath(filePath);
 		textUtils.readByrow();
 		String line=null;
-		int rows=0;//¼ÇÂ¼×Ü¹²¶ÁÈ¡µÄĞĞÊı
+		int rows=0;//è®°å½•æ€»å…±è¯»å–çš„è¡Œæ•°
 		while((line=textUtils.readByrow())!=null){
 			String[] items=line.split(",");
 			int timeSpan=Integer.parseInt(items[0]);
@@ -580,9 +580,9 @@ public class nodePairReader implements IReader {
 	}
 	
 	/**
-	 * ¶ÁÈ¡Ö¸¶¨IPÎÄ¼şÖĞËùÓĞĞ­ÒéÍ¨ĞÅ´ÎÊıµÄDataItems
-	 * @param filePath IPÎÄ¼şµØÖ·
-	 * @return Map<String,DataItems> ,ÆäÖĞkeyÖµÎªĞ­Òé£¬valueÖµÎªDataItems
+	 * è¯»å–æŒ‡å®šIPæ–‡ä»¶ä¸­æ‰€æœ‰åè®®é€šä¿¡æ¬¡æ•°çš„DataItems
+	 * @param filePath IPæ–‡ä»¶åœ°å€
+	 * @return Map<String,DataItems> ,å…¶ä¸­keyå€¼ä¸ºåè®®ï¼Œvalueå€¼ä¸ºDataItems
 	 */
 	public HashMap<String, DataItems> readEachProtocolTimesDataItems(String filePath){
 		
@@ -591,7 +591,7 @@ public class nodePairReader implements IReader {
 		textUtils.setTextPath(filePath);
 		textUtils.readByrow();
 		String line=null;
-		int rows=0;//¼ÇÂ¼×Ü¹²¶ÁÈ¡µÄĞĞÊı
+		int rows=0;//è®°å½•æ€»å…±è¯»å–çš„è¡Œæ•°
 		while((line=textUtils.readByrow())!=null){
 			String[] items=line.split(",");
 			int timeSpan=Integer.parseInt(items[0]);
@@ -605,7 +605,7 @@ public class nodePairReader implements IReader {
 				if(protocolDataItems.containsKey(protocol)){
 					DataItems dataItems=protocolDataItems.get(protocol);
 					DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
-					//ºÏ²¢Í¬Ò»¸öIP£¬Í¬Ò»¸öĞ­ÒéµÄÍ¨ĞÅµÄÁ÷Á¿ÒªºÏ²¢
+					//åˆå¹¶åŒä¸€ä¸ªIPï¼ŒåŒä¸€ä¸ªåè®®çš„é€šä¿¡çš„æµé‡è¦åˆå¹¶
 					if(dataItem.getTime().toString().equals(time.toString())){
 						int times=Integer.parseInt(dataItem.getData());
 						int addTimes=Integer.parseInt(proAndTraffic[2]);
@@ -639,7 +639,7 @@ public class nodePairReader implements IReader {
 		String[] columns=header.split(",");
 		int minerObjectIndex=NameToIndex(miningObejct, columns);
 		if(minerObjectIndex==-1){
-			throw new RuntimeException("Î´ÕÒµ½ÍÚ¾ò¶ÔÏó");
+			throw new RuntimeException("æœªæ‰¾åˆ°æŒ–æ˜å¯¹è±¡");
 		}
 		String line=null;
 		while((line=textUtils.readByrow())!=null){
@@ -649,28 +649,28 @@ public class nodePairReader implements IReader {
 	}
 	
 	/**
-	 * ¶ÁÈ¡¸ø¶¨ÎÄ¼şÏÂËùÓĞÍ¨ĞÅ½Úµã¶ÔµÄÍ¨ĞÅÂ·¾¶
-	 * @param filePath  ÎÄ¼şµØÖ· 
-	 * @param minierObject ½Úµã¶ÔÍ¨ĞÅÂ·¾¶
-	 * @param dataMap  ´æ·ÅÃ¿¶ÔÍ¨ĞÅ½Úµã¶ÔµÄÂ·¾¶ĞòÁĞ
-	 * @param timeMap  °´Ğ¡Ê±¾ÛºÏ£¬·ÀÖ¹Êı¾İÁ¿¹ı´ó
+	 * è¯»å–ç»™å®šæ–‡ä»¶ä¸‹æ‰€æœ‰é€šä¿¡èŠ‚ç‚¹å¯¹çš„é€šä¿¡è·¯å¾„
+	 * @param filePath  æ–‡ä»¶åœ°å€ 
+	 * @param minierObject èŠ‚ç‚¹å¯¹é€šä¿¡è·¯å¾„
+	 * @param dataMap  å­˜æ”¾æ¯å¯¹é€šä¿¡èŠ‚ç‚¹å¯¹çš„è·¯å¾„åºåˆ—
+	 * @param timeMap  æŒ‰å°æ—¶èšåˆï¼Œé˜²æ­¢æ•°æ®é‡è¿‡å¤§
 	 */
 	private void readFile(String filePath,String minierObject,Map<String, DataItems> dataMap,Map<String, Date> timeMap){
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
 		String header=textUtils.readByrow();
 		String[] columns=header.split(",");
-		String[] miningObject = minierObject.split(":");  //miningObjectÕë¶ÔÂ·¾¶´ÎÊıÓëÂ·¾¶Á÷Á¿ ÈôminingObject[1]Îª¿Õ£¬ÔòÖ¸´úÂ·¾¶´ÎÊı
+		String[] miningObject = minierObject.split(":");  //miningObjecté’ˆå¯¹è·¯å¾„æ¬¡æ•°ä¸è·¯å¾„æµé‡ è‹¥miningObject[1]ä¸ºç©ºï¼Œåˆ™æŒ‡ä»£è·¯å¾„æ¬¡æ•°
 		int minerObjectIndex=NameToIndex(miningObject[0], columns);
 		if(minerObjectIndex==-1){
-			throw new RuntimeException("Î´ÕÒµ½ÍÚ¾ò¶ÔÏó");
+			throw new RuntimeException("æœªæ‰¾åˆ°æŒ–æ˜å¯¹è±¡");
 		}
 		int TrafficColIndex=NameToIndex("traffic",columns);
 		int TimeColIndex=NameToIndex("Time(S)", columns);
 		int SIPColIndex=NameToIndex("srcIP", columns);
 		int DIPColIndex=NameToIndex("dstIP", columns);
 		if(TimeColIndex==-1||SIPColIndex==-1||DIPColIndex==-1){
-			throw new RuntimeException("Time SIP DIP ÊôĞÔÔÚÎÄ¼şÖĞÎ´ÕÒµ½");
+			throw new RuntimeException("Time SIP DIP å±æ€§åœ¨æ–‡ä»¶ä¸­æœªæ‰¾åˆ°");
 		}
 		String line=null;
 		
@@ -696,7 +696,7 @@ public class nodePairReader implements IReader {
 				timeMap.put(key, deadDate);
 			}
 			
-			//Ìø¹ı±¾½Úµã Ö±½Ó×ªµ½Â·ÓÉÆ÷½Úµã
+			//è·³è¿‡æœ¬èŠ‚ç‚¹ ç›´æ¥è½¬åˆ°è·¯ç”±å™¨èŠ‚ç‚¹
 			for(int j=minerObjectIndex+1;j<columns.length-1;j++)
 			{
 				int len=nodeList.size();
@@ -763,10 +763,10 @@ public class nodePairReader implements IReader {
 	}
 	
 	/**
-	 * ¶ÁÈ¡ÎÄ¼ş
-	 * @param filePath ÎÄ¼şÂ·¾¶
-	 * @param minierObject Òª¶ÁÈ¡µÄÊôĞÔ
-	 * @param dataItems ¶Áµ½µÄĞòÁĞ
+	 * è¯»å–æ–‡ä»¶
+	 * @param filePath æ–‡ä»¶è·¯å¾„
+	 * @param minierObject è¦è¯»å–çš„å±æ€§
+	 * @param dataItems è¯»åˆ°çš„åºåˆ—
 	 */
 	private void readFile(String filePath,String minierObject,String protocol,DataItems dataItems){
 		TextUtils textUtils=new TextUtils();
@@ -776,13 +776,13 @@ public class nodePairReader implements IReader {
 		int protocolIndex=NameToIndex(protocol, columns);
 		//int minerObjectIndex=NameToIndex(minierObject, columns);
 		if(protocolIndex==-1){
-			throw new RuntimeException("Î´ÕÒµ½ÍÚ¾ò¶ÔÏó");
+			throw new RuntimeException("æœªæ‰¾åˆ°æŒ–æ˜å¯¹è±¡");
 		}
 		int TimeColIndex=NameToIndex("Time(S)", columns);
 		int SIPColIndex=NameToIndex("srcIP", columns);
 		int DIPColIndex=NameToIndex("dstIP", columns);
 		if(TimeColIndex==-1||SIPColIndex==-1||DIPColIndex==-1){
-			throw new RuntimeException("Time SIP DIP ÊôĞÔÔÚÎÄ¼şÖĞÎ´ÕÒµ½");
+			throw new RuntimeException("Time SIP DIP å±æ€§åœ¨æ–‡ä»¶ä¸­æœªæ‰¾åˆ°");
 		}
 		String line=null;
 		boolean fixCondition=true;
@@ -797,13 +797,13 @@ public class nodePairReader implements IReader {
 				columns=line.split(",");
 				fixCondition=true;
 				for(String ip:ipPair){
-					if(ip.endsWith(".0")){//Õë¶Ô¾ÖÓòÍøIP
+					if(ip.endsWith(".0")){//é’ˆå¯¹å±€åŸŸç½‘IP
 						if(!(columns[SIPColIndex].substring(0, columns[SIPColIndex].lastIndexOf(".")+1).equals(ip.substring(0,ip.lastIndexOf(".")+1))||
 								columns[DIPColIndex].substring(0, columns[DIPColIndex].lastIndexOf(".")+1).equals(ip.substring(0,ip.lastIndexOf(".")+1)))){
 							fixCondition=false;
 							break;
 						}
-					}else{                  //Õë¶Ôµ¥½ÚµãIP
+					}else{                  //é’ˆå¯¹å•èŠ‚ç‚¹IP
 						if(!(columns[SIPColIndex].equals(ip)||columns[DIPColIndex].equals(ip))){
 							fixCondition=false;
 							break;
@@ -812,7 +812,7 @@ public class nodePairReader implements IReader {
 				}
 				if(fixCondition){
 					int time=Integer.parseInt(columns[TimeColIndex]);
-					//Ìø¹ı±¾½Úµã Ö±½Ó×ªµ½Â·ÓÉÆ÷½Úµã
+					//è·³è¿‡æœ¬èŠ‚ç‚¹ ç›´æ¥è½¬åˆ°è·¯ç”±å™¨èŠ‚ç‚¹
 					for(int j=minerObjectIndex+1;j<columns.length-1;j++)
 					{
 						int len=nodeList.size();
@@ -919,18 +919,18 @@ public class nodePairReader implements IReader {
 		String[] columns=header.split(",");
 		int minerObjectIndex=NameToIndex(minierObject, columns);
 		if(minerObjectIndex==-1){
-			throw new RuntimeException("Î´ÕÒµ½ÍÚ¾ò¶ÔÏó");
+			throw new RuntimeException("æœªæ‰¾åˆ°æŒ–æ˜å¯¹è±¡");
 		}
 		int TimeColIndex=NameToIndex("Time(S)", columns);
 		int SIPColIndex=NameToIndex("srcIP", columns);
 		int DIPColIndex=NameToIndex("dstIP", columns);
 		if(TimeColIndex==-1||SIPColIndex==-1||DIPColIndex==-1){
-			throw new RuntimeException("Time SIP SIP ÊôĞÔÔÚÎÄ¼şÖĞÎ´ÕÒµ½");
+			throw new RuntimeException("Time SIP SIP å±æ€§åœ¨æ–‡ä»¶ä¸­æœªæ‰¾åˆ°");
 		}
 		
 		String[] parseCondition=new String[conditions.length];
 		
-		//½âÎöÌõ¼ş conditions
+		//è§£ææ¡ä»¶ conditions
 		for(int i=0;i<conditions.length;i++){
 			String condition=conditions[i];
 			String compareOper="";
@@ -942,7 +942,7 @@ public class nodePairReader implements IReader {
 			String[] conditionColumns=condition.split("[><=]+");
 			int conditionIndex=NameToIndex(conditionColumns[0], columns);
 			if(conditionIndex==-1){
-				throw new RuntimeException("²éÕÒÌõ¼şÉèÖÃ´íÎó");
+				throw new RuntimeException("æŸ¥æ‰¾æ¡ä»¶è®¾ç½®é”™è¯¯");
 			}
 			switch (compareOper) {
 			case ">":
@@ -964,7 +964,7 @@ public class nodePairReader implements IReader {
 				condition=conditionIndex+","+"!="+","+conditionColumns[1];
 				break;
 			default:
-				throw new RuntimeException("²éÑ¯Ìõ¼şÎŞ·¨È·ÈÏ");
+				throw new RuntimeException("æŸ¥è¯¢æ¡ä»¶æ— æ³•ç¡®è®¤");
 			}
 			parseCondition[i]=condition;
 		}
@@ -1051,18 +1051,18 @@ public class nodePairReader implements IReader {
 		String[] columns=header.split(",");
 		int minerObjectIndex=NameToIndex(minierObject, columns);
 		if(minerObjectIndex==-1&&!task.getMiningObject().equals("sendTimes")){
-			throw new RuntimeException("Î´ÕÒµ½ÍÚ¾ò¶ÔÏó");
+			throw new RuntimeException("æœªæ‰¾åˆ°æŒ–æ˜å¯¹è±¡");
 		}
 		int TimeColIndex=NameToIndex("Time(S)", columns);
 		int SIPColIndex=NameToIndex("srcIP", columns);
 		int DIPColIndex=NameToIndex("dstIP", columns);
 		if(TimeColIndex==-1||SIPColIndex==-1||DIPColIndex==-1){
-			throw new RuntimeException("Time SIP SIP ÊôĞÔÔÚÎÄ¼şÖĞÎ´ÕÒµ½");
+			throw new RuntimeException("Time SIP SIP å±æ€§åœ¨æ–‡ä»¶ä¸­æœªæ‰¾åˆ°");
 		}
 		
 		String[] parseCondition=new String[conditions.length];
 		
-		//½âÎöÌõ¼ş conditions
+		//è§£ææ¡ä»¶ conditions
 		for(int i=0;i<conditions.length;i++){
 			String condition=conditions[i];
 			String compareOper="";
@@ -1074,7 +1074,7 @@ public class nodePairReader implements IReader {
 			String[] conditionColumns=condition.split("[><=]+");
 			int conditionIndex=NameToIndex(conditionColumns[0], columns);
 			if(conditionIndex==-1){
-				throw new RuntimeException("²éÕÒÌõ¼şÉèÖÃ´íÎó");
+				throw new RuntimeException("æŸ¥æ‰¾æ¡ä»¶è®¾ç½®é”™è¯¯");
 			}
 			switch (compareOper) {
 			case ">":
@@ -1096,7 +1096,7 @@ public class nodePairReader implements IReader {
 				condition=conditionIndex+","+"!="+","+conditionColumns[1];
 				break;
 			default:
-				throw new RuntimeException("²éÑ¯Ìõ¼şÎŞ·¨È·ÈÏ");
+				throw new RuntimeException("æŸ¥è¯¢æ¡ä»¶æ— æ³•ç¡®è®¤");
 			}
 			parseCondition[i]=condition;
 		}
@@ -1198,9 +1198,9 @@ public class nodePairReader implements IReader {
 	}
 	
 	/**
-	 * ÅĞ¶ÏÖ¸¶¨IPÍ¨ĞÅÊÇ·ñÔÚÏàÓ¦µÄÎÄ¼şÖĞ
+	 * åˆ¤æ–­æŒ‡å®šIPé€šä¿¡æ˜¯å¦åœ¨ç›¸åº”çš„æ–‡ä»¶ä¸­
 	 * @param ip 
-	 * @param fileName ÎÄ¼şÂ·¾¶
+	 * @param fileName æ–‡ä»¶è·¯å¾„
 	 * @return 
 	 */
 	private boolean isFileContainsIp(String ip,String fileName){
@@ -1231,7 +1231,7 @@ public class nodePairReader implements IReader {
 			sb.append("srcIP='").append(ips[0]).append("' or dstIP='").append(ips[0]).append("' and ");
 			return sb.toString();
 		}else{
-			throw new RuntimeException("ip ²ÎÊıÊıÁ¿²»·ûºÏÒªÇó");
+			throw new RuntimeException("ip å‚æ•°æ•°é‡ä¸ç¬¦åˆè¦æ±‚");
 		}
 	}
    

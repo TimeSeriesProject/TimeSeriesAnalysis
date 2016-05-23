@@ -7,11 +7,11 @@ import java.lang.reflect.Field;
 import java.util.Date;
 
 public class ParamsFP extends IParamsNetworkMining {
-    //¸ßË¹»¬¶¯´°¿ÚÄ£ĞÍËã·¨²ÎÊı
-    private double minSupport;	// ×îĞ¡Ö§³Ö¶È
-    private int sizeWindow;	// Ê±¼ä´°³¤	£¨µ¥Î»ÎªÃë£©
-    private int stepWindow;	// ²½³¤
-    private int minSeqLen;	// ×î¶ÌĞòÁĞÄ£Ê½³¤¶È
+    //é«˜æ–¯æ»‘åŠ¨çª—å£æ¨¡å‹ç®—æ³•å‚æ•°
+    private double minSupport;	// æœ€å°æ”¯æŒåº¦
+    private int sizeWindow;	// æ—¶é—´çª—é•¿	ï¼ˆå•ä½ä¸ºç§’ï¼‰
+    private int stepWindow;	// æ­¥é•¿
+    private int minSeqLen;	// æœ€çŸ­åºåˆ—æ¨¡å¼é•¿åº¦
 
     public ParamsFP() {
         minSupport = 0.4;

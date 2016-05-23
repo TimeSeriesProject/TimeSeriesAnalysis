@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 
 
 /**
- * ´´½¨¶ÁÈ¡¹ÉÆ±Êı¾İÀà
+ * åˆ›å»ºè¯»å–è‚¡ç¥¨æ•°æ®ç±»
  * @author wsc
  *
  */
@@ -145,10 +145,10 @@ public class TextUtils{
 	}
 	
 	/**
-	 * ½«´æ´¢ÔÚÎÄ¼şÖĞµÄÂ·ÓÉÆ÷×ªÒÆ¸ÅÂÊÌáÈ¡µ½MapÖĞ£¬ ÎÄ¼şÃ¿Ò»ĞĞÎªÒ»Ìõ×ªÒÆ¸ÅÂÊ £¬
-	 * ÌáÈ¡ºóµÄMapÃ¿¸öEntryÎªÒ»Ìõ×ªÒÆ¸ÅÂÊ
-	 * @param FilePath ÎÄ¼şµØÖ·
-	 * @return ·µ»ØÂ·ÓÉÆ÷×ªÒÆ¸ÅÂÊMap ¸ñÊ½Îª Map.Entry<"10,2",0.5> ±íÊ¾P(2|10)=0.5
+	 * å°†å­˜å‚¨åœ¨æ–‡ä»¶ä¸­çš„è·¯ç”±å™¨è½¬ç§»æ¦‚ç‡æå–åˆ°Mapä¸­ï¼Œ æ–‡ä»¶æ¯ä¸€è¡Œä¸ºä¸€æ¡è½¬ç§»æ¦‚ç‡ ï¼Œ
+	 * æå–åçš„Mapæ¯ä¸ªEntryä¸ºä¸€æ¡è½¬ç§»æ¦‚ç‡
+	 * @param FilePath æ–‡ä»¶åœ°å€
+	 * @return è¿”å›è·¯ç”±å™¨è½¬ç§»æ¦‚ç‡Map æ ¼å¼ä¸º Map.Entry<"10,2",0.5> è¡¨ç¤ºP(2|10)=0.5
 	 */
 	public Map<String, Double> readMapFromFile(String FilePath){
 		System.out.println(FilePath);
@@ -176,9 +176,9 @@ public class TextUtils{
 	}
 	
 	/**
-	 * ½«Â·ÓÉÆ÷×ªÒÆ¸ÅÂÊ´æ´¢µ½ÎÄ¼şÖĞ
-	 * @param map °üº¬ÁËÂ·ÓÉÆ÷×ªÒÆ¸ÅÂÊ  ĞÎÊ½Îª Map.Entry<"10,2",0.5> ±íÊ¾P(2|10)=0.5
-	 * @param outFilePath ±£´æ×ªÒÆ¸ÅÂÊÎÄ¼şµØÖ· Ã¿Ò»ÌõMap.Entry ÔÚÎÄ¼şÖĞÎªµ¥¶ÀÒ»ĞĞ
+	 * å°†è·¯ç”±å™¨è½¬ç§»æ¦‚ç‡å­˜å‚¨åˆ°æ–‡ä»¶ä¸­
+	 * @param map åŒ…å«äº†è·¯ç”±å™¨è½¬ç§»æ¦‚ç‡  å½¢å¼ä¸º Map.Entry<"10,2",0.5> è¡¨ç¤ºP(2|10)=0.5
+	 * @param outFilePath ä¿å­˜è½¬ç§»æ¦‚ç‡æ–‡ä»¶åœ°å€ æ¯ä¸€æ¡Map.Entry åœ¨æ–‡ä»¶ä¸­ä¸ºå•ç‹¬ä¸€è¡Œ
 	 */
 	public void writeMap(Map<String, Double> map,String outFilePath){
 		File outFile=new File(outFilePath);
@@ -209,9 +209,9 @@ public class TextUtils{
 		}
 	}
 	/**
-	 * ½«List<List<>>Ğ´Èëµ½ÎÄ¼şÖĞÃ¿¸öList×÷ÎªÒ»ÁĞ 
-	 * @param lists ÒªĞ´Èëµ½ÎÄ½«ÖĞµÄlist<List<String>>
-	 * @param outFilePath Ğ´ÈëÎÄ¼şµÄµØÖ· 
+	 * å°†List<List<>>å†™å…¥åˆ°æ–‡ä»¶ä¸­æ¯ä¸ªListä½œä¸ºä¸€åˆ— 
+	 * @param lists è¦å†™å…¥åˆ°æ–‡å°†ä¸­çš„list<List<String>>
+	 * @param outFilePath å†™å…¥æ–‡ä»¶çš„åœ°å€ 
 	 */
 	public void writeLists(List<List<String>> lists,String outFilePath){
 		File outFile=new File(outFilePath);

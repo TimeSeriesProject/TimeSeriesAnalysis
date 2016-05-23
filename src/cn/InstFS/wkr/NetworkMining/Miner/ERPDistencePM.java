@@ -21,19 +21,19 @@ import ec.nbdemetra.x13.ui.X13ViewFactory.DTablesFactory;
 
 public class ERPDistencePM implements IMinerPM {
 	private int[][] distMatrix;
-	private DataItems di; //µ±Ç°Ê±¼äÇø¼äµÄÊı¾İ¼¯
+	private DataItems di; //å½“å‰æ—¶é—´åŒºé—´çš„æ•°æ®é›†
 	private DataItems oriDi;
 	private Double minEntropy = Double.MAX_VALUE;  
-    private Double []entropies;   //´æ´¢Ã¿¸ö¿ÉÄÜÖÜÆÚµÄÆ½¾ùìØ»òÆ½¾ùERP¾àÀë
+    private Double []entropies;   //å­˜å‚¨æ¯ä¸ªå¯èƒ½å‘¨æœŸçš„å¹³å‡ç†µæˆ–å¹³å‡ERPè·ç¦»
     private HashMap<Integer, Integer[]> predictValuesMap;
     private HashMap<Integer, Integer[]> minPredictValuesMap;
     private HashMap<Integer, Integer[]> maxPredictValuesMap;
-   	private double threshold;  //ÊÇ·ñ¾ßÓĞÖÜÆÚµÄãĞÖµ
-   	private int lastNumIndexInPeriod;//×îºóÒ»¸öÊıÔÚÖÜÆÚÖĞµÄÎ»ÖÃ
-   	private Boolean hasPeriod; //ÊÇ·ñÓĞÖÜÆÚ
-	private int predictPeriod;   //ÖÜÆÚ³¤¶È
+   	private double threshold;  //æ˜¯å¦å…·æœ‰å‘¨æœŸçš„é˜ˆå€¼
+   	private int lastNumIndexInPeriod;//æœ€åä¸€ä¸ªæ•°åœ¨å‘¨æœŸä¸­çš„ä½ç½®
+   	private Boolean hasPeriod; //æ˜¯å¦æœ‰å‘¨æœŸ
+	private int predictPeriod;   //å‘¨æœŸé•¿åº¦
 	private List<Integer> existPeriod;
-	private DataItems itemsInPeriod;  //Ò»¸öÖÜÆÚÄÚµÄitems
+	private DataItems itemsInPeriod;  //ä¸€ä¸ªå‘¨æœŸå†…çš„items
 	private DataItems minItemsInPeriod;
 	private DataItems maxItemsInPeriod;
 	private double confidence;
@@ -120,7 +120,7 @@ public class ERPDistencePM implements IMinerPM {
 		}
 	}
 	/**
-	 * ¼ÆËãÃ»¸öÊ±¼ä¶ÎµÄERPÖµ£¬ÒÔERPµÄÊ±¼ä¶Î×÷ÎªÖÜÆÚÖµ
+	 * è®¡ç®—æ²¡ä¸ªæ—¶é—´æ®µçš„ERPå€¼ï¼Œä»¥ERPçš„æ—¶é—´æ®µä½œä¸ºå‘¨æœŸå€¼
 	 * @param seq 
 	 * @param numItems
 	 */
@@ -133,7 +133,7 @@ public class ERPDistencePM implements IMinerPM {
 		ArrayList<String> seqList=new ArrayList<String>();
 		double Entropy;
 		while((period+1)<= maxPeriod){
-			period++;	//ÖÜÆÚµİ¼Ó
+			period++;	//å‘¨æœŸé€’åŠ 
 			standardList.clear();
 			Entropy=0.0;
 			ErpDistMatrix=new double[period][period];
@@ -158,7 +158,7 @@ public class ERPDistencePM implements IMinerPM {
 	}
 	
 	/**
-	 * ¼ÆËãÃ»¸öÊ±¼ä¶ÎµÄÂü¹ş¶ÙÖµ
+	 * è®¡ç®—æ²¡ä¸ªæ—¶é—´æ®µçš„æ›¼å“ˆé¡¿å€¼
 	 * @param seq 
 	 * @param numItems
 	 */
@@ -170,7 +170,7 @@ public class ERPDistencePM implements IMinerPM {
 		ArrayList<String> seqList=new ArrayList<String>();
 		double Entropy;
 		while((period+1)<= maxPeriod){
-			period++;	//ÖÜÆÚµİ¼Ó
+			period++;	//å‘¨æœŸé€’åŠ 
 			standardList.clear();
 			Entropy=0.0;
 			//generateStandardList(seq, period, standardList);
@@ -206,12 +206,12 @@ public class ERPDistencePM implements IMinerPM {
 	}
 	
 	/**
-	 * ·µ»ØÁ½ÌõĞòÁĞµÄERP¾àÀë
-	 * @param seqX µÚÒ»ÌõĞòÁĞ
-	 * @param seqY µÚ¶şÌõĞòÁĞ
-	 * @param matrix ´æ´¢ÒÑ¾­¼ÆËãÍê³ÉµÄÊı¾İ 
-	 * @param xSize ySize ³äµ±Êı×éÖ¸Õë
-	 * @return ERP¾àÀë
+	 * è¿”å›ä¸¤æ¡åºåˆ—çš„ERPè·ç¦»
+	 * @param seqX ç¬¬ä¸€æ¡åºåˆ—
+	 * @param seqY ç¬¬äºŒæ¡åºåˆ—
+	 * @param matrix å­˜å‚¨å·²ç»è®¡ç®—å®Œæˆçš„æ•°æ® 
+	 * @param xSize ySize å……å½“æ•°ç»„æŒ‡é’ˆ
+	 * @return ERPè·ç¦»
 	 */
 	private double ERPDistance(List<String> seqX,List<String>seqY,int xSize,int ySize,double [][]matrix){
 		if(xSize<0&&ySize<0){
@@ -246,10 +246,10 @@ public class ERPDistencePM implements IMinerPM {
 	}
 	
 	/**
-	 * Éú³ÉÖ¸¶¨ÖÜÆÚÄÚµÄ±ê×¼ĞòÁĞ
-	 * @param seq Ô­ĞòÁĞ
-	 * @param length ±ê×¼ĞòÁĞ³¤¶È
-	 * @param standardList ±ê×¼ĞòÁĞ
+	 * ç”ŸæˆæŒ‡å®šå‘¨æœŸå†…çš„æ ‡å‡†åºåˆ—
+	 * @param seq åŸåºåˆ—
+	 * @param length æ ‡å‡†åºåˆ—é•¿åº¦
+	 * @param standardList æ ‡å‡†åºåˆ—
 	 */
 	private void generateStandardList(List<String> seq,int length,List<String> standardList){
 		int seqLen=seq.size();
@@ -336,7 +336,7 @@ public class ERPDistencePM implements IMinerPM {
 			}
 		}
 		predictPeriod=possiPeriod;
-		confidence=ratios;        //¸Ã¼ì²âÖÜÆÚµÄÖÃĞÅ¶È
+		confidence=ratios;        //è¯¥æ£€æµ‹å‘¨æœŸçš„ç½®ä¿¡åº¦
 		
 		for(int i=1;i<maxPeriod;i++){
 			if(entropies[i]<minEntropy){

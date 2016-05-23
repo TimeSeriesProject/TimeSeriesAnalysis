@@ -78,10 +78,10 @@ public class PartialPM{
 			}
 			if(isEqual){
 				repeatNum++;
-				i+=(patternSize-1);   //µ÷µ½ÏÂÒ»¸öÆµ·±ÏîÖÐ
+				i+=(patternSize-1);   //è°ƒåˆ°ä¸‹ä¸€ä¸ªé¢‘ç¹é¡¹ä¸­
 				partialPmEnd=i;
 			}else{
-				if(repeatNum>=threshold){  //Á¬Ðø³öÏÖµÄ´ÎÊý´óÓÚãÐÖµ£¬ÈÏ¶¨¾Ö²¿ÖÜÆÚ´æÔÚ
+				if(repeatNum>=threshold){  //è¿žç»­å‡ºçŽ°çš„æ¬¡æ•°å¤§äºŽé˜ˆå€¼ï¼Œè®¤å®šå±€éƒ¨å‘¨æœŸå­˜åœ¨
 					List<Integer>partialPm=new ArrayList<Integer>();
 					Date firstTime=dataItems.getTime().get(0);
 					Date startTime=dataItems.getTime().get(partialPmStart);

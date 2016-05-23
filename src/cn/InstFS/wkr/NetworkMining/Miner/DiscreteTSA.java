@@ -16,32 +16,32 @@ import cn.InstFS.wkr.NetworkMining.Exception.NotFoundDicreseValueException;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 public class DiscreteTSA{
-	private final int dimension;//ÀëÉ¢µÄÎ¬¶È
+	private final int dimension;//ç¦»æ•£çš„ç»´åº¦
 	private TaskElement task;
 	private DataItems di;
 	private final String[] discreteValues;
-	private DataItems outlies;//Òì³£µã
-	private int predictPeriod;            //Ô¤²âµÄ³¤¶È
+	private DataItems outlies;//å¼‚å¸¸ç‚¹
+	private int predictPeriod;            //é¢„æµ‹çš„é•¿åº¦
 	private DataItems predictItems;
 
-	//»ùÓÚÖÜÆÚËã·¨
-	private long cycleSpan;            //ÖÜÆÚ³¤¶È
-	private boolean hasPeriod=false;    //ÊÇ·ñ´æÔÚÖÜÆÚ
-	private int[] periodValues;       //ÖÜÆÚÖĞ¸÷Ê±¼äÁ£¶ÈÖĞµÄÖµ
-	private int lastNumIndexInPeriod;  //×îºóµÄÖµÔÚÖÜÆÚÖĞµÄÎ»ÖÃ
-	private Date endDate;              //ĞòÁĞÖĞ×îºóÖµµÄÈÕÆÚ
-	private double periodThreshold;    //´æÔÚµÄÖÜÆÚãĞÖµ
+	//åŸºäºå‘¨æœŸç®—æ³•
+	private long cycleSpan;            //å‘¨æœŸé•¿åº¦
+	private boolean hasPeriod=false;    //æ˜¯å¦å­˜åœ¨å‘¨æœŸ
+	private int[] periodValues;       //å‘¨æœŸä¸­å„æ—¶é—´ç²’åº¦ä¸­çš„å€¼
+	private int lastNumIndexInPeriod;  //æœ€åçš„å€¼åœ¨å‘¨æœŸä¸­çš„ä½ç½®
+	private Date endDate;              //åºåˆ—ä¸­æœ€åå€¼çš„æ—¥æœŸ
+	private double periodThreshold;    //å­˜åœ¨çš„å‘¨æœŸé˜ˆå€¼
 	
-	//»ùÓÚARËã·¨
-	private double[] seq=null;            //´æ´¢Æ½ÎÈ»¯ºóµÄĞòÁĞ
-	private double seqMean;               //¼ÇÂ¼Æ½ÎÈÇ°ĞòÁĞµÄÆ½¾ùÖµ     
-	private double[] offset;              //¼ÇÂ¼Ò»ÌìÖĞÃ¿¸öÊ±¿ÌµÄÆ«²î
-	private double[] params¦Õ=null;        //´æ´¢ARĞòÁĞµÄ²ÎÊı
-	private int window=20;                 //AR µÄ´°¿Ú³¤¶È 
+	//åŸºäºARç®—æ³•
+	private double[] seq=null;            //å­˜å‚¨å¹³ç¨³åŒ–åçš„åºåˆ—
+	private double seqMean;               //è®°å½•å¹³ç¨³å‰åºåˆ—çš„å¹³å‡å€¼     
+	private double[] offset;              //è®°å½•ä¸€å¤©ä¸­æ¯ä¸ªæ—¶åˆ»çš„åå·®
+	private double[] paramsÏ†=null;        //å­˜å‚¨ARåºåˆ—çš„å‚æ•°
+	private int window=20;                 //AR çš„çª—å£é•¿åº¦ 
 	
 	private double outlierThreshold=0.97;
 	
-	//ÕıÌ¬·Ö²¼±í
+	//æ­£æ€åˆ†å¸ƒè¡¨
 	private double[][] normdist = {
          {0.5,0.504,0.508,0.512,0.516,0.5199,0.5239,0.5279,0.5319,0.5359},
          {0.5398,0.5438,0.5478,0.5517,0.5557,0.5596,0.5636,0.5675,0.5714,0.5753},
@@ -143,9 +143,9 @@ public class DiscreteTSA{
 	
     
     /**
-	 * Í¨¹ıÖÜÆÚÄ£ĞÍ½øĞĞTSA·ÖÎö  
-	 * Ö÷Òª¹¦ÄÜ£ºÕÒ³öĞòÁĞµÄÒì³£Öµ
-	 *        Ô¤²â¸ø¶¨Çø¼äµÄÖµ
+	 * é€šè¿‡å‘¨æœŸæ¨¡å‹è¿›è¡ŒTSAåˆ†æ  
+	 * ä¸»è¦åŠŸèƒ½ï¼šæ‰¾å‡ºåºåˆ—çš„å¼‚å¸¸å€¼
+	 *        é¢„æµ‹ç»™å®šåŒºé—´çš„å€¼
 	 */
     public void predictByPeriod(){
     	DiscretePM discretePM=new DiscretePM(task,dimension,periodThreshold);
@@ -163,7 +163,7 @@ public class DiscreteTSA{
 		
 		predictItems=new DataItems();
 		Calendar start=Calendar.getInstance();
-		start.setTime(endDate);//Êµ¼ÊÖÜÆÚÄ©Î²
+		start.setTime(endDate);//å®é™…å‘¨æœŸæœ«å°¾
 		for(int span=1;span<=predictPeriod;span++){
 			String item=periodValues[(span+lastNumIndexInPeriod)%(int)cycleSpan]+"";
 			predictItems.getData().add(item);
@@ -171,7 +171,7 @@ public class DiscreteTSA{
 			predictItems.getTime().add(start.getTime());
 		}
 		
-		//Òì³£¼ì²â²¿·Ö
+		//å¼‚å¸¸æ£€æµ‹éƒ¨åˆ†
 		List<Integer> erpDists=new ArrayList<Integer>();
 		List<String> dataList=di.getData();
 		List<Integer> seqX=new ArrayList<Integer>();
@@ -208,11 +208,11 @@ public class DiscreteTSA{
     }
 	
 	/**
-	 * ÇóÁ½ÌõĞòÁĞµÄARP¾àÀë£¬½«´Ë¾àÀëÊÓÎªÁ½ÌõĞòÁĞµÄÏàËÆ¶È
-	 * @param seqX  µÚÒ»ÌõĞòÁĞ
-	 * @param seqY  µÚ¶şÌõĞòÁĞ
-	 * @param matrix ÏàËÆ¶È¾ØÕó
-	 * @return  ERP¾àÀë
+	 * æ±‚ä¸¤æ¡åºåˆ—çš„ARPè·ç¦»ï¼Œå°†æ­¤è·ç¦»è§†ä¸ºä¸¤æ¡åºåˆ—çš„ç›¸ä¼¼åº¦
+	 * @param seqX  ç¬¬ä¸€æ¡åºåˆ—
+	 * @param seqY  ç¬¬äºŒæ¡åºåˆ—
+	 * @param matrix ç›¸ä¼¼åº¦çŸ©é˜µ
+	 * @return  ERPè·ç¦»
 	 */
 	private int ERPDistance(List<Integer> seqX,List<Integer>seqY,int xSize,int ySize,int[][] matrix){
 		if(xSize<0&&ySize<0){
@@ -248,7 +248,7 @@ public class DiscreteTSA{
 
 	
 	/**
-	 * ½«Êı¾İdataItems×ª»»³ÉÆ½ÎÈĞòÁĞ£¬ÒÔÂú×ãARÆ½ÎÈĞÔÒªÇó
+	 * å°†æ•°æ®dataItemsè½¬æ¢æˆå¹³ç¨³åºåˆ—ï¼Œä»¥æ»¡è¶³ARå¹³ç¨³æ€§è¦æ±‚
 	 */
 	private void transToStationarySeq(){
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
@@ -261,23 +261,23 @@ public class DiscreteTSA{
 		}
 		
 		seqMean=statistics.getMean();
-//		int recordsOfDay=(3600*24*1000)/(task.getGranularity()*1000);  //Ò»ÌìÖĞµÄ¼ÇÂ¼Êı
+//		int recordsOfDay=(3600*24*1000)/(task.getGranularity()*1000);  //ä¸€å¤©ä¸­çš„è®°å½•æ•°
 		int recordsOfDay=24;
 
-		int recordDays=seqSize/recordsOfDay;                //×ÜÌìÊı
-		offset=new double[recordsOfDay];           //¼ÇÂ¼Ò»ÌìÖĞÃ¿¸öÊ±¿ÌµÄÆ«²î
+		int recordDays=seqSize/recordsOfDay;                //æ€»å¤©æ•°
+		offset=new double[recordsOfDay];           //è®°å½•ä¸€å¤©ä¸­æ¯ä¸ªæ—¶åˆ»çš„åå·®
 		for(int i=0;i<recordsOfDay;i++){
 			double sum=0.0;
 			for(int j=0;j<recordDays;j++){
 				sum+=seq[i+j*recordsOfDay];
 			}
 			sum=(sum/recordDays)-seqMean;
-			offset[i]=sum;  //±íÊ¾Ã¿ÌìµÄµÚiÊ±¿ÌºÍ×ÜµÄmeanÆ«²î
+			offset[i]=sum;  //è¡¨ç¤ºæ¯å¤©çš„ç¬¬iæ—¶åˆ»å’Œæ€»çš„meanåå·®
 		}
 		
 		statistics.clear();
-		//½«ĞòÁĞÆ½ÎÈ»¯   ¼´È¥³ıÆ½¾ùÖµºÍÖÜÆÚĞÔ
-		System.out.println("Æ½ÎÈĞòÁĞ");
+		//å°†åºåˆ—å¹³ç¨³åŒ–   å³å»é™¤å¹³å‡å€¼å’Œå‘¨æœŸæ€§
+		System.out.println("å¹³ç¨³åºåˆ—");
 		for(int i=0;i<seqSize;i++){
 			seq[i]=(seq[i]-seqMean-offset[i%recordsOfDay]);
 			int snumber=(int)seq[i]*100;
@@ -287,7 +287,7 @@ public class DiscreteTSA{
 		}
 		System.out.println("");
 		
-		//Ç¿ĞòÁĞ0¾ùÖµ»°£¬¼´¾ùÖµÎªÁã
+		//å¼ºåºåˆ—0å‡å€¼è¯ï¼Œå³å‡å€¼ä¸ºé›¶
 	 	double mean=statistics.getMean();
 		for(int i=0;i<seqSize;i++){
 			seq[i]-=mean;
@@ -296,13 +296,13 @@ public class DiscreteTSA{
 	
 	
 	/**
-	 * Çó³öÃ¿¶ÎARµÄĞòÁĞ¦Õ1ºÍ¦Õ2²ÎÊı
-	 * @param index ÔÚĞòÁĞÖĞµÄÏÂ±ê
-	 * @param params¦Õ  °üº¬¦Õ1ºÍ¦Õ2²ÎÊı²¢·µ»Ø¸øµ÷ÓÃº¯Êı
+	 * æ±‚å‡ºæ¯æ®µARçš„åºåˆ—Ï†1å’ŒÏ†2å‚æ•°
+	 * @param index åœ¨åºåˆ—ä¸­çš„ä¸‹æ ‡
+	 * @param paramsÏ†  åŒ…å«Ï†1å’ŒÏ†2å‚æ•°å¹¶è¿”å›ç»™è°ƒç”¨å‡½æ•°
 	 */
-	private void getParams(int index,double[] params¦Õ){
+	private void getParams(int index,double[] paramsÏ†){
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
-		//ÕÒµ½ ¶şÎ¬¾ØÕóX*XTµÄÄæ¾ØÕó
+		//æ‰¾åˆ° äºŒç»´çŸ©é˜µX*XTçš„é€†çŸ©é˜µ
 		double a11=0.0;
 		double a12=0.0;
 		double a21=0.0;
@@ -316,7 +316,7 @@ public class DiscreteTSA{
 			a22+=(seq[j]*seq[j]);
 		}
 		
-		double matrixNorm=a11*a22-a12*a21;//¾ØÕó·¶Êı  µ±¾ØÕó·¶Êı²»ÎªÁãÊ±£¬¾ØÕó´æÔÚÄæ¾ØÕó
+		double matrixNorm=a11*a22-a12*a21;//çŸ©é˜µèŒƒæ•°  å½“çŸ©é˜µèŒƒæ•°ä¸ä¸ºé›¶æ—¶ï¼ŒçŸ©é˜µå­˜åœ¨é€†çŸ©é˜µ
 		if(matrixNorm!=0){
 			double temp;
 			temp=a11;
@@ -325,26 +325,26 @@ public class DiscreteTSA{
 			a12=-(a12/matrixNorm);
 			a21=-(a21/matrixNorm);
 			
-			//¾ØÕó XT*Y
+			//çŸ©é˜µ XT*Y
 			double b11=0.0;
 			double b21=0.0;
 			for(int j=index+2;j<index+window;j++){
 				b11+=(seq[j]*seq[j-1]);
 				b21+=(seq[j]*seq[j-2]);
 			}
-			double ¦Õ1=(a11*b11+a12*b21);
-			double ¦Õ2=(a21*b11+a22*b21);
-			params¦Õ[0]=¦Õ1;
-			params¦Õ[1]=¦Õ2;
+			double Ï†1=(a11*b11+a12*b21);
+			double Ï†2=(a21*b11+a22*b21);
+			paramsÏ†[0]=Ï†1;
+			paramsÏ†[1]=Ï†2;
 			statistics.clear();
 		}else{
 			return;
 		}
 	}
 	/**
-	 * Í¨¹ıARÄ£ĞÍ½øĞĞTSA·ÖÎö  
-	 * Ö÷Òª¹¦ÄÜ£ºÕÒ³öĞòÁĞµÄÒì³£Öµ
-	 *        Ô¤²â¸ø¶¨Çø¼äµÄÖµ
+	 * é€šè¿‡ARæ¨¡å‹è¿›è¡ŒTSAåˆ†æ  
+	 * ä¸»è¦åŠŸèƒ½ï¼šæ‰¾å‡ºåºåˆ—çš„å¼‚å¸¸å€¼
+	 *        é¢„æµ‹ç»™å®šåŒºé—´çš„å€¼
 	 */
 	public void predictByAR(){
 		outlies=new DataItems();
@@ -353,17 +353,17 @@ public class DiscreteTSA{
 			transToStationarySeq();
 		}
 		int seqSize=di.getData().size();
-		int window=20;//AR´°¿Ú=20  ÉèAR½×Îª 2;¼´Xt=¦Õ1*Xt-1+¦Õ2*Xt-2+et  etÎª°×ÔëÉù  Çó³ö¦Õ1ºÍ¦Õ2
-		//Öğ¸öÕÒµ½Ã¿Ò»¸öÒì³£Öµ
-		params¦Õ=new double[2];
+		int window=20;//ARçª—å£=20  è®¾ARé˜¶ä¸º 2;å³Xt=Ï†1*Xt-1+Ï†2*Xt-2+et  etä¸ºç™½å™ªå£°  æ±‚å‡ºÏ†1å’ŒÏ†2
+		//é€ä¸ªæ‰¾åˆ°æ¯ä¸€ä¸ªå¼‚å¸¸å€¼
+		paramsÏ†=new double[2];
 		for(int i=0;i<seqSize-window;i++){
-			getParams(i,params¦Õ);//»ñÈ¡params¦Õ²ÎÊı
-			double e=0.0;//Æ«²î  ´°¿ÚÖĞ¸÷¸öÊ±¿ÌAR¹À¼ÆÖµºÍÊµ¼ÊÖµµÃÆ«²î
+			getParams(i,paramsÏ†);//è·å–paramsÏ†å‚æ•°
+			double e=0.0;//åå·®  çª—å£ä¸­å„ä¸ªæ—¶åˆ»ARä¼°è®¡å€¼å’Œå®é™…å€¼å¾—åå·®
 			for(int j=i+2;j<i+window;j++){
-				e=seq[j]-params¦Õ[0]*seq[j-1]-params¦Õ[1]*seq[j-2];
+				e=seq[j]-paramsÏ†[0]*seq[j-1]-paramsÏ†[1]*seq[j-2];
 				statistics.addValue(e);
 			}
-			e=seq[i+window]-(params¦Õ[0]*seq[i+window-1]-params¦Õ[1]*seq[i+window-2]);
+			e=seq[i+window]-(paramsÏ†[0]*seq[i+window-1]-paramsÏ†[1]*seq[i+window-2]);
 			double mean=statistics.getMean();
 			double standardDeviation=statistics.getStandardDeviation();
 			statistics.clear();
@@ -371,10 +371,10 @@ public class DiscreteTSA{
 //				System.out.println(i+window+" is outlier ,e is "+e);
 				System.out.print(i+window+",");
 				e=mean;
-				//±£´æÒì³£µã
+				//ä¿å­˜å¼‚å¸¸ç‚¹
 				outlies.add1Data(di.getTime().get(i+window),di.getData().get(i+window)); 
-				//ĞŞ¸´Òì³£ÖµÊ¹µÃ³ÌĞò¿ÉÒÔÔ¤²âÏÂÒ»¸öÖµÊÇ·ñÒì³£
-				seq[i+window]=params¦Õ[0]*seq[i+window-1]+params¦Õ[1]*seq[i+window-2]+e;  
+				//ä¿®å¤å¼‚å¸¸å€¼ä½¿å¾—ç¨‹åºå¯ä»¥é¢„æµ‹ä¸‹ä¸€ä¸ªå€¼æ˜¯å¦å¼‚å¸¸
+				seq[i+window]=paramsÏ†[0]*seq[i+window-1]+paramsÏ†[1]*seq[i+window-2]+e;  
 			}
 		}
 		endDate=di.getLastTime();
@@ -382,16 +382,16 @@ public class DiscreteTSA{
 		calendar.setTime(endDate);
 		predictItems=new DataItems();
 		for(int k=0;k<predictPeriod;k++){
-			getParams(seqSize-window+k, params¦Õ);
+			getParams(seqSize-window+k, paramsÏ†);
 			double x1=seq[seqSize-1+k];
 			double x2=seq[seqSize-2+k];
-			seq[seqSize+k]=params¦Õ[0]*x1+params¦Õ[1]*x2;
-			//¼ÆËãÔ¤²âÖµ
+			seq[seqSize+k]=paramsÏ†[0]*x1+paramsÏ†[1]*x2;
+			//è®¡ç®—é¢„æµ‹å€¼
 			predictItems.getData().add((seq[seqSize+k]+seqMean+offset[(seqSize+k)%(offset.length)])+"");
 			calendar.add(Calendar.SECOND, task.getGranularity());
 			predictItems.getTime().add(calendar.getTime());
 		}
-		//½«×ª»»ºóµÄÆ½ÎÈĞòÁĞ»¹Ô­ÖÁ·ÇÆ½ÎÈĞòÁĞ
+		//å°†è½¬æ¢åçš„å¹³ç¨³åºåˆ—è¿˜åŸè‡³éå¹³ç¨³åºåˆ—
 		for(int k=0;k<seqSize+predictPeriod;k++){
 			seq[k]=seq[k]+seqMean+offset[(k)%(offset.length)];
 		}

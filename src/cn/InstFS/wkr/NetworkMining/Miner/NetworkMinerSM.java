@@ -49,9 +49,9 @@ public class NetworkMinerSM implements INetworkMiner {
 
 	@Override
 	public boolean start() {
-//		System.out.println("PanelShowResultsSM   timer¿ªÊ¼");
+//		System.out.println("PanelShowResultsSM   timerå¼€å§‹");
 		if (timer != null) {
-			UtilsUI.appendOutput(task.getTaskName() + " -- ÔçÒÑÆô¶¯£¡");
+			UtilsUI.appendOutput(task.getTaskName() + " -- æ—©å·²å¯åŠ¨ï¼");
 			return false;
 		}
 		timer = new Timer();
@@ -60,7 +60,7 @@ public class NetworkMinerSM implements INetworkMiner {
 		isStarted = true;
 		task.setRunning(true);
 		// TaskElement.modify1Task(task);
-		UtilsUI.appendOutput(task.getTaskName() + " -- Æô¶¯³É¹¦£¡");
+		UtilsUI.appendOutput(task.getTaskName() + " -- å¯åŠ¨æˆåŠŸï¼");
 		return true;
 	}
 
@@ -117,7 +117,7 @@ class SMTimerTask extends TimerTask {
 	private IsOver isOver;
 	
 	/**
-	 * ±¾´Î´¦ÀíÊı¾İµÄÊ±¼ä
+	 * æœ¬æ¬¡å¤„ç†æ•°æ®çš„æ—¶é—´
 	 */
 	private Date lastRunTime;	
 
@@ -147,7 +147,7 @@ class SMTimerTask extends TimerTask {
 		ParamsSM paramsSM=(ParamsSM)task.getMiningParams();
 		isRunning=true;
 		DataItems dataItems=null;
-		//µ±Miner ReusltsÖĞ´æÔÚÊı¾İÊ±£¬Ôò²»ÔÙ¶ÁÈ¡
+		//å½“Miner Reusltsä¸­å­˜åœ¨æ•°æ®æ—¶ï¼Œåˆ™ä¸å†è¯»å–
 		if(results.getInputData()==null||results.getInputData().getLength()==0){
 			dataItems=reader.readInputByText();
 			results.setInputData(dataItems);
@@ -162,7 +162,7 @@ class SMTimerTask extends TimerTask {
 		if(!task.getDiscreteMethod().equals(DiscreteMethod.None)){
 			dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(), task.getDiscreteEndNodes());
 		}
-		//·ûºÅ»¯ºóµÄĞòÁĞ
+		//ç¬¦å·åŒ–åçš„åºåˆ—
 		DataItems clusterItems=null;
 		PointSegment segment=new PointSegment(dataItems, 5);
 		List<SegPattern> segPatterns=segment.getPatterns();

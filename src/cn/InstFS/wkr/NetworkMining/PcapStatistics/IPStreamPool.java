@@ -19,11 +19,11 @@ public enum IPStreamPool {
 	private Map<String, IPStream> aliveStream=new HashMap<String, IPStream>();
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static String logFile = "./configs/temp.txt";
-	private static String DB_TABLE = "ÊÂ¼ş2";
+	private static String DB_TABLE = "äº‹ä»¶2";
 	
 	private FileWriter fw;
 	private OracleUtils oracle;
-	private static boolean writeToFile = true;	// Ğ´ÈëÎÄ¼ş(true)»òĞ´ÈëÊı¾İ¿â
+	private static boolean writeToFile = true;	// å†™å…¥æ–‡ä»¶(true)æˆ–å†™å…¥æ•°æ®åº“
 	static {
 		File f = new File(logFile);
 		if (f.exists())
@@ -31,12 +31,12 @@ public enum IPStreamPool {
 	}
 	
 	public Map<String,IPStream> getAllStreams(){
-		return aliveStream; //·µ»ØÏÖÓĞµÄstream
+		return aliveStream; //è¿”å›ç°æœ‰çš„stream
 	}
 	/**
-	 * ¸ø¶¨ipÍ¨ĞÅÊÂ¼ş£¬²éÑ¯ÊÇ·ñÓĞÒÑ¾­ÔÚÍ³¼ÆµÄÊı¾İÁ÷<br>
-	 * ÈôÓĞ£¬Ôò·µ»Ø<br>
-	 * ÈôÎŞ£¬Ôò´´½¨Êı¾İÁ÷
+	 * ç»™å®šipé€šä¿¡äº‹ä»¶ï¼ŒæŸ¥è¯¢æ˜¯å¦æœ‰å·²ç»åœ¨ç»Ÿè®¡çš„æ•°æ®æµ<br>
+	 * è‹¥æœ‰ï¼Œåˆ™è¿”å›<br>
+	 * è‹¥æ— ï¼Œåˆ™åˆ›å»ºæ•°æ®æµ
 	 * @param stream
 	 * @return
 	 */
@@ -81,22 +81,22 @@ public enum IPStreamPool {
 		}
 	}
 	/**
-	 * ¸üĞÂÊı¾İÁ÷µÄÁ÷Á¿µÈĞÅÏ¢
-	 * @×¢Òâ ÔÚ¸üĞÂÖ®Ç°£¬<br>
-	 * »áÊ×ÏÈ¼ì²éĞÂ°üµÄÊ±¼äÊÇ·ñ¾àÀëÉÏÒ»¸ö°üÌ«³¤Ê±¼ä£¨Èç2·ÖÖÓ£©£¨×¢Òâ¿´ÏÂÕâ¸ö¹¦ÄÜÓĞÃ»ÓĞ±»×¢ÊÍµô£©£¬Èç¹ûÌ«³¤£¬Ôò½áÊø¸ÃÊı¾İÁ÷£¬´´½¨ĞÂµÄÊı¾İÁ÷<br>
-	 * »¹»á¸ù¾İTCPµÄFIN±êÖ¾À´ÅĞ¶ÏÁ÷ÊÇ·ñ½áÊø
-	 * @param stream	´ı¸üĞÂµÄÊı¾İÁ÷
-	 * @param ipEvent	Ò»´ÎÍ¨Áª
+	 * æ›´æ–°æ•°æ®æµçš„æµé‡ç­‰ä¿¡æ¯
+	 * @æ³¨æ„ åœ¨æ›´æ–°ä¹‹å‰ï¼Œ<br>
+	 * ä¼šé¦–å…ˆæ£€æŸ¥æ–°åŒ…çš„æ—¶é—´æ˜¯å¦è·ç¦»ä¸Šä¸€ä¸ªåŒ…å¤ªé•¿æ—¶é—´ï¼ˆå¦‚2åˆ†é’Ÿï¼‰ï¼ˆæ³¨æ„çœ‹ä¸‹è¿™ä¸ªåŠŸèƒ½æœ‰æ²¡æœ‰è¢«æ³¨é‡Šæ‰ï¼‰ï¼Œå¦‚æœå¤ªé•¿ï¼Œåˆ™ç»“æŸè¯¥æ•°æ®æµï¼Œåˆ›å»ºæ–°çš„æ•°æ®æµ<br>
+	 * è¿˜ä¼šæ ¹æ®TCPçš„FINæ ‡å¿—æ¥åˆ¤æ–­æµæ˜¯å¦ç»“æŸ
+	 * @param stream	å¾…æ›´æ–°çš„æ•°æ®æµ
+	 * @param ipEvent	ä¸€æ¬¡é€šè”
 	 */
 	public IPStream updateTraffic(IPStream stream, IPStream ipEvent, boolean isTcpFIN){
 		if (isTcpFIN){
 			endStream(stream);
 		}
-		if (ipEvent.getTimeStart()-stream.getTimeEnd()>6*60*1000){//´óÓÚ6·ÖÖÓ
+		if (ipEvent.getTimeStart()-stream.getTimeEnd()>6*60*1000){//å¤§äº6åˆ†é’Ÿ
 			endStream(stream);
 			IPStream stream_new = createOrGetIPStream(ipEvent);
 			return stream_new;
-		}else if(ipEvent.getTimeStart()-stream.getTimeEnd()>0){//Çø·ÖipEventºÍStreamÊÇ²»ÊÇÍ¬Ò»¸östream
+		}else if(ipEvent.getTimeStart()-stream.getTimeEnd()>0){//åŒºåˆ†ipEventå’ŒStreamæ˜¯ä¸æ˜¯åŒä¸€ä¸ªstream
 			long traffic=stream.getTraffic() + ipEvent.getTraffic();
 			stream.setTraffic(traffic);
 			stream.setTimeEnd(ipEvent.getTimeStart());
@@ -134,10 +134,10 @@ public enum IPStreamPool {
 		}		
 		oracle.openConn();
 		String sql = "INSERT INTO " + oracle.DB_TABLE +
-				" (ÊÂ¼ş·¢ÉúÊ±¼ä,ÊÂ¼ş½áÊøÊ±¼ä,ËùÔÚÍøÂç²ã¼¶,·¢ËÍ½Úµã±àºÅ,½ÓÊÕ½Úµã±àºÅ,Á÷Á¿,Ğ­ÒéÀàĞÍ) values"+
+				" (äº‹ä»¶å‘ç”Ÿæ—¶é—´,äº‹ä»¶ç»“æŸæ—¶é—´,æ‰€åœ¨ç½‘ç»œå±‚çº§,å‘é€èŠ‚ç‚¹ç¼–å·,æ¥æ”¶èŠ‚ç‚¹ç¼–å·,æµé‡,åè®®ç±»å‹) values"+
 				" ('" + sdf.format(new Date(stream.getTimeStart())) +"',"+
 				"'" + sdf.format(new Date(stream.getTimeEnd()))+ "'," +
-				"'" + "200" + "'," +	// Ğ­Òé²ã
+				"'" + "200" + "'," +	// åè®®å±‚
 				"'" + stream.getSrcIP() + "'," +
 				"'" + stream.getDstIP() + "'," +
 				stream.getTraffic() + "," +

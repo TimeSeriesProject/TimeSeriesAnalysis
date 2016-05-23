@@ -115,15 +115,15 @@ public class ProtocolAssMinerFactory {
 		switch (method) {
 		case MiningMethods_FrequenceItemMining:
 			task.setMiningAlgo(MiningAlgo.MiningAlgo_LineProtocolASS);
-			name=ip+"_¶àÔªÊ±¼äĞòÁĞÍÚ¾ò"+miningObject.toString()+"_auto";
+			name=ip+"_å¤šå…ƒæ—¶é—´åºåˆ—æŒ–æ˜"+miningObject.toString()+"_auto";
 			task.setTaskName(name);
-			task.setComments("ÍÚ¾ò  ipÎª"+ip+" ĞòÁĞÉÏ"+miningObject.toString()+"µÄ¶àÔª¹ØÁª¹æÂÉ");
+			task.setComments("æŒ–æ˜  ipä¸º"+ip+" åºåˆ—ä¸Š"+miningObject.toString()+"çš„å¤šå…ƒå…³è”è§„å¾‹");
 			break;
 		case MiningMethods_SimilarityMining:
 			task.setMiningAlgo(MiningAlgo.MiningAlgo_SimilarityProtocolASS);
-			name=ip+"_Ê±¼äĞòÁĞÏàËÆ¶ÈÍÚ¾ò"+miningObject.toString()+"_auto";
+			name=ip+"_æ—¶é—´åºåˆ—ç›¸ä¼¼åº¦æŒ–æ˜"+miningObject.toString()+"_auto";
 			task.setTaskName(name);
-			task.setComments("ÍÚ¾ò  ipÎª"+ip+" ĞòÁĞÉÏ"+miningObject.toString()+"µÄÏàËÆ¶ÈÍÚ¾ò");
+			task.setComments("æŒ–æ˜  ipä¸º"+ip+" åºåˆ—ä¸Š"+miningObject.toString()+"çš„ç›¸ä¼¼åº¦æŒ–æ˜");
 			break;
 		default:
 			break;

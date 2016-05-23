@@ -33,9 +33,9 @@ import cn.InstFS.wkr.NetworkMining.UIs.MainFrame;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 /**
- * Ô¤´¦ÀíÀà£¬°üÀ¨£º
- * 1¡¢¶ÁÈ¡Êı¾İ
- * 2¡¢Ô¤´¦Àí£¨ÈçÓÃÓÚĞòÁĞÄ£Ê½ÍÚ¾òµÄ¡°ÀëÉ¢»¯¡±´¦Àí£©
+ * é¢„å¤„ç†ç±»ï¼ŒåŒ…æ‹¬ï¼š
+ * 1ã€è¯»å–æ•°æ®
+ * 2ã€é¢„å¤„ç†ï¼ˆå¦‚ç”¨äºåºåˆ—æ¨¡å¼æŒ–æ˜çš„â€œç¦»æ•£åŒ–â€å¤„ç†ï¼‰
  */
 public class DataInputUtils {
 	TaskElement task;
@@ -48,7 +48,7 @@ public class DataInputUtils {
 		if(task.getDataSource().equals("DataBase")){
 			conn = new OracleUtils();
 			if (!conn.tryConnect())
-				UtilsUI.showErrMsg("Êı¾İ¿âÎŞ·¨Á¬½Ó£¡");
+				UtilsUI.showErrMsg("æ•°æ®åº“æ— æ³•è¿æ¥ï¼");
 		}	
 	}
 
@@ -70,34 +70,34 @@ public class DataInputUtils {
 		Calendar cal = Calendar.getInstance();
 		cal.set(1, 0, 1, 0, 0, 0);
 		
-		if (task.getDateStart().equals(cal.getTime()))	// Èç¹ûÃ»ÓĞÉèÖÃÔÚÈÎÎñÀïÉèÖÃÊ±¼ä£¬Ôò²ÉÓÃÈí¼ş×ÜÌåµÄÅäÖÃ
+		if (task.getDateStart().equals(cal.getTime()))	// å¦‚æœæ²¡æœ‰è®¾ç½®åœ¨ä»»åŠ¡é‡Œè®¾ç½®æ—¶é—´ï¼Œåˆ™é‡‡ç”¨è½¯ä»¶æ€»ä½“çš„é…ç½®
 			dStart = UtilsSimulation.instance.getStartTime();
-		else	// Èç¹ûÔÚÈÎÎñÀïÉèÖÃÁËÆğÊ¼Ê±¼ä£¬Ôò°´ÈÎÎñµÄÀ´
+		else	// å¦‚æœåœ¨ä»»åŠ¡é‡Œè®¾ç½®äº†èµ·å§‹æ—¶é—´ï¼Œåˆ™æŒ‰ä»»åŠ¡çš„æ¥
 			dStart = task.getDateStart();
 		
 		return readInputBetween(dStart, date);
 	}
 	public DataItems readInputBetween(Date date1, Date date2){
-		String filter = "ÊÂ¼ş·¢ÉúÊ±¼ä>'" + sdf.format(date1) + "' and " +
-			"ÊÂ¼ş·¢ÉúÊ±¼ä<='" + sdf.format(date2) + "'";
+		String filter = "äº‹ä»¶å‘ç”Ÿæ—¶é—´>'" + sdf.format(date1) + "' and " +
+			"äº‹ä»¶å‘ç”Ÿæ—¶é—´<='" + sdf.format(date2) + "'";
 		return readInput(filter, true, true);
 	}
 	public DataItems readInput(){
 		return readInput(true,true);
 	}
 	/**
-	 * °´ÕÕÈÎÎñÅäÖÃ¶ÁÈ¡Êı¾İ£¬²¢°´ÕÕÈÎÎñÅäÖÃÀïµÄÊ±¼äÁ£¶È£¬¶ÔÊı¾İ½øĞĞ¾ÛºÏ
-	 * @param doAggregate	ÊÇ·ñ¾ÛºÏ
-	 * @param doDiscretize	ÊÇ·ñÀëÉ¢»¯
+	 * æŒ‰ç…§ä»»åŠ¡é…ç½®è¯»å–æ•°æ®ï¼Œå¹¶æŒ‰ç…§ä»»åŠ¡é…ç½®é‡Œçš„æ—¶é—´ç²’åº¦ï¼Œå¯¹æ•°æ®è¿›è¡Œèšåˆ
+	 * @param doAggregate	æ˜¯å¦èšåˆ
+	 * @param doDiscretize	æ˜¯å¦ç¦»æ•£åŒ–
 	 * @return
 	 */
 	public DataItems readInput(boolean doAggregate, boolean doDiscretize){
-		if (UtilsSimulation.instance.isUseSimulatedData())//Ê¹ÓÃ 
+		if (UtilsSimulation.instance.isUseSimulatedData())//ä½¿ç”¨ 
 		{
 			TextUtils txt = new TextUtils();
 			txt.setTextPath(task.getSourcePath());
 			DataItems dataItems = txt.readInput();
-			boolean isNonDouble = !dataItems.isAllDataIsDouble();//ÀëÉ¢µÄ»ò·ÇdoubleĞÍµÄ
+			boolean isNonDouble = !dataItems.isAllDataIsDouble();//ç¦»æ•£çš„æˆ–édoubleå‹çš„
 			if (doAggregate)
 			    dataItems=DataPretreatment.aggregateData(dataItems, task.getGranularity(),
 			    		task.getAggregateMethod(), isNonDouble);
@@ -144,22 +144,22 @@ public class DataInputUtils {
 		return null;		
 	}
 	/**
-	 * 1.°´ÕÕ¹ıÂËÌõ¼ş¶ÁÈ¡Êı¾İ<br>
-	 * 2.°´ÕÕÈÎÎñÅäÖÃÀïÉè¶¨µÄÀëÉ¢»¯·½·¨£¬½øĞĞÀëÉ¢»¯<br>
-	 * 3.°´ÕÕÈÎÎñÅäÖÃÀïµÄÊ±¼äÁ£¶È£¬¶ÔÊı¾İ½øĞĞ¾ÛºÏ
-	 * @param filterCondition	¹ıÂËÌõ¼ş
-	 * @param doAggregate		ÊÇ·ñ°´Ê±¼ä¶ÔÊı¾İ½øĞĞ¾ÛºÏ
-	 * @param doDiscretize		ÊÇ·ñ¿¼ÂÇÀëÉ¢»¯
+	 * 1.æŒ‰ç…§è¿‡æ»¤æ¡ä»¶è¯»å–æ•°æ®<br>
+	 * 2.æŒ‰ç…§ä»»åŠ¡é…ç½®é‡Œè®¾å®šçš„ç¦»æ•£åŒ–æ–¹æ³•ï¼Œè¿›è¡Œç¦»æ•£åŒ–<br>
+	 * 3.æŒ‰ç…§ä»»åŠ¡é…ç½®é‡Œçš„æ—¶é—´ç²’åº¦ï¼Œå¯¹æ•°æ®è¿›è¡Œèšåˆ
+	 * @param filterCondition	è¿‡æ»¤æ¡ä»¶
+	 * @param doAggregate		æ˜¯å¦æŒ‰æ—¶é—´å¯¹æ•°æ®è¿›è¡Œèšåˆ
+	 * @param doDiscretize		æ˜¯å¦è€ƒè™‘ç¦»æ•£åŒ–
 	 * @return
 	 */
 	private DataItems readInput(String filterCondition, boolean doAggregate, boolean doDiscretize){
-		String sqlStr = "SELECT ÊÂ¼ş·¢ÉúÊ±¼ä," + task.getMiningObject() + " "
+		String sqlStr = "SELECT äº‹ä»¶å‘ç”Ÿæ—¶é—´," + task.getMiningObject() + " "
 		+ "FROM " + conn.DB_TABLE + " WHERE ";
 		if(task.getFilterCondition().length() > 0)
 			sqlStr += task.getFilterCondition() + " AND ";
 		if (filterCondition != null && filterCondition.length() > 0)
 			sqlStr += filterCondition + " AND ";
-		sqlStr += "1=1 ORDER BY ÊÂ¼ş·¢ÉúÊ±¼ä asc";	// °´Ê±¼äÏÈºóË³Ğò¶ÁÈ¡Êı¾İ
+		sqlStr += "1=1 ORDER BY äº‹ä»¶å‘ç”Ÿæ—¶é—´ asc";	// æŒ‰æ—¶é—´å…ˆåé¡ºåºè¯»å–æ•°æ®
 		conn.closeConn();
 		ResultSet rs = conn.sqlQuery(sqlStr);
 		if (rs == null){
@@ -190,19 +190,19 @@ public class DataInputUtils {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println("¹²" + numRecords + "Ìõ¼ÇÂ¼£¡");
-		System.out.println("¶ÁÈ¡Íê±Ï:" + data.getLength() + "Ìõ¼ÇÂ¼£¡");  
+		System.out.println("å…±" + numRecords + "æ¡è®°å½•ï¼");
+		System.out.println("è¯»å–å®Œæ¯•:" + data.getLength() + "æ¡è®°å½•ï¼");  
 		
 		boolean isNonDouble = !data.isAllDataIsDouble();
-		// ÏÈ½øĞĞÊ±¼äÁ£¶ÈÉÏµÄ¾ÛºÏ
+		// å…ˆè¿›è¡Œæ—¶é—´ç²’åº¦ä¸Šçš„èšåˆ
 		if (doAggregate)
 			data =DataPretreatment.aggregateData(data, task.getGranularity(),
 					task.getAggregateMethod(), isNonDouble);
-		// ÔÙ½øĞĞÀëÉ¢»¯£¨Ö»ÓĞÊıÖµĞÍ²ÅÄÜ¹»ÀëÉ¢»¯£¬·ñÔòÓ¦¸Ã»á±¨´í£¡£©
+		// å†è¿›è¡Œç¦»æ•£åŒ–ï¼ˆåªæœ‰æ•°å€¼å‹æ‰èƒ½å¤Ÿç¦»æ•£åŒ–ï¼Œå¦åˆ™åº”è¯¥ä¼šæŠ¥é”™ï¼ï¼‰
 		if (doDiscretize)
 			data = DataPretreatment.toDiscreteNumbers(data, task.getDiscreteMethod(),
 					task.getDiscreteDimension(), task.getDiscreteEndNodes());
-		data.setGranularity(task.getGranularity());	// ÉèÖÃÊı¾İµÄÒ»Ğ©²ÎÊı£¬ÈçÁ£¶È
+		data.setGranularity(task.getGranularity());	// è®¾ç½®æ•°æ®çš„ä¸€äº›å‚æ•°ï¼Œå¦‚ç²’åº¦
 		String endNodes=data.discreteNodes();
 		task.setDiscreteEndNodes(endNodes);
 		return data;
@@ -243,12 +243,12 @@ public class DataInputUtils {
 		return di;
 	}
 	/**
-	 * ¶ÔDataItemsÊı¾İ½øĞĞÅÅĞò
-	 * @param input ÒªÅÅĞòµÄDataItems
-	 * @return ÅÅĞòºóµÄDataItems
+	 * å¯¹DataItemsæ•°æ®è¿›è¡Œæ’åº
+	 * @param input è¦æ’åºçš„DataItems
+	 * @return æ’åºåçš„DataItems
 	 */
 	
-	//¶ÔÆµ·±Ïî¼¯½øĞĞÅÅĞò
+	//å¯¹é¢‘ç¹é¡¹é›†è¿›è¡Œæ’åº
 	public static String sortFP(String FP, int DataSetsSize){
 		String FPs[]=FP.split("\n");
 		Item it[] = new Item[FPs.length];
@@ -266,7 +266,7 @@ public class DataInputUtils {
 		return FP;		
 	}
 	
-	//»ñÈ¡¸ø¶¨ÃëÊıÖ®ºóµÄÊ±¼ä
+	//è·å–ç»™å®šç§’æ•°ä¹‹åçš„æ—¶é—´
 	public static Date getDateAfter(Date curTime, int miniSecondsAfter){
 		Calendar cal = Calendar.getInstance();
 		try{
@@ -278,7 +278,7 @@ public class DataInputUtils {
 		return cal.getTime();
 	}
 	
-	//°´ÕÕÊ±¼ä£¬sizeWindowºÍstepWindow½«Êı¾İ·Ö³ÉÏî¼¯£¬ÔÙµ÷ÓÃItemset2FileĞ´ÈëÎÄ¼ş
+	//æŒ‰ç…§æ—¶é—´ï¼ŒsizeWindowå’ŒstepWindowå°†æ•°æ®åˆ†æˆé¡¹é›†ï¼Œå†è°ƒç”¨Itemset2Fileå†™å…¥æ–‡ä»¶
 	public static String[] movingdivide(DataItems datainput, TaskElement task , boolean FP ) throws IOException{
 		int sizeWindow = (int)((ParamsSM)task.getMiningParams()).getSizeWindow() * 1000;//seconds
 		int stepWindow = (int)((ParamsSM)task.getMiningParams()).getStepWindow() * 1000;//seconds
@@ -340,7 +340,7 @@ public class DataInputUtils {
 		return DataSets.toArray(new String[0]);
 	}
 
-	public static DataItems string2DataItems(String str) {// ½«Êä³ö½á¹ûµÄ×Ö·û´®×ª³ÉDataItemsµÄĞÎÊ½
+	public static DataItems string2DataItems(String str) {// å°†è¾“å‡ºç»“æœçš„å­—ç¬¦ä¸²è½¬æˆDataItemsçš„å½¢å¼
 
 		DataItems ans = new DataItems();
 		if (str == null || str.length() == 0)

@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class PanelDisplayTask extends JPanel implements ITaskDisplayer{
-	//ÅäÖÃÈÎÎñ±í
+	//é…ç½®ä»»åŠ¡è¡¨
 	PropertySheetPanel sheet;
 	TaskElement task;
 	PropertyUI_TaskElement taskUI;
@@ -83,7 +83,7 @@ public class PanelDisplayTask extends JPanel implements ITaskDisplayer{
 	    add(panel);
 	    panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 	    
-//	    JButton btnNew = new JButton("ĞÂ½¨");
+//	    JButton btnNew = new JButton("æ–°å»º");
 //	    btnNew.addActionListener(new ActionListener() {
 //			@Override
 //			public void actionPerformed(ActionEvent e) {
@@ -100,7 +100,7 @@ public class PanelDisplayTask extends JPanel implements ITaskDisplayer{
 //		});
 //	    panel.add(btnNew);
 	    
-	    JButton btnSave = new JButton("±£´æ");
+	    JButton btnSave = new JButton("ä¿å­˜");
 	    btnSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -109,7 +109,7 @@ public class PanelDisplayTask extends JPanel implements ITaskDisplayer{
 		});
 	    panel.add(btnSave);
 //
-//	    JButton btnNewCopy = new JButton("¸´ÖÆ");
+//	    JButton btnNewCopy = new JButton("å¤åˆ¶");
 //	    btnNewCopy.addActionListener(new ActionListener() {
 //			@Override
 //			public void actionPerformed(ActionEvent e) {
@@ -160,11 +160,11 @@ public class PanelDisplayTask extends JPanel implements ITaskDisplayer{
 			TaskElement.del1Task(task);
 		}
 		
-		// ĞÂ½¨ÈÎÎñ
+		// æ–°å»ºä»»åŠ¡
 		task = taskUI.getCore();
 		task.setSqlStr(txtArea.getText());
 		if (TaskElement.add1Task(task, true)){
-			JOptionPane.showMessageDialog(this, "±£´æ³É¹¦£¡");			
+			JOptionPane.showMessageDialog(this, "ä¿å­˜æˆåŠŸï¼");			
 			taskUI.setCore(new TaskElement(task));
 			if (isRunning)
 				NetworkMinerFactory.getInstance().startMiner(task);

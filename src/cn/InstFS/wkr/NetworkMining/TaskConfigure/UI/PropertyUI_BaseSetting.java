@@ -34,11 +34,11 @@ public class PropertyUI_BaseSetting implements IObjectDescriptor<TaskElement> {
             "aggregateMethod", "granularity",
             "filterCondition", "miningMethod", "miningParams",
             "dateStart", "dateEnd","dataSource","sourcePath","sqlStr"};
-    String []CnNames = new String[]{"ÈÎÎñÃû×Ö", "ËµÃ÷", "ÍÚ¾ò¶ÔÏó",
-            "ÀëÉ¢»¯·½·¨", "ÀëÉ¢»¯²ÉÓÃµÄ¶Ëµã","ÀëÉ¢ºóµÄÎ¬Êı","ÍÚ¾òËã·¨","ÈÎÎñ·¶Î§","Ñ¡Ôñ½ÚµãÖµ",
-            "Êı¾İ¾ÛºÏ·½·¨","Ê±¼äÁ£¶È(s)",
-            "¹ıÂËÌõ¼ş", "ÍÚ¾ò·½·¨", "ÍÚ¾ò²ÎÊı",
-            "ÆğÊ¼Ê±¼ä","½áÊøÊ±¼ä","Êı¾İÀ´Ô´","ÎÄ±¾Â·¾¶","Êı¾İ¿â"};
+    String []CnNames = new String[]{"ä»»åŠ¡åå­—", "è¯´æ˜", "æŒ–æ˜å¯¹è±¡",
+            "ç¦»æ•£åŒ–æ–¹æ³•", "ç¦»æ•£åŒ–é‡‡ç”¨çš„ç«¯ç‚¹","ç¦»æ•£åçš„ç»´æ•°","æŒ–æ˜ç®—æ³•","ä»»åŠ¡èŒƒå›´","é€‰æ‹©èŠ‚ç‚¹å€¼",
+            "æ•°æ®èšåˆæ–¹æ³•","æ—¶é—´ç²’åº¦(s)",
+            "è¿‡æ»¤æ¡ä»¶", "æŒ–æ˜æ–¹æ³•", "æŒ–æ˜å‚æ•°",
+            "èµ·å§‹æ—¶é—´","ç»“æŸæ—¶é—´","æ•°æ®æ¥æº","æ–‡æœ¬è·¯å¾„","æ•°æ®åº“"};
 
 
     public PropertyUI_BaseSetting() {
@@ -57,7 +57,7 @@ public class PropertyUI_BaseSetting implements IObjectDescriptor<TaskElement> {
     }
     @Override
     public String getDisplayName() {
-        return "ÈÎÎñÅäÖÃ";
+        return "ä»»åŠ¡é…ç½®";
     }
 
     private String getDisplayNameOfStr(String str){
@@ -74,31 +74,31 @@ public class PropertyUI_BaseSetting implements IObjectDescriptor<TaskElement> {
         props.add(getPropDesc("comments", 0));
         props.add(getPropDesc("miningObject", 0));
 
-//		props.add(getPropDesc("discreteMethod", 0, "Èç¹ûĞèÒªÊ×ÏÈ¶ÔÊı¾İ½øĞĞÀëÉ¢»¯£¬ÇëÑ¡Ôñ´ËÏî<br>" +
-//				"1.ÎŞĞèÀëÉ¢»¯<br>2.Ê¹µÃ¸÷Çø¼äÊıÖµ·¶Î§ÏàÍ¬<br>3.Ê¹µÃ¸÷Çø¼äÊı¾İµãÊıÏàÍ¬<br>4.×Ô¶¨Òå¶Ëµã"));
+//		props.add(getPropDesc("discreteMethod", 0, "å¦‚æœéœ€è¦é¦–å…ˆå¯¹æ•°æ®è¿›è¡Œç¦»æ•£åŒ–ï¼Œè¯·é€‰æ‹©æ­¤é¡¹<br>" +
+//				"1.æ— éœ€ç¦»æ•£åŒ–<br>2.ä½¿å¾—å„åŒºé—´æ•°å€¼èŒƒå›´ç›¸åŒ<br>3.ä½¿å¾—å„åŒºé—´æ•°æ®ç‚¹æ•°ç›¸åŒ<br>4.è‡ªå®šä¹‰ç«¯ç‚¹"));
 //		switch (core.getDiscreteMethod()) {
-//		case ¸÷Çø¼äÊıÖµ·¶Î§ÏàÍ¬:
-//		case ¸÷Çø¼äÊı¾İµãÊıÏàÍ¬:
+//		case å„åŒºé—´æ•°å€¼èŒƒå›´ç›¸åŒ:
+//		case å„åŒºé—´æ•°æ®ç‚¹æ•°ç›¸åŒ:
 //		props.add(getPropDesc("discreteDimension", 0));
-//		case ×Ô¶¨Òå¶Ëµã:
+//		case è‡ªå®šä¹‰ç«¯ç‚¹:
 //		props.add(getPropDesc("discreteEndNodes", 0));
-//					"ÈôÀëÉ¢»¯·½·¨Îª'×Ô¶¨Òå·½·¨'£¬Ôò´ËÏîÉèÖÃÉúĞ§£¬·ñÔò¸ÃÉèÖÃÎŞĞ§£¡"));
+//					"è‹¥ç¦»æ•£åŒ–æ–¹æ³•ä¸º'è‡ªå®šä¹‰æ–¹æ³•'ï¼Œåˆ™æ­¤é¡¹è®¾ç½®ç”Ÿæ•ˆï¼Œå¦åˆ™è¯¥è®¾ç½®æ— æ•ˆï¼"));
 //		default:
 //		}
 //		props.add(getPropDesc("miningAlgo",0));
 //		props.add(getPropDesc("taskRange",0));
 //		props.add(getPropDesc("range",0));
-        props.add(getPropDesc("granularity", 0, "³£ÓÃµÄÁ£¶ÈÈçÏÂ£º<br>" +
-                "·Ö£º60<br>" +
-                "    Ê±£º3600<br>" +
-                "    Ìì£º86400<br>"+
-                "    ÖÜ£º604800<br>"));
+        props.add(getPropDesc("granularity", 0, "å¸¸ç”¨çš„ç²’åº¦å¦‚ä¸‹ï¼š<br>" +
+                "åˆ†ï¼š60<br>" +
+                "    æ—¶ï¼š3600<br>" +
+                "    å¤©ï¼š86400<br>"+
+                "    å‘¨ï¼š604800<br>"));
 ////		props.add(getPropDesc("aggregateMethod", 0,
-//				"¶ÔÀëÉ¢Öµ»ò×Ö·û´®Öµ£º´ËÏîÉèÖÃÎŞĞ§¡£Ö±½Ó½«¶à¸öÖµ´®ÆğÀ´£¬¿Õ¸ñ¸ô¿ª<br>" +
-//				"¶ÔÁ¬ĞøÖµ£º¿ÉÎªÇóºÍ¡¢Æ½¾ù¡¢×î´óÖµ¡¢×îĞ¡Öµ¡£"));
+//				"å¯¹ç¦»æ•£å€¼æˆ–å­—ç¬¦ä¸²å€¼ï¼šæ­¤é¡¹è®¾ç½®æ— æ•ˆã€‚ç›´æ¥å°†å¤šä¸ªå€¼ä¸²èµ·æ¥ï¼Œç©ºæ ¼éš”å¼€<br>" +
+//				"å¯¹è¿ç»­å€¼ï¼šå¯ä¸ºæ±‚å’Œã€å¹³å‡ã€æœ€å¤§å€¼ã€æœ€å°å€¼ã€‚"));
 //
 //		props.add(getPropDesc("filterCondition", 0,
-//				"¼´SQLÓï¾äÖĞµÄWHERE ×Ó¾ä£¬Èç¡°Á÷Á¿ > 10¡±"));
+//				"å³SQLè¯­å¥ä¸­çš„WHERE å­å¥ï¼Œå¦‚â€œæµé‡ > 10â€"));
         props.add(getPropDesc("miningMethod", 0));
 //		props.add(getPropDesc("miningParams", 0));
         props.add(getPropDesc("dateStart", 0));

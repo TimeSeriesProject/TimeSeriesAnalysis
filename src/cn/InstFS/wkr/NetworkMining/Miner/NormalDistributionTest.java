@@ -6,7 +6,7 @@ import org.apache.commons.math3.stat.inference.TestUtils;
 
 /**
  * Created by qt on 2015/1/8.
- * ¼ì²éÒ»×éÊı¾İÊÇ·ñÊÇ´ÓÕı³£·Ö²¼
+ * æ£€æŸ¥ä¸€ç»„æ•°æ®æ˜¯å¦æ˜¯ä»æ­£å¸¸åˆ†å¸ƒ
  */
 public class NormalDistributionTest {
     private double[] arr;
@@ -37,7 +37,7 @@ public class NormalDistributionTest {
         return !TestUtils.kolmogorovSmirnovTest(distribution, arr,CONFIDENCE);
     }
     
-    //¼ì²éÒÔÊı¾İÊÇ·ñ·ş´Ó¸Ã·Ö²¼
+    //æ£€æŸ¥ä»¥æ•°æ®æ˜¯å¦æœä»è¯¥åˆ†å¸ƒ
     public boolean isDawnToThisDistri(double i){
         if (stdeviation == 0) return i == mean;
         double limit = (i - mean) / stdeviation;

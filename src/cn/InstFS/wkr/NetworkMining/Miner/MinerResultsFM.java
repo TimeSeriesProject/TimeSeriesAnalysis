@@ -6,7 +6,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
 
 public class MinerResultsFM{
-	ParamsTSA params;	// »òÕß java.util.Properties params;
+	ParamsTSA params;	// æˆ–è€… java.util.Properties params;
 	
 	private DataItems predictItems;
 	private boolean islinkDegree=false;

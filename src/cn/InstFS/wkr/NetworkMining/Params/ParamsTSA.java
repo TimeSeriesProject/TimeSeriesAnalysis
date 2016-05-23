@@ -7,15 +7,15 @@ import java.lang.reflect.Field;
 import java.util.Date;
 
 public class ParamsTSA extends IParamsNetworkMining {
-	//¸ßË¹»¬¶¯´°¿ÚÄ£ĞÍËã·¨²ÎÊı
-	private int initWindowSize = 10;//³õÊ¼´°¿Ú´óĞ¡
-    private int maxWindowSize = 30;//×î´ó´°¿Ú´óĞ¡
-    private int expWindowSize = 3;//À©Õ¹´°¿Ú´óĞ¡
-    private double windowVarK=3.0;//Òì³£±ê×¼²î±¶ÊıãĞÖµ
+	//é«˜æ–¯æ»‘åŠ¨çª—å£æ¨¡å‹ç®—æ³•å‚æ•°
+	private int initWindowSize = 10;//åˆå§‹çª—å£å¤§å°
+    private int maxWindowSize = 30;//æœ€å¤§çª—å£å¤§å°
+    private int expWindowSize = 3;//æ‰©å±•çª—å£å¤§å°
+    private double windowVarK=3.0;//å¼‚å¸¸æ ‡å‡†å·®å€æ•°é˜ˆå€¼
     
-    //¸µÀïÒ¶±ä»»Ëã·¨²ÎÊı
-    private double fftVarK = 1.5;//Òì³£±ê×¼²î±¶ÊıãĞÖµ
-    private double amplitudeRatio = 0.9;//Õñ·ù½ÓÊÕ±ÈÀı
+    //å‚…é‡Œå¶å˜æ¢ç®—æ³•å‚æ•°
+    private double fftVarK = 1.5;//å¼‚å¸¸æ ‡å‡†å·®å€æ•°é˜ˆå€¼
+    private double amplitudeRatio = 0.9;//æŒ¯å¹…æ¥æ”¶æ¯”ä¾‹
     
 
 	private Double periodThreshold;

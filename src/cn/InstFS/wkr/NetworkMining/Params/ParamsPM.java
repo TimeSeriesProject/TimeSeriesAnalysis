@@ -9,7 +9,7 @@ import java.util.Date;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 
 public class ParamsPM extends IParamsNetworkMining {
-	private Double periodThreshold;  //PM²ÎÊı£¬È·¶¨ÖÜÆÚµÄÆ½¾ùìØãĞÖµ
+	private Double periodThreshold;  //PMå‚æ•°ï¼Œç¡®å®šå‘¨æœŸçš„å¹³å‡ç†µé˜ˆå€¼
 	public ParamsPM() {
 		periodThreshold = 0.2;
 	}

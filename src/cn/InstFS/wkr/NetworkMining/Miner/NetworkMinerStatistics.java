@@ -22,7 +22,7 @@ import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
 
 /**
- * Ê±¼äĞòÁĞÍ³¼Æ
+ * æ—¶é—´åºåˆ—ç»Ÿè®¡
  * @author wsc
  *
  */
@@ -44,13 +44,13 @@ public class NetworkMinerStatistics implements INetworkMiner {
 	}
 	@Override
 	public boolean start() {
-		System.out.println("PanelShowResultsTSA   timer¿ªÊ¼");
+		System.out.println("PanelShowResultsTSA   timerå¼€å§‹");
 		if (timer != null){
-			UtilsUI.appendOutput(task.getTaskName() + " -- ÔçÒÑÆô¶¯£¡");
+			UtilsUI.appendOutput(task.getTaskName() + " -- æ—©å·²å¯åŠ¨ï¼");
 			return false;
 		}
 		if (timerTask != null && timerTask.isRunning() == true){
-			UtilsUI.appendOutput(task.getTaskName() + " -- ÉÏ´ÎÍÚ¾òÉĞÎ´½áÊø£¡");
+			UtilsUI.appendOutput(task.getTaskName() + " -- ä¸Šæ¬¡æŒ–æ˜å°šæœªç»“æŸï¼");
 			return false;
 		}
 		timer = new Timer();
@@ -59,7 +59,7 @@ public class NetworkMinerStatistics implements INetworkMiner {
 		isRunning = true;
 		task.setRunning(isRunning);
 //		TaskElement.modify1Task(task);		
-		UtilsUI.appendOutput(task.getTaskName() + " -- ¿ªÊ¼ÍÚ¾ò£¡");
+		UtilsUI.appendOutput(task.getTaskName() + " -- å¼€å§‹æŒ–æ˜ï¼");
 		return true;
 	}
 
@@ -76,7 +76,7 @@ public class NetworkMinerStatistics implements INetworkMiner {
 		
 		isRunning = false;
 		task.setRunning(isRunning);
-		UtilsUI.appendOutput(task.getTaskName() + " -- Í£Ö¹ÍÚ¾ò£¡");
+		UtilsUI.appendOutput(task.getTaskName() + " -- åœæ­¢æŒ–æ˜ï¼");
 		return true;
 	}
 
@@ -157,7 +157,7 @@ class StatisticsTimerTask extends TimerTask  {
 		isRunning = true;
 		//ParamsTSA params = (ParamsTSA) task.getMiningParams();
 		
-		// ¶ÁÈ¡Êı¾İ µ±Miner ReusltsÖĞ´æÔÚÊı¾İÊ±£¬Ôò²»ÔÙ¶ÁÈ¡
+		// è¯»å–æ•°æ® å½“Miner Reusltsä¸­å­˜åœ¨æ•°æ®æ—¶ï¼Œåˆ™ä¸å†è¯»å–
 		DataItems dataItems = null;
 		if(results.getInputData()==null||results.getInputData().getLength()==0){
 			dataItems=reader.readInputByText();

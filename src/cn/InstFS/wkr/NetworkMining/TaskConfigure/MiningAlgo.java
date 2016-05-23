@@ -3,19 +3,19 @@ package cn.InstFS.wkr.NetworkMining.TaskConfigure;
 import javax.lang.model.element.Element;
 
 public enum MiningAlgo {
-	MiningAlgo_averageEntropyPM("Æ½¾ùìØÖÜÆÚ¼ì²âËã·¨"),
-	MiningAlgo_ERPDistencePM("ERP¾àÀëÖÜÆÚ¼ì²âËã·¨"),
-	MiningAlgo_ARTSA("ARÄ£ĞÍĞòÁĞ·ÖÎö"),
-	MiningAlgo_ERPDistTSA("ERPÄ£ĞÍĞòÁĞ·ÖÎö"),
-	MiningAlgo_FastFourier("FFTÒì³£¼ì²â"),
-	MiningAlgo_GaussDetection("¸ßË¹»¬¶¯´°¿ÚÒì³£¼ì²â"),
-	MiningAlgo_TEOTSA("TEOÏß¶ÎÒì³£¼ì²â"),
-	MiningAlgo_NeuralNetworkTSA("Éñ¾­ÍøÂçÔ¤²â"),
-	MiningAlgo_ARIMATSA("ARIMAÄ£ĞÍÔ¤²â"),
-	MiningAlgo_LineProtocolASS("Ïß¶Î»¯¶àÔªĞòÁĞ¹ØÁª"),
-	MiningAlgo_SimilarityProtocolASS("DTWÏàËÆ¶È¶àÔªĞòÁĞ¹ØÁª"),
-	MiningAlgo_RtreeProtocolASS("RtreeÏàËÆ¶È¶àÔªĞòÁĞ¹ØÁª"),
-	MiningAlgo_NULL("ÎŞ");
+	MiningAlgo_averageEntropyPM("å¹³å‡ç†µå‘¨æœŸæ£€æµ‹ç®—æ³•"),
+	MiningAlgo_ERPDistencePM("ERPè·ç¦»å‘¨æœŸæ£€æµ‹ç®—æ³•"),
+	MiningAlgo_ARTSA("ARæ¨¡å‹åºåˆ—åˆ†æ"),
+	MiningAlgo_ERPDistTSA("ERPæ¨¡å‹åºåˆ—åˆ†æ"),
+	MiningAlgo_FastFourier("FFTå¼‚å¸¸æ£€æµ‹"),
+	MiningAlgo_GaussDetection("é«˜æ–¯æ»‘åŠ¨çª—å£å¼‚å¸¸æ£€æµ‹"),
+	MiningAlgo_TEOTSA("TEOçº¿æ®µå¼‚å¸¸æ£€æµ‹"),
+	MiningAlgo_NeuralNetworkTSA("ç¥ç»ç½‘ç»œé¢„æµ‹"),
+	MiningAlgo_ARIMATSA("ARIMAæ¨¡å‹é¢„æµ‹"),
+	MiningAlgo_LineProtocolASS("çº¿æ®µåŒ–å¤šå…ƒåºåˆ—å…³è”"),
+	MiningAlgo_SimilarityProtocolASS("DTWç›¸ä¼¼åº¦å¤šå…ƒåºåˆ—å…³è”"),
+	MiningAlgo_RtreeProtocolASS("Rtreeç›¸ä¼¼åº¦å¤šå…ƒåºåˆ—å…³è”"),
+	MiningAlgo_NULL("æ— ");
 	
 	private String value;
 	MiningAlgo(String value) {

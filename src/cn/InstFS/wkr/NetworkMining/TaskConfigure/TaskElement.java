@@ -51,11 +51,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	private Date dateStart;
 	private Date dateEnd;
 	private String comments;
-	private String dataSource;//Ô´ÎÄ¼þÀàÐÍ  Êý¾Ý¿â »ò ÎÄ±¾ÎÄ¼þ
-	private String sourcePath; //µ±ÎªÎÄ±¾ÎÄ¼þÊ± ÎÄ¼þÂ·¾¶
+	private String dataSource;//æºæ–‡ä»¶ç±»åž‹  æ•°æ®åº“ æˆ– æ–‡æœ¬æ–‡ä»¶
+	private String sourcePath; //å½“ä¸ºæ–‡æœ¬æ–‡ä»¶æ—¶ æ–‡ä»¶è·¯å¾„
 	private String pathSource;
 	private String protocol;
-	private int patternNum;   //¼ì²âÐòÁÐÆµ·±Ä£Ê½Ê±£¬È·¶¨ÐòÁÐµÄÆµ·±Ïî
+	private int patternNum;   //æ£€æµ‹åºåˆ—é¢‘ç¹æ¨¡å¼æ—¶ï¼Œç¡®å®šåºåˆ—çš„é¢‘ç¹é¡¹
 	
 	public String getSourcePath() {
 		return sourcePath;
@@ -66,13 +66,13 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	}
 	private String miningObject;
 	
-	//ÀëÉ¢»¯·½·¨
+	//ç¦»æ•£åŒ–æ–¹æ³•
 	private DiscreteMethod discreteMethod;
-	//ÀëÉ¢»¯Î¬¶È
+	//ç¦»æ•£åŒ–ç»´åº¦
 	private int discreteDimension;
 	private String discreteEndNodes;
 	
-	//Ê±¼äÁ£¶È¾ÛºÏ·½·¨
+	//æ—¶é—´ç²’åº¦èšåˆæ–¹æ³•
 	private AggregateMethod aggregateMethod;
 	private String filterCondition;
 	
@@ -93,16 +93,16 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	
 	public static TaskElement example1 = new TaskElement();
 	static {
-		example1.setTaskName("´óÁ÷Á¿Í¨ÐÅÊÕ·¢·½");
-		example1.setComments("½«Á÷Á¿½Ï´óµÄÊÕ·¢·½×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾òÆäÐòÁÐÄ£Ê½");
+		example1.setTaskName("å¤§æµé‡é€šä¿¡æ”¶å‘æ–¹");
+		example1.setComments("å°†æµé‡è¾ƒå¤§çš„æ”¶å‘æ–¹ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜å…¶åºåˆ—æ¨¡å¼");
 		example1.setMiningObject("traffic");
 		example1.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		example1.setFilterCondition("Á÷Á¿>100");
+		example1.setFilterCondition("æµé‡>100");
 		example1.setGranularity(3600);
 		example1.setMiningMethod(MiningMethod.MiningMethods_PeriodicityMining);
 		example1.setDataSource("File");
 		example1.setSourcePath("./configs/smtpPcap");
-		example1.setDiscreteMethod(DiscreteMethod.×Ô¶¨Òå¶Ëµã);
+		example1.setDiscreteMethod(DiscreteMethod.è‡ªå®šä¹‰ç«¯ç‚¹);
 		example1.setDiscreteEndNodes("1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000,12000,13000,14000,15000,16000,17000,18000,19000,20000,21000,"
 				+ "22000,23000,24000,25000,26000,27000,28000,29000,30000,31000,32000,33000");
 		example1.setTaskRange(TaskRange.NodePairRange);
@@ -119,11 +119,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	}
 	public static TaskElement TSAExample=new TaskElement();
 	static{
-		TSAExample.setTaskName("´óÁ÷Á¿TSA²âÊÔ");
-		TSAExample.setComments("½«Á÷Á¿½Ï´óµÄÊÕ·¢·½×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾òTSAÄ£Ê½");
+		TSAExample.setTaskName("å¤§æµé‡TSAæµ‹è¯•");
+		TSAExample.setComments("å°†æµé‡è¾ƒå¤§çš„æ”¶å‘æ–¹ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜TSAæ¨¡å¼");
 		TSAExample.setMiningObject("traffic");
 		TSAExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		TSAExample.setFilterCondition("Á÷Á¿>100");
+		TSAExample.setFilterCondition("æµé‡>100");
 		TSAExample.setGranularity(3600);
 		TSAExample.setMiningMethod(MiningMethod.MiningMethods_OutliesMining);
 		TSAExample.setMiningAlgo(MiningAlgo.MiningAlgo_ARTSA);
@@ -138,11 +138,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	
 	public static TaskElement FPExample=new TaskElement();
 	static{
-		FPExample.setTaskName("´óÁ÷Á¿TSA²âÊÔ");
-		FPExample.setComments("½«Á÷Á¿½Ï´óµÄÊÕ·¢·½×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾òTSAÄ£Ê½");
+		FPExample.setTaskName("å¤§æµé‡TSAæµ‹è¯•");
+		FPExample.setComments("å°†æµé‡è¾ƒå¤§çš„æ”¶å‘æ–¹ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜TSAæ¨¡å¼");
 		FPExample.setMiningObject("traffic");
 		FPExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		FPExample.setFilterCondition("Á÷Á¿>100");
+		FPExample.setFilterCondition("æµé‡>100");
 		FPExample.setGranularity(3600);
 		FPExample.setMiningMethod(MiningMethod.MiningMethods_FrequenceItemMining);
 		FPExample.setDataSource("File");
@@ -156,11 +156,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	
 	public static TaskElement TSAExample1=new TaskElement();
 	static{
-		TSAExample1.setTaskName("´óÁ÷Á¿TSA²âÊÔ");
-		TSAExample1.setComments("½«Á÷Á¿½Ï´óµÄÊÕ·¢·½×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾òTSAÄ£Ê½");
+		TSAExample1.setTaskName("å¤§æµé‡TSAæµ‹è¯•");
+		TSAExample1.setComments("å°†æµé‡è¾ƒå¤§çš„æ”¶å‘æ–¹ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜TSAæ¨¡å¼");
 		TSAExample1.setMiningObject("traffic");
 		TSAExample1.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		TSAExample1.setFilterCondition("Á÷Á¿>100");
+		TSAExample1.setFilterCondition("æµé‡>100");
 		TSAExample1.setGranularity(3600);
 		TSAExample1.setMiningMethod(MiningMethod.MiningMethods_OutliesMining);
 		TSAExample1.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
@@ -175,11 +175,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	
 	public static TaskElement TSAExampleGauss=new TaskElement();
 	static{
-		TSAExampleGauss.setTaskName("´óÁ÷Á¿TSA²âÊÔ");
-		TSAExampleGauss.setComments("½«Á÷Á¿½Ï´óµÄÊÕ·¢·½×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾òTSAÄ£Ê½");
+		TSAExampleGauss.setTaskName("å¤§æµé‡TSAæµ‹è¯•");
+		TSAExampleGauss.setComments("å°†æµé‡è¾ƒå¤§çš„æ”¶å‘æ–¹ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜TSAæ¨¡å¼");
 		TSAExampleGauss.setMiningObject("traffic");
 		TSAExampleGauss.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		TSAExampleGauss.setFilterCondition("Á÷Á¿>100");
+		TSAExampleGauss.setFilterCondition("æµé‡>100");
 		TSAExampleGauss.setGranularity(3600);
 		TSAExampleGauss.setMiningMethod(MiningMethod.MiningMethods_OutliesMining);
 		TSAExampleGauss.setMiningAlgo(MiningAlgo.MiningAlgo_GaussDetection);
@@ -193,11 +193,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	
 	public static TaskElement TSAExampleFourier=new TaskElement();
 	static{
-		TSAExampleFourier.setTaskName("´óÁ÷Á¿TSA²âÊÔ");
-		TSAExampleFourier.setComments("½«Á÷Á¿½Ï´óµÄÊÕ·¢·½×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾òTSAÄ£Ê½");
+		TSAExampleFourier.setTaskName("å¤§æµé‡TSAæµ‹è¯•");
+		TSAExampleFourier.setComments("å°†æµé‡è¾ƒå¤§çš„æ”¶å‘æ–¹ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜TSAæ¨¡å¼");
 		TSAExampleFourier.setMiningObject("traffic");
 		TSAExampleFourier.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		TSAExampleFourier.setFilterCondition("Á÷Á¿>100");
+		TSAExampleFourier.setFilterCondition("æµé‡>100");
 		TSAExampleFourier.setGranularity(3600);
 		TSAExampleFourier.setMiningMethod(MiningMethod.MiningMethods_OutliesMining);
 		TSAExampleFourier.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
@@ -212,11 +212,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	
 	public static TaskElement TSAExampleARIMA=new TaskElement();
 	static{
-		TSAExampleARIMA.setTaskName("´óÁ÷Á¿TSA²âÊÔ");
-		TSAExampleARIMA.setComments("½«Á÷Á¿½Ï´óµÄÊÕ·¢·½×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾òTSAÄ£Ê½");
+		TSAExampleARIMA.setTaskName("å¤§æµé‡TSAæµ‹è¯•");
+		TSAExampleARIMA.setComments("å°†æµé‡è¾ƒå¤§çš„æ”¶å‘æ–¹ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜TSAæ¨¡å¼");
 		TSAExampleARIMA.setMiningObject("traffic");
 		TSAExampleARIMA.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		TSAExampleARIMA.setFilterCondition("Á÷Á¿>100");
+		TSAExampleARIMA.setFilterCondition("æµé‡>100");
 		TSAExampleARIMA.setGranularity(3600);
 		TSAExampleARIMA.setMiningMethod(MiningMethod.MiningMethods_PredictionMining);
 		TSAExampleARIMA.setMiningAlgo(MiningAlgo.MiningAlgo_ARIMATSA);
@@ -231,11 +231,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	
 	public static TaskElement TSANeutralExample=new TaskElement();
 	static{
-		TSANeutralExample.setTaskName("´óÁ÷Á¿TSA²âÊÔ");
-		TSANeutralExample.setComments("½«Á÷Á¿½Ï´óµÄÊÕ·¢·½×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾òTSAÄ£Ê½");
+		TSANeutralExample.setTaskName("å¤§æµé‡TSAæµ‹è¯•");
+		TSANeutralExample.setComments("å°†æµé‡è¾ƒå¤§çš„æ”¶å‘æ–¹ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜TSAæ¨¡å¼");
 		TSANeutralExample.setMiningObject("traffic");
 		TSANeutralExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		TSANeutralExample.setFilterCondition("Á÷Á¿>100");
+		TSANeutralExample.setFilterCondition("æµé‡>100");
 		TSANeutralExample.setGranularity(3600);
 		TSANeutralExample.setMiningMethod(MiningMethod.MiningMethods_PredictionMining);
 		TSANeutralExample.setMiningAlgo(MiningAlgo.MiningAlgo_NeuralNetworkTSA);
@@ -247,11 +247,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	}
 	public static TaskElement TSAAssociationExample=new TaskElement();
 	static{
-		TSAAssociationExample.setTaskName("¶àÔªÊ±¼äÐòÁÐ¹ØÁª¹æÔò²âÊÔ");
-		TSAAssociationExample.setComments("½«Á÷Á¿½Ï´óµÄÊÕ·¢·½×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾ò¹ØÁª¹æÔòÄ£Ê½");
+		TSAAssociationExample.setTaskName("å¤šå…ƒæ—¶é—´åºåˆ—å…³è”è§„åˆ™æµ‹è¯•");
+		TSAAssociationExample.setComments("å°†æµé‡è¾ƒå¤§çš„æ”¶å‘æ–¹ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜å…³è”è§„åˆ™æ¨¡å¼");
 		TSAAssociationExample.setMiningObject("traffic");
 		TSAAssociationExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		TSAAssociationExample.setFilterCondition("Á÷Á¿>100");
+		TSAAssociationExample.setFilterCondition("æµé‡>100");
 		TSAAssociationExample.setGranularity(3600);
 		TSAAssociationExample.setMiningMethod(MiningMethod.MiningMethods_FrequenceItemMining);
 		//TSAAssociationExample.setMiningAlgo(MiningAlgo.MiningAlgo_NeuralNetworkTSA);
@@ -263,8 +263,8 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	}
 	public static TaskElement example2 = new TaskElement();
 	static {
-		example2.setTaskName("´óÁ÷Á¿Í¨ÐÅÊÕ·¢·½");
-		example2.setComments("½«Á÷Á¿½Ï´óµÄÊÕ·¢·½×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾òÆäÐòÁÐÄ£Ê½");
+		example2.setTaskName("å¤§æµé‡é€šä¿¡æ”¶å‘æ–¹");
+		example2.setComments("å°†æµé‡è¾ƒå¤§çš„æ”¶å‘æ–¹ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜å…¶åºåˆ—æ¨¡å¼");
 		example2.setMiningObject("traffic");
 		example2.setDataSource("Text");
 		example2.setSourcePath("./configs/smtpPcap");
@@ -278,11 +278,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	
 	public static TaskElement TSAExamplePM=new TaskElement();
 	static{
-		TSAExamplePM.setTaskName("´óÁ÷Á¿TSA²âÊÔ");
-		TSAExamplePM.setComments("½«Á÷Á¿½Ï´óµÄÊÕ·¢·½×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾òTSAÄ£Ê½");
+		TSAExamplePM.setTaskName("å¤§æµé‡TSAæµ‹è¯•");
+		TSAExamplePM.setComments("å°†æµé‡è¾ƒå¤§çš„æ”¶å‘æ–¹ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜TSAæ¨¡å¼");
 		TSAExamplePM.setMiningObject("traffic");
 		TSAExamplePM.setAggregateMethod(AggregateMethod.Aggregate_MEAN);
-		TSAExamplePM.setFilterCondition("Á÷Á¿>100");
+		TSAExamplePM.setFilterCondition("æµé‡>100");
 		TSAExamplePM.setGranularity(3600);
 		TSAExamplePM.setMiningMethod(MiningMethod.MiningMethods_PeriodicityMining);
 		TSAExamplePM.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
@@ -296,11 +296,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	
 	public static TaskElement SMExample=new TaskElement();
 	static{
-		SMExample.setTaskName("´óÁ÷Á¿TSA²âÊÔ");
-		SMExample.setComments("½«Á÷Á¿½Ï´óµÄÊÕ·¢·½×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾òTSAÄ£Ê½");
+		SMExample.setTaskName("å¤§æµé‡TSAæµ‹è¯•");
+		SMExample.setComments("å°†æµé‡è¾ƒå¤§çš„æ”¶å‘æ–¹ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜TSAæ¨¡å¼");
 		SMExample.setMiningObject("traffic");
 		SMExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		SMExample.setFilterCondition("Á÷Á¿>100");
+		SMExample.setFilterCondition("æµé‡>100");
 		SMExample.setGranularity(3600);
 		SMExample.setMiningMethod(MiningMethod.MiningMethods_SequenceMining);
 		SMExample.setDiscreteMethod(DiscreteMethod.None);
@@ -314,11 +314,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	
 	public static TaskElement PathPMExample=new TaskElement();
 	static{
-		PathPMExample.setTaskName("ÍøÂçÂ·¾¶ÖÜÆÚ");
-		PathPMExample.setComments("½«ÍøÂçÂ·¾¶×÷ÎªÍÚ¾ò¶ÔÏó, ÍÚ¾òPMÄ£Ê½");
+		PathPMExample.setTaskName("ç½‘ç»œè·¯å¾„å‘¨æœŸ");
+		PathPMExample.setComments("å°†ç½‘ç»œè·¯å¾„ä½œä¸ºæŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜PMæ¨¡å¼");
 		PathPMExample.setMiningObject("pathProb");
 		PathPMExample.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		PathPMExample.setFilterCondition("Á÷Á¿>100");
+		PathPMExample.setFilterCondition("æµé‡>100");
 		PathPMExample.setGranularity(3600);
 		PathPMExample.setMiningMethod(MiningMethod.MiningMethods_PathProbilityMining);
 		PathPMExample.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
@@ -333,11 +333,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	
 	public static TaskElement PathProbTrans=new TaskElement();
 	static{
-		PathProbTrans.setTaskName("Â·ÓÉÆ÷Ìø×ª¸ÅÂÊÔ¤²â");
-		PathProbTrans.setComments("½«ÍøÂçÂ·¾¶Ìø×ª¸ÅÂÊ×÷ÎªÍÚ¾ò¶ÔÏó");
+		PathProbTrans.setTaskName("è·¯ç”±å™¨è·³è½¬æ¦‚çŽ‡é¢„æµ‹");
+		PathProbTrans.setComments("å°†ç½‘ç»œè·¯å¾„è·³è½¬æ¦‚çŽ‡ä½œä¸ºæŒ–æŽ˜å¯¹è±¡");
 		PathProbTrans.setMiningObject("path");
 		PathProbTrans.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		PathProbTrans.setFilterCondition("Á÷Á¿>100");
+		PathProbTrans.setFilterCondition("æµé‡>100");
 		PathProbTrans.setGranularity(3600);
 		PathProbTrans.setMiningMethod(MiningMethod.MiningMethods_PathProbilityMining);
 		PathProbTrans.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
@@ -353,11 +353,11 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	
 	public static TaskElement ClusterPMExample=new TaskElement();
 	static{
-		ClusterPMExample.setTaskName("ÍøÂç´ØÏµÊý²âÊÔ");
-		ClusterPMExample.setComments("½«ÍøÂç´ØÏµÊýÍÚ¾ò¶ÔÏó, ÍÚ¾òPMÄ£Ê½");
-		ClusterPMExample.setMiningObject("½Úµã±ä»¯");
+		ClusterPMExample.setTaskName("ç½‘ç»œç°‡ç³»æ•°æµ‹è¯•");
+		ClusterPMExample.setComments("å°†ç½‘ç»œç°‡ç³»æ•°æŒ–æŽ˜å¯¹è±¡, æŒ–æŽ˜PMæ¨¡å¼");
+		ClusterPMExample.setMiningObject("èŠ‚ç‚¹å˜åŒ–");
 		ClusterPMExample.setAggregateMethod(AggregateMethod.Aggregate_MAX);
-		ClusterPMExample.setDiscreteMethod(DiscreteMethod.×Ô¶¨Òå¶Ëµã);
+		ClusterPMExample.setDiscreteMethod(DiscreteMethod.è‡ªå®šä¹‰ç«¯ç‚¹);
 		ClusterPMExample.setGranularity(3600);
 		ClusterPMExample.setMiningMethod(MiningMethod.MiningMethods_PeriodicityMining);
 		ClusterPMExample.setMiningAlgo(MiningAlgo.MiningAlgo_averageEntropyPM);
@@ -372,10 +372,10 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		setFilterCondition("");
 		setMiningObject("");
 		setComments("");
-		// ÀëÉ¢»¯
+		// ç¦»æ•£åŒ–
 		setDiscreteMethod(DiscreteMethod.None);
 		setDiscreteEndNodes("0,0,0,0");
-		// °´Ê±¼ä¾ÛºÏÊý¾Ý
+		// æŒ‰æ—¶é—´èšåˆæ•°æ®
 		setGranularity(1);
 		setAggregateMethod(AggregateMethod.Aggregate_NONE);
 		setMiningAlgo(MiningAlgo.MiningAlgo_NULL);
@@ -493,10 +493,10 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		task.setMiningParams(IParamsNetworkMining.newInstance(this.getMiningParams()));
 	}
 	
-	//Éú³ÉTaskµÄ²éÑ¯Óï¾ä£¬ÒÔ´ÓÊý¾Ý¿âÖÐ¶ÁÈ¡DataItems
+	//ç”ŸæˆTaskçš„æŸ¥è¯¢è¯­å¥ï¼Œä»¥ä»Žæ•°æ®åº“ä¸­è¯»å–DataItems
 	public String generateSqlStr(){
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT ÊÂ¼þ·¢ÉúÊ±¼ä,")
+		sb.append("SELECT äº‹ä»¶å‘ç”Ÿæ—¶é—´,")
 			.append(getMiningObject())
 			.append(" FROM ")
 			.append(OracleUtils.DB_TABLE)
@@ -505,7 +505,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 			sb.append(getFilterCondition());
 		String pattern = sdf.toPattern().replace("mm", "mi").replace("HH", "HH24");
 		
-		sb.append(" AND to_date(substr(ÊÂ¼þ·¢ÉúÊ±¼ä,0,14),'").append(pattern)
+		sb.append(" AND to_date(substr(äº‹ä»¶å‘ç”Ÿæ—¶é—´,0,14),'").append(pattern)
 		.append("') between ")
 		.append("to_date('")
 		.append(sdf.format(getDateStart()))
@@ -614,7 +614,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		return true;
 	}	
 	
-	//´ÓxmlÎÄ¼þÖÐ¼ÓÔØ³öÒ»¸öTask
+	//ä»Žxmlæ–‡ä»¶ä¸­åŠ è½½å‡ºä¸€ä¸ªTask
 	public static TaskElement LoadTask(File f){
 		FileInputStream fis = null;
 		InputStreamReader isr = null;
@@ -696,7 +696,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		FileOutputStream fos = null;
 		OutputStreamWriter osw = null;
 		if (ee.getTaskName() == null || ee.getTaskName().length() == 0){
-			JOptionPane.showMessageDialog(null, "Ã»ÓÐÊÂ¼þÃû³Æ£¡", "±£´æÊ§°Ü£¡", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "æ²¡æœ‰äº‹ä»¶åç§°ï¼", "ä¿å­˜å¤±è´¥ï¼", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
 		

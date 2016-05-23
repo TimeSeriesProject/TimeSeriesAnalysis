@@ -21,28 +21,28 @@ import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 
 public class DiscretePM {
 	
-	private final int dimension;//ÀëÉ¢µÄÎ¬¶È
+	private final int dimension;//ç¦»æ•£çš„ç»´åº¦
 	private TaskElement task;
-	private Boolean hasPeriod; //ÊÇ·ñÓĞÖÜÆÚ
-	private int predictPeriod;   //ÖÜÆÚ³¤¶È
+	private Boolean hasPeriod; //æ˜¯å¦æœ‰å‘¨æœŸ
+	private int predictPeriod;   //å‘¨æœŸé•¿åº¦
 	private List<Integer> existPeriod;
-	private int lastNumIndexInPeriod;//×îºóÒ»¸öÊıÔÚÖÜÆÚÖĞµÄÎ»ÖÃ
-	private DataItems di; //µ±Ç°Ê±¼äÇø¼äµÄÊı¾İ¼¯
-	private DataItems distributePeriod;  //Ò»¸öÖÜÆÚÄÚµÄitems£¬timesµÄÆğÊ¼Ê±¼äÊÇitemµÄµÚÒ»¸öÖµµÄÊ±¼ä valuesÊÇÒ»¸öÖÜÆÚÄÚµÄÖµ
-	private Date startTime;    //ĞòÁĞÖĞµÄÆğÊ¼Ê±¼ä
-	private double threshold;  //ÊÇ·ñ¾ßÓĞÖÜÆÚµÄãĞÖµ
+	private int lastNumIndexInPeriod;//æœ€åä¸€ä¸ªæ•°åœ¨å‘¨æœŸä¸­çš„ä½ç½®
+	private DataItems di; //å½“å‰æ—¶é—´åŒºé—´çš„æ•°æ®é›†
+	private DataItems distributePeriod;  //ä¸€ä¸ªå‘¨æœŸå†…çš„itemsï¼Œtimesçš„èµ·å§‹æ—¶é—´æ˜¯itemçš„ç¬¬ä¸€ä¸ªå€¼çš„æ—¶é—´ valuesæ˜¯ä¸€ä¸ªå‘¨æœŸå†…çš„å€¼
+	private Date startTime;    //åºåˆ—ä¸­çš„èµ·å§‹æ—¶é—´
+	private double threshold;  //æ˜¯å¦å…·æœ‰å‘¨æœŸçš„é˜ˆå€¼
 	
 	private Double minEntropy = Double.MAX_VALUE;  
-    private Double []entropies;   //´æ´¢Ã¿¸ö¿ÉÄÜÖÜÆÚµÄÆ½¾ùìØ»òÆ½¾ùERP¾àÀë
-    private int[] predictValues;  //µ±´æÔÚÖÜÆÚÊ±£¬Ò»¸öÖÜÆÚÖĞµÄÖµ
+    private Double []entropies;   //å­˜å‚¨æ¯ä¸ªå¯èƒ½å‘¨æœŸçš„å¹³å‡ç†µæˆ–å¹³å‡ERPè·ç¦»
+    private int[] predictValues;  //å½“å­˜åœ¨å‘¨æœŸæ—¶ï¼Œä¸€ä¸ªå‘¨æœŸä¸­çš„å€¼
     private HashMap<Integer, Integer[]> predictValuesMap;
 
 	private int[][] distMatrix;
 	
 	
 	/**
-	 * ×îĞ¡ìØËã·¨ÇóµÃµÄÖÜÆÚ
-	 * @return µÚÒ»¸ö·ûºÏÒªÇóµÄÖÜÆÚ
+	 * æœ€å°ç†µç®—æ³•æ±‚å¾—çš„å‘¨æœŸ
+	 * @return ç¬¬ä¸€ä¸ªç¬¦åˆè¦æ±‚çš„å‘¨æœŸ
 	 */
 	public int getFirstPossiblePeriod(){
 		if (existPeriod == null || existPeriod.size() == 0){
@@ -77,8 +77,8 @@ public class DiscretePM {
 	
 	/**
 	 * @param task
-	 * @param dimension ÀëÉ¢»¯µÄÎ¬Êı ¼´ÓĞ¶àÉÙ¸öÀëÉ¢Öµ
-	 * @param values ÀëÉ¢Öµ Èç¶şÎ¬ÀëÉ¢»¯{0,1} 
+	 * @param dimension ç¦»æ•£åŒ–çš„ç»´æ•° å³æœ‰å¤šå°‘ä¸ªç¦»æ•£å€¼
+	 * @param values ç¦»æ•£å€¼ å¦‚äºŒç»´ç¦»æ•£åŒ–{0,1} 
 	 */
 	
 	public DiscretePM(TaskElement task,int dimension){
@@ -141,9 +141,9 @@ public class DiscretePM {
 	
 	
 	/**
-	 * »ñÈ¡valueÖµÔÚdimensionÖĞµÄÎ¬¶ÈĞòºÅ
+	 * è·å–valueå€¼åœ¨dimensionä¸­çš„ç»´åº¦åºå·
 	 * @param value
-	 * @return ĞòºÅ
+	 * @return åºå·
 	 * @throws NotFoundDicreseValueException
 	 */
 	private int getValueIndex(String value) throws NotFoundDicreseValueException {
@@ -157,13 +157,13 @@ public class DiscretePM {
 		throw new NotFoundDicreseValueException(value+" not exist");	
 	}
 	/**
-	 * ¸ù¾İµÚÒ»¸öµãµÄÆğÊ¼Ê±¼ästartTime£¬»ñÈ¡dËù´ú±íµÄÊ±¼äÔÚÒ»¸öÖÜÆÚÄÚµÄĞòºÅ£¨´Ó1¿ªÊ¼£©
-	 * @param d			Ê±¼äÖµ
-	 * @param period	ÖÜÆÚÖµ
-	 * @return ÖÜÆÚÄÚĞòºÅ
+	 * æ ¹æ®ç¬¬ä¸€ä¸ªç‚¹çš„èµ·å§‹æ—¶é—´startTimeï¼Œè·å–dæ‰€ä»£è¡¨çš„æ—¶é—´åœ¨ä¸€ä¸ªå‘¨æœŸå†…çš„åºå·ï¼ˆä»1å¼€å§‹ï¼‰
+	 * @param d			æ—¶é—´å€¼
+	 * @param period	å‘¨æœŸå€¼
+	 * @return å‘¨æœŸå†…åºå·
 	 */
 	private int getTimeIndex(Date d, int period){
-		double diffTime = (double)(d.getTime() - startTime.getTime()) / 1000.0;	// ¾àÀëÆğÊ¼µãµÄÃëÊı
+		double diffTime = (double)(d.getTime() - startTime.getTime()) / 1000.0;	// è·ç¦»èµ·å§‹ç‚¹çš„ç§’æ•°
 		int granularity = task.getGranularity();
 		return (int)(diffTime / granularity) % period + 1;
 	}
@@ -189,7 +189,7 @@ public class DiscretePM {
 		seqY.remove(0);
 		entropies=new Double[maxPeriod];
 		while((period+1)<= maxPeriod){
-			period++;	//ÖÜÆÚµİ¼Ó
+			period++;	//å‘¨æœŸé€’åŠ 
 			seqX.remove(seqX.size()-1);
 			seqY.remove(0);
 			ErpDistMatrix=new int[numItems-period][numItems-period];
@@ -202,8 +202,8 @@ public class DiscretePM {
 	}
 	
 	/**
-	 * ÉèÖÃĞòÁĞÖĞ¸÷ÔªËØ¼äµÄERP¾àÀë ¶Ô½ÇÏßÉÏµÄERP¾àÀëÉèÎªÎŞÇî´ó
-	 * @param items ĞòÁĞ
+	 * è®¾ç½®åºåˆ—ä¸­å„å…ƒç´ é—´çš„ERPè·ç¦» å¯¹è§’çº¿ä¸Šçš„ERPè·ç¦»è®¾ä¸ºæ— ç©·å¤§
+	 * @param items åºåˆ—
 	 */
 	private void setDistMatrix(List<String> items) {
 		int length=items.size();
@@ -220,11 +220,11 @@ public class DiscretePM {
 	}
 	
 	/**
-	 * ·µ»ØÁ½ÌõĞòÁĞµÄERP¾àÀë
-	 * @param seqX µÚÒ»ÌõĞòÁĞ
-	 * @param seqY µÚ¶şÌõĞòÁĞ
-	 * @param offset µÚ¶şÌõĞòÁĞÊÇÆ½ÒÆoffset¸öµ¥Î»µÃµ½µÄ
-	 * @return ERP¾àÀë
+	 * è¿”å›ä¸¤æ¡åºåˆ—çš„ERPè·ç¦»
+	 * @param seqX ç¬¬ä¸€æ¡åºåˆ—
+	 * @param seqY ç¬¬äºŒæ¡åºåˆ—
+	 * @param offset ç¬¬äºŒæ¡åºåˆ—æ˜¯å¹³ç§»offsetä¸ªå•ä½å¾—åˆ°çš„
+	 * @return ERPè·ç¦»
 	 */
 	private int ERPDistance(List<String> seqX,List<String>seqY,int xSize,int ySize,int [][]matrix,int offset){
 		if(xSize<0&&ySize<0){
@@ -260,11 +260,11 @@ public class DiscretePM {
 	
 	
 	/**
-	 * Ô¤²âÖÜÆÚºÍ¸ÃÖÜÆÚÄÚ¸÷Á£¶ÈÖĞÀëÉ¢ÖµµÄ¸ÅÂÊ·Ö²¼
+	 * é¢„æµ‹å‘¨æœŸå’Œè¯¥å‘¨æœŸå†…å„ç²’åº¦ä¸­ç¦»æ•£å€¼çš„æ¦‚ç‡åˆ†å¸ƒ
 	 */
 	public void predictPeriod(){
 		if(!di.isDiscretized()){
-			throw new RuntimeException("Æ½¾ùìØËã·¨ÒªÇóÊı¾İÀëÉ¢»¯");
+			throw new RuntimeException("å¹³å‡ç†µç®—æ³•è¦æ±‚æ•°æ®ç¦»æ•£åŒ–");
 		}
 		int numItems=di.getLength();
 		if (numItems == 0)
@@ -277,11 +277,11 @@ public class DiscretePM {
 		int maxPeriod = Math.min(numItems/2, 100);
 		entropies = new Double[maxPeriod];
 		while((period+1)< maxPeriod){
-			period++;	//ÖÜÆÚµİ¼Ó
+			period++;	//å‘¨æœŸé€’åŠ 
 			double entropy=0.0;
 			double[][] data=new double[period+1][dimension];
 			predictValues=new int[period+1];
-			//³õÊ¼»¯ÎªÁã
+			//åˆå§‹åŒ–ä¸ºé›¶
 			for(int i=1;i<=period;i++){
 				for(int j=0;j<dimension;j++){
 					data[i][j]=0.0;
@@ -310,9 +310,9 @@ public class DiscretePM {
 					}
 				}
 			}
-			System.out.println("ÖÜÆÚ:"+period+" Æ½¾ùìØ:"+(entropy/period)+" ìØ£º"+entropy);
+			System.out.println("å‘¨æœŸ:"+period+" å¹³å‡ç†µ:"+(entropy/period)+" ç†µï¼š"+entropy);
 			entropies[period - 1] = (entropy/period);
-			if((entropy/period)<threshold){//ÇóÆ½¾ùìØ×îĞ¡µÄÖÜÆÚ
+			if((entropy/period)<threshold){//æ±‚å¹³å‡ç†µæœ€å°çš„å‘¨æœŸ
 				existPeriod.add(period);
 				Integer[] predictValues=new Integer[period];
 				double maxPoss=0;
@@ -332,9 +332,9 @@ public class DiscretePM {
 	}
 	
 	/**
-	 * È·¶¨ÖÜÆÚÊÇ·ñ´æÔÚ£¬Èç¹û´æÔÚ¼ÆËãÖÜÆÚÄÚµÄ·Ö²¼
-	 * È·¶¨×îĞ¡ìØ
-	 * @param maxPeriod ³¢ÊÔµÄÖÜÆÚ¸öÊı
+	 * ç¡®å®šå‘¨æœŸæ˜¯å¦å­˜åœ¨ï¼Œå¦‚æœå­˜åœ¨è®¡ç®—å‘¨æœŸå†…çš„åˆ†å¸ƒ
+	 * ç¡®å®šæœ€å°ç†µ
+	 * @param maxPeriod å°è¯•çš„å‘¨æœŸä¸ªæ•°
 	 */
 	private void isPeriodExist(int maxPeriod){
 		int minPeriod=0;

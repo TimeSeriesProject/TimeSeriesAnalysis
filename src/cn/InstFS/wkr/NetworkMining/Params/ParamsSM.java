@@ -6,10 +6,10 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 
 public class ParamsSM extends IParamsNetworkMining{
 	
-	private double minSupport;	// ×îĞ¡Ö§³Ö¶È
-	private int sizeWindow;	// Ê±¼ä´°³¤	£¨µ¥Î»ÎªÃë£©
-	private int stepWindow;	// ²½³¤
-	private int minSeqLen;	// ×î¶ÌĞòÁĞÄ£Ê½³¤¶È
+	private double minSupport;	// æœ€å°æ”¯æŒåº¦
+	private int sizeWindow;	// æ—¶é—´çª—é•¿	ï¼ˆå•ä½ä¸ºç§’ï¼‰
+	private int stepWindow;	// æ­¥é•¿
+	private int minSeqLen;	// æœ€çŸ­åºåˆ—æ¨¡å¼é•¿åº¦
 	
 	public ParamsSM() {
 		minSupport = 5;

@@ -14,7 +14,7 @@ public interface ITaskElementEventListener extends EventListener {
 	static int TASK_STOP = 6;
 	
 	
-	static int TASK_MODIFY_RestartMining = 1;	// ÐÞ¸ÄÁËMiningMethod
+	static int TASK_MODIFY_RestartMining = 1;	// ä¿®æ”¹äº†MiningMethod
 	static int TASK_MODIFY_ELSE = 2;	
 	
 

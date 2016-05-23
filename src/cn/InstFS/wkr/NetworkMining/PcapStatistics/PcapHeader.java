@@ -1,12 +1,12 @@
 package cn.InstFS.wkr.NetworkMining.PcapStatistics;
 
 public class PcapHeader {
-	private int magic;//ÎÄ¼şÊ¶±ğÍ·,Îª0xA1B2C3D4
-	 private short magor_version;//Ö÷Òª°æ±¾
-	 private short minor_version;//´ÎÒª°æ±¾
-	 private int timezone;//µ±µØ±ê×¼Ê±¼ä
-	 private int sigflags;//Ê±¼ä´ÁµÄ¾«¶È
-	 private int snaplen;//×î´óµÄ´æ´¢³¤¶È
+	private int magic;//æ–‡ä»¶è¯†åˆ«å¤´,ä¸º0xA1B2C3D4
+	 private short magor_version;//ä¸»è¦ç‰ˆæœ¬
+	 private short minor_version;//æ¬¡è¦ç‰ˆæœ¬
+	 private int timezone;//å½“åœ°æ ‡å‡†æ—¶é—´
+	 private int sigflags;//æ—¶é—´æˆ³çš„ç²¾åº¦
+	 private int snaplen;//æœ€å¤§çš„å­˜å‚¨é•¿åº¦
 	 /**
 	     * 0            BSD loopback devices, except for later OpenBSD
 	       1            Ethernet, and Linux loopback devices
@@ -16,16 +16,16 @@ public class PcapHeader {
 	       9            PPP
 	       10           FDDI
 	       100         LLC/SNAP-encapsulated ATM
-	       101         ¡°raw IP¡±, with no link
+	       101         â€œraw IPâ€, with no link
 	       102         BSD/OS SLIP
 	       103         BSD/OS PPP
 	       104         Cisco HDLC
 	       105         802.11
 	       108         later OpenBSD loopback devices (with the AF_value in network byte order)
-	       113         special Linux ¡°cooked¡± capture
+	       113         special Linux â€œcookedâ€ capture
 	       114         LocalTalk
 	     */   
-	 private int linktype;//Á´Â·ÀàĞÍ
+	 private int linktype;//é“¾è·¯ç±»å‹
 	 public int getMagic() {
 	  return magic;
 	 }

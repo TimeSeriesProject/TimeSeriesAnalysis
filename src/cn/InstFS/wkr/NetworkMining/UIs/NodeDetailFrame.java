@@ -54,7 +54,7 @@ public class NodeDetailFrame extends JFrame{
 					
 					JFrame.setDefaultLookAndFeelDecorated(true); 
 					SingleNodeOrNodePairMinerFactory periodMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-//					periodMinerFactory.setMiningObject("Í¨ĞÅ´ÎÊı");
+//					periodMinerFactory.setMiningObject("é€šä¿¡æ¬¡æ•°");
 					periodMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
 					periodMinerFactory.setMethod(MiningMethod.MiningMethods_PeriodicityMining);
 					periodMinerFactory.detect();
@@ -111,7 +111,7 @@ public class NodeDetailFrame extends JFrame{
 		}
 	}
 private void initialize() {
-//		this.setTitle("½áµãÊôĞÔ±ä»¯¹æÂÉ");
+//		this.setTitle("ç»“ç‚¹å±æ€§å˜åŒ–è§„å¾‹");
 		setBounds(100, 100, 1500, 900);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 

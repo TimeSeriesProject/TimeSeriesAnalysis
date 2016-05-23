@@ -71,7 +71,7 @@ public class NodePairListFrame extends JFrame {
     JTabbedPane tabbedPane;
     protected int miniMethodIndex=0;
     protected int miningObjectIndex=0;
-    Map<Integer,MouseListener> popupListeners= new   HashMap<Integer,MouseListener>(); //µ¯³ö²Ëµ¥¼àÌıÆ÷
+    Map<Integer,MouseListener> popupListeners= new   HashMap<Integer,MouseListener>(); //å¼¹å‡ºèœå•ç›‘å¬å™¨
 	int ipIndex=0;
 	int protocolIndex=0;
 	JTable listTable = new JTable();
@@ -82,7 +82,7 @@ public class NodePairListFrame extends JFrame {
 	HashMap<TaskCombination, MinerNodeResults> resultMap;
 	HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>> resultMaps;
 	ArrayList<Map.Entry<TaskCombination, MinerNodeResults> >resultList;
-	String sortMethod ="°´ÖÜÆÚÖÃĞÅ¶È";
+	String sortMethod ="æŒ‰å‘¨æœŸç½®ä¿¡åº¦";
 	/**
 	 * Launch the application.
 	 */
@@ -128,26 +128,26 @@ public class NodePairListFrame extends JFrame {
 	}
 	private void sort()
 	{
-		System.out.println("ÅÅĞò"+sortMethod);
+		System.out.println("æ’åº"+sortMethod);
 		switch(sortMethod)
 		{
-		case "°´ip":
+		case "æŒ‰ip":
 			sortByIP();
 			break;
-		case "°´Ğ­Òé":
+		case "æŒ‰åè®®":
 			sortByProtocol();
 			break;
-		case "°´ÖÜÆÚÖÃĞÅ¶È":
+		case "æŒ‰å‘¨æœŸç½®ä¿¡åº¦":
 			sortByPeriodicity();
-			System.out.println("ÅÅĞò"+sortMethod);
+			System.out.println("æ’åº"+sortMethod);
 			break;
-		case "°´Òì³£¶È":
+		case "æŒ‰å¼‚å¸¸åº¦":
 			sortByOutlies();
-			System.out.println("ÅÅĞò"+sortMethod);
+			System.out.println("æ’åº"+sortMethod);
 			break;
-//		case "°´Æµ·±¹æÂÉ":
+//		case "æŒ‰é¢‘ç¹è§„å¾‹":
 //			sortBySequence();
-//			System.out.println("ÅÅĞò"+sortMethod);
+//			System.out.println("æ’åº"+sortMethod);
 //			break;
 		}
 	}
@@ -222,7 +222,7 @@ public class NodePairListFrame extends JFrame {
 	}
 	private void update()
 	{
-		System.out.println("¸üĞÂ");
+		System.out.println("æ›´æ–°");
 		if(listTable!=null)
 		{
 //		scrollPane.remove(listTable);
@@ -251,7 +251,7 @@ public class NodePairListFrame extends JFrame {
                  (myTable, myTable.getValueAt(row, col), false, false, row, col).getPreferredSize().getWidth();
                  width = Math.max(width, preferedWidth);
              }
-             header.setResizingColumn(column); // ´ËĞĞºÜÖØÒª
+             header.setResizingColumn(column); // æ­¤è¡Œå¾ˆé‡è¦
              column.setWidth(width+myTable.getIntercellSpacing().width);
          }
     }
@@ -270,15 +270,15 @@ public class NodePairListFrame extends JFrame {
 			data[i][4]=String.format("%5.3f",results.getRetStatistics().getComplex());
 			data[i][5]=String.format("%d",results.getRetPM().getPeriod());
 			if(results.getRetPM().getPeriod()<=0)
-				data[i][5]="ÎŞ";
+				data[i][5]="æ— ";
 			data[i][6]=String.format("%5.3f",results.getRetPM().getConfidence());
-			data[i][7]=String.valueOf(results.getRetOM().isHasOutlies()==true?"ÊÇ":"·ñ");
+			data[i][7]=String.valueOf(results.getRetOM().isHasOutlies()==true?"æ˜¯":"å¦");
 			data[i][8]=String.format("%5d",results.getRetOM().getConfidence());
-			data[i][9]=String.valueOf(results.getRetSM().isHasFreItems()==true?"ÊÇ":"·ñ");
+			data[i][9]=String.valueOf(results.getRetSM().isHasFreItems()==true?"æ˜¯":"å¦");
 			
 			
 		}
-	    String colNames[]={"Ê±¼äĞòÁĞ","Æ½¾ùÖµ","±ê×¼²î","Ñù±¾ìØ","¸´ÔÓ¶È","ÖÜÆÚ","ÖÜÆÚÖÃĞÅ¶È","ÊÇ·ñÓĞÒì³£","Òì³£¶È","ÊÇ·ñ´æÔÚÆµ·±Ïî"};
+	    String colNames[]={"æ—¶é—´åºåˆ—","å¹³å‡å€¼","æ ‡å‡†å·®","æ ·æœ¬ç†µ","å¤æ‚åº¦","å‘¨æœŸ","å‘¨æœŸç½®ä¿¡åº¦","æ˜¯å¦æœ‰å¼‚å¸¸","å¼‚å¸¸åº¦","æ˜¯å¦å­˜åœ¨é¢‘ç¹é¡¹"};
 	   
 	 
 	    DefaultTableModel model=new DefaultTableModel(data,colNames){
@@ -298,7 +298,7 @@ public class NodePairListFrame extends JFrame {
 	       
 	    public void mouseClicked(MouseEvent e) {
 	        
-	          if(e.getClickCount()==2){//µã»÷¼¸´Î£¬ÕâÀïÊÇË«»÷ÊÂ¼ş
+	          if(e.getClickCount()==2){//ç‚¹å‡»å‡ æ¬¡ï¼Œè¿™é‡Œæ˜¯åŒå‡»äº‹ä»¶
 	        	System.out.println("kkkkk");
 	           tableChanged();        
 	          }
@@ -306,7 +306,7 @@ public class NodePairListFrame extends JFrame {
 	      });
 	
 	    final JPopupMenu popupMenu = new JPopupMenu();
-	    JMenuItem menu = new JMenuItem("ÏÔÊ¾ÏêÏ¸½á¹û");
+	    JMenuItem menu = new JMenuItem("æ˜¾ç¤ºè¯¦ç»†ç»“æœ");
 	    popupMenu.add(menu);
 	    menu.addActionListener(new ActionListener()
 		{
@@ -323,7 +323,7 @@ public class NodePairListFrame extends JFrame {
             public void mouseReleased(MouseEvent evt) {
                 if (evt.getButton() == MouseEvent.BUTTON3) {
                     if (evt.isPopupTrigger()) {
-                        //  È¡µÃÓÒ¼üµã»÷ËùÔÚĞĞ
+                        //  å–å¾—å³é”®ç‚¹å‡»æ‰€åœ¨è¡Œ
                         int row = evt.getY() / listTable.getRowHeight();
                         listTable.setRowSelectionInterval(row,row);
                         popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
@@ -340,11 +340,11 @@ public class NodePairListFrame extends JFrame {
 	public void initModel()
 	{
 		selectPanel.setLayout(new FlowLayout());
-		JLabel objectLabel=new JLabel("Ñ¡ÔñÍÚ¾ò¶ÔÏó");
+		JLabel objectLabel=new JLabel("é€‰æ‹©æŒ–æ˜å¯¹è±¡");
 		selectPanel.add(objectLabel);
 		miningObjectComboBox = new JComboBox<String>();
-		miningObjectComboBox.addItem("Á÷Á¿");
-		miningObjectComboBox.addItem("Í¨ĞÅ´ÎÊı");
+		miningObjectComboBox.addItem("æµé‡");
+		miningObjectComboBox.addItem("é€šä¿¡æ¬¡æ•°");
 		miningObjectComboBox.setSelectedIndex(1);
 		miningObjectComboBox.addItemListener(new ItemListener()
         {
@@ -353,47 +353,47 @@ public class NodePairListFrame extends JFrame {
                 switch (event.getStateChange())
                 {
                 case ItemEvent.SELECTED: 
-                    System.out.println("Ñ¡ÖĞ" + event.getItem());
-                    if(event.getItem().equals("Á÷Á¿"))
+                    System.out.println("é€‰ä¸­" + event.getItem());
+                    if(event.getItem().equals("æµé‡"))
                     {
                     	resultMap=resultMaps.get(MiningObject.MiningObject_Traffic);
                     	
                     }
-                    else if(event.getItem().equals("Í¨ĞÅ´ÎÊı"))
+                    else if(event.getItem().equals("é€šä¿¡æ¬¡æ•°"))
                     {
                     	resultMap=resultMaps.get(MiningObject.MiningObject_Times);
                     }
                     update();
                     break;
                 case ItemEvent.DESELECTED:
-                    System.out.println("È¡ÏûÑ¡ÖĞ" + event.getItem());
+                    System.out.println("å–æ¶ˆé€‰ä¸­" + event.getItem());
                     break;
                 }
             }
         });
 		selectPanel.add(miningObjectComboBox);
 		
-		JLabel sortLabel= new JLabel("Ñ¡ÔñÅÅĞò·½Ê½");
+		JLabel sortLabel= new JLabel("é€‰æ‹©æ’åºæ–¹å¼");
 		sortTypeComboBox = new JComboBox<String>();
-		sortTypeComboBox.addItem("°´ip");
-		sortTypeComboBox.addItem("°´Ğ­Òé");
-		sortTypeComboBox.addItem("°´ÖÜÆÚÖÃĞÅ¶È");
-		sortTypeComboBox.addItem("°´Òì³£¶È");
+		sortTypeComboBox.addItem("æŒ‰ip");
+		sortTypeComboBox.addItem("æŒ‰åè®®");
+		sortTypeComboBox.addItem("æŒ‰å‘¨æœŸç½®ä¿¡åº¦");
+		sortTypeComboBox.addItem("æŒ‰å¼‚å¸¸åº¦");
 		sortTypeComboBox.setSelectedIndex(2);
 		sortTypeComboBox.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent event)
-            { System.out.println("Ñ¡ÖĞ");
+            { System.out.println("é€‰ä¸­");
                 switch (event.getStateChange())
                 {
                 case ItemEvent.SELECTED: 
-                    System.out.println("Ñ¡ÖĞ" + event.getItem());
+                    System.out.println("é€‰ä¸­" + event.getItem());
                     sortMethod=event.getItem().toString();
                     System.out.println(sortMethod);
                     update();
                     break;
                 case ItemEvent.DESELECTED:
-                    System.out.println("È¡ÏûÑ¡ÖĞ" + event.getItem());
+                    System.out.println("å–æ¶ˆé€‰ä¸­" + event.getItem());
                     break;
                 }
             }
@@ -408,16 +408,16 @@ public class NodePairListFrame extends JFrame {
 	public void tableChanged()
 	 {
 	  int row=listTable.getSelectedRow();    
-	  //µÃµ½ËùÔÚĞĞµÄµÚÒ»¸öÁĞµÄÖµ£¬×÷ÎªÏÂÃæÊÂ¼ş´«µİµÄ²ÎÊı
+	  //å¾—åˆ°æ‰€åœ¨è¡Œçš„ç¬¬ä¸€ä¸ªåˆ—çš„å€¼ï¼Œä½œä¸ºä¸‹é¢äº‹ä»¶ä¼ é€’çš„å‚æ•°
 	  NodeDetailFrame SingleNodeFrame=new NodeDetailFrame(resultList.get(row).getKey());
-	  SingleNodeFrame.setTitle( "ip: "+resultList.get(row).getKey().getRange()+" protocol: "+resultList.get(row).getKey().getProtocol()+" "+resultList.get(row).getKey().getMiningObject()+"¹æÂÉ");
+	  SingleNodeFrame.setTitle( "ip: "+resultList.get(row).getKey().getRange()+" protocol: "+resultList.get(row).getKey().getProtocol()+" "+resultList.get(row).getKey().getMiningObject()+"è§„å¾‹");
 	  SingleNodeFrame.setVisible(true);
 	  System.out.println("selectrow:"+row);
 	 }
 	
 	void initialize() {
 //		setDefaultCloseOperation(JFrame.);
-		setTitle("Á´Â·ÊôĞÔ¹æÂÉ");
+		setTitle("é“¾è·¯å±æ€§è§„å¾‹");
 		setBounds(100, 100, 1500, 900);
 		try { 
 //			org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
@@ -426,9 +426,9 @@ public class NodePairListFrame extends JFrame {
 	            JFrame.setDefaultLookAndFeelDecorated(true);  
                
 	            SubstanceLookAndFeel.setCurrentBorderPainter(new StandardBorderPainter());  
-	            //ÉèÖÃ½¥±ääÖÈ¾   
+	            //è®¾ç½®æ¸å˜æ¸²æŸ“   
 	            SubstanceLookAndFeel.setCurrentGradientPainter(new StandardGradientPainter());  
-	            //ÉèÖÃ±êÌâ  
+	            //è®¾ç½®æ ‡é¢˜  
 	            SubstanceLookAndFeel.setCurrentTitlePainter( new MatteHeaderPainter());     
         } catch (Exception e) {  
             System.out.println(e.getMessage());  

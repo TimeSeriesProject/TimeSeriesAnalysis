@@ -145,7 +145,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	public void startAllTaskMiners(){
 		for(INetworkMiner miner :allMiners.values()){
 			if(miner.isOver())
-				continue;    //已经挖掘完的任务不需再次挖掘
+				continue;    //宸茬粡鎸栨帢瀹岀殑浠诲姟涓嶉渶鍐嶆鎸栨帢
 			miner.start();
 			try {
 				Thread.sleep(100);
@@ -178,7 +178,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 				new HashMap<TaskCombination, MinerNodeResults>();
 		for(INetworkMiner miner :allCombinationMiners.values()){
 			if(miner.isOver())
-				continue;    //已经挖掘完的任务不需再次挖掘
+				continue;    //宸茬粡鎸栨帢瀹岀殑浠诲姟涓嶉渶鍐嶆鎸栨帢
 			miner.start();
 			try {
 				Thread.sleep(2000);
@@ -263,7 +263,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	private void autoTaskFilter(){
 		for(int t=0;t<TaskElement.allTasks.size();t++){
 			TaskElement task=TaskElement.allTasks.get(t);
-			if(task.getTaskName().contains("周期挖掘_auto")){
+			if(task.getTaskName().contains("鍛ㄦ湡鎸栨帢_auto")){
 				if(allMiners.containsKey(task)){
 					INetworkMiner miner=allMiners.get(task);
 					if(!miner.getResults().getRetPM().hasPeriod){
@@ -273,7 +273,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						t--;
 					}
 				}
-			}else if(task.getTaskName().contains("auto_频繁模式挖掘")){
+			}else if(task.getTaskName().contains("auto_棰戠箒妯″紡鎸栨帢")){
 				if(allMiners.containsKey(task)){
 					INetworkMiner miner=allMiners.get(task);
 					if(!miner.getResults().getRetSM().isHasFreItems()){

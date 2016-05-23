@@ -64,7 +64,7 @@ public class DialogConfigTask extends JDialog {
 //		contentPane.setLayout(new FlowLayout());
 		setContentPane(contentPane);
 		
-		setTitle("ÊÂ¼şĞòÁĞÅäÖÃ");
+		setTitle("äº‹ä»¶åºåˆ—é…ç½®");
 
 		
 		contentPane.add(new PanelConfigTask(), BorderLayout.CENTER);

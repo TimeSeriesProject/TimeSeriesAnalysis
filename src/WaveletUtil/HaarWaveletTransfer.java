@@ -23,11 +23,11 @@ public class HaarWaveletTransfer {
 	}
 
 	/**
-	 * ÀëÉ¢HaarĞ¡²¨±ä»»
+	 * ç¦»æ•£Haarå°æ³¢å˜æ¢
 	 */
 	public void HaarDWT(){
 		if(layer>(Math.log(dataItems.getLength())/Math.log(2))){
-			throw new RuntimeException("ĞòÁĞ³¤¶ÈÎŞ·¨·Ö½âµ½"+layer+"²ã");
+			throw new RuntimeException("åºåˆ—é•¿åº¦æ— æ³•åˆ†è§£åˆ°"+layer+"å±‚");
 		}
 		int size=dataItems.getLength();
 		List<String> data=dataItems.getData();
@@ -50,11 +50,11 @@ public class HaarWaveletTransfer {
 		hasTransfer=true;
 	}
 	/**
-	 * ÀëÉ¢  Haar Ğ¡²¨Äæ±ä»»
+	 * ç¦»æ•£  Haar å°æ³¢é€†å˜æ¢
 	 */
 	public void HasrIDWT(){
 		if(!hasTransfer){
-			throw new RuntimeException("»¹Î´Ğ¡²¨±ä»»£¬ÎŞ·¨½øĞĞÄæ±ä»»");
+			throw new RuntimeException("è¿˜æœªå°æ³¢å˜æ¢ï¼Œæ— æ³•è¿›è¡Œé€†å˜æ¢");
 		}
 		int size=dataItems.getLength();
 		for(int i=0;i<size;i++){

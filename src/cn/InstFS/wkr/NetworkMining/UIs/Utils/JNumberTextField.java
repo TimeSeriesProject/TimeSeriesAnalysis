@@ -13,7 +13,7 @@ public class JNumberTextField extends JTextField {
 	static char []allowedChars_int = new char[]{'0','1','2','3','4','5','6','7','8','9'};
 	static char []allowedChars_double = new char[]{'.', '0','1','2','3','4','5','6','7','8','9'};
 	int []allowedCodes = new int []{8, 127, 37, 39};	// backspace, delete, <-, ->
-	Field field;	// 类的成员
+	Field field;	// 绫荤殑鎴愬憳
 	public JNumberTextField(Field field) {
 		this.field = field;
 		if (field.getType().equals(double.class))

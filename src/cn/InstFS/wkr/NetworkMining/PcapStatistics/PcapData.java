@@ -1,10 +1,10 @@
 package cn.InstFS.wkr.NetworkMining.PcapStatistics;
 
 public class PcapData implements Comparable{
-	 private long time_s;//Ê±¼ä´Á£¨Ãë£©
-	 private long time_ms;//Ê±¼ä´Á£¨Î¢Ãî£©
-	 private int pLength;//×¥°ü³¤¶È
-	 private int length;//Êµ¼Ê³¤¶È
+	 private long time_s;//æ—¶é—´æˆ³ï¼ˆç§’ï¼‰
+	 private long time_ms;//æ—¶é—´æˆ³ï¼ˆå¾®å¦™ï¼‰
+	 private int pLength;//æŠ“åŒ…é•¿åº¦
+	 private int length;//å®žé™…é•¿åº¦
 	 private int traffic;
 	 private int TTL;
 	 private String srcIP;

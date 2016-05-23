@@ -22,7 +22,7 @@ public class UtilsUI {
 	
 	
 	public static void showErrMsg(String msg){
-		JOptionPane.showMessageDialog(MainFrame.topFrame, msg, "´íÎó£¡", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(MainFrame.topFrame, msg, "é”™è¯¯ï¼", JOptionPane.ERROR_MESSAGE);
 	}
 	public static void appendOutput(String str){
 		if (MainFrame.topFrame != null)

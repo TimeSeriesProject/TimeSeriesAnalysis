@@ -6,23 +6,23 @@ import java.util.Map;
 
 
 public interface IReader {	
-	//¶ÁÈ¡ÎÄ±¾ÎÄ¼şÖĞµÄÊı¾İ
+	//è¯»å–æ–‡æœ¬æ–‡ä»¶ä¸­çš„æ•°æ®
 	public DataItems readInputByText();
 	public Map<String, DataItems> readAllRoute();
-	//¶ÁÈ¡Êı¾İ¿âÖĞµÄÊı¾İ
+	//è¯»å–æ•°æ®åº“ä¸­çš„æ•°æ®
 	public DataItems readInputBySql();
 	
 	/**
-	 * ¶ÁÈ¡Êı¾İ¿âÖĞ·ûºÏÒªÇóµÄÊı¾İ  
-	 * @param condition ÎªsqlÓï¾äĞÎÊ½µÄÊı¾İ¹ıÂËÌõ¼ş Èç "sip=='10.0.1.1' and dip=='10.0.1.2'"
-	 * @return ·ûºÏÒªÇóµÄÊı¾İ
+	 * è¯»å–æ•°æ®åº“ä¸­ç¬¦åˆè¦æ±‚çš„æ•°æ®  
+	 * @param condition ä¸ºsqlè¯­å¥å½¢å¼çš„æ•°æ®è¿‡æ»¤æ¡ä»¶ å¦‚ "sip=='10.0.1.1' and dip=='10.0.1.2'"
+	 * @return ç¬¦åˆè¦æ±‚çš„æ•°æ®
 	 */
 	public DataItems readInputBySql(String condition);
 	
 	/**
-	 * ¶ÁÈ¡ÎÄ±¾ÎÄ¼şÖĞµÄ·ûºÏÒªÇóµÄÊı¾İ
-	 * @param condistions ÊÇÊı×éĞÎÊ½µÄÊı¾İ¹ıÂËÌõ¼ş 
-	 * Èç  conditions[0]Îªsip=='10.0.1.1'    conditions[1]Îªdip=='10.0.1.2'
+	 * è¯»å–æ–‡æœ¬æ–‡ä»¶ä¸­çš„ç¬¦åˆè¦æ±‚çš„æ•°æ®
+	 * @param condistions æ˜¯æ•°ç»„å½¢å¼çš„æ•°æ®è¿‡æ»¤æ¡ä»¶ 
+	 * å¦‚  conditions[0]ä¸ºsip=='10.0.1.1'    conditions[1]ä¸ºdip=='10.0.1.2'
 	 * @return
 	 */
 	public DataItems readInputByText(String[] condistions);

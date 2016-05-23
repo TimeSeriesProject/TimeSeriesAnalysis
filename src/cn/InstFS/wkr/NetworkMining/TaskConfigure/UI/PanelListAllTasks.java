@@ -65,13 +65,13 @@ public class PanelListAllTasks extends JScrollPane implements ITaskElementEventL
 				undisplayTaskConfig();
 			}
 		});
-		setColumnHeaderView(new JLabel("ÒÑÅäÊÂ¼şÁĞ±í£º"));
+		setColumnHeaderView(new JLabel("å·²é…äº‹ä»¶åˆ—è¡¨ï¼š"));
 		setViewportView(listTasks);	
 		
 		JPopupMenu popupMenu = new JPopupMenu();
 		addPopup(listTasks, popupMenu);
 		
-		JMenuItem menuStart = new JMenuItem("¿ªÊ¼ÍÚ¾ò");
+		JMenuItem menuStart = new JMenuItem("å¼€å§‹æŒ–æ˜");
 		menuStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int []selected = listTasks.getSelectedIndices();
@@ -86,7 +86,7 @@ public class PanelListAllTasks extends JScrollPane implements ITaskElementEventL
 		});
 		popupMenu.add(menuStart);
 		
-		JMenuItem menuStop = new JMenuItem("Í£Ö¹ÍÚ¾ò");
+		JMenuItem menuStop = new JMenuItem("åœæ­¢æŒ–æ˜");
 		menuStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int []selected = listTasks.getSelectedIndices();
@@ -101,7 +101,7 @@ public class PanelListAllTasks extends JScrollPane implements ITaskElementEventL
 		});
 		popupMenu.add(menuStop);		
 		
-		JMenuItem menuDel = new JMenuItem("É¾³ı");
+		JMenuItem menuDel = new JMenuItem("åˆ é™¤");
 		menuDel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int []selected = listTasks.getSelectedIndices();

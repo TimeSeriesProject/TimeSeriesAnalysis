@@ -21,14 +21,14 @@ public class JDateTimeTextField extends JFormattedTextField {
 //		MyDateTimeFormatter f= new MyDateTimeFormatter();
 //		setFormatter(f);
 		setInputVerifier(new MyDateTimeVerifier());
-		setValue(new Date());	// 这步会自动寻找Formatter()，即DateFormatter
+		setValue(new Date());	// 杩欐浼氳嚜鍔ㄥ鎵綟ormatter()锛屽嵆DateFormatter
 		AbstractFormatter formatter = getFormatter();
 		if (formatter.getClass().equals(DateFormatter.class)){
 			DateFormatter df = (DateFormatter)formatter;
 			df.setFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 		}
 		setColumns(20);
-		setToolTipText("格式：yyyy-MM-dd HH:mm:ss，例如：2015-01-01 14:00:00");	
+		setToolTipText("鏍煎紡锛歽yyy-MM-dd HH:mm:ss锛屼緥濡傦細2015-01-01 14:00:00");	
 	}
 }
 class MyDateTimeFormatter extends AbstractFormatter{
@@ -43,7 +43,7 @@ class MyDateTimeFormatter extends AbstractFormatter{
 		if (value == null)
 			return sdf.format(UtilsSimulation.instance.getCurTime());
 		if (!value.getClass().equals(DATE.class))
-			throw new ParseException("时间格式不正确！", 0);
+			throw new ParseException("鏃堕棿鏍煎紡涓嶆纭紒", 0);
 		Date d = (Date)value;
 		return sdf.format(d);
 	}

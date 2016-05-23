@@ -3,7 +3,7 @@ package cn.InstFS.wkr.NetworkMining.PcapStatistics;
 import java.util.Date;
 
 /**
- * IPStream 用于统计IP通行信息
+ * IPStream 鐢ㄤ簬缁熻IP閫氳淇℃伅
  * @author wsc
  *
  */
@@ -16,7 +16,7 @@ public class IPStream{
 	private String protoType;
 	private long traffic;
 	
-	private long hops;//ip包经历的跳数
+	private long hops;//ip鍖呯粡鍘嗙殑璺虫暟
 	// getters and setters
 	public void setKeyElement(String srcIP, String dstIP, String protoType,long hops,long traffic,long timeStart){
 		this.srcIP = srcIP.trim();

@@ -1,6 +1,6 @@
 /**
- * ÖÜÆÚÄ£Ê½¼ì²âµÄMiner
- * ²ÉÓÃ¶¨Ê±Æ÷ÊµÏÖ¶¨Ê±ÔËĞĞ£¬´ó²¿·Ö¿ÉÒÔÖØĞÂĞ´
+ * å‘¨æœŸæ¨¡å¼æ£€æµ‹çš„Miner
+ * é‡‡ç”¨å®šæ—¶å™¨å®ç°å®šæ—¶è¿è¡Œï¼Œå¤§éƒ¨åˆ†å¯ä»¥é‡æ–°å†™
  */
 package cn.InstFS.wkr.NetworkMining.Miner;
 
@@ -136,11 +136,11 @@ class PMTimerTask extends TimerTask{
 		results.setDateProcess(UtilsSimulation.instance.getCurTime());
 		results.getRetPM().setParamsPM((ParamsPM) task.getMiningParams());
 		
-		ParamsPM paramsPM= (ParamsPM) task.getMiningParams();	// »ñÈ¡PARAMSPMÄÚÈİ
+		ParamsPM paramsPM= (ParamsPM) task.getMiningParams();	// è·å–PARAMSPMå†…å®¹
 		isRunning = true;
-		// ¶ÁÈ¡Êı¾İ
+		// è¯»å–æ•°æ®
 		DataItems dataItems = null;
-		//µ±Miner ReusltsÖĞ´æÔÚÊı¾İÊ±£¬Ôò²»ÔÙ¶ÁÈ¡
+		//å½“Miner Reusltsä¸­å­˜åœ¨æ•°æ®æ—¶ï¼Œåˆ™ä¸å†è¯»å–
 		if(results.getInputData()==null||results.getInputData().getLength()==0){
 			dataItems=reader.readInputByText();
 			results.setInputData(dataItems);
@@ -189,7 +189,7 @@ class PMTimerTask extends TimerTask{
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
 			pmMethod=new ERPDistencePM();
 		}else{
-			throw new RuntimeException("·½·¨²»´æÔÚ£¡");
+			throw new RuntimeException("æ–¹æ³•ä¸å­˜åœ¨ï¼");
 		}
 		pmMethod.setOriginDataItems(oriDataItems);
 		pmMethod.setDataItems(dataItems);
@@ -204,14 +204,14 @@ class PMTimerTask extends TimerTask{
 			retPM.setMaxDistributePeriod(pmMethod.getMaxItemsInPeriod());
 			retPM.setFeatureValue(pmMethod.getMinEntropy());
 			retPM.setFeatureValues(pmMethod.getEntropies());
-			retPM.setFirstPossiblePeriod(pmMethod.getFirstPossiblePeriod());//ÕÒ³öµÚÒ»¸ö³ÊÏÖÖÜÆÚĞÔµÄÖÜÆÚ
+			retPM.setFirstPossiblePeriod(pmMethod.getFirstPossiblePeriod());//æ‰¾å‡ºç¬¬ä¸€ä¸ªå‘ˆç°å‘¨æœŸæ€§çš„å‘¨æœŸ
 			retPM.setConfidence(pmMethod.getConfidence());
-			System.out.println("ÊÇ·ñ´æÔÚÖÜÆÚ£º"+pmMethod.hasPeriod());
+			System.out.println("æ˜¯å¦å­˜åœ¨å‘¨æœŸï¼š"+pmMethod.hasPeriod());
 			if(pmMethod.hasPeriod()){
-				System.out.println("ÖÜÆÚÖµ "+pmMethod.getPredictPeriod());
+				System.out.println("å‘¨æœŸå€¼ "+pmMethod.getPredictPeriod());
 			}
 			retPmMap.put(MiningItem, retPM);
-			//¼ì²âÊÇ·ñ´æÔÚ¾Ö²¿ÖÜÆÚ
+			//æ£€æµ‹æ˜¯å¦å­˜åœ¨å±€éƒ¨å‘¨æœŸ
 			if(!retPM.getHasPeriod()){
 				PartialPM partialPM=new PartialPM(results,oriDataItems,task.getTaskName());
 				partialPM.miningPartialPM();
@@ -223,10 +223,10 @@ class PMTimerTask extends TimerTask{
 					continue;
 				}
 				System.out.println(item);
-				System.out.println("ÊÇ·ñ´æÔÚÖÜÆÚ£º"+pmMethod.getHasPeriodOfNonNumDataItms().get(item));
+				System.out.println("æ˜¯å¦å­˜åœ¨å‘¨æœŸï¼š"+pmMethod.getHasPeriodOfNonNumDataItms().get(item));
 
 				if(pmMethod.getHasPeriodOfNonNumDataItms().get(item)){
-					System.out.println("ÖÜÆÚÖµ "+pmMethod.getPredictPeriodOfNonNumDataItems().get(item));
+					System.out.println("å‘¨æœŸå€¼ "+pmMethod.getPredictPeriodOfNonNumDataItems().get(item));
 				}
 				MinerResultsPM retPM=new MinerResultsPM();
 				retPM.setHasPeriod(pmMethod.getHasPeriodOfNonNumDataItms().get(item));

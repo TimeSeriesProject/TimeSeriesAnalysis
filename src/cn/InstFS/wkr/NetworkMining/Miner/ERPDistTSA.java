@@ -7,18 +7,18 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 public class ERPDistTSA implements IMinerOM {
-	private DataItems outlies;          //Òì³£µã
+	private DataItems outlies;          //å¼‚å¸¸ç‚¹
 	private TaskElement task;
-	private int predictPeriod;          //Ô¤²âµÄ³¤¶È
+	private int predictPeriod;          //é¢„æµ‹çš„é•¿åº¦
 	private DataItems predictItems;
 	private DataItems di;
 	
-	private long cycleSpan;             //ÖÜÆÚ³¤¶È
-	private boolean hasPeriod=false;    //ÊÇ·ñ´æÔÚÖÜÆÚ
-	private int[] periodValues;         //ÖÜÆÚÖĞ¸÷Ê±¼äÁ£¶ÈÖĞµÄÖµ
-	private int lastNumIndexInPeriod;   //×îºóµÄÖµÔÚÖÜÆÚÖĞµÄÎ»ÖÃ
-	private Date endDate;               //ĞòÁĞÖĞ×îºóÖµµÄÈÕÆÚ
-	private double periodThreshold;     //´æÔÚµÄÖÜÆÚãĞÖµ
+	private long cycleSpan;             //å‘¨æœŸé•¿åº¦
+	private boolean hasPeriod=false;    //æ˜¯å¦å­˜åœ¨å‘¨æœŸ
+	private int[] periodValues;         //å‘¨æœŸä¸­å„æ—¶é—´ç²’åº¦ä¸­çš„å€¼
+	private int lastNumIndexInPeriod;   //æœ€åçš„å€¼åœ¨å‘¨æœŸä¸­çš„ä½ç½®
+	private Date endDate;               //åºåˆ—ä¸­æœ€åå€¼çš„æ—¥æœŸ
+	private double periodThreshold;     //å­˜åœ¨çš„å‘¨æœŸé˜ˆå€¼
 	
 	public ERPDistTSA(TaskElement task,int predictPeriod,DataItems di){
 		this.task=task;
@@ -44,7 +44,7 @@ public class ERPDistTSA implements IMinerOM {
 		
 		predictItems=new DataItems();
 		Calendar start=Calendar.getInstance();
-		start.setTime(endDate);//Êµ¼ÊÖÜÆÚÄ©Î²
+		start.setTime(endDate);//å®é™…å‘¨æœŸæœ«å°¾
 		for(int span=1;span<=predictPeriod;span++){
 			String item=periodValues[(span+lastNumIndexInPeriod)%(int)cycleSpan]+"";
 			predictItems.getData().add(item);

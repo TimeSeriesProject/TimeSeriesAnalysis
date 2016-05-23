@@ -1,6 +1,6 @@
 /**
- * Ê±¼äĞòÁĞ·ÖÎöMiner
- * ²ÉÓÃ¶¨Ê±Æ÷ÊµÏÖ¶¨Ê±ÔËĞĞ£¬´ó²¿·Ö¿ÉÒÔÖØĞÂĞ´
+ * æ—¶é—´åºåˆ—åˆ†æMiner
+ * é‡‡ç”¨å®šæ—¶å™¨å®ç°å®šæ—¶è¿è¡Œï¼Œå¤§éƒ¨åˆ†å¯ä»¥é‡æ–°å†™
  */
 
 
@@ -44,13 +44,13 @@ public class NetworkMinerFM implements INetworkMiner {
 	}
 	@Override
 	public boolean start() {
-		System.out.println("PanelShowResultsTSA   timer¿ªÊ¼");
+		System.out.println("PanelShowResultsTSA   timerå¼€å§‹");
 		if (timer != null){
-			UtilsUI.appendOutput(task.getTaskName() + " -- ÔçÒÑÆô¶¯£¡");
+			UtilsUI.appendOutput(task.getTaskName() + " -- æ—©å·²å¯åŠ¨ï¼");
 			return false;
 		}
 		if (timerTask != null && timerTask.isRunning() == true){
-			UtilsUI.appendOutput(task.getTaskName() + " -- ÉÏ´ÎÍÚ¾òÉĞÎ´½áÊø£¡");
+			UtilsUI.appendOutput(task.getTaskName() + " -- ä¸Šæ¬¡æŒ–æ˜å°šæœªç»“æŸï¼");
 			return false;
 		}
 		timer = new Timer();
@@ -59,7 +59,7 @@ public class NetworkMinerFM implements INetworkMiner {
 		isRunning = true;
 		task.setRunning(isRunning);
 //		TaskElement.modify1Task(task);		
-		UtilsUI.appendOutput(task.getTaskName() + " -- ¿ªÊ¼ÍÚ¾ò£¡");
+		UtilsUI.appendOutput(task.getTaskName() + " -- å¼€å§‹æŒ–æ˜ï¼");
 		return true;
 	}
 
@@ -76,7 +76,7 @@ public class NetworkMinerFM implements INetworkMiner {
 		
 		isRunning = false;
 		task.setRunning(isRunning);
-		UtilsUI.appendOutput(task.getTaskName() + " -- Í£Ö¹ÍÚ¾ò£¡");
+		UtilsUI.appendOutput(task.getTaskName() + " -- åœæ­¢æŒ–æ˜ï¼");
 		return true;
 	}
 
@@ -138,9 +138,9 @@ class FMTimerTask extends TimerTask{
 		isRunning = true;
 		ParamsTSA params = (ParamsTSA) task.getMiningParams();
 		
-		// ¶ÁÈ¡Êı¾İ
+		// è¯»å–æ•°æ®
 		DataItems dataItems = null;
-		//µ±Miner ReusltsÖĞ´æÔÚÊı¾İÊ±£¬Ôò²»ÔÙ¶ÁÈ¡
+		//å½“Miner Reusltsä¸­å­˜åœ¨æ•°æ®æ—¶ï¼Œåˆ™ä¸å†è¯»å–
 		if(results.getInputData()==null||results.getInputData().getLength()==0){
 			dataItems=reader.readInputByText();
 			results.setInputData(dataItems);
@@ -166,10 +166,10 @@ class FMTimerTask extends TimerTask{
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ARIMATSA)){
 			tsaMethod=new ARIMATSA(task, dataItems, 10);
 		}else{
-			throw new RuntimeException("·½·¨²»´æÔÚ£¡");
+			throw new RuntimeException("æ–¹æ³•ä¸å­˜åœ¨ï¼");
 		}
 		tsaMethod.TimeSeriesAnalysis();
-		results.getRetFM().setPredictItems(tsaMethod.getPredictItems());  //Ô¤²â
+		results.getRetFM().setPredictItems(tsaMethod.getPredictItems());  //é¢„æµ‹
 		
 		isRunning = false;
 		isOver.setIsover(true);

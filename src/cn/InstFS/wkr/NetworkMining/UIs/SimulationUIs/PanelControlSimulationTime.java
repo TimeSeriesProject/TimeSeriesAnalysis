@@ -47,8 +47,8 @@ public class PanelControlSimulationTime extends JPanel {
 		gridBagLayout.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		chckUseSimData = new JCheckBox("ÓÃ²âÊÔÊı¾İ");
-		chckUseSimData.setToolTipText("¸ÃÊı¾İ½öÓÃÓÚ²âÊÔ¹¦ÄÜÊÇ·ñÕı³££¡");
+		chckUseSimData = new JCheckBox("ç”¨æµ‹è¯•æ•°æ®");
+		chckUseSimData.setToolTipText("è¯¥æ•°æ®ä»…ç”¨äºæµ‹è¯•åŠŸèƒ½æ˜¯å¦æ­£å¸¸ï¼");
 		chckUseSimData.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -61,8 +61,8 @@ public class PanelControlSimulationTime extends JPanel {
 		gbc_chckUseSimData.gridy = 0;
 		add(chckUseSimData, gbc_chckUseSimData);
 		
-		btnStartSimulation = new JButton("¿ªÊ¼");
-		btnStartSimulation.setToolTipText("¿ªÊ¼·ÂÕæ");
+		btnStartSimulation = new JButton("å¼€å§‹");
+		btnStartSimulation.setToolTipText("å¼€å§‹ä»¿çœŸ");
 		GridBagConstraints gbc_btnStartSimulation = new GridBagConstraints();
 		gbc_btnStartSimulation.insets = new Insets(0, 0, 0, 5);
 		gbc_btnStartSimulation.gridx = 1;
@@ -75,8 +75,8 @@ public class PanelControlSimulationTime extends JPanel {
 			}
 		});
 		
-		btnPauseSimulation = new JButton("ÔİÍ£");
-		btnPauseSimulation.setToolTipText("ÔİÍ£·ÂÕæ");
+		btnPauseSimulation = new JButton("æš‚åœ");
+		btnPauseSimulation.setToolTipText("æš‚åœä»¿çœŸ");
 		GridBagConstraints gbc_btnPauseSimulation = new GridBagConstraints();
 		gbc_btnPauseSimulation.insets = new Insets(0, 0, 0, 5);
 		gbc_btnPauseSimulation.gridx = 2;
@@ -89,7 +89,7 @@ public class PanelControlSimulationTime extends JPanel {
 			}
 		});
 		
-		JLabel lblTimeGap = new JLabel("Ê±¼ä¼ä¸ô(s):");
+		JLabel lblTimeGap = new JLabel("æ—¶é—´é—´éš”(s):");
 		GridBagConstraints gbc_lblTimeGap = new GridBagConstraints();
 		gbc_lblTimeGap.fill = GridBagConstraints.BOTH;
 		gbc_lblTimeGap.insets = new Insets(0, 0, 0, 5);
@@ -121,7 +121,7 @@ public class PanelControlSimulationTime extends JPanel {
 			}
 		});
 		
-		JLabel lblCurTime = new JLabel("µ±Ç°Ê±¼ä:");
+		JLabel lblCurTime = new JLabel("å½“å‰æ—¶é—´:");
 		GridBagConstraints gbc_lblCurTime = new GridBagConstraints();
 		gbc_lblCurTime.fill = GridBagConstraints.BOTH;
 		gbc_lblCurTime.insets = new Insets(0, 0, 0, 5);
@@ -146,14 +146,14 @@ public class PanelControlSimulationTime extends JPanel {
 				try {
 					dNew = sdf.parse(txtCurTime.getText());
 				} catch (ParseException e1) {
-					JOptionPane.showMessageDialog(txtCurTime, "Ê±¼ä¸ñÊ½´íÎó£¡","Ê±¼ä¸ñÊ½´íÎó£¡",
+					JOptionPane.showMessageDialog(txtCurTime, "æ—¶é—´æ ¼å¼é”™è¯¯ï¼","æ—¶é—´æ ¼å¼é”™è¯¯ï¼",
 							JOptionPane.ERROR_MESSAGE);
 				}
 				Date curTime = UtilsSimulation.instance.getCurTime();
 				if (d.equals(dNew))
 					onSimulationSettingsFocused(false);
 				else if (!UtilsSimulation.instance.isPaused() &&dNew.before(curTime)){
-					JOptionPane.showMessageDialog(txtCurTime, "ÔËĞĞÊ±£¬¸ÃÊ±¼äÖ»ÄÜ±Èµ±Ç°Ê±¼äÍí£¡\r\nÇëÏÈÔİÍ£ÔÙ½øĞĞĞŞ¸Ä£¡","µ±Ç°Ê±¼äÎª£º" + 
+					JOptionPane.showMessageDialog(txtCurTime, "è¿è¡Œæ—¶ï¼Œè¯¥æ—¶é—´åªèƒ½æ¯”å½“å‰æ—¶é—´æ™šï¼\r\nè¯·å…ˆæš‚åœå†è¿›è¡Œä¿®æ”¹ï¼","å½“å‰æ—¶é—´ä¸ºï¼š" + 
 							new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(curTime), JOptionPane.ERROR_MESSAGE);
 					onSimulationSettingsFocused(false);
 				}else
@@ -166,7 +166,7 @@ public class PanelControlSimulationTime extends JPanel {
 			}
 		});
 		
-		btnDoSet = new JButton("ÉèÖÃ");
+		btnDoSet = new JButton("è®¾ç½®");
 		btnDoSet.setEnabled(false);
 		GridBagConstraints gbc_btnDoSet = new GridBagConstraints();
 		gbc_btnDoSet.insets = new Insets(0, 0, 0, 5);
@@ -182,7 +182,7 @@ public class PanelControlSimulationTime extends JPanel {
 			}
 		});
 		
-		btnCancelSet = new JButton("È¡Ïû");
+		btnCancelSet = new JButton("å–æ¶ˆ");
 		btnCancelSet.setEnabled(false);
 		GridBagConstraints gbc_btnCancelSet = new GridBagConstraints();
 		gbc_btnCancelSet.gridx = 8;
@@ -223,7 +223,7 @@ public class PanelControlSimulationTime extends JPanel {
 			int wSize = Integer.parseInt(wSizeStr);	
 			UtilsSimulation.instance.setForcastWindowSizeInSeconds(wSize);
 		}catch(Exception e){
-			JOptionPane.showMessageDialog(this, "±ØĞëÎªintĞÍ£¡", "Ê±¼ä¼ä¸ôÉèÖÃÓĞÎó£¡", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "å¿…é¡»ä¸ºintå‹ï¼", "æ—¶é—´é—´éš”è®¾ç½®æœ‰è¯¯ï¼", JOptionPane.ERROR_MESSAGE);
 			txtForcastWindowSizeInSeconds.requestFocus();
 			return;
 		}
@@ -234,7 +234,7 @@ public class PanelControlSimulationTime extends JPanel {
 	}
 	public void doStartSimulation(){	
 		if (btnDoSet.isEnabled()){
-			int ret = JOptionPane.showConfirmDialog(this, "ÊÇ·ñ±£´æÉèÖÃ?");
+			int ret = JOptionPane.showConfirmDialog(this, "æ˜¯å¦ä¿å­˜è®¾ç½®?");
 			if (ret == JOptionPane.CANCEL_OPTION)
 				return;
 			if (ret == JOptionPane.YES_OPTION)

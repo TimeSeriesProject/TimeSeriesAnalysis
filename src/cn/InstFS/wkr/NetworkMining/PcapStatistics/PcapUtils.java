@@ -173,7 +173,7 @@ class RouteGen implements Callable
 				num=1;
 				continue;
 			}
-			//¼ÇÂ¼Ã¿Ò»´ÎÍ¨ĞÅµÄÍ¨ĞÅÂ·¾¶£¬Ò»´ÎÍ¨ĞÅÖ»¼ÇÂ¼Ò»´ÎÁ÷Á¿¡£
+			//è®°å½•æ¯ä¸€æ¬¡é€šä¿¡çš„é€šä¿¡è·¯å¾„ï¼Œä¸€æ¬¡é€šä¿¡åªè®°å½•ä¸€æ¬¡æµé‡ã€‚
 			if(!pre.getSrcIP().equals(data.getSrcIP())||!pre.getDstIP().equals(data.getDstIP())||pre.getSrcPort()!=data.getSrcPort()||pre.getDstPort()!=data.getDstPort())
 			{
 				updateRecords(pre);
@@ -276,13 +276,13 @@ class RouteGen implements Callable
 	}
 }
 /**
- * pcapÎÄ¼ş²Ù×÷Àà
+ * pcapæ–‡ä»¶æ“ä½œç±»
  * @author wsc
  *
  */
 public class PcapUtils {
-	private boolean SessionLevel=true;   //ÅĞ¶Ï¶ÁÈ¡µÄÊı¾İÊÇ·ñÊÇÒµÎñ²ãÊı¾İ
-	private ConcurrentHashMap<RecordKey,Integer> trafficRecords=new ConcurrentHashMap<RecordKey,Integer>(); //¼ÇÂ¼Á÷Á¿
+	private boolean SessionLevel=true;   //åˆ¤æ–­è¯»å–çš„æ•°æ®æ˜¯å¦æ˜¯ä¸šåŠ¡å±‚æ•°æ®
+	private ConcurrentHashMap<RecordKey,Integer> trafficRecords=new ConcurrentHashMap<RecordKey,Integer>(); //è®°å½•æµé‡
 	private ConcurrentHashMap<RecordKey,Integer> comRecords=new ConcurrentHashMap<RecordKey,Integer>(); 
 	TreeMap<RecordKey,Integer> sortedtrafficRecords=new TreeMap<RecordKey,Integer> ();
 	private ArrayList<File> fileList=new ArrayList<File>();
@@ -547,7 +547,7 @@ public class PcapUtils {
 		generateRoute(outpath+"\\routesrc",outpath);
 		generateTraffic(outpath);
 		status=Status.END;
-		System.out.println("½âÎö½áÊø");
+		System.out.println("è§£æç»“æŸ");
 		
 	}
 	private void getFileList(String fpath,String type)
@@ -577,7 +577,7 @@ public class PcapUtils {
 	private void readInput(String fpath,int type) throws FileNotFoundException{
 		File ff = new File(fpath);
 		if(ff.isFile()){
-			System.out.println(new Date() +"\t¿ªÊ¼¶ÁÈ¡:" + ff.getName());
+			System.out.println(new Date() +"\tå¼€å§‹è¯»å–:" + ff.getName());
 			if(SessionLevel){
 				if(type==0){
 					read2File(ff.getPath(),ff.getName());
@@ -587,7 +587,7 @@ public class PcapUtils {
 			}else{
 				read1File(ff.getPath());
 			}	
-			System.out.println(new Date() + "\t¶ÁÈ¡Íê±Ï£º" + ff.getName());
+			System.out.println(new Date() + "\tè¯»å–å®Œæ¯•ï¼š" + ff.getName());
 		}else{
 			File []files = ff.listFiles();
 			for(File f : files){
@@ -598,7 +598,7 @@ public class PcapUtils {
 				if(path.endsWith("pcap"))
 				{
 					if (f.isFile()){
-						System.out.println(new Date() +"\t¿ªÊ¼¶ÁÈ¡:" + f.getName());
+						System.out.println(new Date() +"\tå¼€å§‹è¯»å–:" + f.getName());
 						if(SessionLevel){
 							if(type==0){
 								read2File(f.getPath(),f.getName());
@@ -609,7 +609,7 @@ public class PcapUtils {
 						}else{
 							read1File(f.getPath());
 						}	
-						System.out.println(new Date() + "\t¶ÁÈ¡Íê±Ï:" + f.getName());
+						System.out.println(new Date() + "\tè¯»å–å®Œæ¯•:" + f.getName());
 					}
 					if(f.isDirectory())
 						readInput(f.getAbsolutePath(),type);
@@ -620,8 +620,8 @@ public class PcapUtils {
 	}
 	
 	/**
-	 * ´ÓÎÄ¼şÖĞ¶ÁÈ¡ÍøÂç²ã²ãÊı¾İ
-	 * @param fpath ÎÄ¼şÂ·¾¶
+	 * ä»æ–‡ä»¶ä¸­è¯»å–ç½‘ç»œå±‚å±‚æ•°æ®
+	 * @param fpath æ–‡ä»¶è·¯å¾„
 	 */
 	private void read1File(String fpath){
 		StringBuilder errSb = new StringBuilder();
@@ -675,12 +675,12 @@ public class PcapUtils {
 			}
 		}
 		pcap.close();
-		System.out.println(fpath + " --> ¹²" + num + "¸ö°ü£¡");
+		System.out.println(fpath + " --> å…±" + num + "ä¸ªåŒ…ï¼");
 	}
 	
 	/**
-	 * ´ÓÎÄ¼şÖĞ¶ÁÈ¡ÒµÎñ²ãÊı¾İ
-	 * @param fpath ÎÄ¼şÂ·¾¶
+	 * ä»æ–‡ä»¶ä¸­è¯»å–ä¸šåŠ¡å±‚æ•°æ®
+	 * @param fpath æ–‡ä»¶è·¯å¾„
 	 */
 	private void read2File(String fpath,String name){
 		String title=name.split("\\.")[0];
@@ -737,7 +737,7 @@ public class PcapUtils {
 				event.setProtoType(protoType+"");	
 			}
 			if (smtp){
-				//´óÓÚ80BµÄ°üÊÓÎªÊı¾İ°ü
+				//å¤§äº80Bçš„åŒ…è§†ä¸ºæ•°æ®åŒ…
 				if(event.getTraffic()>=30){
 					TCPStream stream = streamPool.getOrCreateStream(event);
 					streamPool.updateTraffic(stream, event, isTcpFIN);
@@ -758,7 +758,7 @@ public class PcapUtils {
 		}
 		streamPool.endAllStream();
 		pcap.close();
-		System.out.println(fpath + " --> ¹²" + num + "¸ö°ü£¡");
+		System.out.println(fpath + " --> å…±" + num + "ä¸ªåŒ…ï¼");
 	}
 	
 	private void directRead2File(String path,String name) throws FileNotFoundException{
@@ -773,7 +773,7 @@ public class PcapUtils {
 			e.printStackTrace();
 		}
 		streamPool.endAllStream();
-		System.out.println(path+" ¶ÁÈ¡Íê±Ï");
+		System.out.println(path+" è¯»å–å®Œæ¯•");
 	}
 	private String ipBytes2Str(byte[] ipBytes){
 		if (ipBytes == null)

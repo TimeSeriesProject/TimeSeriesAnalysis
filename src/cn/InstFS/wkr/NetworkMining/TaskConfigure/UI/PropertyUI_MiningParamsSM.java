@@ -16,8 +16,8 @@ public class PropertyUI_MiningParamsSM implements IObjectDescriptor<ParamsSM>{
 	ParamsSM core;
 	
 	String [] names = new String[]{"sizeWindow", "stepWindow", "minSeqLen", "minSupport"};
-	String []CnNames = new String[]{"Ê±¼ä´°³¤(s)", "²½³¤(s)", "×îĞ¡ĞòÁĞ³¤¶È", "×îĞ¡Ö§³Ö¶È(0-1)",
-			"¹ıÂËÌõ¼ş", "ÍÚ¾ò·½·¨", "ÍÚ¾ò²ÎÊı"};
+	String []CnNames = new String[]{"æ—¶é—´çª—é•¿(s)", "æ­¥é•¿(s)", "æœ€å°åºåˆ—é•¿åº¦", "æœ€å°æ”¯æŒåº¦(0-1)",
+			"è¿‡æ»¤æ¡ä»¶", "æŒ–æ˜æ–¹æ³•", "æŒ–æ˜å‚æ•°"};
 	HashMap<String, String> displayNames = new HashMap<String,String>();
 	
 	
@@ -30,7 +30,7 @@ public class PropertyUI_MiningParamsSM implements IObjectDescriptor<ParamsSM>{
 	}
 	@Override
 	public String getDisplayName() {
-		return "ÍÚ¾ò²ÎÊı";
+		return "æŒ–æ˜å‚æ•°";
 	}
 	
 	private String getDisplayNameOfStr(String str){
@@ -44,10 +44,10 @@ public class PropertyUI_MiningParamsSM implements IObjectDescriptor<ParamsSM>{
 	public List<EnhancedPropertyDescriptor> getProperties() {
 		List<EnhancedPropertyDescriptor>props = new ArrayList<EnhancedPropertyDescriptor>();
 
-		props.add(getPropDesc("sizeWindow", 0, "´°¿Ú´óĞ¡"));
-		props.add(getPropDesc("stepWindow", 0, "´°¿Ú²½³¤£¬¼´£º<br>ÓëÉÏÒ»´°¿ÚÏà±È£¬µ±Ç°´°¿ÚÔÚÊ±¼äÉÏÒÆ¶¯ÁË¶àÉÙ"));
-		props.add(getPropDesc("minSeqLen", 0, "ÍÚ¾ò³öÀ´µÄ×î¶ÌĞòÁĞ³¤¶È"));
-		props.add(getPropDesc("minSupport", 0, "×îĞ¡Ö§³Ö¶ÈÃÅÏŞ<br>ÖµÔ½Ğ¡£¬ÔòÍÚ¾òËÙ¶ÈÔ½Âı£¬ÍÚ¾ò³ö½á¹ûÔ½·á¸»<br>ÖµÔ½´ó£¬ÍÚ¾òËÙ¶ÈÔ½¿ì£¬µ«½á¹ûÏà¶Ô½ÏÉÙ"));
+		props.add(getPropDesc("sizeWindow", 0, "çª—å£å¤§å°"));
+		props.add(getPropDesc("stepWindow", 0, "çª—å£æ­¥é•¿ï¼Œå³ï¼š<br>ä¸ä¸Šä¸€çª—å£ç›¸æ¯”ï¼Œå½“å‰çª—å£åœ¨æ—¶é—´ä¸Šç§»åŠ¨äº†å¤šå°‘"));
+		props.add(getPropDesc("minSeqLen", 0, "æŒ–æ˜å‡ºæ¥çš„æœ€çŸ­åºåˆ—é•¿åº¦"));
+		props.add(getPropDesc("minSupport", 0, "æœ€å°æ”¯æŒåº¦é—¨é™<br>å€¼è¶Šå°ï¼Œåˆ™æŒ–æ˜é€Ÿåº¦è¶Šæ…¢ï¼ŒæŒ–æ˜å‡ºç»“æœè¶Šä¸°å¯Œ<br>å€¼è¶Šå¤§ï¼ŒæŒ–æ˜é€Ÿåº¦è¶Šå¿«ï¼Œä½†ç»“æœç›¸å¯¹è¾ƒå°‘"));
 
 		return props;
 	}

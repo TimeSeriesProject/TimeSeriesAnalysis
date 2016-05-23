@@ -32,7 +32,7 @@ public class Mallat {
 	public void waveletTrasfer(){
 		
 		if(layer>(Math.log(dataItems.getData().size())/Math.log(2))){
-			throw new RuntimeException("ĞòÁĞ³¤¶ÈÎŞ·¨·Ö½âµ½"+layer+"²ã");
+			throw new RuntimeException("åºåˆ—é•¿åº¦æ— æ³•åˆ†è§£åˆ°"+layer+"å±‚");
 		}
 		double[] nextCA=CA;
 		int translayer=layer;
@@ -52,7 +52,7 @@ public class Mallat {
 	
 	public void waveletInverseTransfer(){
 		if(!hasTransfer){
-			throw new RuntimeException("ĞòÁĞ»¹Î´±ä»»£¬ÎŞ·¨Äæ±ä»»");
+			throw new RuntimeException("åºåˆ—è¿˜æœªå˜æ¢ï¼Œæ— æ³•é€†å˜æ¢");
 		}
 		int itranslayer=layer;
 		while(itranslayer>0){
@@ -64,7 +64,7 @@ public class Mallat {
 	}
 	
 	/**
-	 * Ó²ãĞÖµÈ¥Ôë
+	 * ç¡¬é˜ˆå€¼å»å™ª
 	 */
 	public void hardDenoising(){
 		if(hasTransfer){
@@ -75,7 +75,7 @@ public class Mallat {
 				}
 			}
 		}else{
-			throw new RuntimeException("»¹Î´×ª»»£¬ÎŞ·¨È¥Ôë");
+			throw new RuntimeException("è¿˜æœªè½¬æ¢ï¼Œæ— æ³•å»å™ª");
 		}
 	}
 	
@@ -146,7 +146,7 @@ public class Mallat {
 			for(int k=0; k<dataLen; k++)
 	        {
 	            int p = n-2*k+filterLen-2;
-	            // ĞÅºÅÖØ¹¹
+	            // ä¿¡å·é‡æ„
 	            if((p>=0)&&(p<filterLen))
 	            {
 	            	nextCA[n] += wavelet.getLowFilterRec()[p]*CA[k] + wavelet.getHighFilterRec()[p]*CD[k];
@@ -193,7 +193,7 @@ public class Mallat {
 		if(hasTransfer){
 			return CDs;
 		}else{
-			throw new RuntimeException("»¹Î´±ä»»£¬ÎŞ·¨»ñµÃĞ¡²¨²ÎÊı");
+			throw new RuntimeException("è¿˜æœªå˜æ¢ï¼Œæ— æ³•è·å¾—å°æ³¢å‚æ•°");
 		}
 		
 	}

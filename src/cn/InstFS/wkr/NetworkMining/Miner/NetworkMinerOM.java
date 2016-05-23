@@ -1,6 +1,6 @@
 /**
- * Ê±¼äĞòÁĞ·ÖÎöMiner
- * ²ÉÓÃ¶¨Ê±Æ÷ÊµÏÖ¶¨Ê±ÔËĞĞ£¬´ó²¿·Ö¿ÉÒÔÖØĞÂĞ´
+ * æ—¶é—´åºåˆ—åˆ†æMiner
+ * é‡‡ç”¨å®šæ—¶å™¨å®ç°å®šæ—¶è¿è¡Œï¼Œå¤§éƒ¨åˆ†å¯ä»¥é‡æ–°å†™
  */
 
 
@@ -44,13 +44,13 @@ public class NetworkMinerOM implements INetworkMiner {
 	}
 	@Override
 	public boolean start() {
-		System.out.println("PanelShowResultsTSA   timer¿ªÊ¼");
+		System.out.println("PanelShowResultsTSA   timerå¼€å§‹");
 		if (timer != null){
-			UtilsUI.appendOutput(task.getTaskName() + " -- ÔçÒÑÆô¶¯£¡");
+			UtilsUI.appendOutput(task.getTaskName() + " -- æ—©å·²å¯åŠ¨ï¼");
 			return false;
 		}
 		if (timerTask != null && timerTask.isRunning() == true){
-			UtilsUI.appendOutput(task.getTaskName() + " -- ÉÏ´ÎÍÚ¾òÉĞÎ´½áÊø£¡");
+			UtilsUI.appendOutput(task.getTaskName() + " -- ä¸Šæ¬¡æŒ–æ˜å°šæœªç»“æŸï¼");
 			return false;
 		}
 		timer = new Timer();
@@ -59,7 +59,7 @@ public class NetworkMinerOM implements INetworkMiner {
 		isRunning = true;
 		task.setRunning(isRunning);
 //		TaskElement.modify1Task(task);		
-		UtilsUI.appendOutput(task.getTaskName() + " -- ¿ªÊ¼ÍÚ¾ò£¡");
+		UtilsUI.appendOutput(task.getTaskName() + " -- å¼€å§‹æŒ–æ˜ï¼");
 		return true;
 	}
 
@@ -76,7 +76,7 @@ public class NetworkMinerOM implements INetworkMiner {
 		
 		isRunning = false;
 		task.setRunning(isRunning);
-		UtilsUI.appendOutput(task.getTaskName() + " -- Í£Ö¹ÍÚ¾ò£¡");
+		UtilsUI.appendOutput(task.getTaskName() + " -- åœæ­¢æŒ–æ˜ï¼");
 		return true;
 	}
 
@@ -138,7 +138,7 @@ class OMTimerTask extends TimerTask{
 		isRunning = true;
 		ParamsTSA params = (ParamsTSA) task.getMiningParams();
 		
-		// ¶ÁÈ¡Êı¾İ µ±Miner ReusltsÖĞ´æÔÚÊı¾İÊ±£¬Ôò²»ÔÙ¶ÁÈ¡
+		// è¯»å–æ•°æ® å½“Miner Reusltsä¸­å­˜åœ¨æ•°æ®æ—¶ï¼Œåˆ™ä¸å†è¯»å–
 		DataItems dataItems = null;
 		if(results.getInputData()==null||results.getInputData().getLength()==0){
 			dataItems=reader.readInputByText();
@@ -168,10 +168,10 @@ class OMTimerTask extends TimerTask{
 			tsaMethod=new PointPatternDetection(dataItems,2,10);
 			results.getRetOM().setIslinkDegree(true);
 		}else{
-			throw new RuntimeException("·½·¨²»´æÔÚ£¡");
+			throw new RuntimeException("æ–¹æ³•ä¸å­˜åœ¨ï¼");
 		}
 		tsaMethod.TimeSeriesAnalysis();
-		results.getRetOM().setOutlies(tsaMethod.getOutlies());    //²éÕÒÒì³£
+		results.getRetOM().setOutlies(tsaMethod.getOutlies());    //æŸ¥æ‰¾å¼‚å¸¸
 		results.getRetOM().setHasOutlies(false);
 		if(tsaMethod.getOutlies()!=null){
 			DataItems outlies=tsaMethod.getOutlies();

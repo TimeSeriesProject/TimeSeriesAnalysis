@@ -68,7 +68,7 @@ public class DialogSettingTask extends JDialog {
 //		contentPane.setLayout(new FlowLayout());
         setContentPane(contentPane);
 
-        setTitle("»ù±¾ÊÂ¼şĞòÁĞÅäÖÃ");
+        setTitle("åŸºæœ¬äº‹ä»¶åºåˆ—é…ç½®");
 
 
         contentPane.add(new PanelConfigBaseTask(), BorderLayout.CENTER);
@@ -84,60 +84,60 @@ public class DialogSettingTask extends JDialog {
 //        jt.setEnabled(false);
 //        DefaultTableModel tableModel=new DefaultTableModel(19,2);
 //        TaskElement tk=new TaskElement();
-//        //Îªtable¸³Öµ
-//        tableModel.setValueAt("ÈÎÎñÃû×Ö",0,0);
+//        //ä¸ºtableèµ‹å€¼
+//        tableModel.setValueAt("ä»»åŠ¡åå­—",0,0);
 //        tableModel.setValueAt(tk.getTaskName(),0,1);
-//        tableModel.setValueAt("ËµÃ÷",1,0);
+//        tableModel.setValueAt("è¯´æ˜",1,0);
 //        tableModel.setValueAt(tk.getComments(),1,1);
-//        tableModel.setValueAt("ÍÚ¾ò¶ÔÏó",2,0);
+//        tableModel.setValueAt("æŒ–æ˜å¯¹è±¡",2,0);
 //        tableModel.setValueAt(tk.getMiningObject(),2,1);
-//        tableModel.setValueAt("ÀëÉ¢»¯·½·¨",3,0);
+//        tableModel.setValueAt("ç¦»æ•£åŒ–æ–¹æ³•",3,0);
 //        tableModel.setValueAt(tk.getDiscreteMethod(),3,1);
-//        tableModel.setValueAt("ÀëÉ¢»¯Î¬Êı",4,0);
+//        tableModel.setValueAt("ç¦»æ•£åŒ–ç»´æ•°",4,0);
 //        tableModel.setValueAt(tk.getDiscreteDimension(),4,1);
-//        tableModel.setValueAt("ÀëÉ¢»¯ºó²ÉÓÃµÄ¶Ëµã",5,0);
+//        tableModel.setValueAt("ç¦»æ•£åŒ–åé‡‡ç”¨çš„ç«¯ç‚¹",5,0);
 //        tableModel.setValueAt(tk.getDiscreteEndNodes(),5,1);
-//        tableModel.setValueAt("ÍÚ¾òËã·¨",6,0);
+//        tableModel.setValueAt("æŒ–æ˜ç®—æ³•",6,0);
 //        tableModel.setValueAt(tk.getMiningAlgo(),6,1);
-//        tableModel.setValueAt("ÈÎÎñ·¶Î§",7,0);
+//        tableModel.setValueAt("ä»»åŠ¡èŒƒå›´",7,0);
 //        tableModel.setValueAt(tk.getTaskRange(),7,1);
-//        tableModel.setValueAt("Ñ¡Ôñ½ÚµãÖµ",8,0);
+//        tableModel.setValueAt("é€‰æ‹©èŠ‚ç‚¹å€¼",8,0);
 //        tableModel.setValueAt(tk.getRange(),8,1);
-//        tableModel.setValueAt("Ê±¼äÁ£¶È",9,0);
+//        tableModel.setValueAt("æ—¶é—´ç²’åº¦",9,0);
 //        tableModel.setValueAt(tk.getGranularity(),9,1);
-//        tableModel.setValueAt("Êı¾İ¾ÛºÏ·½·¨",10,0);
+//        tableModel.setValueAt("æ•°æ®èšåˆæ–¹æ³•",10,0);
 //        tableModel.setValueAt(tk.getAggregateMethod(),10,1);
-//        tableModel.setValueAt("¹ıÂËÌõ¼ş",11,0);
+//        tableModel.setValueAt("è¿‡æ»¤æ¡ä»¶",11,0);
 //        tableModel.setValueAt(tk.getFilterCondition(),11,1);
-//        tableModel.setValueAt("ÍÚ¾òËã·¨",12,0);
+//        tableModel.setValueAt("æŒ–æ˜ç®—æ³•",12,0);
 //        tableModel.setValueAt(tk.getMiningMethod(),12,1);
-//        tableModel.setValueAt("ÍÚ¾ò²ÎÊı",13,0);
+//        tableModel.setValueAt("æŒ–æ˜å‚æ•°",13,0);
 //        tableModel.setValueAt(tk.getMiningParams(),13,1);
-//        tableModel.setValueAt("ÆğÊ¼Ê±¼ä",14,0);
+//        tableModel.setValueAt("èµ·å§‹æ—¶é—´",14,0);
 //        tableModel.setValueAt(tk.getDateStart(),14,1);
-//        tableModel.setValueAt("½áÊøÊ±¼ä",15,0);
+//        tableModel.setValueAt("ç»“æŸæ—¶é—´",15,0);
 //        tableModel.setValueAt(tk.getDateEnd(),15,1);
-//        tableModel.setValueAt("Êı¾İÀ´Ô´",16,0);
+//        tableModel.setValueAt("æ•°æ®æ¥æº",16,0);
 //        tableModel.setValueAt(tk.getDataSource(),16,1);
-//        tableModel.setValueAt("ÎÄ±¾Â·¾¶",17,0);
+//        tableModel.setValueAt("æ–‡æœ¬è·¯å¾„",17,0);
 //        tableModel.setValueAt(tk.getSourcePath(),17,1);
-//        tableModel.setValueAt("Êı¾İ¿â",18,0);
+//        tableModel.setValueAt("æ•°æ®åº“",18,0);
 //        tableModel.setValueAt(tk.getSqlStr(),18,1);
 //        jt.setModel(tableModel);
 //        contentPane.add(jt);
 //        add(jt,BorderLayout.CENTER);
-        //ÉèÖÃÊäÈë¿ò
+        //è®¾ç½®è¾“å…¥æ¡†
 //        JScrollPane scrollPane = new JScrollPane();
 //        add(scrollPane);
 //
 //        txtArea = new JTextArea();
 //        txtArea.setRows(3);
 //        scrollPane.setViewportView(txtArea);
-        //ÉèÖÃ°´Å¥
+        //è®¾ç½®æŒ‰é’®
 //        JPanel panel = new JPanel();
 //        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 //
-//        JButton btnSave = new JButton("±£´æ");
+//        JButton btnSave = new JButton("ä¿å­˜");
 //        btnSave.setVisible(true);
 //        panel.add(btnSave);
 //        btnSave.addActionListener(new ActionListener() {
@@ -148,7 +148,7 @@ public class DialogSettingTask extends JDialog {
 //                saveConfigure(task,taskUI);
 //            }
 //        });
-//        JButton btnSetting = new JButton("¸ß¼¶ÉèÖÃ");
+//        JButton btnSetting = new JButton("é«˜çº§è®¾ç½®");
 //        btnSetting.setVisible(true);
 //        panel.add(btnSetting);
 //        btnSetting.addActionListener(new ActionListener() {
@@ -162,7 +162,7 @@ public class DialogSettingTask extends JDialog {
 //
 ////        panel.add(btnSave);
 //
-//        setTitle("ÊÂ¼şÄ¬ÈÏĞòÁĞÅäÖÃ");
+//        setTitle("äº‹ä»¶é»˜è®¤åºåˆ—é…ç½®");
 //
 //
 ////        contentPane.add(new PanelConfigTask(), BorderLayout.CENTER);
@@ -175,11 +175,11 @@ public class DialogSettingTask extends JDialog {
 //            TaskElement.del1Task(task);
 //        }
 //
-//        // ĞÂ½¨ÈÎÎñ
+//        // æ–°å»ºä»»åŠ¡
 //        task = taskUI.getCore();
 ////        task.setSqlStr(txtArea.getText());
 //        if (TaskElement.add1Task(task, true)){
-//            JOptionPane.showMessageDialog(this, "±£´æ³É¹¦£¡");
+//            JOptionPane.showMessageDialog(this, "ä¿å­˜æˆåŠŸï¼");
 //            taskUI.setCore(new TaskElement(task));
 //            if (isRunning)
 //                NetworkMinerFactory.getInstance().startMiner(task);

@@ -71,7 +71,7 @@ public class MutiProtocolFrame extends JFrame{
     JTabbedPane tabbedPane;
     protected int miniMethodIndex=0;
     protected int miningObjectIndex=0;
-    Map<Integer,MouseListener> popupListeners= new   HashMap<Integer,MouseListener>(); //µ¯³ö²Ëµ¥¼àÌıÆ÷
+    Map<Integer,MouseListener> popupListeners= new   HashMap<Integer,MouseListener>(); //å¼¹å‡ºèœå•ç›‘å¬å™¨
 	int ipIndex=0;
 	int protocolIndex=0;
 	/**
@@ -110,7 +110,7 @@ public class MutiProtocolFrame extends JFrame{
 
 					
 					MutiProtocolFrame window = new MutiProtocolFrame();
-//					window.setTitle("ÍøÂç¹æÂÉÍÚ¾ò");
+//					window.setTitle("ç½‘ç»œè§„å¾‹æŒ–æ˜");
 //					window.setModel(networkMinerFactory.allMiners);
 					//window.loadModel();
 					
@@ -140,8 +140,8 @@ public class MutiProtocolFrame extends JFrame{
 //		miningMethods.add(method);
 		miningMethods.add(MiningMethod.MiningMethods_FrequenceItemMining);
 		miningObjects.add("traffic");
-		miningObjects.add("Í¨ĞÅ´ÎÊı");
-//		miningObjects.add("Í¨ĞÅÌøÊı");
+		miningObjects.add("é€šä¿¡æ¬¡æ•°");
+//		miningObjects.add("é€šä¿¡è·³æ•°");
 	}
 
 	
@@ -150,10 +150,10 @@ public class MutiProtocolFrame extends JFrame{
 		NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
 		Map<TaskElement, INetworkMiner> allMiners = networkMinerFactory.allMiners;
 		Map<TaskElement, INetworkMiner> miners=new HashMap<TaskElement, INetworkMiner> ();
-		for(Map.Entry<TaskElement, INetworkMiner> entry:allMiners.entrySet()) //µÃµ½ĞèÒªµÄÈÎÎñ
+		for(Map.Entry<TaskElement, INetworkMiner> entry:allMiners.entrySet()) //å¾—åˆ°éœ€è¦çš„ä»»åŠ¡
 		{
 			TaskElement task = entry.getKey();
-			if(task.getTaskRange().compareTo(TaskRange.SingleNodeRange)==0) //±È½ÏµÄÊÇË³Ğò
+			if(task.getTaskRange().compareTo(TaskRange.SingleNodeRange)==0) //æ¯”è¾ƒçš„æ˜¯é¡ºåº
 			{
 				miners.put(entry.getKey(),entry.getValue());
 			}
@@ -172,7 +172,7 @@ public class MutiProtocolFrame extends JFrame{
 				
 				Map<TaskElement, INetworkMiner> tmpminers=new HashMap<TaskElement, INetworkMiner> ();
 				TreeMap<String,TreeMap<String,TaskElement>> taskTree = new TreeMap<String,TreeMap<String,TaskElement>>();
-				for(Map.Entry<TaskElement, INetworkMiner> entry:miners.entrySet()) //µÃµ½ĞèÒªµÄÈÎÎñ
+				for(Map.Entry<TaskElement, INetworkMiner> entry:miners.entrySet()) //å¾—åˆ°éœ€è¦çš„ä»»åŠ¡
 				{
 					
 					TaskElement task = entry.getKey();
@@ -197,7 +197,7 @@ public class MutiProtocolFrame extends JFrame{
 				for(Entry<String, TreeMap<String, TaskElement>>  entry:taskTree.entrySet())
 				{
 					String ip =entry.getKey();
-					int len =ip.length();   //×Ö·û¾ÓÖĞ¶ÔÆë
+					int len =ip.length();   //å­—ç¬¦å±…ä¸­å¯¹é½
 					int w =(28-len)/2;
 					String pad=String.format("%"+w+"s", " ");
 					String str =pad+ip+pad;
@@ -206,7 +206,7 @@ public class MutiProtocolFrame extends JFrame{
 					for(Entry<String, TaskElement> subEntry:entry.getValue().entrySet())
 					{
 						String protocol =subEntry.getKey();
-						int len1 =protocol.length();   //×Ö·û¾ÓÖĞ¶ÔÆë
+						int len1 =protocol.length();   //å­—ç¬¦å±…ä¸­å¯¹é½
 						int w1 =(20-len1)/2;
 						String pad1=String.format("%"+w1+"s", " ");
 						String str1 =pad1+protocol+pad1;
@@ -250,7 +250,7 @@ public class MutiProtocolFrame extends JFrame{
 	}
 	
     void initialize() {
-		this.setTitle(("¶àÒµÎñ¹ØÁª·ÖÎö"));
+		this.setTitle(("å¤šä¸šåŠ¡å…³è”åˆ†æ"));
 		setBounds(100, 100, 1500, 900);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		try { 
@@ -258,25 +258,25 @@ public class MutiProtocolFrame extends JFrame{
            
 			    UIManager.setLookAndFeel( new  SubstanceBusinessBlackSteelLookAndFeel());
 	            JFrame.setDefaultLookAndFeelDecorated(true);  
-	            //ÉèÖÃÖ÷Ìâ   
+	            //è®¾ç½®ä¸»é¢˜   
 //	            SubstanceLookAndFeel.setCurrentTheme(new SubstanceBottleGreenTheme());  
-	            //ÉèÖÃ°´Å¥Íâ¹Û  
+	            //è®¾ç½®æŒ‰é’®å¤–è§‚  
 //	            SubstanceLookAndFeel.setSkin(new NebulaBrickWallSkin());
 //	            SubstanceLookAndFeel.setCurrentButtonShaper(new  org.jvnet.substance.button.ClassicButtonShaper());  
-//	            //ÉèÖÃË®Ó¡  
+//	            //è®¾ç½®æ°´å°  
 //	           // SubstanceLookAndFeel.setCurrentWatermark(new SubstanceBinaryWatermark());  
-//	            //ÉèÖÃ±ß¿ò  
+//	            //è®¾ç½®è¾¹æ¡†  
 	           
-//                SubstanceSkin skin = new SaharaSkin().withWatermark(watermark); //³õÊ¼»¯ÓĞË®Ó¡µÄÆ¤·ô
+//                SubstanceSkin skin = new SaharaSkin().withWatermark(watermark); //åˆå§‹åŒ–æœ‰æ°´å°çš„çš®è‚¤
 
 //                UIManager.setLookAndFeel(new SubstanceOfficeBlue2007LookAndFeel());
-//                SubstanceLookAndFeel.setSkin(skin); //ÉèÖÃÆ¤·ô
+//                SubstanceLookAndFeel.setSkin(skin); //è®¾ç½®çš®è‚¤
               
                
 	            SubstanceLookAndFeel.setCurrentBorderPainter(new StandardBorderPainter());  
-	            //ÉèÖÃ½¥±ääÖÈ¾   
+	            //è®¾ç½®æ¸å˜æ¸²æŸ“   
 	            SubstanceLookAndFeel.setCurrentGradientPainter(new StandardGradientPainter());  
-	            //ÉèÖÃ±êÌâ  
+	            //è®¾ç½®æ ‡é¢˜  
 	            SubstanceLookAndFeel.setCurrentTitlePainter( new MatteHeaderPainter());     
 			
 			 

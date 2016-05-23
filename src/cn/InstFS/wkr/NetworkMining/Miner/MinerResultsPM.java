@@ -9,10 +9,10 @@ import cn.InstFS.wkr.NetworkMining.Params.ParamsPM;
 public class MinerResultsPM{
 	boolean hasPeriod;
 	boolean hasPartialPeriod;
-	ParamsPM params;	// »òÕß java.util.Properties params;
+	ParamsPM params;	// æˆ–è€… java.util.Properties params;
 	long period;
-	private Double featureValue;	// Ö¸±êÖµ
-	private Double[] featureValues;	// ²»Í¬ÖÜÆÚ¶ÔÓ¦µÄÖ¸±êÖµ£¬ÈçfeatureValues[2]´ú±íÖÜÆÚÎª2Ê±µÄÖ¸±êÖµ
+	private Double featureValue;	// æŒ‡æ ‡å€¼
+	private Double[] featureValues;	// ä¸åŒå‘¨æœŸå¯¹åº”çš„æŒ‡æ ‡å€¼ï¼Œå¦‚featureValues[2]ä»£è¡¨å‘¨æœŸä¸º2æ—¶çš„æŒ‡æ ‡å€¼
 	private DataItems distibutePeriod;
 	private DataItems minDistributePeriod;
 	private DataItems maxDistributePeriod;

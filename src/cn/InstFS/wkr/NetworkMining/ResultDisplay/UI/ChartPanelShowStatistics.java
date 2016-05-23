@@ -46,15 +46,15 @@ public class ChartPanelShowStatistics extends JPanel {
     Shape itemShape; // = new Ellipse2D.Double(-2,-2, 4, 4);
 
     private ChartPanelShowStatistics() {
-        // ´´½¨Ö÷ÌâÑùÊ½
+        // åˆ›å»ºä¸»é¢˜æ ·å¼
         StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
-        // ÉèÖÃ±êÌâ×ÖÌå
-        standardChartTheme.setExtraLargeFont(new Font("Á¥Êé", Font.BOLD, 15));
-        // ÉèÖÃÍ¼ÀıµÄ×ÖÌå
-        standardChartTheme.setRegularFont(new Font("ËÎÊé", Font.PLAIN, 10));
-        // ÉèÖÃÖáÏòµÄ×ÖÌå
-        standardChartTheme.setLargeFont(new Font("ËÎÊé", Font.PLAIN, 10));
-        // Ó¦ÓÃÖ÷ÌâÑùÊ½
+        // è®¾ç½®æ ‡é¢˜å­—ä½“
+        standardChartTheme.setExtraLargeFont(new Font("éš¶ä¹¦", Font.BOLD, 15));
+        // è®¾ç½®å›¾ä¾‹çš„å­—ä½“
+        standardChartTheme.setRegularFont(new Font("å®‹ä¹¦", Font.PLAIN, 10));
+        // è®¾ç½®è½´å‘çš„å­—ä½“
+        standardChartTheme.setLargeFont(new Font("å®‹ä¹¦", Font.PLAIN, 10));
+        // åº”ç”¨ä¸»é¢˜æ ·å¼
         ChartFactory.setChartTheme(standardChartTheme);
 
         setLayout(new BorderLayout());
@@ -72,9 +72,9 @@ public class ChartPanelShowStatistics extends JPanel {
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
 
         renderer.setBaseShapesVisible(false);
-//		renderer.setBaseShape(itemShape);	// ºÃÏñ²»¹ÜÓÃ£¬±ØĞëÓÃsetSeriesShape
+//		renderer.setBaseShape(itemShape);	// å¥½åƒä¸ç®¡ç”¨ï¼Œå¿…é¡»ç”¨setSeriesShape
         renderer.setBaseLinesVisible(true);
-//		renderer.setBasePaint(new Color(0));	// ºÃÏñ²»¹ÜÓÃ£¬±ØĞëÓÃsetSeriesPaint
+//		renderer.setBasePaint(new Color(0));	// å¥½åƒä¸ç®¡ç”¨ï¼Œå¿…é¡»ç”¨setSeriesPaint
 
         itemShape = ShapeUtilities.createDiamond((float) 3);
         renderer.setSeriesShape(0, itemShape);
@@ -108,7 +108,7 @@ public class ChartPanelShowStatistics extends JPanel {
             return;
         TimeSeriesCollection tsc = new TimeSeriesCollection();
 
-        TimeSeries ts = new TimeSeries("ĞòÁĞÖµ");
+        TimeSeries ts = new TimeSeries("åºåˆ—å€¼");
 
         int len = items.getLength();
         for (int i = 0; i < len; i++) {

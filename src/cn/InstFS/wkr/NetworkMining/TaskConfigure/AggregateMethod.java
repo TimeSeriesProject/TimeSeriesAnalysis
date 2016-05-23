@@ -1,11 +1,11 @@
 package cn.InstFS.wkr.NetworkMining.TaskConfigure;
 
 public enum AggregateMethod {
-	Aggregate_MAX("×î´óÖµ"),
-	Aggregate_MIN("×îĞ¡Öµ"),
-	Aggregate_SUM("ÇóºÍ"),
-	Aggregate_MEAN("Æ½¾ù"),
-	Aggregate_NONE("ÎŞ");
+	Aggregate_MAX("æœ€å¤§å€¼"),
+	Aggregate_MIN("æœ€å°å€¼"),
+	Aggregate_SUM("æ±‚å’Œ"),
+	Aggregate_MEAN("å¹³å‡"),
+	Aggregate_NONE("æ— ");
 	
 	final String value;
 	AggregateMethod(String val){

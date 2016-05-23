@@ -14,24 +14,24 @@ import cn.InstFS.wkr.NetworkMining.Exception.NotFoundDicreseValueException;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 public class averageEntropyPM implements IMinerPM{
-	private final int dimension;//ÀëÉ¢µÄÎ¬¶È
+	private final int dimension;//ç¦»æ•£çš„ç»´åº¦
 	private TaskElement task;
-	private Boolean hasPeriod; //ÊÇ·ñÓĞÖÜÆÚ
-	private int predictPeriod;   //ÖÜÆÚ³¤¶È
+	private Boolean hasPeriod; //æ˜¯å¦æœ‰å‘¨æœŸ
+	private int predictPeriod;   //å‘¨æœŸé•¿åº¦
 	private List<Integer> existPeriod;
-	private DataItems di; //µ±Ç°Ê±¼äÇø¼äµÄÊı¾İ¼¯
+	private DataItems di; //å½“å‰æ—¶é—´åŒºé—´çš„æ•°æ®é›†
 	private DataItems oriDi;
-	private Date startTime;    //ĞòÁĞÖĞµÄÆğÊ¼Ê±¼ä
-	private DataItems itemsInPeriod;  //Ò»¸öÖÜÆÚÄÚµÄitems
+	private Date startTime;    //åºåˆ—ä¸­çš„èµ·å§‹æ—¶é—´
+	private DataItems itemsInPeriod;  //ä¸€ä¸ªå‘¨æœŸå†…çš„items
 	private DataItems minItemsInPeriod;
 	private DataItems maxItemsInPeriod;
 	private Double minEntropy = Double.MAX_VALUE;  
-    private Double []entropies;   //´æ´¢Ã¿¸ö¿ÉÄÜÖÜÆÚµÄÆ½¾ùìØ»òÆ½¾ùERP¾àÀë
+    private Double []entropies;   //å­˜å‚¨æ¯ä¸ªå¯èƒ½å‘¨æœŸçš„å¹³å‡ç†µæˆ–å¹³å‡ERPè·ç¦»
     private HashMap<Integer, Integer[]> predictValuesMap;
     private HashMap<Integer, Integer[]> minPredictValuesMap;
     private HashMap<Integer, Integer[]> maxPredictValuesMap;
-	private double threshold;  //ÊÇ·ñ¾ßÓĞÖÜÆÚµÄãĞÖµ
-	private int lastNumIndexInPeriod;//×îºóÒ»¸öÊıÔÚÖÜÆÚÖĞµÄÎ»ÖÃ
+	private double threshold;  //æ˜¯å¦å…·æœ‰å‘¨æœŸçš„é˜ˆå€¼
+	private int lastNumIndexInPeriod;//æœ€åä¸€ä¸ªæ•°åœ¨å‘¨æœŸä¸­çš„ä½ç½®
 	private double confidence;
 	
 	private Map<String, List<Integer>> existPeriodOfNonNumDataItems;
@@ -66,9 +66,9 @@ public class averageEntropyPM implements IMinerPM{
 	}
 	
 	/**
-	 * »ñÈ¡valueÖµÔÚdimensionÖĞµÄÎ¬¶ÈĞòºÅ
+	 * è·å–valueå€¼åœ¨dimensionä¸­çš„ç»´åº¦åºå·
 	 * @param value
-	 * @return ĞòºÅ
+	 * @return åºå·
 	 * @throws NotFoundDicreseValueException
 	 */
 	private int getValueIndex(String value) throws NotFoundDicreseValueException {
@@ -83,23 +83,23 @@ public class averageEntropyPM implements IMinerPM{
 		throw new NotFoundDicreseValueException(value+" not exist");	
 	}
 	/**
-	 * ¸ù¾İµÚÒ»¸öµãµÄÆğÊ¼Ê±¼ästartTime£¬»ñÈ¡dËù´ú±íµÄÊ±¼äÔÚÒ»¸öÖÜÆÚÄÚµÄĞòºÅ£¨´Ó1¿ªÊ¼£©
-	 * @param d			Ê±¼äÖµ
-	 * @param period	ÖÜÆÚÖµ
-	 * @return ÖÜÆÚÄÚĞòºÅ
+	 * æ ¹æ®ç¬¬ä¸€ä¸ªç‚¹çš„èµ·å§‹æ—¶é—´startTimeï¼Œè·å–dæ‰€ä»£è¡¨çš„æ—¶é—´åœ¨ä¸€ä¸ªå‘¨æœŸå†…çš„åºå·ï¼ˆä»1å¼€å§‹ï¼‰
+	 * @param d			æ—¶é—´å€¼
+	 * @param period	å‘¨æœŸå€¼
+	 * @return å‘¨æœŸå†…åºå·
 	 */
 	private int getTimeIndex(Date d, int period){
-		double diffTime = (double)(d.getTime() - startTime.getTime()) / 1000.0;	// ¾àÀëÆğÊ¼µãµÄÃëÊı
+		double diffTime = (double)(d.getTime() - startTime.getTime()) / 1000.0;	// è·ç¦»èµ·å§‹ç‚¹çš„ç§’æ•°
 		int granularity = task.getGranularity();
 		return (int)(diffTime / granularity) % period + 1;
 	}
 	
 	/**
-	 * Ô¤²âÖÜÆÚºÍ¸ÃÖÜÆÚÄÚ¸÷Á£¶ÈÖĞÀëÉ¢ÖµµÄ¸ÅÂÊ·Ö²¼
+	 * é¢„æµ‹å‘¨æœŸå’Œè¯¥å‘¨æœŸå†…å„ç²’åº¦ä¸­ç¦»æ•£å€¼çš„æ¦‚ç‡åˆ†å¸ƒ
 	 */
 	public void predictPeriod(){
 		if(!di.isDiscretized()){
-			throw new RuntimeException("Æ½¾ùìØËã·¨ÒªÇóÊı¾İÀëÉ¢»¯");
+			throw new RuntimeException("å¹³å‡ç†µç®—æ³•è¦æ±‚æ•°æ®ç¦»æ•£åŒ–");
 		}
 		int numItems=di.getLength();
 		int maxPeriod = (numItems/2>300)?300:numItems/2;
@@ -136,10 +136,10 @@ public class averageEntropyPM implements IMinerPM{
 		int maxPeriod = Math.min(numItems/2, 300);
 		entropies = new Double[maxPeriod];
 		while((period+1)<= maxPeriod){
-			period++;	//ÖÜÆÚµİ¼Ó
+			period++;	//å‘¨æœŸé€’åŠ 
 			double entropy=0.0;
 			double[][] data=new double[period+1][dimension];
-			//³õÊ¼»¯ÎªÁã
+			//åˆå§‹åŒ–ä¸ºé›¶
 			for(int i=1;i<=period;i++){
 				for(int j=0;j<dimension;j++){
 					data[i][j]=0.0;
@@ -168,15 +168,15 @@ public class averageEntropyPM implements IMinerPM{
 					}
 				}
 			}
-			System.out.println("ÖÜÆÚ:"+period+" Æ½¾ùìØ:"+(entropy/period)+" ìØ£º"+entropy);
+			System.out.println("å‘¨æœŸ:"+period+" å¹³å‡ç†µ:"+(entropy/period)+" ç†µï¼š"+entropy);
 			entropies[period - 1] = (entropy/period);
 		}
 	}
 	
 	/**
-	 * È·¶¨ÖÜÆÚÊÇ·ñ´æÔÚ£¬Èç¹û´æÔÚ¼ÆËãÖÜÆÚÄÚµÄ·Ö²¼
-	 * È·¶¨×îĞ¡ìØ
-	 * @param maxPeriod ³¢ÊÔµÄÖÜÆÚ¸öÊı
+	 * ç¡®å®šå‘¨æœŸæ˜¯å¦å­˜åœ¨ï¼Œå¦‚æœå­˜åœ¨è®¡ç®—å‘¨æœŸå†…çš„åˆ†å¸ƒ
+	 * ç¡®å®šæœ€å°ç†µ
+	 * @param maxPeriod å°è¯•çš„å‘¨æœŸä¸ªæ•°
 	 */
 	private void isPeriodExist(int maxPeriod,String item,List<String>seq){
 		itemsInPeriod=new DataItems();
@@ -244,7 +244,7 @@ public class averageEntropyPM implements IMinerPM{
 			}
 		}
 		predictPeriod=possiPeriod;
-		confidence=ratios;        //¸Ã¼ì²âÖÜÆÚµÄÖÃĞÅ¶È
+		confidence=ratios;        //è¯¥æ£€æµ‹å‘¨æœŸçš„ç½®ä¿¡åº¦
 		
 		for(int i=1;i<maxPeriod;i++){
 			if(entropies[i]<minEntropy){

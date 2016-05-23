@@ -33,7 +33,7 @@ public class MainProc extends JPanel  implements IResultsDisplayer{
 	}
 	public MainProc() {
 		setLayout(new GridLayout());
-		JButton btnPM = new JButton("测试周期模式发现");
+		JButton btnPM = new JButton("娴嬭瘯鍛ㄦ湡妯″紡鍙戠幇");
 		add(btnPM);
 		btnPM.addActionListener(new ActionListener() {			
 			@Override
@@ -47,7 +47,7 @@ public class MainProc extends JPanel  implements IResultsDisplayer{
 		TaskElement task = TaskElement.TSAExamplePM;
 		TaskElement.add1Task(task, false);
 		INetworkMiner miner = NetworkMinerFactory.getInstance().createMiner(task);
-		miner.setResultsDisplayer(this);//设置result display
+		miner.setResultsDisplayer(this);//璁剧疆result display
 		miner.start();
 	}
 	@Override

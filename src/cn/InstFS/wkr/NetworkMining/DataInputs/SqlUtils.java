@@ -20,23 +20,23 @@ public class SqlUtils{
 	
 	public static String configFileString="./configs/configuration.xml";
 	
-	//³¢ÊÔ¶ÁÈ¡ÅäÖÃÎÄ¼ş£¬ÈôÅäÖÃÎÄ¼şÃ»ÓĞÅäÖÃ£¬ÔòÖÃÎªÄ¬ÈÏÖµ
+	//å°è¯•è¯»å–é…ç½®æ–‡ä»¶ï¼Œè‹¥é…ç½®æ–‡ä»¶æ²¡æœ‰é…ç½®ï¼Œåˆ™ç½®ä¸ºé»˜è®¤å€¼
 	public static String DB_DIRVER="com.mysql.jdbc.Driver";
 	public static String DB_URL="jdbc:mysql://localhost:3306/57suo?useUnicode=true&amp;characterEncoding=UTF-8";
 	public static String DB_USER="root";
 	public static String DB_PASSWD="dmlab";
-	public static String DB_TABLE = "ÊÂ¼ş";
+	public static String DB_TABLE = "äº‹ä»¶";
 	
 	private Connection connection=null;
 	
 	public SqlUtils(){
 		/**
-		 * ³¢ÊÔ¶ÁÈ¡ÅäÖÃÎÄ¼ş£¬ÈôÅäÖÃÎÄ¼ş²»´æÔÚÔò¶ÁÈ¡Ä¬ÈÏÖµ
+		 * å°è¯•è¯»å–é…ç½®æ–‡ä»¶ï¼Œè‹¥é…ç½®æ–‡ä»¶ä¸å­˜åœ¨åˆ™è¯»å–é»˜è®¤å€¼
 		 */
 		File configFile=new File(configFileString);
 		Properties properties=new Properties();
 		if(!configFile.exists()){
-			new File(configFile.getParent()).mkdir();//´´½¨configÎÄ¼ş¼Ğ
+			new File(configFile.getParent()).mkdir();//åˆ›å»ºconfigæ–‡ä»¶å¤¹
 			Field[] fields=SqlUtils.class.getFields();
 			for(Field field:fields){
 				if(!field.getName().equals("configFileString")){					

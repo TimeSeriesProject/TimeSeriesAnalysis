@@ -217,7 +217,7 @@ public class PcapParser {
 		    		continue;
 		    	}
 		    }
-		    else if(header.getLinktype()==1) //ÒÔÌ«Íø
+		    else if(header.getLinktype()==1) //ä»¥å¤ªç½‘
 		    {
 		    	 m=is.read(buffer,0,14);
 		    	 datalength+=14;
@@ -254,7 +254,7 @@ public class PcapParser {
 		    m=is.read(buffer_2);
 		    datalength+=2;
 		    data.setDstPort(byteArrayToPort(buffer_2, 0));
-//		    int left=data.getpLength()-datalength;//packet dataÖĞÎ´¶ÁµÄÁ÷³¤¶È
+//		    int left=data.getpLength()-datalength;//packet dataä¸­æœªè¯»çš„æµé•¿åº¦
 		    
 //		    int HanNum=left/100;
 //		    if(HanNum>0){
@@ -332,7 +332,7 @@ public class PcapParser {
 	 }
 
 		 /**
-		  * ·´×ªÊı×é
+		  * åè½¬æ•°ç»„
 		  * @param arr
 		  */
 	 private static void reverseByteArray(byte[] arr){

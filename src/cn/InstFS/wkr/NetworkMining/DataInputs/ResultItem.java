@@ -10,7 +10,7 @@ public class ResultItem
 		return pointList;
 	}
 	/**
-	 * ¸´ÖÆÄÚÈİ¶ø²»ÊÇÒıÓÃ
+	 * å¤åˆ¶å†…å®¹è€Œä¸æ˜¯å¼•ç”¨
 	 * @param pointList
 	 */
 	public void setPointList(ArrayList<Integer> pointList) {

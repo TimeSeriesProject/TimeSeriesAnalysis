@@ -120,7 +120,7 @@ class ProtocolMinerTask extends TimerTask{
 		results.setDateProcess(UtilsSimulation.instance.getCurTime());
 		isRunning = true;
 		
-		//当Miner Reuslts中存在数据时，则不再读取
+		//褰揗iner Reuslts涓瓨鍦ㄦ暟鎹椂锛屽垯涓嶅啀璇诲彇
 		Map<String,List<ProtocolAssociationResult>> protocolResult = null;
 		List<TaskElement> tasks=taskCombination.getTasks();
 		for(TaskElement task:tasks){

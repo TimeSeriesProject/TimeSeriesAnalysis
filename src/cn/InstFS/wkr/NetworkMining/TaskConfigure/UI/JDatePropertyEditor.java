@@ -37,21 +37,21 @@ public class JDatePropertyEditor extends AbstractPropertyEditor{
 //		MyDateTimeFormatter f= new MyDateTimeFormatter();
 //		setFormatter(f);
 //		setInputVerifier(new MyDateTimeVerifier());
-		editor.setValue(new Date());	// Õâ²½»á×Ô¶¯Ñ°ÕÒFormatter()£¬¼´DateFormatter
+		editor.setValue(new Date());	// è¿™æ­¥ä¼šè‡ªåŠ¨å¯»æ‰¾Formatter()ï¼Œå³DateFormatter
 		AbstractFormatter formatter = editor.getFormatter();
 		if (formatter.getClass().equals(DateFormatter.class)){
 			DateFormatter df = (DateFormatter)formatter;
 			df.setFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 		}
 		editor.setColumns(20);
-		editor.setToolTipText("¸ñÊ½£ºyyyy-MM-dd HH:mm:ss£¬ÀıÈç£º2015-01-01 14:00:00");		
+		editor.setToolTipText("æ ¼å¼ï¼šyyyy-MM-dd HH:mm:ssï¼Œä¾‹å¦‚ï¼š2015-01-01 14:00:00");		
 	}
 
 	@Override
 	public void setValue(Object value) {
 		// Date oldValue = (Date)editor.getValue();
 		editor.setValue(value);
-		// Ôø¾­£¬ÎÒ¾õµÃÏÂÃæÕâĞĞ±ØĞëÒª£¬È»¶ø£¬ÏÖÔÚÎÒ¾õµÃ¿ÉÒª¿É²»Òª
+		// æ›¾ç»ï¼Œæˆ‘è§‰å¾—ä¸‹é¢è¿™è¡Œå¿…é¡»è¦ï¼Œç„¶è€Œï¼Œç°åœ¨æˆ‘è§‰å¾—å¯è¦å¯ä¸è¦
 		// firePropertyChange(oldValue, value);
 	}
 
@@ -61,9 +61,9 @@ public class JDatePropertyEditor extends AbstractPropertyEditor{
 		try {
 			editor.commitEdit();
 		} catch (ParseException e) {
-			System.out.println("¸ñÊ½´íÎó£º" + editor.getText());
+			System.out.println("æ ¼å¼é”™è¯¯ï¼š" + editor.getText());
 		}
-		// °ÑºÁÃëÉèÖÃÎª0
+		// æŠŠæ¯«ç§’è®¾ç½®ä¸º0
 		Date d = (Date) editor.getValue();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(d);
