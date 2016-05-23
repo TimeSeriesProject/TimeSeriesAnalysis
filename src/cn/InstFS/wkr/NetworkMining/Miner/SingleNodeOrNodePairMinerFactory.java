@@ -143,6 +143,7 @@ public class SingleNodeOrNodePairMinerFactory {
 						taskCombination.setProtocol(protocol);
 						taskCombination.setRange(ipPair);
 						taskCombination.setName();
+						taskCombination.setMinerType(MinerType.MiningType_SinglenodeOrNodePair);
 						TaskElement.add1Task(taskCombination, false);
 					}
 				}

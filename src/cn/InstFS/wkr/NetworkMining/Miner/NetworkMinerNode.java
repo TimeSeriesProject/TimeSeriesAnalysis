@@ -153,8 +153,7 @@ class NodeTimerTask extends TimerTask{
 			IMinerOM tsaMethod=null;
 			switch (task.getMiningMethod()) {
 			case MiningMethods_PeriodicityMining:
-				if(task.getDiscreteMethod().equals(DiscreteMethod.None))
-		    		dataItems=DataPretreatment.normalization(dataItems);
+				
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_averageEntropyPM)){
 					pmMethod=new averageEntropyPM(task, dimension);
 				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
@@ -162,7 +161,9 @@ class NodeTimerTask extends TimerTask{
 				}else{
 					throw new RuntimeException("方法不存在！");
 				}
-				pmMethod.setOriginDataItems(oriDataItems);
+				pmMethod.setOriginDataItems(dataItems);
+				if(task.getDiscreteMethod().equals(DiscreteMethod.None))
+		    		dataItems=DataPretreatment.normalization(dataItems);
 				pmMethod.setDataItems(dataItems);
 				pmMethod.predictPeriod();
 				setPMResults(results, pmMethod);
