@@ -37,6 +37,7 @@ public class MinerResults {
 		retSM = new MinerResultsSM();
 		retFP = new MinerResultsFP();
 		retFM = new MinerResultsFM();
+		retPath = new MinerResultsPath();
 		retNode=new MinerNodeResults();
 		retProtocol=new MinerProtocolResults();
 		retStatistics=new MinerResultsStatistics();

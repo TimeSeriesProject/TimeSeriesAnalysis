@@ -5,32 +5,27 @@ import java.util.HashMap;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
 public class MinerResultsPath {
-	private HashMap<String, Integer> periodPath;
-	private HashMap<String, Integer> firstPeriodOfPath;
-	private HashMap<String, DataItems> itemsInPeriod;
+	private HashMap<String, MinerResultsPM> retPM;
+	private HashMap<String, MinerResultsOM> retOM;
+
 	public MinerResultsPath() {
-		periodPath=new HashMap<String, Integer>();
-		firstPeriodOfPath=new HashMap<String, Integer>();
-		itemsInPeriod=new HashMap<String, DataItems>();
+		retPM = new HashMap<String, MinerResultsPM>();
+		retOM = new HashMap<String, MinerResultsOM>();
 	}
-	public HashMap<String, Integer> getPeriodPath() {
-		return periodPath;
+
+	public HashMap<String, MinerResultsPM> getRetPM() {
+		return retPM;
 	}
-	public void setPeriodPath(HashMap<String, Integer> periodPath) {
-		this.periodPath = periodPath;
+
+	public void setRetPM(HashMap<String, MinerResultsPM> retPM) {
+		this.retPM = retPM;
 	}
-	public HashMap<String, Integer> getFirstPeriodOfPath() {
-		return firstPeriodOfPath;
+
+	public HashMap<String, MinerResultsOM> getRetOM() {
+		return retOM;
 	}
-	public void setFirstPeriodOfPath(HashMap<String, Integer> firstPeriodOfPath) {
-		this.firstPeriodOfPath = firstPeriodOfPath;
+
+	public void setRetOM(HashMap<String, MinerResultsOM> retOM) {
+		this.retOM = retOM;
 	}
-	public HashMap<String, DataItems> getItemsInPeriod() {
-		return itemsInPeriod;
-	}
-	public void setItemsInPeriod(HashMap<String, DataItems> itemsInPeriod) {
-		this.itemsInPeriod = itemsInPeriod;
-	}
-	
-	
 }

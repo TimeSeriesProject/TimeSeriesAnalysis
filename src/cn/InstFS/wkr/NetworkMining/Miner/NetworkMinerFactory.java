@@ -80,6 +80,8 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		case MiningType_ProtocolAssociation:
 			miner=new ProtocolAssMiner(taskCombination);
 			break;
+			case MiningType_Path:
+				miner = new NetworkMinerPath(taskCombination);
 		default:
 			break;
 		}
@@ -263,7 +265,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		}
 		return resultsMap;
 	}
-	
+
 	private void autoTaskFilter(){
 		for(int t=0;t<TaskElement.allTasks.size();t++){
 			TaskElement task=TaskElement.allTasks.get(t);
