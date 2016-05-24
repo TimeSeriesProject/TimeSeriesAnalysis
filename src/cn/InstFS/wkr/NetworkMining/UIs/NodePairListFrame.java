@@ -80,7 +80,7 @@ public class NodePairListFrame extends JFrame {
 	 JComboBox<String> miningObjectComboBox;
 	JPanel selectPanel = new JPanel();
 	HashMap<TaskCombination, MinerNodeResults> resultMap;
-	HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>> resultMaps;
+	HashMap<String,HashMap<TaskCombination, MinerNodeResults>> resultMaps;
 	ArrayList<Map.Entry<TaskCombination, MinerNodeResults> >resultList;
 	String sortMethod ="按周期置信度";
 	/**
@@ -90,19 +90,19 @@ public class NodePairListFrame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					NetworkMinerFactory.getInstance();
-					SingleNodeOrNodePairMinerFactory freMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-					freMinerFactory.dataPath="C:\\data\\out\\traffic";
-					freMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
-					freMinerFactory.setTaskRange(TaskRange.NodePairRange);
-					freMinerFactory.detect();
-					HashMap<TaskCombination, MinerNodeResults> resultMap = NetworkMinerFactory.getInstance().startAllNodeMiners();
-					HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>> tmpresultMaps = new HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>>();
-					tmpresultMaps.put(MiningObject.MiningObject_Times,resultMap);
-					System.out.println("size "+resultMap.size());
+//					NetworkMinerFactory.getInstance();
+//					SingleNodeOrNodePairMinerFactory freMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
+//					freMinerFactory.dataPath="C:\\data\\out\\traffic";
+//					freMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
+//					freMinerFactory.setTaskRange(TaskRange.NodePairRange);
+//					freMinerFactory.detect();
+//					HashMap<TaskCombination, MinerNodeResults> resultMap = NetworkMinerFactory.getInstance().startAllNodeMiners();
+//					HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>> tmpresultMaps = new HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>>();
+//					tmpresultMaps.put(MiningObject.MiningObject_Times,resultMap);
+//					System.out.println("size "+resultMap.size());
 					JFrame.setDefaultLookAndFeelDecorated(true); 
-					NodePairListFrame frame = new NodePairListFrame(tmpresultMaps);
-					frame.setVisible(true);
+//					NodePairListFrame frame = new NodePairListFrame(tmpresultMaps);
+//					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -113,9 +113,21 @@ public class NodePairListFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public NodePairListFrame(HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>> resultMaps) {
-		this.resultMaps=resultMaps;
-		this.resultMap=resultMaps.get(MiningObject.MiningObject_Times);
+	public NodePairListFrame(HashMap<String,HashMap<TaskCombination, MinerNodeResults>> resultMaps) {
+		this.resultMaps= new HashMap<String,HashMap<TaskCombination, MinerNodeResults>>();
+		for(Map.Entry<String, HashMap<TaskCombination, MinerNodeResults>> entry:resultMaps.entrySet())
+		{
+			HashMap<TaskCombination, MinerNodeResults> map = new HashMap<TaskCombination, MinerNodeResults>();
+			for(Map.Entry<TaskCombination, MinerNodeResults> subentry:entry.getValue().entrySet())
+			{
+				if(subentry.getKey().getTaskRange().compareTo(TaskRange.NodePairRange)==0)
+				{
+					map.put(subentry.getKey(), subentry.getValue());
+				}
+			}
+			this.resultMaps.put(entry.getKey(), map);
+		}
+		this.resultMap=this.resultMaps.get("通信次数");
 		loadModel();
 		initModel();
 		initialize();
@@ -356,12 +368,12 @@ public class NodePairListFrame extends JFrame {
                     System.out.println("选中" + event.getItem());
                     if(event.getItem().equals("流量"))
                     {
-                    	resultMap=resultMaps.get(MiningObject.MiningObject_Traffic);
+                    	resultMap=resultMaps.get("流量");
                     	
                     }
                     else if(event.getItem().equals("通信次数"))
                     {
-                    	resultMap=resultMaps.get(MiningObject.MiningObject_Times);
+                    	resultMap=resultMaps.get("通信次数");
                     }
                     update();
                     break;
