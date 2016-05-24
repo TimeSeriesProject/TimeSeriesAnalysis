@@ -101,9 +101,9 @@ public class SingleNodeOrNodePairMinerFactory {
 					taskCombination.getTasks().add(generateTask(taskRange, granularity,
 							dataFile, protocol, ip, MiningMethod.MiningMethods_PeriodicityMining));
 					taskCombination.getTasks().add(generateTask(taskRange, granularity,
-							dataFile, protocol, ip, MiningMethod.MiningMethods_OutliesMining));
-					taskCombination.getTasks().add(generateTask(taskRange, granularity,
 							dataFile, protocol, ip, MiningMethod.MiningMethods_Statistics));
+					taskCombination.getTasks().add(generateTask(taskRange, granularity,
+							dataFile, protocol, ip, MiningMethod.MiningMethods_OutliesMining));
 					taskCombination.getTasks().add(generateTask(taskRange, granularity,
 							dataFile, protocol, ip, MiningMethod.MiningMethods_SequenceMining));
 					taskCombination.setMiningObject(miningObject.toString());
@@ -134,6 +134,7 @@ public class SingleNodeOrNodePairMinerFactory {
 					DataItems dataItems=itemsMap.get(protocol);
 					if(!isDataItemSparse(dataItems)){
 						TaskCombination taskCombination=new TaskCombination();
+						taskCombination.setTaskRange(taskRange);
 						taskCombination.getTasks().add(generateTask(taskRange, granularity,
 								dataFile, protocol, ipPair, MiningMethod.MiningMethods_PeriodicityMining));
 						taskCombination.getTasks().add(generateTask(taskRange, granularity,

@@ -313,6 +313,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						break;
 					case MiningType_ProtocolAssociation:
 						retPro.put(task, miner.getResults().getRetProtocol());
+						System.out.println(task.getName()+" has over");
 						break;
 					default:
 						break;
