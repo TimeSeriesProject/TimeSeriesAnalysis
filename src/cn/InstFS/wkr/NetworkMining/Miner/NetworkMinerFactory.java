@@ -13,6 +13,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerPM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
@@ -138,7 +139,6 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	
 	public void startAllMiners(){
 		startAllTaskMiners();
-		startAllNodeMiners();
 		autoTaskFilter();
 	}
 	
@@ -173,7 +173,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		}
 	}
 	
-	public HashMap<TaskCombination, MinerNodeResults> startAllNodeMiners(){
+	public HashMap<TaskCombination, MinerNodeResults> startAllNodeMiners(MiningObject miningObject){
 		HashMap<TaskCombination, MinerNodeResults>resultsMap=
 				new HashMap<TaskCombination,MinerNodeResults>();
 		for(INetworkMiner miner :allCombinationMiners.values()){
@@ -194,6 +194,8 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 				Entry<TaskCombination, INetworkMiner> entry=iterator.next();
 				TaskCombination task=entry.getKey();
 				INetworkMiner miner=entry.getValue();
+				if(!task.getMiningObject().equals(miningObject.toString()))
+					continue;
 				if(!miner.isOver()){
 					isAllOver=false;
 					try {
@@ -212,6 +214,8 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		while(iterator.hasNext()){
 			Entry<TaskCombination, INetworkMiner> entry=iterator.next();
 			TaskCombination taskCombination=entry.getKey();
+			if(!taskCombination.getMiningObject().equals(miningObject.toString()))
+				continue;
 			for(TaskElement task:taskCombination.getTasks()){
 				switch (task.getMiningMethod()) {
 				case MiningMethods_OutliesMining:
