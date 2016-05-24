@@ -135,6 +135,8 @@ class PathTimerTask extends TimerTask{
 	private void PMDetect(DataItems dataItems,List<TaskElement>tasks){
 		DataItems oriDataItems=dataItems;
 		results.setInputData(oriDataItems);
+		HashMap<String, MinerResultsPM> retPathPM=new HashMap<String, MinerResultsPM>();
+		HashMap<String, MinerResultsOM> retPathOM=new HashMap<String, MinerResultsOM>();
 		for(TaskElement task:tasks){
 			dataItems=oriDataItems;
 			
@@ -176,8 +178,51 @@ class PathTimerTask extends TimerTask{
 					continue;
 				seqs.add(seq);
 			}
-			
-			switch (task.getMiningMethod()) {
+
+			for (List<String> seq: seqs){
+				DataItems newItem=new DataItems();
+				String name=seq.get(0);
+				seq.remove(0);
+				newItem.setData(seq);
+				newItem.setTime(dataItems.getTime());
+
+				switch (task.getMiningMethod()){
+					case MiningMethods_PeriodicityMining:
+						IMinerPM pmMethod = null;
+						if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
+							pmMethod=new ERPDistencePM();
+						}else{
+							throw new RuntimeException("方法不存在！");
+						}
+						pmMethod.setDataItems(newItem);
+						pmMethod.setOriginDataItems(newItem);
+						pmMethod.predictPeriod();
+						MinerResultsPM retPM = new MinerResultsPM();
+						if(pmMethod.hasPeriod()){
+							System.out.println("period:"+name+":"+pmMethod.getPredictPeriod()+":"+pmMethod.getFirstPossiblePeriod());
+						}
+						setPMResults(retPM, pmMethod);
+						retPathPM.put(name, retPM);
+
+						break;
+					case MiningMethods_OutliesMining:
+						IMinerOM omMethod = null;
+						MinerResultsOM retOM = new MinerResultsOM();
+						if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)){
+							omMethod = new PointPatternDetection(newItem,2,10);
+							retOM.setIslinkDegree(true);
+						}
+						omMethod.TimeSeriesAnalysis();
+						setOMResults(retOM, omMethod);
+						retPathOM.put(name, retOM);
+						break;
+					default:
+						break;
+				}
+			}
+			results.getRetPath().setRetPM(retPathPM);
+			results.getRetPath().setRetOM(retPathOM);
+			/*switch (task.getMiningMethod()) {
 			case MiningMethods_PeriodicityMining:
 				IMinerPM pmMethod = null;
 				
@@ -210,7 +255,8 @@ class PathTimerTask extends TimerTask{
 				break;
 			default:
 				break;
-			}
+			}*/
+
 		}
 		isRunning = false;
 		isOver.setIsover(true);;
@@ -242,6 +288,31 @@ class PathTimerTask extends TimerTask{
 		retPM.setFeatureValues(pmMethod.getEntropies());
 		retPM.setFirstPossiblePeriod(pmMethod.getFirstPossiblePeriod());//找出第一个呈现周期性的周期
 		retPM.setConfidence(pmMethod.getConfidence());
+	}
+
+	private void setOMResults(MinerResultsOM retOM, IMinerOM omMethod){
+		retOM.setOutlies(omMethod.getOutlies());    //查找异常
+		if(omMethod.getOutlies()!=null){
+			DataItems outlies=omMethod.getOutlies();
+			int outliesLen=outlies.getLength();
+			int itemLen=taskCombination.getDataItems().getLength();
+			if(Math.abs(outliesLen-itemLen)<=1){
+				int confidence=0;
+				for(String item:outlies.getData()){
+					if(Double.parseDouble(item)>=8000){
+						retOM.setHasOutlies(true);
+						confidence++;
+					}
+				}
+				if(confidence!=0)
+					retOM.setConfidence(confidence);
+			}else{
+				if(outlies.getLength()>0){
+					retOM.setHasOutlies(true);
+					retOM.setConfidence(outlies.getLength());
+				}
+			}
+		}
 	}
 }
 
