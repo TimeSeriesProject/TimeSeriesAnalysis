@@ -66,7 +66,7 @@ public class WholeNetworkFrame extends JFrame{
 					System.out.println("size "+resultMap.size());
 					JFrame.setDefaultLookAndFeelDecorated(true); 
 					SingleNodeListFrame frame = new SingleNodeListFrame(tmpresultMaps);
-					networkMinerFactory.startAllTaskMiners();
+//					networkMinerFactory.startAllTaskMiners();
 					
 					WholeNetworkFrame window = new WholeNetworkFrame();
 					

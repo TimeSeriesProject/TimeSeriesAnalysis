@@ -81,6 +81,8 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		case MiningType_ProtocolAssociation:
 			miner=new ProtocolAssMiner(taskCombination);
 			break;
+			case MiningType_Path:
+				miner = new NetworkMinerPath(taskCombination);
 		default:
 			break;
 		}
@@ -229,13 +231,13 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		}
 		return resultsMap;
 	}
-	
+
 	public HashMap<TaskCombination, MinerProtocolResults> startAllProtocolMiners(MiningObject miningObject){
 		HashMap<TaskCombination, MinerProtocolResults>resultsMap=
 				new HashMap<TaskCombination,MinerProtocolResults>();
 		startMinerOneByOne(MinerType.MiningType_ProtocolAssociation,miningObject);
 		waitUtilAllMinerOver(MinerType.MiningType_ProtocolAssociation, miningObject,null,resultsMap);
-		
+
 		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<TaskCombination, INetworkMiner> entry=iterator.next();
@@ -266,7 +268,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		}
 		return resultsMap;
 	}
-	
+
 	private void startMinerOneByOne(MinerType minerType,MiningObject miningObject){
 		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
 		while(iterator.hasNext()){
@@ -282,8 +284,8 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			}
 		}
 	}
-	
-	private void waitUtilAllMinerOver(MinerType type,MiningObject miningObject,HashMap<TaskCombination, 
+
+	private void waitUtilAllMinerOver(MinerType type,MiningObject miningObject,HashMap<TaskCombination,
 			MinerNodeResults> retNode,HashMap<TaskCombination, MinerProtocolResults>retPro){
 		Iterator<Entry<TaskCombination, INetworkMiner>> iterator;
 		boolean isAllOver=false;
@@ -311,6 +313,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						break;
 					case MiningType_ProtocolAssociation:
 						retPro.put(task, miner.getResults().getRetProtocol());
+						System.out.println(task.getName()+" has over");
 						break;
 					default:
 						break;
@@ -319,8 +322,8 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			}
 		}
 	}
-	
-	
+
+
 	private void autoTaskFilter(){
 		for(int t=0;t<TaskElement.allTasks.size();t++){
 			TaskElement task=TaskElement.allTasks.get(t);

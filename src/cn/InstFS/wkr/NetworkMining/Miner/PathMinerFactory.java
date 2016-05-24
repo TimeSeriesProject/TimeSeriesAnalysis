@@ -2,19 +2,26 @@ package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 
 public class PathMinerFactory {
 	private static PathMinerFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="E:\\parsePcap\\route";
+	public String dataPath="E:\\parsePcap\\route\\10.0.1.2_10.0.2.2.csv";
+	
+	private MiningObject miningObject;
+	private TaskRange taskRange;
+	private MiningMethod method;
+	
 	private PathMinerFactory(){}
 	public static PathMinerFactory getInstance(){
 		if(inst==null){
@@ -23,7 +30,8 @@ public class PathMinerFactory {
 		}
 		return inst;
 	}
-	public void minerPathPeriod(){
+	
+/*	public void minerPathPeriod(){
 		if(isMining)
 			return;
 		isMining=true;
@@ -37,9 +45,84 @@ public class PathMinerFactory {
         		generateTask(file);
         	}
         }
+	}*/
+	
+	public void detect(){
+		if(isMining)
+			return;
+		isMining=true;
+		
+		File dataDirectory=new File(dataPath);
+		nodePairReader reader=new nodePairReader();
+		if(dataDirectory.isFile()){
+			parseFile(dataDirectory,reader);
+		}else{
+			File[] dataDirs=dataDirectory.listFiles();
+			for(int i=0;i<dataDirs.length;i++){
+				parseFile(dataDirs[i],reader);
+			}
+		}
 	}
 	
-	private void generateTask(File file){
+	private void parseFile(File dataFile, nodePairReader reader){
+		Map<String, DataItems> dataMap = new HashMap<String, DataItems>();
+		DataItems di = new DataItems();
+		switch(miningObject){
+		case MiningObject_Traffic:
+		case MiningObject_Times:
+			dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString());
+			break;
+		default:
+			break;
+		}
+		
+		Iterator<Entry<String, DataItems>> iterator=dataMap.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<String, DataItems> entry=iterator.next();
+			di = entry.getValue();
+		}
+		
+		TaskCombination taskCombination = new TaskCombination();
+		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_PeriodicityMining));
+		taskCombination.setDataItems(di);
+		taskCombination.setRange(dataFile.getName().substring(0, dataFile.getName().lastIndexOf(".")));
+		taskCombination.setMinerType(MinerType.MiningType_Path);
+		taskCombination.setMiningObject(miningObject.toString());
+		TaskElement.add1Task(taskCombination, false);
+	}
+	
+	private TaskElement generateTask(File file, TaskRange taskRange, MiningMethod method){
+		String fileName = file.getName();
+		
+		TaskElement task = new TaskElement();
+		task.setDataSource("File");
+		task.setSourcePath(file.getAbsolutePath());
+		task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		task.setDiscreteMethod(DiscreteMethod.None);
+		task.setMiningMethod(method);
+		task.setTaskRange(taskRange);
+		task.setRange(fileName.substring(0, fileName.lastIndexOf(".")));
+		
+		String taskName = null;
+		switch (method) {
+		case MiningMethods_PeriodicityMining:
+			task.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
+			taskName = fileName + "_路径_"+miningObject.toString()+"_周期挖掘_auto";
+			task.setTaskName(taskName);
+			task.setComments("ip为"+file.getName()+"的路径+"+miningObject.toString()+"周期规律挖掘");
+			break;
+		case MiningMethods_OutliesMining:
+			break;
+
+		default:
+			break;
+		}
+		task.setMiningObject(miningObject.toString());
+		
+		return task;
+	}
+	
+/*	private void generateTask(File file){
 		String fileName=file.getName();
 		
 		TaskElement task=new TaskElement();
@@ -56,12 +139,38 @@ public class PathMinerFactory {
 		task.setMiningMethod(MiningMethod.MiningMethods_PathProbilityMining);
 		task.setSourcePath(file.getAbsolutePath());
 		TaskElement.add1Task(task, false);
+	}*/
+	
+	public MiningMethod getMethod() {
+		return method;
+	}
+	public void setMethod(MiningMethod method) {
+		this.method = method;
+	}
+	public TaskRange getTaskRange() {
+		return taskRange;
+	}
+	public void setTaskRange(TaskRange taskRange) {
+		this.taskRange = taskRange;
+	}
+	public MiningObject getMiningObject() {
+		return miningObject;
+	}
+	public void setMiningObject(MiningObject miningObject) {
+		this.miningObject = miningObject;
+	}
+	public String getDataPath() {
+		return dataPath;
+	}
+	public void setDataPath(String dataPath) {
+		this.dataPath = dataPath;
 	}
 	
 	public static void main(String[] args) {
 		NetworkMinerFactory.getInstance();
 		PathMinerFactory pathFactory=PathMinerFactory.getInstance();
-		pathFactory.minerPathPeriod();
-		NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PathProbilityMining);
+		pathFactory.setMiningObject(MiningObject.MiningObject_Traffic);
+		pathFactory.detect();
+		NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Traffic);
 	}
 }

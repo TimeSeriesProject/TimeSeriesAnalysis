@@ -119,7 +119,7 @@ public class ProtocolAssMinerFactory {
 			task.setComments("挖掘  ip为"+ip+" 序列上"+miningObject.toString()+"的多元关联规律");
 			break;
 		case MiningMethods_SimilarityMining:
-			task.setMiningAlgo(MiningAlgo.MiningAlgo_SimilarityProtocolASS);
+			task.setMiningAlgo(MiningAlgo.MiningAlgo_RtreeProtocolASS);
 			name=ip+"_时间序列相似度挖掘"+miningObject.toString()+"_auto";
 			task.setTaskName(name);
 			task.setComments("挖掘  ip为"+ip+" 序列上"+miningObject.toString()+"的相似度挖掘");

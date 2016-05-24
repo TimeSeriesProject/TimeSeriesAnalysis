@@ -7,6 +7,7 @@ import java.util.List;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
 public class TaskCombination {
 	private List<TaskElement> tasks;
@@ -14,6 +15,7 @@ public class TaskCombination {
 	private HashMap<String, HashMap<String, DataItems>> eachIpProtocolItems;
 	private String range;
 	private String miningObject;
+	private TaskRange taskRange;
 	private String protocol;
 	private String name;
 	private MinerType minerType;
@@ -84,6 +86,14 @@ public class TaskCombination {
 
 	public void setMinerType(MinerType minerType) {
 		this.minerType = minerType;
+	}
+
+	public TaskRange getTaskRange() {
+		return taskRange;
+	}
+
+	public void setTaskRange(TaskRange taskRange) {
+		this.taskRange = taskRange;
 	}
 	
 	

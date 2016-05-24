@@ -43,6 +43,7 @@ public class MinerResults {
 		retFP = new MinerResultsFP();
 		retFM = new MinerResultsFM();
 		retFPLine=new MinerResultsFP_Line();
+		retPath = new MinerResultsPath();
 		retNode=new MinerNodeResults();
 		retProtocol=new MinerProtocolResults();
 		retStatistics=new MinerResultsStatistics();
@@ -162,7 +163,7 @@ public class MinerResults {
 	public void setRetSim(Map<String, List<ProtocolAssociationResult>> retSim) {
 		this.retSim = retSim;
 	}
-	
+
 	
 }
 

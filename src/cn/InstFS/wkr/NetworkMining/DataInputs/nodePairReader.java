@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.IPStreamPool;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 
@@ -648,6 +649,19 @@ public class nodePairReader implements IReader {
 		}
 	}
 	
+	
+	public Map<String, DataItems> readPath(String filePath, String mining){
+		Map<String, DataItems> dataMap = new HashMap<String, DataItems>();
+		Map<String, Date> timeMap = new HashMap<String, Date>();
+		DataItems di;
+		String minerObject = "path";
+		if(mining.equals(MiningObject.MiningObject_Traffic.toString()))
+			minerObject = "path:traffic";
+		
+		readFile(filePath, minerObject,dataMap, timeMap);
+		
+		return dataMap;
+	}
 	/**
 	 * 读取给定文件下所有通信节点对的通信路径
 	 * @param filePath  文件地址 
