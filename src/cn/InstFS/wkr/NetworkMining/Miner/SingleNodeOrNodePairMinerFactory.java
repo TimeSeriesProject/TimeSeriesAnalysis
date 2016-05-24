@@ -57,6 +57,9 @@ public class SingleNodeOrNodePairMinerFactory {
 	public void setDataPath(String dataPath) {
 		this.dataPath = dataPath;
 	}
+	public void reset(){
+		isMining=false;
+	}
 	public void detect(){
 		
 		if(isMining)

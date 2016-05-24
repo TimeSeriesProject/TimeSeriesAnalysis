@@ -84,8 +84,7 @@ public class ProtocolAssMinerFactory {
 				generateTask(file,granularity,MiningMethod.MiningMethods_SimilarityMining));
 		taskCombination.getTasks().add(
 				generateTask(file,granularity,MiningMethod.MiningMethods_FrequenceItemMining));
-		HashMap<String, HashMap<String, DataItems>> ipProtocolItems=
-				new HashMap<String, HashMap<String,DataItems>>();
+		HashMap<String, HashMap<String, DataItems>> ipProtocolItems=null;
 		ipProtocolItems=pretreatment(granularity,eachProtocolItems);
 		taskCombination.setEachIpProtocolItems(ipProtocolItems);
 		taskCombination.setMiningObject(miningObject.toString());

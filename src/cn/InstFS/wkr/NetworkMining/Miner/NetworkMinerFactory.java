@@ -174,8 +174,8 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	}
 	
 	public HashMap<TaskCombination, MinerNodeResults> startAllNodeMiners(){
-		HashMap<TaskCombination, MinerNodeResults> resultsMap=
-				new HashMap<TaskCombination, MinerNodeResults>();
+		HashMap<TaskCombination, MinerNodeResults>resultsMap=
+				new HashMap<TaskCombination,MinerNodeResults>();
 		for(INetworkMiner miner :allCombinationMiners.values()){
 			if(miner.isOver())
 				continue;    //已经挖掘完的任务不需再次挖掘

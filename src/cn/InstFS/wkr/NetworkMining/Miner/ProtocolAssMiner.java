@@ -136,6 +136,7 @@ class ProtocolMinerTask extends TimerTask{
 					ProtocolAssRtree rTreePa=new ProtocolAssRtree(eachProtocolItems);
 					protocolResult=rTreePa.miningAssociation();
 				}
+				results.getRetProtocol().setRetSim(protocolResult);
 				break;
 			default:
 				break;
