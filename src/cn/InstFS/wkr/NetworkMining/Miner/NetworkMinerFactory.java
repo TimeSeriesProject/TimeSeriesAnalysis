@@ -11,6 +11,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.Exception.NoneSuchMinerMethod;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerPM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
@@ -178,45 +179,15 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	public HashMap<TaskCombination, MinerNodeResults> startAllNodeMiners(MiningObject miningObject){
 		HashMap<TaskCombination, MinerNodeResults>resultsMap=
 				new HashMap<TaskCombination,MinerNodeResults>();
-		for(INetworkMiner miner :allCombinationMiners.values()){
-			if(miner.isOver())
-				continue;    //已经挖掘完的任务不需再次挖掘
-			miner.start();
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		boolean isAllOver=false;
-		while (!isAllOver) {
-			isAllOver=true;
-			Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
-			while(iterator.hasNext()){
-				Entry<TaskCombination, INetworkMiner> entry=iterator.next();
-				TaskCombination task=entry.getKey();
-				INetworkMiner miner=entry.getValue();
-				if(!task.getMiningObject().equals(miningObject.toString()))
-					continue;
-				if(!miner.isOver()){
-					isAllOver=false;
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					System.out.println(task.getName()+" not over");
-				}else{
-					resultsMap.put(task, miner.getResults().getRetNode());
-				}
-			}
-		}
+		startMinerOneByOne(MinerType.MiningType_SinglenodeOrNodePair,miningObject);
+		waitUtilAllMinerOver(MinerType.MiningType_SinglenodeOrNodePair, miningObject, resultsMap, null);
 		
 		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<TaskCombination, INetworkMiner> entry=iterator.next();
 			TaskCombination taskCombination=entry.getKey();
-			if(!taskCombination.getMiningObject().equals(miningObject.toString()))
+			if(!taskCombination.getMiningObject().equals(miningObject.toString())||
+					!taskCombination.getMinerType().equals(MinerType.MiningType_SinglenodeOrNodePair))
 				continue;
 			for(TaskElement task:taskCombination.getTasks()){
 				switch (task.getMiningMethod()) {
@@ -231,11 +202,6 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 					NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
 					minerPM.results.setRetPM(resultsMap.get(taskCombination).getRetPM());
 					minerPM.isOver.setIsover(true);
-//					if(minerPM.results.getRetPM().getHasPeriod()){
-//						System.out.println(minerPM.results.getRetPM().getConfidence());
-//					}else{
-//						System.out.println("none period "+minerPM.results.getRetPM().getConfidence());
-//					}
 					minerPM.results.di=taskCombination.getDataItems();
 					allMiners.put(task, minerPM);
 					break;
@@ -265,6 +231,97 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		}
 		return resultsMap;
 	}
+
+	public HashMap<TaskCombination, MinerProtocolResults> startAllProtocolMiners(MiningObject miningObject){
+		HashMap<TaskCombination, MinerProtocolResults>resultsMap=
+				new HashMap<TaskCombination,MinerProtocolResults>();
+		startMinerOneByOne(MinerType.MiningType_ProtocolAssociation,miningObject);
+		waitUtilAllMinerOver(MinerType.MiningType_ProtocolAssociation, miningObject,null,resultsMap);
+
+		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<TaskCombination, INetworkMiner> entry=iterator.next();
+			TaskCombination taskCombination=entry.getKey();
+			if(!taskCombination.getMiningObject().equals(miningObject.toString())||
+					!taskCombination.getMinerType().equals(MinerType.MiningType_ProtocolAssociation))
+				continue;
+			for(TaskElement task:taskCombination.getTasks()){
+				switch (task.getMiningMethod()) {
+				case MiningMethods_SimilarityMining:
+					NetworkMinerProtocolAssSim minerSim =new NetworkMinerProtocolAssSim(task,null);
+					minerSim.results.setRetSim(resultsMap.get(taskCombination).getRetSim());
+					minerSim.results.di=taskCombination.getDataItems();
+					minerSim.isOver.setIsover(true);
+					allMiners.put(task, minerSim);
+					break;
+				case MiningMethods_FrequenceItemMining:
+					NetworkMinerProtoclAssLine minerFPLine=new NetworkMinerProtoclAssLine(task, null);
+					minerFPLine.results.setRetFPLine(resultsMap.get(taskCombination).getRetFP());
+					minerFPLine.isOver.setIsover(true);
+					minerFPLine.results.di=taskCombination.getDataItems();
+					allMiners.put(task, minerFPLine);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		return resultsMap;
+	}
+
+	private void startMinerOneByOne(MinerType minerType,MiningObject miningObject){
+		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<TaskCombination, INetworkMiner> entry=iterator.next();
+			if(!entry.getKey().getMinerType().equals(minerType)||!entry.getKey().getMiningObject()
+					.equals(miningObject.toString())||entry.getValue().isOver())
+				continue;
+			entry.getValue().start();
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void waitUtilAllMinerOver(MinerType type,MiningObject miningObject,HashMap<TaskCombination,
+			MinerNodeResults> retNode,HashMap<TaskCombination, MinerProtocolResults>retPro){
+		Iterator<Entry<TaskCombination, INetworkMiner>> iterator;
+		boolean isAllOver=false;
+		while (!isAllOver) {
+			isAllOver=true;
+			iterator=allCombinationMiners.entrySet().iterator();
+			while(iterator.hasNext()){
+				Entry<TaskCombination, INetworkMiner> entry=iterator.next();
+				TaskCombination task=entry.getKey();
+				if(!task.getMinerType().equals(type)||!task.getMiningObject().equals(miningObject.toString()))
+					continue;
+				INetworkMiner miner=entry.getValue();
+				if(!miner.isOver()){
+					isAllOver=false;
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					System.out.println(task.getName()+" not over");
+				}else{
+					switch (type) {
+					case MiningType_SinglenodeOrNodePair:
+						retNode.put(task, miner.getResults().getRetNode());
+						break;
+					case MiningType_ProtocolAssociation:
+						retPro.put(task, miner.getResults().getRetProtocol());
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}
+	}
+
 
 	private void autoTaskFilter(){
 		for(int t=0;t<TaskElement.allTasks.size();t++){

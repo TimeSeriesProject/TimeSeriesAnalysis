@@ -97,6 +97,7 @@ public class SingleNodeOrNodePairMinerFactory {
 				DataItems dataItems=rawDataItems.get(protocol);
 				if(!isDataItemSparse(dataItems)){
 					TaskCombination taskCombination=new TaskCombination();
+					taskCombination.setTaskRange(taskRange);
 					taskCombination.getTasks().add(generateTask(taskRange, granularity,
 							dataFile, protocol, ip, MiningMethod.MiningMethods_PeriodicityMining));
 					taskCombination.getTasks().add(generateTask(taskRange, granularity,

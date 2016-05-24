@@ -3,8 +3,11 @@ package cn.InstFS.wkr.NetworkMining.Miner;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import associationRules.ProtocolAssociationResult;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Params.IParamsNetworkMining;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsPM;
@@ -23,6 +26,8 @@ public class MinerResults {
 	private MinerResultsSM retSM; 
 	private MinerResultsFP retFP;
 	private MinerResultsFM retFM;
+	private MinerResultsFP_Line retFPLine;
+	private Map<String, List<ProtocolAssociationResult>> retSim;
 	private MinerNodeResults retNode;
 	private MinerProtocolResults retProtocol;
 	private MinerResultsStatistics retStatistics;
@@ -37,6 +42,7 @@ public class MinerResults {
 		retSM = new MinerResultsSM();
 		retFP = new MinerResultsFP();
 		retFM = new MinerResultsFM();
+		retFPLine=new MinerResultsFP_Line();
 		retPath = new MinerResultsPath();
 		retNode=new MinerNodeResults();
 		retProtocol=new MinerProtocolResults();
@@ -141,7 +147,23 @@ public class MinerResults {
 	public void setRetProtocol(MinerProtocolResults retProtocol) {
 		this.retProtocol = retProtocol;
 	}
-	
+
+	public MinerResultsFP_Line getRetFPLine() {
+		return retFPLine;
+	}
+
+	public void setRetFPLine(MinerResultsFP_Line retFPLine) {
+		this.retFPLine = retFPLine;
+	}
+
+	public Map<String, List<ProtocolAssociationResult>> getRetSim() {
+		return retSim;
+	}
+
+	public void setRetSim(Map<String, List<ProtocolAssociationResult>> retSim) {
+		this.retSim = retSim;
+	}
+
 	
 }
 
