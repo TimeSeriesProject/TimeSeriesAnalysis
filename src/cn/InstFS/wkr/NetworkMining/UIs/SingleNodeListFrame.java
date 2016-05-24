@@ -80,7 +80,7 @@ public class SingleNodeListFrame extends JFrame {
 	 JComboBox<String> miningObjectComboBox;
 	JPanel selectPanel = new JPanel();
 	HashMap<TaskCombination, MinerNodeResults> resultMap;
-	HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>> resultMaps;
+	HashMap<String,HashMap<TaskCombination, MinerNodeResults>> resultMaps;
 	ArrayList<Map.Entry<TaskCombination, MinerNodeResults> >resultList;
 	String sortMethod ="按周期置信度";
 	/**
@@ -90,19 +90,48 @@ public class SingleNodeListFrame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					
+					
 					NetworkMinerFactory.getInstance();
-					SingleNodeOrNodePairMinerFactory freMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-					freMinerFactory.dataPath="C:\\data\\out\\traffic";
-					freMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
-					freMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
-					freMinerFactory.detect();
-					HashMap<TaskCombination, MinerNodeResults> resultMap = NetworkMinerFactory.getInstance().startAllNodeMiners();
-					HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>> tmpresultMaps = new HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>>();
-					tmpresultMaps.put(MiningObject.MiningObject_Times,resultMap);
-					System.out.println("size "+resultMap.size());
+					SingleNodeOrNodePairMinerFactory singleNodeMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
+					singleNodeMinerFactory.dataPath="C:\\data\\out\\traffic";
+					singleNodeMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
+					singleNodeMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
+					singleNodeMinerFactory.detect();
+					HashMap<TaskCombination, MinerNodeResults> timesMap=NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Times);
+					
+//					singleNodeMinerFactory.reset();
+//					singleNodeMinerFactory.setMiningObject(MiningObject.MiningObject_Traffic);
+//					singleNodeMinerFactory.detect();
+//					HashMap<TaskCombination, MinerNodeResults> trafficMap=NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Traffic);
+					HashMap<String, HashMap<TaskCombination, MinerNodeResults>> map=
+							new HashMap<String, HashMap<TaskCombination,MinerNodeResults>>();
+					
+//					map.put("流量", trafficMap);
+					map.put("通信次数", timesMap);
+					
+				
 					JFrame.setDefaultLookAndFeelDecorated(true); 
-					SingleNodeListFrame frame = new SingleNodeListFrame(tmpresultMaps);
+					SingleNodeListFrame frame = new SingleNodeListFrame(map);
+					
 					frame.setVisible(true);
+					
+//					SingleNodeOrNodePairMinerFactory NodePairMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
+//					NodePairMinerFactory.reset();
+//					NodePairMinerFactory.dataPath="C:\\data\\out\\traffic";
+//					NodePairMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
+//					NodePairMinerFactory.setTaskRange(TaskRange.NodePairRange);
+//					NodePairMinerFactory.detect();
+//					HashMap<TaskCombination, MinerNodeResults> pairtimesMap=NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Times);
+//					
+////					
+//					HashMap<String, HashMap<TaskCombination, MinerNodeResults>> pairmap=
+//							new HashMap<String, HashMap<TaskCombination,MinerNodeResults>>();
+//					
+////					map.put("流量", trafficMap);
+//					pairmap.put("通信次数", pairtimesMap);
+//					NodePairListFrame pairFrame = new NodePairListFrame(pairmap);
+//					pairFrame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -113,9 +142,21 @@ public class SingleNodeListFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public SingleNodeListFrame(HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>> resultMaps) {
-		this.resultMaps=resultMaps;
-		this.resultMap=resultMaps.get(MiningObject.MiningObject_Times);
+	public SingleNodeListFrame(HashMap<String,HashMap<TaskCombination, MinerNodeResults>> resultMaps) {
+		this.resultMaps= new HashMap<String,HashMap<TaskCombination, MinerNodeResults>>();
+		for(Map.Entry<String, HashMap<TaskCombination, MinerNodeResults>> entry:resultMaps.entrySet())
+		{
+			HashMap<TaskCombination, MinerNodeResults> map = new HashMap<TaskCombination, MinerNodeResults>();
+			for(Map.Entry<TaskCombination, MinerNodeResults> subentry:entry.getValue().entrySet())
+			{
+				if(subentry.getKey().getTaskRange().compareTo(TaskRange.SingleNodeRange)==0)
+				{
+					map.put(subentry.getKey(), subentry.getValue());
+				}
+			}
+			this.resultMaps.put(entry.getKey(), map);
+		}
+		this.resultMap=this.resultMaps.get("通信次数");
 		loadModel();
 		initModel();
 		initialize();
@@ -366,12 +407,12 @@ public class SingleNodeListFrame extends JFrame {
                     System.out.println("选中" + event.getItem());
                     if(event.getItem().equals("流量"))
                     {
-                    	resultMap=resultMaps.get(MiningObject.MiningObject_Traffic);
+                    	resultMap=resultMaps.get("流量");
                     	
                     }
                     else if(event.getItem().equals("通信次数"))
                     {
-                    	resultMap=resultMaps.get(MiningObject.MiningObject_Times);
+                    	resultMap=resultMaps.get("通信次数");
                     }
                     else if(event.getItem().equals("结点出现消失"))
                     {

@@ -11,6 +11,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
@@ -26,8 +27,15 @@ public class NetworkFactory {
 	private static NetworkFactory inst;
 	public static boolean isMining=false;
 	public String dataPath="./tasks1/";
-
+	private TaskRange taskRange= TaskRange.WholeNetworkRange;
+	private String miningObject ;
 	
+	public String getMiningObject() {
+		return miningObject;
+	}
+	public void setMiningObject(String miningObject) {
+		this.miningObject = miningObject;
+	}
 	NetworkFactory(){
 		
 	}
@@ -38,71 +46,42 @@ public class NetworkFactory {
 		}
 		return inst;
 	}
-	public DataItems mineNetworkDiameterRule(){
-
-		/**
-		 * 网络直径挖掘
-		 */
-		TaskElement diameter_task = new TaskElement();
-		diameter_task.setSourcePath(dataPath);
-		diameter_task.setGranularity(3600);
-		diameter_task.setMiningObject("网络直径");
-		CWNetworkReader reader = new CWNetworkReader(diameter_task);
-		System.out.println("网络直径");
-		DataItems diameter_dataItems = reader.readInputByText();
-		
-		TaskCombination taskCombination=new TaskCombination();
-		taskCombination.getTasks().add(generateTask(3600,
-				"网络直径", "周期预测", MiningMethod.MiningMethods_PeriodicityMining));
-		taskCombination.getTasks().add(generateTask(3600,
-				"网络直径", "异常监测", MiningMethod.MiningMethods_OutliesMining));
-		taskCombination.getTasks().add(generateTask(3600,
-				"网络直径", "统计", MiningMethod.MiningMethods_Statistics));
-		taskCombination.getTasks().add(generateTask(3600,
-				"网络直径", "频繁项挖掘", MiningMethod.MiningMethods_SequenceMining));
-		taskCombination.setMiningObject(MiningObject.MiningObject_None.toString());
-		taskCombination.setDataItems(diameter_dataItems);
-		taskCombination.setProtocol("网络直径挖掘");
-		taskCombination.setRange("");
-		taskCombination.setName();
-		TaskElement.add1Task(taskCombination, false);
-		
-		return diameter_dataItems;
-		
+	public void reset(){
+		isMining=false;
 	}
-	public DataItems mineNetworkClusterRule(){
-
-		/**
-		 * 网络簇系数挖掘
-		 */
-		TaskElement cluster_task = new TaskElement();
-		cluster_task.setSourcePath(dataPath);
-		cluster_task.setGranularity(3600);
-		cluster_task.setMiningObject("网络簇系数");
-		CWNetworkReader reader = new CWNetworkReader(cluster_task);
-		reader = new CWNetworkReader(cluster_task);
-		System.out.println("网络簇系数");
-		DataItems cluster_dataItems = reader.readInputByText();
+	public void detect()
+	{
+		if(isMining)
+			return;
+		isMining=true;
+		TaskElement task = new TaskElement();
+		task.setSourcePath(dataPath);
+		task.setGranularity(3600);
+		task.setMiningObject(miningObject);
+		CWNetworkReader reader = new CWNetworkReader(task);
+		DataItems dataItems = reader.readInputByText();
 		
 		TaskCombination taskCombination=new TaskCombination();
-		taskCombination.getTasks().add(generateTask(3600,
-				"网络簇系数", "周期预测", MiningMethod.MiningMethods_PeriodicityMining));
-		taskCombination.getTasks().add(generateTask(3600,
-				"网络簇系数", "异常监测", MiningMethod.MiningMethods_OutliesMining));
-		taskCombination.getTasks().add(generateTask(3600,
-				"网络簇系数", "统计", MiningMethod.MiningMethods_Statistics));
-		taskCombination.getTasks().add(generateTask(3600,
-				"网络簇系数", "频繁项挖掘", MiningMethod.MiningMethods_SequenceMining));
-		taskCombination.setMiningObject(MiningObject.MiningObject_None.toString());
-		taskCombination.setDataItems(cluster_dataItems);
-		taskCombination.setProtocol("网络簇系数");
+		taskCombination.setTaskRange(TaskRange.WholeNetworkRange);
+		taskCombination.setMiningObject(miningObject);
+		taskCombination.setMinerType(MinerType.MiningTypes_WholeNetwork);
 		taskCombination.setRange("");
 		taskCombination.setName();
+		taskCombination.setDataItems(dataItems);
+		taskCombination.getTasks().add(generateTask(3600,
+				miningObject,  MiningMethod.MiningMethods_PeriodicityMining));
+		taskCombination.getTasks().add(generateTask(3600,
+				miningObject,  MiningMethod.MiningMethods_OutliesMining));
+		taskCombination.getTasks().add(generateTask(3600,
+				miningObject,  MiningMethod.MiningMethods_Statistics));
+		taskCombination.getTasks().add(generateTask(3600,
+				miningObject, MiningMethod.MiningMethods_SequenceMining));
+		taskCombination.setMiningObject(MiningObject.MiningObject_None.toString());
+		
 		TaskElement.add1Task(taskCombination, false);
-		return cluster_dataItems;
 	}
 	
-	public TaskElement generateTask(int granularity,String ip,
+	public TaskElement generateTask(int granularity,
 			String mingObj,MiningMethod method){
 		TaskElement task = new TaskElement();
 		task.setDataSource("File");
@@ -114,24 +93,24 @@ public class NetworkFactory {
 		switch (method) {
 		case MiningMethods_OutliesMining:
 			task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
-			name = ip+"_"+mingObj;
+			name = mingObj;
 			task.setTaskName(name);
-			task.setComments("挖掘  "+ip+" 上的异常");
+			task.setComments("挖掘  "+mingObj+" 的异常");
 			break;
 		case MiningMethods_PeriodicityMining:
 			task.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
-			name = ip+"_"+mingObj;
+			name = mingObj;
 			task.setTaskName(name);
-			task.setComments("挖掘  "+ip+ "的周期规律");
+			task.setComments("挖掘  "+mingObj+ "的周期规律");
 			break;
 		case MiningMethods_SequenceMining:
-			name = ip+"_"+mingObj;
+			name = mingObj;
 			task.setTaskName(name);
-			task.setComments("挖掘  "+ip+" 上的频繁模式");
+			task.setComments("挖掘  "+mingObj+" 的频繁模式");
 		case MiningMethods_Statistics:
-			name = ip+"_"+mingObj;
+			name = mingObj;
 			task.setTaskName(name);
-			task.setComments("挖掘  "+ip+" 上的统计");
+			task.setComments("挖掘  "+mingObj+" 的统计量");
 		default:
 			break;
 		}
