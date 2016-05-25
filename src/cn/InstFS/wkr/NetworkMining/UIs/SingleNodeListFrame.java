@@ -198,8 +198,6 @@ public class SingleNodeListFrame extends JFrame {
 				{
 					@Override
 					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
-						System.out.println(o1.getValue().getRetPM().getConfidence());
-						System.out.println(o2.getValue().getRetPM().getConfidence());
 						return o1.getKey().getRange().compareTo(o2.getKey().getRange());
 					}
 				});
@@ -210,8 +208,6 @@ public class SingleNodeListFrame extends JFrame {
 				{
 					@Override
 					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
-						System.out.println(o1.getValue().getRetPM().getConfidence());
-						System.out.println(o2.getValue().getRetPM().getConfidence());
 						return o1.getKey().getProtocol().compareTo(o2.getKey().getProtocol());
 					}
 				});
@@ -223,8 +219,6 @@ public class SingleNodeListFrame extends JFrame {
 				{
 					@Override
 					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
-						System.out.println(o1.getValue().getRetPM().getConfidence());
-						System.out.println(o2.getValue().getRetPM().getConfidence());
 						if(o1.getValue().getRetPM().getConfidence()>o2.getValue().getRetPM().getConfidence())
 							return -1;
 						else if(o1.getValue().getRetPM().getConfidence()<o2.getValue().getRetPM().getConfidence())
@@ -246,13 +240,12 @@ public class SingleNodeListFrame extends JFrame {
 //	}
 	private void sortByOutlies()
 	{
-		System.out.println("why"+sortMethod);
+		
 		Collections.sort(resultList,new Comparator<Map.Entry<TaskCombination, MinerNodeResults> >()
 				{
 					@Override
 					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
-						System.out.println(o1.getValue().getRetPM().getConfidence());
-						System.out.println(o2.getValue().getRetPM().getConfidence());
+					
 						if(o1.getValue().getRetOM().getConfidence()>o2.getValue().getRetOM().getConfidence())
 							return -1;
 						else if(o1.getValue().getRetOM().getConfidence()<o2.getValue().getRetOM().getConfidence())
@@ -266,7 +259,7 @@ public class SingleNodeListFrame extends JFrame {
 		System.out.println("更新");
 		if(listTable!=null)
 		{
-//		scrollPane.remove(listTable);
+		scrollPane.remove(listTable);
 		System.out.println("remove");
 		}
 		resultList=new ArrayList<Map.Entry<TaskCombination, MinerNodeResults>>(resultMap.entrySet());
@@ -340,7 +333,7 @@ public class SingleNodeListFrame extends JFrame {
 	    public void mouseClicked(MouseEvent e) {
 	        
 	          if(e.getClickCount()==2){//点击几次，这里是双击事件
-	        	System.out.println("kkkkk");
+//	        	System.out.println("kkkkk");
 	           tableChanged();        
 	          }
 	       }
