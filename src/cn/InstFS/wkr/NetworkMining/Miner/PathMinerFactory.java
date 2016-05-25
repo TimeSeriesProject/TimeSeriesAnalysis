@@ -16,7 +16,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 public class PathMinerFactory {
 	private static PathMinerFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="E:\\parsePcap\\route\\10.0.1.2_10.0.2.2.csv";
+	public String dataPath="E:\\parsePcap\\route\\10.0.13.2_10.0.2.2.csv";
 	
 	private MiningObject miningObject;
 	private TaskRange taskRange;
@@ -84,6 +84,7 @@ public class PathMinerFactory {
 		
 		TaskCombination taskCombination = new TaskCombination();
 		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_PeriodicityMining));
+		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_OutliesMining));
 		taskCombination.setDataItems(di);
 		taskCombination.setRange(dataFile.getName().substring(0, dataFile.getName().lastIndexOf(".")));
 		taskCombination.setMinerType(MinerType.MiningType_Path);
@@ -109,11 +110,14 @@ public class PathMinerFactory {
 			task.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
 			taskName = fileName + "_路径_"+miningObject.toString()+"_周期挖掘_auto";
 			task.setTaskName(taskName);
-			task.setComments("ip为"+file.getName()+"的路径+"+miningObject.toString()+"周期规律挖掘");
+			task.setComments("ip为"+file.getName()+"的路径"+miningObject.toString()+"周期规律挖掘");
 			break;
 		case MiningMethods_OutliesMining:
+			task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
+			taskName = fileName + "_路径_" + miningObject.toString() + "_异常检测_auto";
+			task.setTaskName(taskName);
+			task.setComments("ip为"+file.getName()+"的路径"+ miningObject.toString()+"异常检测");
 			break;
-
 		default:
 			break;
 		}
@@ -171,6 +175,6 @@ public class PathMinerFactory {
 		PathMinerFactory pathFactory=PathMinerFactory.getInstance();
 		pathFactory.setMiningObject(MiningObject.MiningObject_Traffic);
 		pathFactory.detect();
-		NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Traffic);
+		NetworkMinerFactory.getInstance().startAllPathMiners(MiningObject.MiningObject_Traffic);
 	}
 }

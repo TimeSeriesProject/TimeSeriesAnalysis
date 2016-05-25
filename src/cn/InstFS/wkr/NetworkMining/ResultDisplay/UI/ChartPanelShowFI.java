@@ -274,12 +274,12 @@ public class ChartPanelShowFI extends JPanel {
 //                    generalpath.lineTo(-3F, 3F);
 //                    generalpath.closePath();
 //                    xylineandshaperenderer2.setSeriesShape(0, generalpath);
-                    xylineandshaperenderer2.setSeriesPaint(0, Color.black);
-                    xylineandshaperenderer2.setSeriesFillPaint(0, Color.black);
+                    xylineandshaperenderer2.setSeriesPaint(0, Color.yellow);
+                    xylineandshaperenderer2.setSeriesFillPaint(0, Color.black   );
                     xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.black);
                     xylineandshaperenderer2.setUseFillPaint(true);
                     xylineandshaperenderer2.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(2F));
+                    xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(0.5F));
 //                    xylineandshaperenderer2.setBaseItemLabelsVisible(true);
 
 
@@ -343,12 +343,12 @@ public class ChartPanelShowFI extends JPanel {
 ////                    generalpath.closePath();
 //                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
-                    xylineandshaperenderer3.setSeriesPaint(0, Color.black);
+                    xylineandshaperenderer3.setSeriesPaint(0, Color.yellow);
                     xylineandshaperenderer3.setSeriesFillPaint(0, Color.black);
                     xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.black);
                     xylineandshaperenderer3.setUseFillPaint(true);
                     xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(2F));
+                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(0.5F));
                     xylineandshaperenderer3.setBaseItemLabelsVisible(false);
 
 
@@ -373,7 +373,7 @@ public class ChartPanelShowFI extends JPanel {
                     generalpath.moveTo(3F, -9F);
                     generalpath.lineTo(0F, -9F);
                     generalpath.moveTo(0F, -9F);
-                                                                                                                                                                                              generalpath.lineTo(0F, -6F);
+                    generalpath.lineTo(0F, -6F);
                     generalpath.moveTo(0F,-6F);
                     generalpath.lineTo(3F,-6F);
 
@@ -409,12 +409,12 @@ public class ChartPanelShowFI extends JPanel {
 //                    xylineandshaperenderer4.setSeriesShape(0, generalpath);
                     xylineandshaperenderer4.setSeriesShape(0, double1);
                     //设置线和点的颜色。
-                    xylineandshaperenderer4.setSeriesPaint(0, Color.black);
+                    xylineandshaperenderer4.setSeriesPaint(0, Color.yellow);
                     xylineandshaperenderer4.setSeriesFillPaint(0, Color.black);
                     xylineandshaperenderer4.setSeriesOutlinePaint(0, Color.black);
                     xylineandshaperenderer4.setUseFillPaint(true);
                     xylineandshaperenderer4.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer4.setSeriesStroke(0, new BasicStroke(2F));
+                    xylineandshaperenderer4.setSeriesStroke(0, new BasicStroke(0.5F));
                     xylineandshaperenderer4.setBaseItemLabelsVisible(false);
 
 
@@ -484,12 +484,12 @@ public class ChartPanelShowFI extends JPanel {
 ////                    generalpath.closePath();
 //                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
-                    xylineandshaperenderer5.setSeriesPaint(0, Color.black);
+                    xylineandshaperenderer5.setSeriesPaint(0, Color.yellow);
                     xylineandshaperenderer5.setSeriesFillPaint(0, Color.black);
                     xylineandshaperenderer5.setSeriesOutlinePaint(0, Color.black);
                     xylineandshaperenderer5.setUseFillPaint(true);
                     xylineandshaperenderer5.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer5.setSeriesStroke(0, new BasicStroke(2F));
+                    xylineandshaperenderer5.setSeriesStroke(0, new BasicStroke(0.5F));
                     xylineandshaperenderer5.setBaseItemLabelsVisible(false);
 
 
@@ -561,12 +561,12 @@ public class ChartPanelShowFI extends JPanel {
 ////                    generalpath.closePath();
 //                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
-                    xylineandshaperenderer6.setSeriesPaint(0, Color.black);
+                    xylineandshaperenderer6.setSeriesPaint(0, Color.yellow);
                     xylineandshaperenderer6.setSeriesFillPaint(0, Color.black);
                     xylineandshaperenderer6.setSeriesOutlinePaint(0, Color.black);
                     xylineandshaperenderer6.setUseFillPaint(true);
                     xylineandshaperenderer6.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer6.setSeriesStroke(0, new BasicStroke(2F));
+                    xylineandshaperenderer6.setSeriesStroke(0, new BasicStroke(0.5F));
                     xylineandshaperenderer6.setBaseItemLabelsVisible(false);
 
 
@@ -646,12 +646,12 @@ public class ChartPanelShowFI extends JPanel {
 ////                    generalpath.closePath();
 //                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
-                    xylineandshaperenderer7.setSeriesPaint(0, Color.black);
+                    xylineandshaperenderer7.setSeriesPaint(0, Color.yellow);
                     xylineandshaperenderer7.setSeriesFillPaint(0, Color.black);
                     xylineandshaperenderer7.setSeriesOutlinePaint(0, Color.black);
                     xylineandshaperenderer7.setUseFillPaint(true);
                     xylineandshaperenderer7.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer7.setSeriesStroke(0, new BasicStroke(2F));
+                    xylineandshaperenderer7.setSeriesStroke(0, new BasicStroke(0.5F));
                     xylineandshaperenderer7.setBaseItemLabelsVisible(false);
 
 
@@ -739,12 +739,12 @@ public class ChartPanelShowFI extends JPanel {
 ////                    generalpath.closePath();
 //                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
-                    xylineandshaperenderer8.setSeriesPaint(0, Color.black);
+                    xylineandshaperenderer8.setSeriesPaint(0, Color.yellow);
                     xylineandshaperenderer8.setSeriesFillPaint(0, Color.black);
                     xylineandshaperenderer8.setSeriesOutlinePaint(0, Color.black);
                     xylineandshaperenderer8.setUseFillPaint(true);
                     xylineandshaperenderer8.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer8.setSeriesStroke(0, new BasicStroke(2F));
+                    xylineandshaperenderer8.setSeriesStroke(0, new BasicStroke(0.5F));
                     xylineandshaperenderer8.setBaseItemLabelsVisible(false);
 
 
@@ -828,12 +828,12 @@ public class ChartPanelShowFI extends JPanel {
 ////                    generalpath.closePath();
 //                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
-                    xylineandshaperenderer9.setSeriesPaint(0, Color.black);
+                    xylineandshaperenderer9.setSeriesPaint(0, Color.yellow);
                     xylineandshaperenderer9.setSeriesFillPaint(0, Color.black);
                     xylineandshaperenderer9.setSeriesOutlinePaint(0, Color.black);
                     xylineandshaperenderer9.setUseFillPaint(true);
                     xylineandshaperenderer9.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer9.setSeriesStroke(0, new BasicStroke(2F));
+                    xylineandshaperenderer9.setSeriesStroke(0, new BasicStroke(0.5F));
                     xylineandshaperenderer9.setBaseItemLabelsVisible(false);
 
 
@@ -924,12 +924,12 @@ public class ChartPanelShowFI extends JPanel {
 ////                    generalpath.closePath();
 //                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
-                    xylineandshaperenderer3.setSeriesPaint(0, Color.black);
+                    xylineandshaperenderer3.setSeriesPaint(0, Color.yellow);
                     xylineandshaperenderer3.setSeriesFillPaint(0, Color.black);
                     xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.black);
                     xylineandshaperenderer3.setUseFillPaint(true);
                     xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(2F));
+                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(0.5F));
                     xylineandshaperenderer3.setBaseItemLabelsVisible(false);
 
 
@@ -1020,12 +1020,12 @@ public class ChartPanelShowFI extends JPanel {
 ////                    generalpath.closePath();
 //                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
-                    xylineandshaperenderer3.setSeriesPaint(0, Color.black);
+                    xylineandshaperenderer3.setSeriesPaint(0, Color.yellow);
                     xylineandshaperenderer3.setSeriesFillPaint(0, Color.black);
                     xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.black);
                     xylineandshaperenderer3.setUseFillPaint(true);
                     xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(2F));
+                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(0.5F));
                     xylineandshaperenderer3.setBaseItemLabelsVisible(false);
 
 

@@ -179,7 +179,6 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
             chart1.displayDataItems(oriItems);
 
             boolean islinkPic = rslts.getRetOM().isIslinkDegree();
-            islinkPic=true;
             if (count == 0) {
                 if (outliesItems != null) {
                     System.out.println("outlies " + outliesItems.getLength());

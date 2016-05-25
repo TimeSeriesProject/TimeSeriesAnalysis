@@ -180,7 +180,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		HashMap<TaskCombination, MinerNodeResults>resultsMap=
 				new HashMap<TaskCombination,MinerNodeResults>();
 		startMinerOneByOne(MinerType.MiningType_SinglenodeOrNodePair,miningObject);
-		waitUtilAllMinerOver(MinerType.MiningType_SinglenodeOrNodePair, miningObject, resultsMap, null);
+		waitUtilAllMinerOver(MinerType.MiningType_SinglenodeOrNodePair, miningObject, resultsMap, null,null);
 		
 		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
 		while(iterator.hasNext()){
@@ -236,7 +236,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		HashMap<TaskCombination, MinerProtocolResults>resultsMap=
 				new HashMap<TaskCombination,MinerProtocolResults>();
 		startMinerOneByOne(MinerType.MiningType_ProtocolAssociation,miningObject);
-		waitUtilAllMinerOver(MinerType.MiningType_ProtocolAssociation, miningObject,null,resultsMap);
+		waitUtilAllMinerOver(MinerType.MiningType_ProtocolAssociation, miningObject,null,resultsMap,null);
 
 		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
 		while(iterator.hasNext()){
@@ -269,6 +269,50 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		return resultsMap;
 	}
 
+	public HashMap<TaskCombination, MinerResultsPath> startAllPathMiners(MiningObject miningObject){
+		HashMap<TaskCombination, MinerResultsPath>resultsMap=
+				new HashMap<TaskCombination,MinerResultsPath>();
+		startMinerOneByOne(MinerType.MiningType_Path,miningObject);
+		waitUtilAllMinerOver(MinerType.MiningType_Path, miningObject, null, null,resultsMap);
+
+		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<TaskCombination, INetworkMiner> entry=iterator.next();
+			TaskCombination taskCombination=entry.getKey();
+			if(!taskCombination.getMiningObject().equals(miningObject.toString())||
+					!taskCombination.getMinerType().equals(MinerType.MiningType_Path))
+				continue;
+			for(TaskElement task:taskCombination.getTasks()){
+				switch (task.getMiningMethod()) {
+					case MiningMethods_OutliesMining:
+						NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
+						minerOM.results.getRetPath().setRetOM(resultsMap.get(taskCombination).getRetOM());
+						minerOM.results.di=taskCombination.getDataItems();
+						minerOM.isOver.setIsover(true);
+						allMiners.put(task, minerOM);
+						break;
+					case MiningMethods_PeriodicityMining:
+						NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
+						minerPM.results.getRetPath().setRetPM(resultsMap.get(taskCombination).getRetPM());
+						minerPM.isOver.setIsover(true);
+						minerPM.results.di=taskCombination.getDataItems();
+						allMiners.put(task, minerPM);
+						break;
+					case MiningMethods_Statistics:
+						/*NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
+						statistics.results.setRetStatistics(resultsMap.get(taskCombination).getRetStatistics());
+						statistics.isOver.setIsover(true);
+						statistics.results.di=taskCombination.getDataItems();
+						allMiners.put(task, statistics);*/
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		return resultsMap;
+	}
+
 	private void startMinerOneByOne(MinerType minerType,MiningObject miningObject){
 		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
 		while(iterator.hasNext()){
@@ -286,7 +330,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	}
 
 	private void waitUtilAllMinerOver(MinerType type,MiningObject miningObject,HashMap<TaskCombination,
-			MinerNodeResults> retNode,HashMap<TaskCombination, MinerProtocolResults>retPro){
+			MinerNodeResults> retNode,HashMap<TaskCombination, MinerProtocolResults>retPro, HashMap<TaskCombination, MinerResultsPath> retPath){
 		Iterator<Entry<TaskCombination, INetworkMiner>> iterator;
 		boolean isAllOver=false;
 		while (!isAllOver) {
@@ -315,6 +359,8 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						retPro.put(task, miner.getResults().getRetProtocol());
 						System.out.println(task.getName()+" has over");
 						break;
+						case MiningType_Path:
+							retPath.put(task, miner.getResults().getRetPath());
 					default:
 						break;
 					}
