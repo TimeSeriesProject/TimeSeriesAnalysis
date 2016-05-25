@@ -138,9 +138,9 @@ public class SingleNodeOrNodePairMinerFactory {
 						taskCombination.getTasks().add(generateTask(taskRange, granularity,
 								dataFile, protocol, ipPair, MiningMethod.MiningMethods_PeriodicityMining));
 						taskCombination.getTasks().add(generateTask(taskRange, granularity,
-								dataFile, protocol, ipPair, MiningMethod.MiningMethods_OutliesMining));
-						taskCombination.getTasks().add(generateTask(taskRange, granularity,
 								dataFile, protocol, ipPair, MiningMethod.MiningMethods_Statistics));
+						taskCombination.getTasks().add(generateTask(taskRange, granularity,
+								dataFile, protocol, ipPair, MiningMethod.MiningMethods_OutliesMining));
 						taskCombination.getTasks().add(generateTask(taskRange, granularity,
 								dataFile, protocol, ipPair, MiningMethod.MiningMethods_SequenceMining));
 						taskCombination.setMiningObject(miningObject.toString());

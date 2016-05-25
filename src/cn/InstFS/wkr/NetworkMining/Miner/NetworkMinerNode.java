@@ -169,12 +169,17 @@ class NodeTimerTask extends TimerTask{
 				setPMResults(results, pmMethod);
 				break;
 			case MiningMethods_OutliesMining:
+				if(results.getRetNode().getRetStatistics().getComplex()>1.5){
+					task.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
+				}
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
 					tsaMethod=new FastFourierOutliesDetection(dataItems);
 					((FastFourierOutliesDetection)tsaMethod).setAmplitudeRatio(0.7);
 					((FastFourierOutliesDetection)tsaMethod).setVarK(2.5);
+					results.getRetNode().getRetOM().setIslinkDegree(false);
 				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_GaussDetection)){
 					tsaMethod=new AnormalyDetection(dataItems);
+					results.getRetNode().getRetOM().setIslinkDegree(false);
 				}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
 					//tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
 					tsaMethod=new PointPatternDetection(dataItems,2,10);
