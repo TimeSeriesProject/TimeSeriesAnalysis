@@ -99,9 +99,9 @@ public class ProtocolAssociation {
 						System.out.println("拒绝该关联");
 					if(thresh > supportThresh[whichAlogrithm-1])
 					{
-						ProtocolAssociationResultRate par = new ProtocolAssociationResultRate(proDataList.get(i).protocolName
+						ProtocolAssociationResult par = new ProtocolAssociationResult(proDataList.get(i).protocolName
 								,proDataList.get(j).protocolName,proDataList.get(i).getDataItems(),
-								proDataList.get(j).getDataItems(),thresh,bias);
+								proDataList.get(j).getDataItems(),1,thresh);
 						resultList.add(par);
 						
 					}
@@ -202,7 +202,7 @@ public class ProtocolAssociation {
 			i++;
 			j++;
 		}
-		FileOutput.writeRateData(data,path+"\\"+currentPath);
+//		FileOutput.writeRateData(data,path+"\\"+currentPath);
 		mean = sum/num;
 		double s = 0;
 		for(i = 0;i < data.size();i++)

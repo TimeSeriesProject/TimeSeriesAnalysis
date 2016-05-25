@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import test.ProtocolAssociationTest;
 import lineAssociation.BottomUpLinear;
 import lineAssociation.ClusterWrapper;
 import lineAssociation.DPCluster;
@@ -15,6 +16,8 @@ import lineAssociation.FindRules;
 import lineAssociation.Linear;
 import lineAssociation.Rule;
 import lineAssociation.SymbolNode;
+import associationRules.LinePos;
+import associationRules.ProtoclPair;
 import associationRules.ProtocolAssociationResult;
 import associationRules.ProtocolAssociationResultLine;
 
@@ -48,18 +51,24 @@ public class ProtocolAssociationLine {
 	/**
 	 * 挖掘ip下协议之间的关联
 	 */
-	public Map<String,List<ProtocolAssociationResult>> miningAssociation()
+	public MinerResultsFP_Line miningAssociation()
 	{
 		if(ip_proData == null)
 		{
 			System.out.println("待挖掘数据为空，请先载入数据！");
 			System.exit(0);
 		}
-		Map<String,List<ProtocolAssociationResult>> resultMap = new TreeMap<String,List<ProtocolAssociationResult>>();
+		if(ip_proData.size() != 1)
+		{
+			System.out.println("该方法只处理一个ip下的协议的关联性");
+		}
+		MinerResultsFP_Line mr_fp_l = new MinerResultsFP_Line();
+//		Map<String,List<ProtocolAssociationResult>> resultMap = new TreeMap<String,List<ProtocolAssociationResult>>();
 		Iterator<String> ip_iter = ip_proData.keySet().iterator();
 		while(ip_iter.hasNext())
 		{
 			String ip = ip_iter.next();
+			mr_fp_l.ip = ip;
 			List<ProtocolDataItems> proDataList = ip_proData.get(ip);
 			
 			List<TreeMap<Integer,SymbolNode>> linesList = new ArrayList<TreeMap<Integer,SymbolNode>>();
@@ -83,8 +92,8 @@ public class ProtocolAssociationLine {
 		        System.out.println("DPCluster聚类算法计算完毕！");
 		        System.out.println("***************************************************");
 			}
-
-			List<ProtocolAssociationResult> resultList = new ArrayList<ProtocolAssociationResult>();
+			double max_confidence = -1;
+			List<ProtoclPair> resultList = new ArrayList<ProtoclPair>();
 			for(int i = 0;i < linesList.size();i++)
 			{
 				HashMap<Integer,TreeMap<Integer,SymbolNode>> symbolSeries = new HashMap<Integer, TreeMap<Integer, SymbolNode>>();
@@ -94,104 +103,87 @@ public class ProtocolAssociationLine {
 					symbolSeries.put(j,linesList.get(j));
 					FindRules findRules = new FindRules(symbolSeries);
 					findRules.run();
-					ProtocolAssociationResultLine par = new ProtocolAssociationResultLine(proDataList.get(i).getProtocolName(),
+					
+					ProtoclPair pp = new ProtoclPair(proDataList.get(i).getProtocolName(),
 							proDataList.get(j).getProtocolName(),
 							proDataList.get(i).getDataItems(),proDataList.get(j).getDataItems());
 					
-					List<String> assA1 = new ArrayList<String>();
-					List<String> assA2 = new ArrayList<String>();
-					List<String> assB1 = new ArrayList<String>();
-					List<String> assB2 = new ArrayList<String>();
 					
-					int son = 0;
-					int father_len = 0;
-					int son_len = 0;
+					int son = 0,father_len = 0,son_len = 0;
 					
 					System.out.println(findRules.rulesSet.size());
+					
+					HashMap<String,ArrayList<LinePos>> mapAB = new HashMap<String,ArrayList<LinePos>>();  //记录序列1与序列2 各个关联符号所在的位置 A,B表示在哪个序列上，12表示序列的比较顺序
+					HashMap<String,ArrayList<LinePos>> mapBA = new HashMap<String,ArrayList<LinePos>>();
+					
+					int symbol = 1;
+					double sum_confidence = 0;
 					for(Rule rule : findRules.rulesSet){
 						
-						/**
-						int len_i = 0;
-						SymbolNode  sn = null;
-						System.out.println("rule.befor.size:"+rule.before.size());
-						for(int m = 0;m < rule.before.size();m++)
-						{
-							sn = rule.before.get(m);
-							len_i = linesPosList.get(sn.belong_series).get(sn.node_name).span;
-//							System.out.println("series:"+sn.belong_series);
-							if(sn.belong_series == i)
-							{
-								assA1.add(String.valueOf(sn.node_name)+","+String.valueOf(sn.node_name+len_i));
-							}
-							else {
-								assB1.add(String.valueOf(sn.node_name)+","+String.valueOf(sn.node_name+len_i));
-							}
-						}
-						sn = rule.after;
-//						System.out.println("sn.belong_series:"+sn.belong_series+" sn.node_name:"+sn.node_name);
-//						System.out.println(linesPosList.get(sn.belong_series));
-						len_i = linesPosList.get(sn.belong_series).
-								get(sn.node_name).span;
-						if(sn.belong_series == i)
-						{
-							assA1.add(String.valueOf(sn.node_name)+","+String.valueOf(sn.node_name+len_i));
-						}
-						else {
-							assB1.add(String.valueOf(sn.node_name)+","+String.valueOf(sn.node_name+len_i));
-						}
-						*/
-						
+						symbol++;
+						sum_confidence += rule.con;
+						ArrayList<LinePos> alp = new ArrayList<LinePos>();
 						if(rule.after.belong_series == i)
 						{
 							System.out.println(rule.parent_node_time_map);
 							for(int father :rule.parent_node_time_map.keySet()){
 								
-								try{
-									son = rule.parent_node_time_map.get(father);  //对应 after
-									
-//									System.out.println("**********fir:sec："+father+" "+son);
-									son_len = linesPosList.get(i).get(son).span;
-									father_len = linesPosList.get(j).get(father).span;
-									
-									assA1.add(String.valueOf(father)+","+String.valueOf(father+father_len));
-									assB1.add(String.valueOf(son)+","+String.valueOf(son+son_len));
-								}catch(java.lang.NullPointerException e){
-//									System.out.println("first="+father+";second="+son);
-//									System.out.println(linesPosList.get(i));
-//									System.out.println(linesPosList.get(j));
-									throw e;
-								}
+								
+								son = rule.parent_node_time_map.get(father);  //对应 after
+								son_len = linesPosList.get(i).get(son).span;
+								father_len = linesPosList.get(j).get(father).span;
+								
+								LinePos lp = new LinePos();
+								lp.A_start = father;
+								lp.A_end = father+father_len;
+								
+								lp.B_start = son;
+								lp.B_end = son+son_len;
+								alp.add(lp);
+								
+//								assi.add(String.valueOf(father)+","+String.valueOf(father+father_len));
+//								assj.add(String.valueOf(son)+","+String.valueOf(son+son_len));
 							}
+							mapAB.put(String.valueOf(symbol),alp);
+							
 						}
-						else if(rule.after.belong_series == j){
+						else if(rule.after.belong_series == j){ 
 							
 							for(int father :rule.parent_node_time_map.keySet()){
 								
 								son = rule.parent_node_time_map.get(father);
 								son_len = linesPosList.get(j).get(son).span;
 								father_len = linesPosList.get(i).get(father).span;
-								assA1.add(String.valueOf(son)+","+String.valueOf(son+son_len));
-								assB1.add(String.valueOf(father)+","+String.valueOf(father+father_len));
 								
+								LinePos lp = new LinePos();
+								lp.A_start = son;
+								lp.A_end = son+son_len; 
+								
+								lp.B_start = father;
+								lp.B_end = father+father_len;
+								alp.add(lp);
 							}
+							mapBA.put(String.valueOf(symbol),alp);
 						}
 						
 					}
+					pp.setConfidence(sum_confidence/(symbol-1));
+					pp.setMapAB(mapAB);
+					pp.setMapBA(mapBA);
+					resultList.add(pp);
+					
+					if(max_confidence < pp.confidence)
+						max_confidence = pp.confidence;
 					symbolSeries.remove(j);
-					par.assA = assA1;
-//					par.assA2 = assA2;
-					par.assB = assB1;
-//					par.assB2 = assB2;
-					resultList.add(par);
 					System.out.println("*********************一轮结束****************************");
 				}
 			}
+			mr_fp_l.confidence = max_confidence;
+			mr_fp_l.protocolPairList = resultList;
 			//找序列的关联信息
-			
 	        //计算两个符号化序列的关联度
-			resultMap.put(ip,resultList);
 		}
-		return resultMap;
+		return mr_fp_l;
 	}
 	private TreeMap<Integer, Double> convertDataToTreeMap(
 			ProtocolDataItems protocolDataItems) {
