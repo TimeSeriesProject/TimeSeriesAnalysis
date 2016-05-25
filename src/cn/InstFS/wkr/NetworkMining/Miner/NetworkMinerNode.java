@@ -175,7 +175,7 @@ class NodeTimerTask extends TimerTask{
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
 					tsaMethod=new FastFourierOutliesDetection(dataItems);
 					((FastFourierOutliesDetection)tsaMethod).setAmplitudeRatio(0.7);
-					((FastFourierOutliesDetection)tsaMethod).setVarK(2.5);
+					((FastFourierOutliesDetection)tsaMethod).setVarK(3.0);
 					results.getRetNode().getRetOM().setIslinkDegree(false);
 				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_GaussDetection)){
 					tsaMethod=new AnormalyDetection(dataItems);
@@ -183,7 +183,7 @@ class NodeTimerTask extends TimerTask{
 				}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
 					//tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
 					tsaMethod=new PointPatternDetection(dataItems,2,10);
-					results.getRetOM().setIslinkDegree(true);
+					results.getRetNode().getRetOM().setIslinkDegree(true);
 				}else{
 					throw new RuntimeException("方法不存在！");
 				}
@@ -263,6 +263,7 @@ class NodeTimerTask extends TimerTask{
 				}
 			}
 		}
+		System.out.println(results.getRetNode().getRetOM().isIslinkDegree());
 	}
 	
 	private void setStatisticResults(MinerResults results,SeriesStatistics statistics){

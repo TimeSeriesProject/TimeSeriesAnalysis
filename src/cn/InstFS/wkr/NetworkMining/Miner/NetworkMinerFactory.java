@@ -194,6 +194,9 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 				case MiningMethods_OutliesMining:
 					NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
 					minerOM.results.setRetOM(resultsMap.get(taskCombination).getRetOM());
+					if(minerOM.results.getRetOM().isIslinkDegree()){
+						System.out.println("true");
+					}
 					minerOM.results.di=taskCombination.getDataItems();
 					minerOM.isOver.setIsover(true);
 					allMiners.put(task, minerOM);
@@ -357,7 +360,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						break;
 					case MiningType_ProtocolAssociation:
 						retPro.put(task, miner.getResults().getRetProtocol());
-						System.out.println(task.getName()+" has over");
+						//System.out.println(task.getName()+" has over");
 						break;
 						case MiningType_Path:
 							retPath.put(task, miner.getResults().getRetPath());

@@ -70,7 +70,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
             if(!nbt.isDawnToThisDistri(result[i]))
             {
             	outlies.add1Data(dataItems.getTime().get(i), original[i]+"");
-            	System.out.println(original[i]);
+            	//System.out.println(original[i]);
             }
         }
     }
@@ -219,7 +219,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
 		for(int j=0;j<outlength;j++){
 			for(;i<dataLen;i++){
 				if(time.get(i).equals(outlies.getTime().get(j))){
-					System.out.print(i+1+",");
+					//System.out.print(i+1+",");
 					break;
 				}
 			}
