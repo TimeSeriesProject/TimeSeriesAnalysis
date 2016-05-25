@@ -138,7 +138,8 @@ private void initialize() {
 		}
 		splitPane.setRightComponent(panelShow);;
 		getContentPane().add(splitPane);
-		
+		if(buttons.size()>0)
+			buttons.get(0).doClick();
 	}
 
 }

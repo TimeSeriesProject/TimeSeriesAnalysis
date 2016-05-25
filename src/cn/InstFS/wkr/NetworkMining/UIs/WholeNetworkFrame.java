@@ -2,12 +2,12 @@ package cn.InstFS.wkr.NetworkMining.UIs;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -57,18 +57,24 @@ public class WholeNetworkFrame extends JFrame{
 					JFrame.setDefaultLookAndFeelDecorated(true); 
 					NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
 					NetworkFactory networkFactory = NetworkFactory.getInstance();
-					networkFactory.dataPath="C:\\data\\out\\traffic";;
-					networkFactory.mineNetworkClusterRule();
+					networkFactory.dataPath="C:\\data\\out\\route";;
+					networkFactory.setMiningObject(MiningObject.MiningObject_Cluster);
+					networkFactory.detect();
 					
-					HashMap<TaskCombination, MinerNodeResults> resultMap = NetworkMinerFactory.getInstance().startAllNodeMiners();
-					HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>> tmpresultMaps = new HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>>();
-					tmpresultMaps.put("网络簇系数",resultMap);
-					System.out.println("size "+resultMap.size());
+					HashMap<TaskCombination, MinerNodeResults> clusterMap = NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(MiningObject.MiningObject_Cluster);
+					HashMap<String,HashMap<TaskCombination, MinerNodeResults>> tmpresultMaps = new HashMap<String,HashMap<TaskCombination, MinerNodeResults>>();
+					tmpresultMaps.put(MiningObject.MiningObject_Cluster.toString(),clusterMap);
+					
+					networkFactory.reset();
+					networkFactory.setMiningObject(MiningObject.MiningObject_Diameter);
+					networkFactory.detect();
+					
+					HashMap<TaskCombination, MinerNodeResults> diameter = NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(MiningObject.MiningObject_Diameter);
+					tmpresultMaps.put(MiningObject.MiningObject_Diameter.toString(),diameter);
+					
 					JFrame.setDefaultLookAndFeelDecorated(true); 
-					SingleNodeListFrame frame = new SingleNodeListFrame(tmpresultMaps);
-//					networkMinerFactory.startAllTaskMiners();
-					
-					WholeNetworkFrame window = new WholeNetworkFrame();
+				
+					WholeNetworkFrame window = new WholeNetworkFrame(tmpresultMaps);
 					
 //					window.setModel(networkMinerFactory.allMiners);
 					//window.loadModel();
@@ -80,7 +86,7 @@ public class WholeNetworkFrame extends JFrame{
 			}
 		});
 	}
-	protected ArrayList<MiningMethod> miningMethods = new ArrayList<MiningMethod>();
+	protected ArrayList<MiningMethod> miningMethods ;
 	protected ArrayList<String>     miningObjects = new ArrayList<String>();
 	ArrayList<ArrayList<JPopupMenu>> popupMenus=new ArrayList<ArrayList<JPopupMenu>>();
 	ArrayList<JPopupMenu> currentPopupMenus=new ArrayList<JPopupMenu>();
@@ -91,11 +97,13 @@ public class WholeNetworkFrame extends JFrame{
 	protected int miningObjectIndex=0;
 	Map<Integer,MouseListener> popupListeners= new   HashMap<Integer,MouseListener>(); //弹出菜单监听器
 	ArrayList<JPanel> statisticsPanels = new ArrayList<JPanel>();
-	ArrayList<ArrayList<TaskElement>> taskList = new ArrayList<ArrayList<TaskElement>> ();
+	ArrayList<List<TaskElement>> taskList = new ArrayList<List<TaskElement>> ();
 	int ipIndex=0;
 	int protocolIndex=0;
-	public WholeNetworkFrame()
+	HashMap<String,HashMap<TaskCombination, MinerNodeResults>> resultMaps;
+	public WholeNetworkFrame(HashMap<String,HashMap<TaskCombination, MinerNodeResults>> argresultMaps)
 	{
+		this.resultMaps=argresultMaps;
 		loadModel();
 		initModel();
 		initialize();
@@ -103,77 +111,37 @@ public class WholeNetworkFrame extends JFrame{
 	public void loadModel() {
 		// TODO Auto-generated method stub
 		
-		miningMethods.add(MiningMethod.MiningMethods_PeriodicityMining);
-		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
-		miningMethods.add(MiningMethod.MiningMethods_OutliesMining);
-		miningMethods.add(MiningMethod.MiningMethods_PredictionMining);
-		miningMethods.add(MiningMethod.MiningMethods_Statistics);
-		miningObjects.add("网络簇系数");
-		miningObjects.add("网络直径");
+//		miningMethods.add(MiningMethod.MiningMethods_PeriodicityMining);
+//		miningMethods.add(MiningMethod.MiningMethods_SequenceMining);
+//		miningMethods.add(MiningMethod.MiningMethods_OutliesMining);
+////		miningMethods.add(MiningMethod.MiningMethods_PredictionMining);
+//		miningMethods.add(MiningMethod.MiningMethods_Statistics);
+//		miningObjects.add("网络簇系数");
+//		miningObjects.add("网络直径");
 //		miningObjects.add("结点出现消失");
 	}
 	
 	
 	public void initModel() {
 		// TODO Auto-generated method stub
-		NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
-		Map<TaskElement, INetworkMiner> allMiners = networkMinerFactory.allMiners;
-		Map<TaskElement, INetworkMiner> miners=new HashMap<TaskElement, INetworkMiner> ();
 		
-		
-		for(Map.Entry<TaskElement, INetworkMiner> entry:allMiners.entrySet()) //得到需要的任务
+		for(Map.Entry<String, HashMap<TaskCombination, MinerNodeResults>> entry :resultMaps.entrySet())
 		{
-			TaskElement task = entry.getKey();
-			if(task.getTaskRange().compareTo(TaskRange.WholeNetworkRange)==0) //比较的是顺序
+			miningObjects.add(entry.getKey());
+			HashMap<TaskCombination, MinerNodeResults> resultMap=entry.getValue();
+			
+			for(Map.Entry<TaskCombination, MinerNodeResults>subentry:resultMap.entrySet())
 			{
-				miners.put(entry.getKey(),entry.getValue());
-			}
-		}
-		
-		System.out.println(miningObjects.size());
-		System.out.println(miningMethods.size());
-		for(int i=0;i<miningObjects.size();i++)
-		{
-			ArrayList<JPopupMenu> list = new ArrayList<JPopupMenu>();
-			ArrayList<TaskElement> tasks = new ArrayList<TaskElement> ();
-			taskList.add(tasks);
-			final PanelShowAllResults   panelShow = new PanelShowAllResults();
-			panelShowList.add(panelShow);
-			TaskElement task=null;
-			for(int j=0;j<miningMethods.size();j++)
-			{
-				if(miningMethods.get(j).compareTo(MiningMethod.MiningMethods_Statistics)==0)
+				List<TaskElement> tasks = subentry.getKey().getTasks();
+				final PanelShowAllResults   panelShow = new PanelShowAllResults();
+				miningMethods= new ArrayList<MiningMethod>();
+				for(int j=0;j<tasks.size();j++)
 				{
-					task = new TaskElement();
-					tasks.add(task);
-					task.setSourcePath("C:/data/out/route");
-					task.setMiningObject(miningObjects.get(i));
-					task.setMiningMethod(MiningMethod.MiningMethods_Statistics);
-					task.setGranularity(3600);
-					task.setTaskRange(TaskRange.WholeNetworkRange);
-					task.setTaskName(miningObjects.get(i)+"_"+MiningMethod.MiningMethods_Statistics+"_"+task.getGranularity());
-					panelShow.onTaskAdded(task);
-					
-					System.out.println("get");
+					panelShow.onTaskAdded(tasks.get(j));
+					miningMethods.add(tasks.get(j).getMiningMethod());
 				}
-				else
-				{
-					Map<TaskElement, INetworkMiner> tmpminers=new HashMap<TaskElement, INetworkMiner> ();
-					
-					for(Map.Entry<TaskElement, INetworkMiner> entry:miners.entrySet()) //得到需要的任务
-					{
-						
-						task = entry.getKey();
-						if(entry.getKey().getMiningObject().equals(miningObjects.get(i))&&entry.getKey().getMiningMethod().equals(miningMethods.get(j)))
-						{
-							
-							panelShow.onTaskAdded(task);
-						}
-					}
-					
-				}
-				tasks.add(task);
-				
+				taskList.add(tasks);
+				panelShowList.add(panelShow);
 			}
 			
 		}
@@ -187,6 +155,7 @@ public class WholeNetworkFrame extends JFrame{
 				@Override
 				public void actionPerformed(ActionEvent e)
 				{
+					miniMethodIndex=index;
 					panelShowList.get(tabbedPane.getSelectedIndex()).displayTask(taskList.get(tabbedPane.getSelectedIndex()).get(index));
 				}
 			});
@@ -243,9 +212,8 @@ private void initialize() {
 		splitPane.setLeftComponent(leftPanel);
 		
 		
-		for (int i=0;i<miningMethods.size();i++)  
+		for (int i=0;i<buttons.size();i++)  
 		{
-			MiningMethod method = miningMethods.get(i);
 			JButton button = buttons.get(i);
 			
 			button.setBounds(38, 51+i*100, 134, 27);
@@ -265,19 +233,22 @@ private void initialize() {
 	
 		System.out.println(miningMethods.size());
 		tabbedPane.addChangeListener(new ChangeListener()
+		{
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				if(miningObjectIndex!=tabbedPane.getSelectedIndex())
 				{
-
-					@Override
-					public void stateChanged(ChangeEvent e) {
-						// TODO Auto-generated method stub
-						if(miningObjectIndex!=tabbedPane.getSelectedIndex())
-						{
-							miningObjectIndex=tabbedPane.getSelectedIndex();
-							
-						}
-					}
-			
-				});
+					miningObjectIndex=tabbedPane.getSelectedIndex();
+					System.out.println("minindex "+miningObjectIndex);
+					buttons.get(miniMethodIndex).doClick();
+				}
+			}
+	
+		});
+		if(buttons.size()>0)
+			buttons.get(0).doClick();
 	}
-
+	
 }

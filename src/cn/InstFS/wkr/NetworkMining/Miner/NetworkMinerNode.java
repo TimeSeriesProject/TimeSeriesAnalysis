@@ -221,7 +221,7 @@ class NodeTimerTask extends TimerTask{
 			}
 		}
 		isRunning = false;
-		isOver.setIsover(true);;
+		isOver.setIsover(true);
 		System.out.println(taskCombination.getName()+" over");
 		if (displayer != null)
 			displayer.displayMinerResults(results);

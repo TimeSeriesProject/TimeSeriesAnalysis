@@ -102,29 +102,29 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 		if (di == null)
 			di = new DataItems();
 		
-		if (di.isDiscretized()){
-			StringBuilder sb = new StringBuilder();
-			Double []nodes = di.getDiscreteNodes();
-			if (nodes != null){
-				int len = nodes.length;
-				sb.append("离散化\r\n区间与值：\r\n");
-				sb.append("<" + formatStrOrNumber(nodes[1]) + ":\t0\r\n");
-				for (int i = 1; i < len - 1; i ++){
-					sb.append("" + formatStrOrNumber(nodes[i]) + " ~ " + formatStrOrNumber(nodes[i+1]) + ":\t" + i + "\r\n");
-				}
-				sb.append(">" + formatStrOrNumber(nodes[len - 1]) + ":\t" + (len-1) + "\r\n");
-				txtDiscreteNodes.setText(sb.toString());
-			}else{
-				Map<String, String> mapStrs = di.getDiscreteStrings();
-				sb.append("离散化\r\n区间与值：\r\n");
-				for(Entry<String, String>mapStr : mapStrs.entrySet()){
-					sb.append(mapStr.getKey() + ":\t" + mapStr.getValue() +"\r\n");
-				}
-				txtDiscreteNodes.setText(sb.toString());
-			}
-			txtDiscreteNodes.setVisible(true);
-		}else
-			txtDiscreteNodes.setVisible(false);
+//		if (di.isDiscretized()){
+//			StringBuilder sb = new StringBuilder();
+//			Double []nodes = di.getDiscreteNodes();
+//			if (nodes != null){
+//				int len = nodes.length;
+//				sb.append("离散化\r\n区间与值：\r\n");
+//				sb.append("<" + formatStrOrNumber(nodes[1]) + ":\t0\r\n");
+//				for (int i = 1; i < len - 1; i ++){
+//					sb.append("" + formatStrOrNumber(nodes[i]) + " ~ " + formatStrOrNumber(nodes[i+1]) + ":\t" + i + "\r\n");
+//				}
+//				sb.append(">" + formatStrOrNumber(nodes[len - 1]) + ":\t" + (len-1) + "\r\n");
+//				txtDiscreteNodes.setText(sb.toString());
+//			}else{
+//				Map<String, String> mapStrs = di.getDiscreteStrings();
+//				sb.append("离散化\r\n区间与值：\r\n");
+//				for(Entry<String, String>mapStr : mapStrs.entrySet()){
+//					sb.append(mapStr.getKey() + ":\t" + mapStr.getValue() +"\r\n");
+//				}
+//				txtDiscreteNodes.setText(sb.toString());
+//			}
+//			txtDiscreteNodes.setVisible(true);
+//		}else
+		txtDiscreteNodes.setVisible(false);
 		chartTs.displayDataItems(di);		
 	}
 	private String formatStrOrNumber(Double str){

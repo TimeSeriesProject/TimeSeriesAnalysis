@@ -94,7 +94,7 @@ public class SingleNodeListFrame extends JFrame {
 					
 					NetworkMinerFactory.getInstance();
 					SingleNodeOrNodePairMinerFactory singleNodeMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-					singleNodeMinerFactory.dataPath="F:\\parse\\traffic";
+					singleNodeMinerFactory.dataPath="C:\\data\\out\\traffic";
 					singleNodeMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
 					singleNodeMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
 					singleNodeMinerFactory.detect();
@@ -398,19 +398,20 @@ public class SingleNodeListFrame extends JFrame {
                 {
                 case ItemEvent.SELECTED: 
                     System.out.println("选中" + event.getItem());
-                    if(event.getItem().equals("流量"))
-                    {
-                    	resultMap=resultMaps.get("流量");
-                    	
-                    }
-                    else if(event.getItem().equals("通信次数"))
-                    {
-                    	resultMap=resultMaps.get("通信次数");
-                    }
-                    else if(event.getItem().equals("结点出现消失"))
-                    {
-                    	//resultMap=resultMaps.get(MiningObject.MiningObject_Traffic);
-                    }
+                    resultMap=resultMaps.get(event.getItem());
+//                    if(event.getItem().equals("流量"))
+//                    {
+//                    	resultMap=resultMaps.get("流量");
+//                    	
+//                    }
+//                    else if(event.getItem().equals("通信次数"))
+//                    {
+//                    	resultMap=resultMaps.get("通信次数");
+//                    }
+//                    else if(event.getItem().equals("结点出现消失"))
+//                    {
+//                    	//resultMap=resultMaps.get(MiningObject.MiningObject_Traffic);
+//                    }
                     update();
                     break;
                 case ItemEvent.DESELECTED:
