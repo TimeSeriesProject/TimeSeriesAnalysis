@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -17,12 +18,17 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 
+import cn.InstFS.wkr.NetworkMining.Miner.MinerNodeResults;
+import cn.InstFS.wkr.NetworkMining.Miner.MinerProtocolResults;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.PathMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.ProtocolAssMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.SingleNodeOrNodePairMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsSM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogConfigTask;
@@ -190,11 +196,22 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				SingleNodeOrNodePairMinerFactory periodMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-				periodMinerFactory.setMiningObject("通信次数");
-				periodMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
-				periodMinerFactory.setMethod(MiningMethod.MiningMethods_PeriodicityMining);
+				periodMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
+				periodMinerFactory.setTaskRange(TaskRange.NodePairRange);
 				periodMinerFactory.detect();
-				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PeriodicityMining);
+				HashMap<TaskCombination, MinerNodeResults> timesMap=
+						NetworkMinerFactory.getInstance().startAllNodeMiners(periodMinerFactory.getMiningObject());
+				
+				periodMinerFactory.reset();
+				periodMinerFactory.setMiningObject(MiningObject.MiningObject_Traffic);
+				periodMinerFactory.detect();
+				HashMap<TaskCombination, MinerNodeResults> trafficMap=
+						NetworkMinerFactory.getInstance().startAllNodeMiners(periodMinerFactory.getMiningObject());
+				HashMap<String, HashMap<TaskCombination, MinerNodeResults>> map=
+						new HashMap<String, HashMap<TaskCombination,MinerNodeResults>>();
+				
+				map.put("流量", trafficMap);
+				map.put("通信次数", timesMap);
 				panelListAllEvents.refreshAllTasks();
 			}
 		});
@@ -206,7 +223,7 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				SingleNodeOrNodePairMinerFactory periodMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-				periodMinerFactory.setMiningObject("通信次数");
+				periodMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
 				periodMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
 				periodMinerFactory.setMethod(MiningMethod.MiningMethods_OutliesMining);
 				periodMinerFactory.detect();
@@ -221,17 +238,16 @@ public class MainFrame extends JFrame {
 		minerFrequency.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SingleNodeOrNodePairMinerFactory periodMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-				periodMinerFactory.setMiningObject("通信次数");
-				periodMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
-				periodMinerFactory.setMethod(MiningMethod.MiningMethods_FrequenceItemMining);
-				periodMinerFactory.detect();
-				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_FrequenceItemMining);
+				ProtocolAssMinerFactory factory=ProtocolAssMinerFactory.getInstance();
+				factory.setMiningObject(MiningObject.MiningObject_Traffic);
+				factory.detect();
+				HashMap<TaskCombination, MinerProtocolResults> timesMap=
+						NetworkMinerFactory.getInstance().startAllProtocolMiners(factory.getMiningObject());
 				panelListAllEvents.refreshAllTasks();
 			}
 		});
 		miner.add(minerFrequency);
-		
+		                                           
 		JMenuItem minerPath = new JMenuItem("通信路径规律(T)");
 		minerPath.setMnemonic(KeyEvent.VK_T);
 		minerPath.addActionListener(new ActionListener() {

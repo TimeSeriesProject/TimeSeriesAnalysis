@@ -28,12 +28,12 @@ public class NetworkFactory {
 	public static boolean isMining=false;
 	public String dataPath="./tasks1/";
 	private TaskRange taskRange= TaskRange.WholeNetworkRange;
-	private String miningObject ;
+	private MiningObject miningObject ;
 	
-	public String getMiningObject() {
+	public MiningObject getMiningObject() {
 		return miningObject;
 	}
-	public void setMiningObject(String miningObject) {
+	public void setMiningObject(MiningObject miningObject) {
 		this.miningObject = miningObject;
 	}
 	NetworkFactory(){
@@ -57,26 +57,25 @@ public class NetworkFactory {
 		TaskElement task = new TaskElement();
 		task.setSourcePath(dataPath);
 		task.setGranularity(3600);
-		task.setMiningObject(miningObject);
+		task.setMiningObject(miningObject.toString());
 		CWNetworkReader reader = new CWNetworkReader(task);
 		DataItems dataItems = reader.readInputByText();
 		
 		TaskCombination taskCombination=new TaskCombination();
 		taskCombination.setTaskRange(TaskRange.WholeNetworkRange);
-		taskCombination.setMiningObject(miningObject);
+		taskCombination.setMiningObject(miningObject.toString());
 		taskCombination.setMinerType(MinerType.MiningTypes_WholeNetwork);
 		taskCombination.setRange("");
 		taskCombination.setName();
 		taskCombination.setDataItems(dataItems);
 		taskCombination.getTasks().add(generateTask(3600,
-				miningObject,  MiningMethod.MiningMethods_PeriodicityMining));
+				miningObject.toString(),  MiningMethod.MiningMethods_PeriodicityMining));
 		taskCombination.getTasks().add(generateTask(3600,
-				miningObject,  MiningMethod.MiningMethods_OutliesMining));
+				miningObject.toString(),  MiningMethod.MiningMethods_OutliesMining));
 		taskCombination.getTasks().add(generateTask(3600,
-				miningObject,  MiningMethod.MiningMethods_Statistics));
+				miningObject.toString(),  MiningMethod.MiningMethods_Statistics));
 		taskCombination.getTasks().add(generateTask(3600,
-				miningObject, MiningMethod.MiningMethods_SequenceMining));
-		taskCombination.setMiningObject(MiningObject.MiningObject_None.toString());
+				miningObject.toString(), MiningMethod.MiningMethods_SequenceMining));
 		
 		TaskElement.add1Task(taskCombination, false);
 	}
@@ -88,34 +87,30 @@ public class NetworkFactory {
 		task.setGranularity(granularity);
 		task.setDiscreteMethod(DiscreteMethod.None);
 		task.setMiningMethod(method);
-		String name=null;
+		String name=mingObj+method.toString();
 		
 		switch (method) {
 		case MiningMethods_OutliesMining:
 			task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
-			name = mingObj;
 			task.setTaskName(name);
 			task.setComments("挖掘  "+mingObj+" 的异常");
 			break;
 		case MiningMethods_PeriodicityMining:
 			task.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
-			name = mingObj;
 			task.setTaskName(name);
 			task.setComments("挖掘  "+mingObj+ "的周期规律");
 			break;
 		case MiningMethods_SequenceMining:
-			name = mingObj;
 			task.setTaskName(name);
 			task.setComments("挖掘  "+mingObj+" 的频繁模式");
 		case MiningMethods_Statistics:
-			name = mingObj;
 			task.setTaskName(name);
 			task.setComments("挖掘  "+mingObj+" 的统计量");
 		default:
 			break;
 		}
-		task.setMiningObject(MiningObject.MiningObject_None.toString());
-		task.setProtocol(mingObj);
+		task.setMiningObject(mingObj);
+		task.setProtocol("");
 		return task;
 	}
 }

@@ -79,7 +79,7 @@ public class ProtocolAssRtree {
 				String searchProtocl=itemEntry.getKey();
 				String similarityProtocol=knnSearch.getResults().get(i).name.split("_")[1];
 				ProtocolAssociationResult result=new ProtocolAssociationResult(searchProtocl,similarityProtocol,
-						itemEntry.getValue(),knnSearch.getResults().get(i).dataItems,0);
+						itemEntry.getValue(),knnSearch.getResults().get(i).dataItems,0,0.0);
 				list.add(result);
 				break;
 			}

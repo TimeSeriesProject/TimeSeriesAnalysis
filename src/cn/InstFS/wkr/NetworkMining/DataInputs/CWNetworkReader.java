@@ -251,6 +251,7 @@ public class CWNetworkReader  implements IReader{
 				TextReader textReader = new TextReader(path+"/"+srcFiles.list()[i]);
 				String curLine="";
 				String header =textReader.readLine(); //读取文件
+				System.out.println("读取文件"+srcFiles.list()[i]);
 				while((curLine=textReader.readLine())!=null)
 				{
 					
@@ -567,7 +568,6 @@ public class CWNetworkReader  implements IReader{
 		{
 		case "网络簇系数": return readClusterByText();
 		case "网络直径":return readDiameterByText();
-		case "结点出现消失":return readNodeFrequenceByText();
 		default: return null;
 		}
 	}
