@@ -137,13 +137,13 @@ public class AssociationIpListFrame extends JFrame {
 	
 	private void update()
 	{
-		System.out.println("更新");
+		System.out.println("更新显示结果");
 		if(listTable!=null)
 		{
-//		scrollPane.remove(listTable);
-		System.out.println("remove");
+			//		scrollPane.remove(listTable);
+			System.out.println("remove");
 		}
-		resultList=new ArrayList<Map.Entry<TaskCombination, MinerProtocolResults>>(resultMap.entrySet());
+		resultList = new ArrayList<Map.Entry<TaskCombination, MinerProtocolResults>>(resultMap.entrySet());
 		sort();
 		createTable();
 		
@@ -202,13 +202,13 @@ public class AssociationIpListFrame extends JFrame {
 //	    listTable.setRowHeight(35);
 	    listTable.addMouseListener(new MouseAdapter(){
 	       
-	    public void mouseClicked(MouseEvent e) {
+	    	public void mouseClicked(MouseEvent e) {
 	        
-	          if(e.getClickCount()==2){//点击几次，这里是双击事件
-	        	System.out.println("双击跳转");
-	           tableChanged();        
-	          }
-	       }
+	    		if(e.getClickCount()==2){//点击几次，这里是双击事件
+	    			System.out.println("双击跳转");
+	    			tableChanged();        
+	    		}
+	    	}
 	      });
 
 	    final JPopupMenu popupMenu = new JPopupMenu();
@@ -239,8 +239,6 @@ public class AssociationIpListFrame extends JFrame {
         });  
 //		scrollPane.add(listTable); 
 		scrollPane.setViewportView(listTable);
-//		scrollPane.updateUI();
-//		scrollPane.repaint();
 		
 	}
 	public void initModel()
@@ -289,11 +287,9 @@ public class AssociationIpListFrame extends JFrame {
 	
 	void initialize() {
 		System.out.println("initialize....");
-//		setDefaultCloseOperation(JFrame.);
 		setTitle("ip协议之间的关联");
 		setBounds(100, 100, 1500, 900);
 		try { 
-//			org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
            
 			    UIManager.setLookAndFeel( new  SubstanceBusinessBlackSteelLookAndFeel());
 	            JFrame.setDefaultLookAndFeelDecorated(true);  
@@ -337,14 +333,8 @@ public class AssociationIpListFrame extends JFrame {
 				sortByProtocolConfidence();
 				break;
 			default :
-				sortByProtocolConfidence();
-//				System.out.println("选择异常");
-//				System.exit(0);
+				sortByProtocolConfidence();  //默认按部分关联度排序
 				break;
-//			case "按频繁规律":
-//				sortBySequence();
-//				System.out.println("排序"+sortMethod);
-//				break;
 			}
 		}
 		private void sortByIP()

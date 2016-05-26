@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import test.ProtocolAssociationTest;
 import lineAssociation.FileOutput;
 //import test.ProtocolAssociationTest;
 import associationRules.ProtocolAssociationResult;
@@ -27,13 +26,13 @@ public class ProtocolAssociation {
 	 * @param args
 	 */
 	
-	public static void main(String[] args)
-	{
-		String path = "D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\DiplomaProject\\data\\rawDataInput";
-		ProtocolAssociation pa = new ProtocolAssociation(ProtocolAssociationTest.getData(path),-1,1);
-		pa.miningAssociation();
-		
-	}
+//	public static void main(String[] args)
+//	{
+//		String path = "D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\DiplomaProject\\data\\rawDataInput";
+//		ProtocolAssociation pa = new ProtocolAssociation(ProtocolAssociationTest.getData(path),-1,1);
+//		pa.miningAssociation();
+//		
+//	}
 	
 	double[] supportThresh = {0.4,10};
 	int bias = 0;
@@ -71,14 +70,19 @@ public class ProtocolAssociation {
 	/**
 	 * 挖掘ip下协议之间的关联
 	 */
-	public Map<String,List<ProtocolAssociationResult>> miningAssociation()
+	public MinerResultsFP_Whole miningAssociation()
 	{
 		if(ip_proData == null)
 		{
 			System.out.println("待挖掘数据为空，请先载入数据！");
 			System.exit(0);
 		}
-		Map<String,List<ProtocolAssociationResult>> resultMap = new TreeMap<String,List<ProtocolAssociationResult>>();
+		if(ip_proData.size() != 1)
+		{
+			System.out.println("传入的ip个数超过一个");
+			System.exit(0);
+		}
+		MinerResultsFP_Whole resultMap = new MinerResultsFP_Whole();
 		Iterator<String> ip_iter = ip_proData.keySet().iterator();
 		while(ip_iter.hasNext())
 		{
@@ -109,7 +113,7 @@ public class ProtocolAssociation {
 				
 			}
 			if(resultList.size() != 0)
-				resultMap.put(ip, resultList);
+				resultMap.setProtocolPairList(resultList);
 			
 		}
 		return resultMap;
