@@ -22,4 +22,36 @@ public class ProtocolAssociationResult {
 	public ProtocolAssociationResult(){
 		
 	}
+	public void setAlogrithmType(int type){
+		alogrithmType = type;
+	}
+	public void setProtocol1(String p){
+		protocol1 = p;
+	}
+	public void setProtocol2(String p){
+		protocol2 = p;
+	}
+	public void setDataItems1(DataItems data){
+		dataItems1 = data;
+	}
+	public void setDataItems2(DataItems data){
+		dataItems2 = data;
+	}
+	public int getAlogrithmType(){
+		return alogrithmType ;
+	}
+	public String getProtocol1(){
+		return protocol1;
+	}
+	public String getProtocol2(){
+		return protocol2;
+	}
+	public DataItems getDataItems1(){
+		return dataItems1;
+	}
+	public DataItems getDataItems2(){
+		return dataItems2;
+	}
+	
+	
 }
