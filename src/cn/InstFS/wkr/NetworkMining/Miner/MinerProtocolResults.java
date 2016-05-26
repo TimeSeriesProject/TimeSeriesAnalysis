@@ -8,10 +8,10 @@ import associationRules.ProtocolAssociationResult;
 
 public class MinerProtocolResults {
 	private MinerResultsFP_Line retFP;
-	private Map<String, List<ProtocolAssociationResult>> retSim;
+	private MinerResultsFP_Whole retSim;
 	public MinerProtocolResults() {
 		this.retFP = new MinerResultsFP_Line();
-		this.retSim = new HashMap<String, List<ProtocolAssociationResult>>();
+		this.retSim = new MinerResultsFP_Whole();
 	}
 	public MinerResultsFP_Line getRetFP() {
 		return retFP;
@@ -19,10 +19,10 @@ public class MinerProtocolResults {
 	public void setRetFP(MinerResultsFP_Line retFP) {
 		this.retFP = retFP;
 	}
-	public Map<String, List<ProtocolAssociationResult>> getRetSim() {
+	public MinerResultsFP_Whole getRetSim() {
 		return retSim;
 	}
-	public void setRetSim(Map<String, List<ProtocolAssociationResult>> retSim) {
+	public void setRetSim(MinerResultsFP_Whole retSim) {
 		this.retSim = retSim;
 	}
 	
