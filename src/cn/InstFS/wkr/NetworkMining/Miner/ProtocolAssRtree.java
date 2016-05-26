@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+
 import associationRules.ProtocolAssociationResult;
 import RTreeUtil.KNNTimeSires;
 import RTreeUtil.LeafNode;
@@ -45,7 +47,8 @@ public class ProtocolAssRtree {
 		node.parent=null;
 	}
 	
-	public Map<String,List<ProtocolAssociationResult>> miningAssociation(){
+	public MinerResultsFP_Whole miningAssociation(){
+		MinerResultsFP_Whole results=new MinerResultsFP_Whole();
 		Iterator<Entry<String, HashMap<String, DataItems>>> iterator=eachProtocolItems.entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<String, HashMap<String, DataItems>> entry=iterator.next();
@@ -56,14 +59,16 @@ public class ProtocolAssRtree {
 				tree.insert(itemEntry.getValue(), name);
 			}
 			KNNTimeSires knnSearch=new KNNTimeSires(2, tree.root);
-			searchDataItems(entry.getKey(),entry.getValue(), knnSearch);
+			searchDataItems(entry.getKey(),entry.getValue(), knnSearch,results);
 			deleteTree(tree.root);
 			tree=new RTreeIndex();
+			break;
 		}
-		return protocolResult;
+		return results;
 	}
 	
-	private void searchDataItems(String ip, HashMap<String, DataItems>eachProtocolItems,KNNTimeSires knnSearch){
+	private void searchDataItems(String ip, HashMap<String, DataItems>eachProtocolItems,KNNTimeSires knnSearch,
+			MinerResultsFP_Whole results){
 		
 		Iterator<Entry<String,  DataItems>> iterator=eachProtocolItems.entrySet().iterator();
 		List<ProtocolAssociationResult> list=new ArrayList<ProtocolAssociationResult>();
@@ -79,11 +84,15 @@ public class ProtocolAssRtree {
 				String searchProtocl=itemEntry.getKey();
 				String similarityProtocol=knnSearch.getResults().get(i).name.split("_")[1];
 				ProtocolAssociationResult result=new ProtocolAssociationResult(searchProtocl,similarityProtocol,
-						itemEntry.getValue(),knnSearch.getResults().get(i).dataItems,0,0.0);
+						itemEntry.getValue(),knnSearch.getResults().get(i).dataItems,0,
+						1.0/knnSearch.getDistResults().get(i));
 				list.add(result);
 				break;
 			}
+			results.setProtocolPairList(list);
+			DescriptiveStatistics statistics=new DescriptiveStatistics();
+//			for(ProtocolAssociationResult proAssResult:results.getProtocolPairList())
+//				//statistics.addValue(proAssResult);
 		}
-		protocolResult.put(ip, list);
 	}
 }

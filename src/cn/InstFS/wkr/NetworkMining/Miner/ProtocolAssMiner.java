@@ -122,21 +122,23 @@ class ProtocolMinerTask extends TimerTask{
 		
 		//当Miner Reuslts中存在数据时，则不再读取
 		Map<String,List<ProtocolAssociationResult>> protocolResult = null;
+		MinerProtocolResults protocolAssResult = new MinerProtocolResults();
 		List<TaskElement> tasks=taskCombination.getTasks();
 		for(TaskElement task:tasks){
 			switch (task.getMiningMethod()) {
 			case MiningMethods_FrequenceItemMining:
-				//TODO
+				ProtocolAssociationLine pal = new ProtocolAssociationLine(eachProtocolItems);
+				protocolAssResult.setRetFP(pal.miningAssociation());
 				break;
 			case MiningMethods_SimilarityMining:
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_SimilarityProtocolASS)){
 					ProtocolAssociation pa=new ProtocolAssociation(eachProtocolItems, 5,1);
-					protocolResult=pa.miningAssociation();
+					protocolAssResult.setRetSim(pa.miningAssociation());
 				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_RtreeProtocolASS)){
 					ProtocolAssRtree rTreePa=new ProtocolAssRtree(eachProtocolItems);
-					protocolResult=rTreePa.miningAssociation();
+					protocolAssResult.setRetSim(rTreePa.miningAssociation());
 				}
-				results.getRetProtocol().setRetSim(protocolResult);
+				results.setRetProtocol(protocolAssResult);
 				break;
 			default:
 				break;

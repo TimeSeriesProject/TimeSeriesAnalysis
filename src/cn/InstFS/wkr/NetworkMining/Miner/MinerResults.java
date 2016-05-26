@@ -27,7 +27,7 @@ public class MinerResults {
 	private MinerResultsFP retFP;
 	private MinerResultsFM retFM;
 	private MinerResultsFP_Line retFPLine;
-	private Map<String, List<ProtocolAssociationResult>> retSim;
+	private MinerResultsFP_Whole retSim;
 	private MinerNodeResults retNode;
 	private MinerProtocolResults retProtocol;
 	private MinerResultsStatistics retStatistics;
@@ -156,11 +156,11 @@ public class MinerResults {
 		this.retFPLine = retFPLine;
 	}
 
-	public Map<String, List<ProtocolAssociationResult>> getRetSim() {
+	public MinerResultsFP_Whole getRetSim() {
 		return retSim;
 	}
 
-	public void setRetSim(Map<String, List<ProtocolAssociationResult>> retSim) {
+	public void setRetSim(MinerResultsFP_Whole retSim) {
 		this.retSim = retSim;
 	}
 

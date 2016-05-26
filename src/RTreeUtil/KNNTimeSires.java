@@ -73,7 +73,9 @@ public class KNNTimeSires {
 		}
 		while(results.size()<K) {
 			if(tempSeires.size()>0){
-				results.add(tempSeires.poll().series);
+				QueueNode node=tempSeires.poll();
+				results.add(node.series);
+				distResults.add(node.dist);
 			}else {
 				break;
 			}
