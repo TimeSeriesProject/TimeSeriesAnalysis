@@ -465,7 +465,7 @@ public class SingleNodeListFrame extends JFrame {
 	 }
 	
 	void initialize() {
-//		setDefaultCloseOperation(JFrame.);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("结点属性规律");
 		setBounds(100, 100, 1500, 900);
 		try { 
