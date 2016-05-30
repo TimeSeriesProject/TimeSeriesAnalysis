@@ -97,7 +97,7 @@ public  class CTabFolderChart extends CTabFolder {
 			sc.setExpandVertical(true);
 			int itemcount=pp.getDataItems1().getLength();
 			System.out.println("changdu:"+itemcount);
-		   // sc.setMinWidth(800+itemcount*2);
+		   sc.setMinWidth(800+itemcount*2);
 			sc.setMinWidth(800);
 		    sc.setMinHeight(400);
 		

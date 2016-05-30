@@ -54,6 +54,9 @@ public class CompositeSWTChart extends Composite {
 		 this.dataitems2=pp.getDataItems2();*/
 		 System.out.println("CompositeSWTChart 调用 TimeSeriesChart1");
 		TimeSeriesChart1 c1 = new TimeSeriesChart1(this, SWT.NULL, pp);
+		 System.out.println("CompositeSWTChart 调用 TimeSeriesChart1 结束");
+		 
+		 
 		FillLayout fillLayout = (FillLayout) c1.getLayout();
 		fillLayout.type = SWT.VERTICAL;
 		TimeSeriesChart2 c2 = new TimeSeriesChart2(this, SWT.NULL, 0, 0,
