@@ -131,7 +131,7 @@ class PathTimerTask extends TimerTask{
 		// 读取数据
 		PMDetect(taskCombination.getDataItems(),taskCombination.getTasks());
 	}
-	
+
 	private void PMDetect(DataItems dataItems,List<TaskElement>tasks){
 		DataItems oriDataItems=dataItems;
 		results.setInputData(oriDataItems);
@@ -220,8 +220,7 @@ class PathTimerTask extends TimerTask{
 						break;
 				}
 			}
-			results.getRetPath().setRetPM(retPathPM);
-			results.getRetPath().setRetOM(retPathOM);
+
 			/*switch (task.getMiningMethod()) {
 			case MiningMethods_PeriodicityMining:
 				IMinerPM pmMethod = null;
@@ -258,6 +257,9 @@ class PathTimerTask extends TimerTask{
 			}*/
 
 		}
+		results.getRetPath().setRetPM(retPathPM);
+		results.getRetPath().setRetOM(retPathOM);
+		results.getRetPath().setMaxAndMinValue();
 		isRunning = false;
 		isOver.setIsover(true);;
 		System.out.println(taskCombination.getName()+" over");
