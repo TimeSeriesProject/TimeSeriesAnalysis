@@ -136,7 +136,7 @@ public class PointPatternDetection implements IMinerOM{
 			int start=patterns.get(i).getStart();
 			int end=patterns.get(i).getEnd();
 			for(int pos=start;pos<end;pos++){
-				outlies.add1Data(dataItems.getTime().get(pos), ((int)(10000*Math.max(pof, 0)))+"");
+				outlies.add1Data(dataItems.getTime().get(pos), ((int)(100*Math.max(pof, 0)))+"");
 			}
 			patternOutliesMap.put(patterns.get(i), pof);
 		}

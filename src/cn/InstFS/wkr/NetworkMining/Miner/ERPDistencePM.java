@@ -83,7 +83,7 @@ public class ERPDistencePM implements IMinerPM {
 		if(di.isAllDataIsDouble()){
 			List<String> seq=new ArrayList<String>();
 			for(int i=0;i<numItems;i++){
-				seq.add((int)(Double.parseDouble(di.getData().get(i)))+"");
+				seq.add((Double.parseDouble(di.getData().get(i)))+"");
 			}
 //			for(String i:seq){
 //				System.out.println(i);

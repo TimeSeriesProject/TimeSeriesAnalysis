@@ -71,7 +71,7 @@ public class ChartPanelShowTs extends JPanel{
 		
 		itemShape = ShapeUtilities.createDiamond((float) 3);
 		renderer.setSeriesShape(0, itemShape);		
-		renderer.setSeriesPaint(0, new Color(0,255,0));
+		renderer.setSeriesPaint(0, new Color(0,0,0));
 
 		renderer.setSeriesShape(1, itemShape);		
 		renderer.setSeriesPaint(1, new Color(0,0,0));

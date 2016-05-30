@@ -165,7 +165,7 @@ public class WholeNetworkFrame extends JFrame{
 private void initialize() {
 		this.setTitle("网络结构变化规律");
 		setBounds(100, 100, 1500, 900);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		try { 
 //			org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
            

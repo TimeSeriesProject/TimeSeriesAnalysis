@@ -1,9 +1,13 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.omg.CORBA.INTERNAL;
 
 public class PointSegment {
 
@@ -24,10 +28,45 @@ public class PointSegment {
 	}
 	
 	public List<SegPattern> getPatterns(){
-		//splitByPointsInRatio();
 		splitByPointsInDistnce();
+		List<Integer> copyPoints=new ArrayList<Integer>();
+		for(int point:pointsIndex)
+			copyPoints.add(point);
+		for(int i=0;i<copyPoints.size()-1;i++){
+			splitByPointsInArea(copyPoints.get(i), copyPoints.get(i+1));
+		}
 		genPatterns();
 		return patterns;
+	}
+	
+	public List<Pattern> getTEOPattern(){
+		splitByPointsInDistnce();
+		List<Integer> copyPoints=new ArrayList<Integer>();
+		for(int point:pointsIndex)
+			copyPoints.add(point);
+		for(int i=0;i<copyPoints.size()-1;i++){
+			splitByPointsInArea(copyPoints.get(i), copyPoints.get(i+1));
+		}
+		List<Pattern> teoPatterns=new ArrayList<Pattern>();
+		Collections.sort(pointsIndex);
+		int len=pointsIndex.size();
+		DescriptiveStatistics statistics=new DescriptiveStatistics();
+		for(int i=0;i<len-1;i++){
+			statistics.clear();
+			int start=pointsIndex.get(i);
+			int end=pointsIndex.get(i+1);
+			Pattern pattern=new Pattern();
+			pattern.setStart(start);
+			pattern.setEnd(end);
+			pattern.setSlope((getItem(end)-getItem(start))/(end-start+1));
+			pattern.setSpan(end-start+1);
+			for(int pos=start;pos<=end;pos++){
+				statistics.addValue(getItem(pos));
+			}
+			pattern.setAverage(statistics.getMean());
+			teoPatterns.add(pattern);
+		}
+		return teoPatterns;
 	}
 	
 	private double getItem(int index){
@@ -35,6 +74,7 @@ public class PointSegment {
 	}
 	
 	private void genPatterns(){
+		Collections.sort(pointsIndex);
 		int len=pointsIndex.size();
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
 		for(int i=0;i<len-1;i++){
@@ -85,6 +125,36 @@ public class PointSegment {
 		while(index<length-1){
 			index=findMaxinum(index);
 			index=findMininum(index);
+		}
+	}
+	private void splitByPointsInArea(int start,int end){
+		if(end-start<=5)
+			return;
+		double startY=getItem(start);
+		double endY=getItem(end);
+		double slope=(endY-startY)/(end-start);
+		double maxSpan=1;
+		int index=0;
+		double span;
+		for(int i=start+1;i<end;i++){
+			double ax=start-i;
+			double bx=end-i;
+			double ay=getItem(start)-getItem(i);
+			double by=getItem(end)-getItem(i);
+			double aLen=Math.sqrt(ax*ax+ay*ay);
+			double bLen=Math.sqrt(bx*bx+by*by);
+			span=(ax*bx+ay*by)/(aLen*bLen);
+			if(Math.cos(7*Math.PI/8)<=span&&span<=Math.cos(Math.PI/8)){
+				if(Math.abs(span)<maxSpan){
+					index=i;
+					maxSpan=span;
+				}
+			}
+		}
+		if(Math.cos(7*Math.PI/8)<=maxSpan&&maxSpan<=Math.cos(Math.PI/8)){
+			pointsIndex.add(index);
+			splitByPointsInArea(start, index);
+			splitByPointsInArea(index, end);
 		}
 	}
 	
