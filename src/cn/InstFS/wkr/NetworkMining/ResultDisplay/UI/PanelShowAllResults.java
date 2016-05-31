@@ -49,11 +49,14 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 		if (allPanels == null)
 			allPanels = new HashMap<TaskElement, IPanelShowResults>();
 		if (allPanels.containsKey(task))
-			return ;
-		
+			return;
+
 		MiningMethod miningMethodName = task.getMiningMethod();
+		String taskName = task.getTaskName();
 		IPanelShowResults panel = null;
-		if (miningMethodName.equals(MiningMethod.MiningMethods_OutliesMining)){
+		if (taskName.contains("路径")){
+			panel = new PanelShowResultsPP(task);
+		}else if (miningMethodName.equals(MiningMethod.MiningMethods_OutliesMining)){
 			panel = new PanelShowResultsOM(task);
 		}else if (miningMethodName.equals(MiningMethod.MiningMethods_PredictionMining)) {
 			panel=new PanelShowResultsFM(task);

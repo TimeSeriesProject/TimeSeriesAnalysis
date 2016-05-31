@@ -125,8 +125,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
 
     @Override
     public void displayMinerResults(MinerResults rslt) {
-        if (rslt == null || rslt.getRetPath() == null ||
-                !rslt.getMiner().getClass().equals(NetwokerMinerPathProb.class))
+        if (rslt == null || rslt.getRetPath() == null)
             return;
         else if(count==0)
         {
@@ -140,9 +139,24 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
 //            add(chart1);
 //            add(chart2);
             remove(chart1);
-            HashMap<String,Integer> period=rslt.getRetPath().getPeriodPath();
-            HashMap<String,Integer> firstPeriod=rslt.getRetPath().getFirstPeriodOfPath();
-            HashMap<String,DataItems> pathDataItems=rslt.getRetPath().getItemsInPeriod();
+
+
+            HashMap<String, MinerResultsPM> resultPM = rslt.getRetPath().getRetPM();
+
+            HashMap<String,Integer> period = new HashMap<>();
+            HashMap<String,Integer> firstPeriod = new HashMap<>();
+            HashMap<String,DataItems> pathDataItems = new HashMap<>();
+
+            for (Map.Entry<String, MinerResultsPM> entry : resultPM.entrySet()) {
+                String pathname = entry.getKey();
+                MinerResultsPM result = entry.getValue();
+                period.put(pathname, (int) result.getPeriod());
+                firstPeriod.put(pathname, result.getFirstPossiblePeriod());
+                pathDataItems.put(pathname,result.getDistributePeriod());
+                System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+            }
+
+
             HashMap<Integer,ArrayList<String>> sortPeriod=new HashMap<>();
             int min=100000000;
             while (!period.isEmpty()) {

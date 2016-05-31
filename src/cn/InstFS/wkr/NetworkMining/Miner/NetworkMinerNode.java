@@ -10,6 +10,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import WaveletUtil.PointPatternDetection;
+import WaveletUtil.SAXPartternDetection;
+import WaveletUtil.TEOPartern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
@@ -133,6 +135,8 @@ class NodeTimerTask extends TimerTask{
 	}
 	
 	private void PMDetect(DataItems dataItems,List<TaskElement>tasks){
+		if(taskCombination.getRange().equals("10.0.13.2"))
+			System.out.println();
 		DataItems oriDataItems=dataItems;
 		results.setInputData(oriDataItems);
 		for(TaskElement task:tasks){
@@ -172,6 +176,7 @@ class NodeTimerTask extends TimerTask{
 				if(results.getRetNode().getRetStatistics().getComplex()>1.5){
 					task.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
 				}
+				
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
 					tsaMethod=new FastFourierOutliesDetection(dataItems);
 					((FastFourierOutliesDetection)tsaMethod).setAmplitudeRatio(0.7);
@@ -182,7 +187,11 @@ class NodeTimerTask extends TimerTask{
 					results.getRetNode().getRetOM().setIslinkDegree(false);
 				}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
 					//tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
-					tsaMethod=new PointPatternDetection(dataItems,2,10);
+					if(results.getRetNode().getRetPM().hasPeriod)
+				    	tsaMethod=new SAXPartternDetection(dataItems,
+				    			results.getRetNode().getRetPM().getFirstPossiblePeriod());
+					else 
+						tsaMethod=new SAXPartternDetection(dataItems,24);
 					results.getRetNode().getRetOM().setIslinkDegree(true);
 				}else{
 					throw new RuntimeException("方法不存在！");
@@ -191,12 +200,15 @@ class NodeTimerTask extends TimerTask{
 				setOMResults(results, tsaMethod);
 				break;
 			case MiningMethods_Statistics:
+				if(taskCombination.getName().equals("10.0.7.2_9")){
+					System.out.println("");
+				}
 				SeriesStatistics seriesStatistics=new SeriesStatistics(dataItems);
 				seriesStatistics.statistics();
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_SequenceMining:
-				PointSegment segment=new PointSegment(dataItems, 5);
+				PointSegment segment=new PointSegment(dataItems, 20);
 				DataItems clusterItems=null;
 				List<SegPattern> segPatterns=segment.getPatterns();
 				if(task.getPatternNum()==0){
@@ -249,7 +261,7 @@ class NodeTimerTask extends TimerTask{
 			if(Math.abs(outliesLen-itemLen)<=1){
 				int confidence=0;
 				for(String item:outlies.getData()){
-					if(Double.parseDouble(item)>=8000){
+					if(Double.parseDouble(item)>=6){
 						results.getRetNode().getRetOM().setHasOutlies(true);
 						confidence++;
 					}

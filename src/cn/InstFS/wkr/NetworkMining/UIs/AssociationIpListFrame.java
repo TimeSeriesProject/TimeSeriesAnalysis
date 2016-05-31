@@ -85,7 +85,7 @@ public class AssociationIpListFrame extends JFrame {
 	HashMap<TaskCombination, MinerProtocolResults> resultMap;
 	HashMap<MiningObject,HashMap<TaskCombination, MinerProtocolResults>> resultMaps;
 	ArrayList<Map.Entry<TaskCombination, MinerProtocolResults> > resultList;
-	String sortMethod = "按ip协议整体置信度排序";
+	String sortMethod = "按ip协议部分置信度排序";
 	String mingObj = "";
 	/**
 	 * Launch the application.
@@ -184,7 +184,7 @@ public class AssociationIpListFrame extends JFrame {
 			data[i][2]=String.format("%5d",results.protocolPairList.size());
 			
 		}
-	    String colNames[]={"ip","整体置信度","关联协议对数目"};
+	    String colNames[]={"ip","置信度","关联协议对数目"};
 	   
 	 
 	    DefaultTableModel model=new DefaultTableModel(data,colNames){
@@ -247,8 +247,9 @@ public class AssociationIpListFrame extends JFrame {
 
 		JLabel sortLabel= new JLabel("选择排序方式");
 		sortTypeComboBox = new JComboBox<String>();
-		sortTypeComboBox.addItem("按ip排序");
+		sortTypeComboBox.addItem("按ip协议部分置信度排序");
 		sortTypeComboBox.addItem("按ip协议整体置信度排序");
+		sortTypeComboBox.addItem("按ip排序");
 		sortTypeComboBox.setSelectedIndex(1);
 		sortTypeComboBox.addItemListener(new ItemListener()
         {
@@ -281,7 +282,7 @@ public class AssociationIpListFrame extends JFrame {
 	  //得到所在行的第一个列的值，作为下面事件传递的参数
 	  SingleIpProtocolAssFrame singleIpProtocol = new SingleIpProtocolAssFrame(resultList.get(row).getKey(),resultMap);
 	  singleIpProtocol.setTitle( "ip: "+resultList.get(row).getKey().getRange()+" protocol: "+resultList.get(row).getKey().getProtocol()+" "+resultList.get(row).getKey().getMiningObject()+"规律");
-	  singleIpProtocol.setVisible(true);
+//	  singleIpProtocol.setVisible(true);
 	  System.out.println("selectrow:"+row);
 	 }
 	
@@ -326,17 +327,23 @@ public class AssociationIpListFrame extends JFrame {
 			System.out.println("排序"+sortMethod);
 			switch(sortMethod)
 			{
+			
+			case "按ip协议部分置信度排序":
+				sortByPartyProtocolConfidence();
+				break;
+			case "按ip协议整体置信度排序":
+				sortByWholeProtocolConfidence();
+				break;
 			case "按ip排序":
 				sortByIP();
 				break;
-			case "按ip协议整体置信度排序":
-				sortByProtocolConfidence();
-				break;
 			default :
-				sortByProtocolConfidence();  //默认按部分关联度排序
+				sortByPartyProtocolConfidence();  //默认按部分关联度排序
 				break;
 			}
 		}
+		
+
 		private void sortByIP()
 		{
 			Collections.sort(resultList,new Comparator<Map.Entry<TaskCombination, MinerProtocolResults> >()
@@ -349,7 +356,7 @@ public class AssociationIpListFrame extends JFrame {
 						}
 					});
 		}
-		private void sortByProtocolConfidence()
+		private void sortByPartyProtocolConfidence()
 		{
 			Collections.sort(resultList,new Comparator<Map.Entry<TaskCombination, MinerProtocolResults> >()
 					{
@@ -366,5 +373,21 @@ public class AssociationIpListFrame extends JFrame {
 						}
 					});
 		}
-
+		private void sortByWholeProtocolConfidence() {
+			// TODO Auto-generated method stub
+			Collections.sort(resultList,new Comparator<Map.Entry<TaskCombination, MinerProtocolResults> >()
+					{
+						@Override
+						public int compare(Map.Entry<TaskCombination,MinerProtocolResults> o1, Map.Entry<TaskCombination,MinerProtocolResults> o2) {  
+							System.out.println(o1.getValue().getRetSim().getConfidence());
+							System.out.println(o2.getValue().getRetSim().getConfidence());
+							if(o1.getValue().getRetSim().getConfidence() > o2.getValue().getRetSim().getConfidence())
+								return -1;
+							else if(o1.getValue().getRetSim().getConfidence() < o2.getValue().getRetSim().getConfidence())
+								return 1;
+							else 
+								return 0;
+						}
+					});
+		}
 }

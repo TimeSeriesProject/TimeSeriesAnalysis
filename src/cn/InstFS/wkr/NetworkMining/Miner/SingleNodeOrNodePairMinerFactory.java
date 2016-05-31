@@ -80,6 +80,8 @@ public class SingleNodeOrNodePairMinerFactory {
 	private void parseFile(File dataFile,nodePairReader reader){
 		String ip=dataFile.getName().substring(0, dataFile.getName().lastIndexOf("."));
 		//事先读取每一个IP上，每一个协议的DataItems
+		if(ip.equals("10.0.13.2"))
+			System.out.println();
 		int granularity=3600;
 		if(taskRange.toString().equals(TaskRange.SingleNodeRange.toString())){
 			HashMap<String, DataItems> rawDataItems=null;

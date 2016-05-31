@@ -90,19 +90,20 @@ public class NodePairListFrame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-//					NetworkMinerFactory.getInstance();
-//					SingleNodeOrNodePairMinerFactory freMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-//					freMinerFactory.dataPath="C:\\data\\out\\traffic";
-//					freMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
-//					freMinerFactory.setTaskRange(TaskRange.NodePairRange);
-//					freMinerFactory.detect();
-//					HashMap<TaskCombination, MinerNodeResults> resultMap = NetworkMinerFactory.getInstance().startAllNodeMiners();
-//					HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>> tmpresultMaps = new HashMap<MiningObject,HashMap<TaskCombination, MinerNodeResults>>();
-//					tmpresultMaps.put(MiningObject.MiningObject_Times,resultMap);
-//					System.out.println("size "+resultMap.size());
+					NetworkMinerFactory.getInstance();
+					SingleNodeOrNodePairMinerFactory freMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
+					freMinerFactory.dataPath="C:\\data\\out\\traffic";
+					freMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
+					freMinerFactory.setTaskRange(TaskRange.NodePairRange);
+					freMinerFactory.detect();
+					
+					HashMap<TaskCombination, MinerNodeResults> resultMap = NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Times);
+					HashMap<String,HashMap<TaskCombination, MinerNodeResults>> tmpresultMaps = new HashMap<String,HashMap<TaskCombination, MinerNodeResults>>();
+					tmpresultMaps.put(MiningObject.MiningObject_Times.toString(),resultMap);
+					System.out.println("size "+resultMap.size());
 					JFrame.setDefaultLookAndFeelDecorated(true); 
-//					NodePairListFrame frame = new NodePairListFrame(tmpresultMaps);
-//					frame.setVisible(true);
+					NodePairListFrame frame = new NodePairListFrame(tmpresultMaps);
+					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -204,17 +205,6 @@ public class NodePairListFrame extends JFrame {
 					}
 				});
 	}
-//	private void sortBySequence()
-//	{
-//		Collections.sort(resultList,new Comparator<Map.Entry<TaskCombination, MinerNodeResults> >()
-//				{
-//					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
-//						System.out.println(o1.getValue().getRetPM().getConfidence());
-//						System.out.println(o2.getValue().getRetPM().getConfidence());
-//						return (o1.getValue().getRetSM().getAccuracyRatio()-o2.getValue().getRetSM().getAccuracyRatio())>0?-1:1;
-//					}
-//				});
-//	}
 	private void sortByOutlies()
 	{
 		System.out.println("why"+sortMethod);
@@ -245,28 +235,6 @@ public class NodePairListFrame extends JFrame {
 		createTable();
 		
 	}
-	public void fitTableColumns(JTable myTable)
-    {
-         myTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-         JTableHeader header = myTable.getTableHeader();
-         int rowCount = myTable.getRowCount();
-         Enumeration columns = myTable.getColumnModel().getColumns();
-         while(columns.hasMoreElements())
-         {
-             TableColumn column = (TableColumn)columns.nextElement();
-             int col = header.getColumnModel().getColumnIndex(column.getIdentifier());
-             int width = (int)header.getDefaultRenderer().getTableCellRendererComponent
-             (myTable, column.getIdentifier(), false, false, -1, col).getPreferredSize().getWidth();
-             for(int row = 0; row < rowCount; row++)
-             {
-                 int preferedWidth = (int)myTable.getCellRenderer(row, col).getTableCellRendererComponent
-                 (myTable, myTable.getValueAt(row, col), false, false, row, col).getPreferredSize().getWidth();
-                 width = Math.max(width, preferedWidth);
-             }
-             header.setResizingColumn(column); // 此行很重要
-             column.setWidth(width+myTable.getIntercellSpacing().width);
-         }
-    }
     
 	private void createTable()
 	{
@@ -322,7 +290,6 @@ public class NodePairListFrame extends JFrame {
 	    popupMenu.add(menu);
 	    menu.addActionListener(new ActionListener()
 		{
-	    	
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
@@ -428,7 +395,7 @@ public class NodePairListFrame extends JFrame {
 	 }
 	
 	void initialize() {
-//		setDefaultCloseOperation(JFrame.);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("链路属性规律");
 		setBounds(100, 100, 1500, 900);
 		try { 

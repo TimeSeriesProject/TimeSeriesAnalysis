@@ -21,6 +21,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.MergeSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.Pattern;
+import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.Miner.IMinerOM;
 
 public class TEOPartern implements IMinerOM{
@@ -404,6 +405,7 @@ public class TEOPartern implements IMinerOM{
 					outlies.add1Data(dataItems.getTime().get(i), ((int)(10*Math.max(1-pof, 0)))+"");
 				}
 				lastPof=(int)(10*Math.max(1-pof, 0));
+				outlies.add1Data(dataItems.getLastTime(), (int)lastPof+"");
 			}
 		}
 		System.out.print(lastPof);
@@ -547,8 +549,9 @@ public class TEOPartern implements IMinerOM{
 
 	@Override
 	public void TimeSeriesAnalysis() {
-		MergeSegment mergeSeg=new MergeSegment(dataItems, 0.25);
-		patterns=mergeSeg.getPatterns();
+		//MergeSegment mergeSeg=new MergeSegment(dataItems, 0.25);
+		PointSegment segment=new PointSegment(dataItems, 20);
+		patterns=segment.getTEOPattern();
 		//timeSeriesToPatternByStep(5000);
 		outliesDectation();
 	}
