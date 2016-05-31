@@ -11,6 +11,7 @@ public class ProtoclPair{
 	String protocol2 = "";
 	public double confidence = 0.0;
 	DataItems dataItems1 = null;  //包括协议1和协议2的原始序列
+	
 	public DataItems getDataItems1() {
 		return dataItems1;
 	}
