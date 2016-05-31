@@ -11,6 +11,18 @@ public class ProtoclPair{
 	String protocol2 = "";
 	public double confidence = 0.0;
 	DataItems dataItems1 = null;  //包括协议1和协议2的原始序列
+	public DataItems getDataItems1() {
+		return dataItems1;
+	}
+	public void setDataItems1(DataItems dataItems1) {
+		this.dataItems1 = dataItems1;
+	}
+	public DataItems getDataItems2() {
+		return dataItems2;
+	}
+	public void setDataItems2(DataItems dataItems2) {
+		this.dataItems2 = dataItems2;
+	}
 	DataItems dataItems2 = null;  //包括协议1和协议2的原始序列
 	
 	Map<String, ArrayList<LinePos>> mapAB = null;  //记录序列1与序列2 各个关联符号所在的位置 A,B表示在哪个序列上，12表示序列的比较顺序
