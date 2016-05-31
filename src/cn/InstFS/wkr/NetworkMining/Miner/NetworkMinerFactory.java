@@ -255,10 +255,10 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 				switch (task.getMiningMethod()) {
 				case MiningMethods_OutliesMining:
 					NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
-					minerOM.results.setRetOM(resultsMap.get(taskCombination).getRetOM());
 					if(minerOM.results.getRetOM().isIslinkDegree()){
 						System.out.println("true");
 					}
+					minerOM.results.setRetOM(resultsMap.get(taskCombination).getRetOM());
 					minerOM.results.di=taskCombination.getDataItems();
 					minerOM.isOver.setIsover(true);
 					allMiners.put(task, minerOM);

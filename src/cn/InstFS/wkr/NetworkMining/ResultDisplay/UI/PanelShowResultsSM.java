@@ -180,6 +180,8 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 			return;
 		else if(count==0)
 		{
+			DataItems nnor=new DataItems();
+			 long startTime=System.currentTimeMillis();
 			if(freq!=null&&count==0){
 				HashMap<String,ArrayList<DataItems>> f_model_nor_mode=new HashMap<>();
 
@@ -240,26 +242,27 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 						DataItem tempItem = new DataItem();
 						tempItem.setTime(nor.getElementAt(first).getTime());
 						tempItem.setData(nor.getElementAt(first).getData());
-
+						DataItem tempMode=new DataItem();
 						nor_line.add1Data(tempItem);
+						nnor.add1Data(tempItem);
 					if(last!=nor.getLength()) {
+
 						tempItem.setTime(nor.getElementAt(last).getTime());
 						tempItem.setData(nor.getElementAt(last).getData());
+//						tempMode.setTime(nor.getElementAt(last).getTime());
+//						tempMode.setData(nor.getElementAt(last).getData());
 						nor_line.add1Data(tempItem);
+						nnor.add1Data(tempItem);
 					}
 					else {
 						tempItem.setTime(nor.getElementAt(last - 1).getTime());
 						tempItem.setData(nor.getElementAt(last - 1).getData());
+//						tempMode.setTime(nor.getElementAt(last - 1).getTime());
+//						tempMode.setData(nor.getElementAt(last - 1).getData());
 						nor_line.add1Data(tempItem);
+						nnor.add1Data(tempItem);
 					}
-						if(i==3&&last!=nor.getLength())
-						{
-							System.out.println(++cc);
-							System.out.println("起始点时间"+  nor.getElementAt(first).getTime()+"     起始点数据"+nor.getElementAt(first).getData());
-							System.out.println("结束点时间"+  nor.getElementAt(last).getTime()+"     结束点数据"+nor.getElementAt(last).getData());
-							System.out.println("-----------");
-						}
-					DataItem tempMode=new DataItem();
+//
 					tempMode.setTime(nor.getElementAt((first + last) / 2).getTime());
 					tempMode.setData(Math.abs(Double.valueOf
 							(nor.getElementAt(last-1).getData())+Double.valueOf(nor.getElementAt(first).getData()))/2	+ "");
@@ -276,7 +279,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 					if(f_model_nor.size()==nor_model.size())
 					{
 						//System.out.println("ppppppppp"+f_model_nor.size());
-						JFreeChart jf = ChartPanelShowFI.createChart(f_model_nor, nor,f_model_nor_mode);
+						JFreeChart jf = ChartPanelShowFI.createChart(f_model_nor, nnor,f_model_nor_mode);
 						ChartPanel chartpanel = new ChartPanel(jf);
 						remove(chart1);
 						add(chartpanel);
@@ -284,6 +287,8 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 						validate();
 						count++;
 					}
+					long endTime=System.currentTimeMillis();
+					System.out.println(endTime-startTime+"ms");
 				}
 			}
 		}

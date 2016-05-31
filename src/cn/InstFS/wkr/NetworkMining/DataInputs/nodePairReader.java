@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import RTreeUtil.TimeSeries;
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.IPStreamPool;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
@@ -590,7 +591,7 @@ public class nodePairReader implements IReader {
 		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
-		textUtils.readByrow();
+		//textUtils.readByrow();
 		String line=null;
 		int rows=0;//记录总共读取的行数
 		while((line=textUtils.readByrow())!=null){
@@ -611,8 +612,15 @@ public class nodePairReader implements IReader {
 						int times=Integer.parseInt(dataItem.getData());
 						int addTimes=Integer.parseInt(proAndTraffic[2]);
 						dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
+					}else if(dataItem.getTime().before(time)){
+						Date addtime=DataPretreatment.getDateAfter(dataItem.getTime(),3600*1000);
+						while(!addtime.toString().equals(time.toString())&&addtime.before(time)){
+							dataItems.add1Data(addtime,"0");
+							addtime=DataPretreatment.getDateAfter(addtime, 3600*1000);
+						}
+						dataItems.add1Data(addtime, proAndTraffic[2]);
 					}else{
-						dataItems.add1Data(time, proAndTraffic[2]);
+						throw new RuntimeException("读入文件"+filePath+"第"+rows+"行发生时间错位");
 					}	
 				}else{
 					DataItems dataItems=new DataItems();

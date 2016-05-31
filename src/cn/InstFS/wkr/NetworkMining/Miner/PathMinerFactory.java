@@ -19,7 +19,7 @@ public class PathMinerFactory {
 	public String dataPath="E:\\parsePcap\\route\\10.0.13.2_10.0.2.2.csv";
 	
 	private MiningObject miningObject;
-	private TaskRange taskRange;
+	private TaskRange taskRange = TaskRange.NodePairRange;
 	private MiningMethod method;
 	
 	private PathMinerFactory(){}
@@ -46,6 +46,9 @@ public class PathMinerFactory {
         	}
         }
 	}*/
+	public void reset(){
+	isMining=false;
+}
 	
 	public void detect(){
 		if(isMining)
@@ -86,9 +89,11 @@ public class PathMinerFactory {
 		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_PeriodicityMining));
 		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_OutliesMining));
 		taskCombination.setDataItems(di);
+		taskCombination.setTaskRange(TaskRange.NodePairRange);
 		taskCombination.setRange(dataFile.getName().substring(0, dataFile.getName().lastIndexOf(".")));
 		taskCombination.setMinerType(MinerType.MiningType_Path);
 		taskCombination.setMiningObject(miningObject.toString());
+		taskCombination.setName();
 		TaskElement.add1Task(taskCombination, false);
 	}
 	
