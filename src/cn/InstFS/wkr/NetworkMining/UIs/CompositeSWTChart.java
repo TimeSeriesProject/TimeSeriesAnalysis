@@ -52,6 +52,7 @@ public class CompositeSWTChart extends Composite {
 		//这里调用图表1
 /*		 this.dataitems1= pp.getDataItems1();
 		 this.dataitems2=pp.getDataItems2();*/
+		//////////////////////
 		 System.out.println("CompositeSWTChart 调用 TimeSeriesChart1");
 		TimeSeriesChart1 c1 = new TimeSeriesChart1(this, SWT.NULL, pp);
 		 System.out.println("CompositeSWTChart 调用 TimeSeriesChart1 结束");

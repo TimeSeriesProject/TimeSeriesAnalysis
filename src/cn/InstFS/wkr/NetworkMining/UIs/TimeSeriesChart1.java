@@ -370,19 +370,27 @@ public class TimeSeriesChart1 extends Composite {
 			.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
 	xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(2.5F));
 	//遍历DataItems上的点
+	int k=0;
 		for (int i = 0; i < _abnor_model.size(); i++) {
 			System.out.println("360:i= "+i);
 
-
+			Date date1=new Date();
+			long seconds1 = date1.getTime();    // 秒
+			for(int j=0;j<100000;j++){
+				k=k+1;
+			}
 			XYDataset xydataset3 = createmodeDataset(_abnor_model.get(i));
-		//	Date date2=new Date();
-		//	long seconds2 =date2.getTime();      // 秒
-		//	System.out.println("seconds1:"+seconds1+" seconds2:"+seconds2+"差值:"+  (seconds2-seconds1));
+			Date date2=new Date();
+			long seconds2 =date2.getTime();      // 秒
+			System.out.println("seconds1:"+seconds1+" seconds2:"+seconds2+"差值:"+  (seconds2-seconds1));
 			
-			xyplot.setDataset(3, xydataset3);
-			xyplot.setRenderer(3,
+			xyplot.setDataset(i + 2 + _nor_model.size(), xydataset3);
+			xyplot.setRenderer(i + 2 + _nor_model.size(),
 					xylineandshaperenderer3);
-			
+				Date date3=new Date();
+			long seconds3 =date3.getTime();       // 秒
+			System.out.println("seconds1:"+seconds1+" seconds3:"+seconds3+"差值:"+  (seconds3-seconds1));
+			System.out.println("k= "+k);
 		
 		}
 		jfreechart.getLegend().setVisible(false);
