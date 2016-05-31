@@ -46,7 +46,7 @@ public class PathListFrame extends JFrame{
 
                     NetworkMinerFactory.getInstance();
                     PathMinerFactory pathMinerFactory=PathMinerFactory.getInstance();
-                    pathMinerFactory.dataPath="E:\\parsePcap\\route\\";
+                    pathMinerFactory.dataPath="E:\\parsePcap\\route\\10.0.1.2_10.0.2.2.csv";
                     pathMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
                     pathMinerFactory.detect();
                     HashMap<TaskCombination, MinerResultsPath> timesMap=NetworkMinerFactory.getInstance().startAllPathMiners(MiningObject.MiningObject_Times);
