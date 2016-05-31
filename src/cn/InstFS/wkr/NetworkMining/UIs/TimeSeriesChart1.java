@@ -102,14 +102,18 @@ public class TimeSeriesChart1 extends Composite {
 		//_nor_model_保存DataItem1对应的曲线线段
 		//_abnor_model_保存DataItem2对应的曲线线段
 		//LinePos 標标注两条曲线每一个key线段的起始位置和终点位置
-		
+		System.out.println(" DataItems1 lengh="+pp.getDataItems1().getLength());
 		_nor_model_ =new ArrayList<DataItems>();
 		_abnor_model_ =new ArrayList<DataItems>();
 		ArrayList<LinePos> linepos1 = new ArrayList<LinePos>();
+		System.out.println(" linepos1 :"+linepos1.size());
 		
 		//取出所有key值得线段linpos
 		for(Object se:pp.getMapAB().keySet()){
 			ArrayList<LinePos> s = pp.getMapAB().get(se);
+			System.out.println(" key :"+se+"	"+"value"+s.size());
+			
+			
 			linepos1.addAll(s);
 			}
 		Iterator lineposIt1 = linepos1.iterator();
@@ -118,12 +122,13 @@ public class TimeSeriesChart1 extends Composite {
 			// LinePos temp2=(LinePos)lineposIt2.next();
 			_nor_model_.add(this.getDataItems(pp.getDataItems1(),
 					(temp1).A_start, temp1.A_end));
-			System.out.println(" A_start="+(temp1).A_start+"  "+"A_end="+temp1.A_end);
+			//System.out.println(" A_start="+(temp1).A_start+"  "+"A_end="+temp1.A_end);
 			_abnor_model_.add(this.getDataItems(pp.getDataItems2(),
 					(temp1).B_start, temp1.B_end));
-			System.out.println(" B_start="+(temp1).B_start+"  "+"B_end="+temp1.B_end);
+			//System.out.println(" B_start="+(temp1).B_start+"  "+"B_end="+temp1.B_end);
 		}
-	
+		System.out.println(" _nor_model_ :"+_nor_model_.size());
+		System.out.println(" _abnor_model_ :"+_abnor_model_.size());
 		//传入
 		JFreeChart chart = createChart(_nor_model_,
 				_abnor_model_, pp.getDataItems1(), pp.getDataItems2());
@@ -194,26 +199,30 @@ public class TimeSeriesChart1 extends Composite {
         xylineandshaperenderer1.setSeriesStroke(0, new BasicStroke(0.5F));
 
         //xylineandshaperenderer1.setBaseItemLabelsVisible(true);
+        XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
+        xylineandshaperenderer2.setBaseShapesVisible(false);
+        //设置可以看见线。
+        xylineandshaperenderer2.setSeriesLinesVisible(0, true);
+        xylineandshaperenderer2.setSeriesShape(0, double1);
+        //设置线和点的颜色。
+        xylineandshaperenderer2.setSeriesPaint(0, Color.red);
+        xylineandshaperenderer2.setSeriesFillPaint(0, Color.red);
+        xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.red);
+        xylineandshaperenderer2.setUseFillPaint(true);
+        xylineandshaperenderer2.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+        xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(2.5F));
+
         for (int i = 0; i < _nor_model.size(); i++) {
+        	
             XYDataset xydataset2 = createmodeDataset(_nor_model.get(i));
-            XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
+            
             xyplot.setDataset(i + 2, xydataset2);
             xyplot.setRenderer(2 + i, xylineandshaperenderer2);
             //设置不可见到点。
-            xylineandshaperenderer2.setBaseShapesVisible(false);
-            //设置可以看见线。
-            xylineandshaperenderer2.setSeriesLinesVisible(0, true);
-            xylineandshaperenderer2.setSeriesShape(0, double1);
-            //设置线和点的颜色。
-            xylineandshaperenderer2.setSeriesPaint(0, Color.red);
-            xylineandshaperenderer2.setSeriesFillPaint(0, Color.red);
-            xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.red);
-            xylineandshaperenderer2.setUseFillPaint(true);
-            xylineandshaperenderer2.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-            xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(2.5F));
-
+            
 
         }
+        
         for (int i = 0; i < _abnor_model.size(); i++) {
             XYDataset xydataset3 = createmodeDataset(_abnor_model.get(i));
             XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
@@ -290,23 +299,30 @@ public class TimeSeriesChart1 extends Composite {
 	public static JFreeChart createChart(ArrayList<DataItems> _nor_model,
 			ArrayList<DataItems> _abnor_model, DataItems nor, DataItems abnor) {
 		XYDataset xydataset = createNormalDataset(nor);
+
 		JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 多元任务",
 				"时间", "值", xydataset);
 		XYPlot xyplot = (XYPlot) jfreechart.getPlot();
+
+		XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer) xyplot
+				.getRenderer();
+		
+		
+		xyplot.setDataset(1, xydataset);
+		xyplot.setRenderer(1, xylineandshaperenderer);
 		NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
 		numberaxis.setAutoRangeIncludesZero(false);
 		java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(
 				-4D, -4D, 6D, 6D);
 		// 设置异常点提示红点大小
-		XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer) xyplot
-				.getRenderer();
+		
 		// 设置不可看到点。
 		xylineandshaperenderer.setSeriesLinesVisible(0, true);
 		xylineandshaperenderer.setBaseShapesVisible(false);
 		xylineandshaperenderer.setSeriesShape(0, double1);
-		xylineandshaperenderer.setSeriesPaint(0, Color.blue);
-		xylineandshaperenderer.setSeriesFillPaint(0, Color.yellow);
-		xylineandshaperenderer.setSeriesOutlinePaint(0, Color.gray);
+		xylineandshaperenderer.setSeriesPaint(0, Color.black);
+		xylineandshaperenderer.setSeriesFillPaint(0, Color.black);
+		xylineandshaperenderer.setSeriesOutlinePaint(0, Color.black);
 		xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
 		// 设置显示数据点
 		// xylineandshaperenderer.setBaseItemLabelGenerator(new
@@ -316,8 +332,8 @@ public class TimeSeriesChart1 extends Composite {
 		//创造数据集，
 		XYDataset xydataset1 = createAbnormalDataset(abnor);
 		XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
-		xyplot.setDataset(1, xydataset1);
-		xyplot.setRenderer(1, xylineandshaperenderer1);
+		xyplot.setDataset(2, xydataset1);
+		xyplot.setRenderer(2, xylineandshaperenderer1);
 		// 设置不可见到点。
 		xylineandshaperenderer1.setBaseShapesVisible(false);
 		// 设置可以看见线。
@@ -334,8 +350,8 @@ public class TimeSeriesChart1 extends Composite {
 		// xylineandshaperenderer1.setBaseItemLabelsVisible(true);
 		///////////////////////////////
 		XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
-		
-					// 设置不可见到点。
+//		
+//					// 设置不可见到点。
 			xylineandshaperenderer2.setBaseShapesVisible(false);
 			// 设置可以看见线。
 			xylineandshaperenderer2.setSeriesLinesVisible(0, true);
@@ -351,8 +367,8 @@ public class TimeSeriesChart1 extends Composite {
 		for (int i = 0; i < _nor_model.size(); i++) {
 			
 			XYDataset xydataset2 = createmodeDataset(_nor_model.get(i));
-			xyplot.setDataset(2, xydataset2);
-			xyplot.setRenderer(2 , xylineandshaperenderer2);
+			xyplot.setDataset(i+2, xydataset2);
+			xyplot.setRenderer(2+i , xylineandshaperenderer2);
 		}
 		
 	XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
@@ -362,36 +378,22 @@ public class TimeSeriesChart1 extends Composite {
 	xylineandshaperenderer3.setSeriesLinesVisible(0, true);
 	xylineandshaperenderer3.setSeriesShape(0, double1);
 	// 设置线和点的颜色。
-	xylineandshaperenderer3.setSeriesPaint(0, Color.red);
-	xylineandshaperenderer3.setSeriesFillPaint(0, Color.red);
-	xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.red);
+	xylineandshaperenderer3.setSeriesPaint(0, Color.blue);
+	xylineandshaperenderer3.setSeriesFillPaint(0, Color.blue);
+	xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.blue);
 	xylineandshaperenderer3.setUseFillPaint(true);
 	xylineandshaperenderer3
 			.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
 	xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(2.5F));
 	//遍历DataItems上的点
-	int k=0;
+	
 		for (int i = 0; i < _abnor_model.size(); i++) {
-			System.out.println("360:i= "+i);
+	//		System.out.println("360:i= "+i);
 
-			Date date1=new Date();
-			long seconds1 = date1.getTime();    // 秒
-			for(int j=0;j<100000;j++){
-				k=k+1;
-			}
-			XYDataset xydataset3 = createmodeDataset(_abnor_model.get(i));
-			Date date2=new Date();
-			long seconds2 =date2.getTime();      // 秒
-			System.out.println("seconds1:"+seconds1+" seconds2:"+seconds2+"差值:"+  (seconds2-seconds1));
-			
+			XYDataset xydataset3 = createmodeDataset(_abnor_model.get(i));	
 			xyplot.setDataset(i + 2 + _nor_model.size(), xydataset3);
 			xyplot.setRenderer(i + 2 + _nor_model.size(),
 					xylineandshaperenderer3);
-				Date date3=new Date();
-			long seconds3 =date3.getTime();       // 秒
-			System.out.println("seconds1:"+seconds1+" seconds3:"+seconds3+"差值:"+  (seconds3-seconds1));
-			System.out.println("k= "+k);
-		
 		}
 		jfreechart.getLegend().setVisible(false);
 		return jfreechart;

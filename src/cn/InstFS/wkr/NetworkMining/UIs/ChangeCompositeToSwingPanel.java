@@ -134,7 +134,7 @@ public class ChangeCompositeToSwingPanel extends Panel {
 
 		private void swtEventLoop() {
 			while (exit!=0) {
-				System.out.println("swt running...");
+				//System.out.println("swt running...");
 				if (!display.readAndDispatch()) {
 					display.sleep();
 				}
