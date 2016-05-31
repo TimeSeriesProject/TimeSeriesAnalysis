@@ -183,7 +183,7 @@ public class ChartPanelShowFI extends JPanel {
         return xyseriescollection;
     }
 
-    public static JFreeChart createChart(HashMap<String, ArrayList<DataItems>> nor_model, DataItems nor,HashMap<String,ArrayList<DataItems>> nor_model_mode) {
+    public static JFreeChart createChart(HashMap<String, ArrayList<DataItems>> nor_model, DataItems nor, HashMap<String, ArrayList<DataItems>> nor_model_mode) {
         XYDataset xydataset = createNormalDataset(nor);
         JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 频繁项集挖掘结果", "时间", "值", xydataset);
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
@@ -195,13 +195,13 @@ public class ChartPanelShowFI extends JPanel {
         //设置不可看到点。
         Shape itemShape;
         itemShape = ShapeUtilities.createDiamond((float) 3);
-        xylineandshaperenderer.setSeriesLinesVisible(0, false);
-        xylineandshaperenderer.setBaseShapesVisible(false);
-        xylineandshaperenderer.setSeriesShape(0, itemShape);
-        xylineandshaperenderer.setSeriesPaint(0, Color.darkGray);
-        xylineandshaperenderer.setSeriesFillPaint(0, Color.yellow);
-        xylineandshaperenderer.setSeriesOutlinePaint(0, Color.gray);
-        xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(2F));
+        xylineandshaperenderer.setSeriesLinesVisible(0, true);
+        xylineandshaperenderer.setBaseShapesVisible(true);
+        xylineandshaperenderer.setSeriesShape(0, new java.awt.geom.Ellipse2D.Double(-2D, -2D, 4D, 4D));
+        xylineandshaperenderer.setSeriesPaint(0, Color.red);
+        xylineandshaperenderer.setSeriesFillPaint(0, Color.black);
+        xylineandshaperenderer.setSeriesOutlinePaint(0, Color.black);
+        xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
         //设置显示数据点
 //        xylineandshaperenderer.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
 //        xylineandshaperenderer.setBaseItemLabelsVisible(true);
@@ -252,113 +252,128 @@ public class ChartPanelShowFI extends JPanel {
             System.out.println(nor_model.get(key).size());
             if (i == 0) {
                 one = nor_model.get(key);
-                one_mode=nor_model_mode.get(key);
-                for (int j = 0; j < one.size(); j++) {
-                    count++;
-                    DataItems _nor_model = new DataItems();
-                    _nor_model = one.get(j);
-                    XYDataset xydataset2 = createmodeDataset(_nor_model);
-                    XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1, xydataset2);
-                    xyplot.setRenderer(1 + j, xylineandshaperenderer2);
-                    //设置不可见到点。
-                    xylineandshaperenderer2.setBaseShapesVisible(true);
-                    //设置可以看见线。
-                    xylineandshaperenderer2.setSeriesLinesVisible(0, true);
-                    xylineandshaperenderer2.setSeriesShape(0, double1);
-//                    xylineandshaperenderer2.setSeriesShape(0, new java.awt.geom.Ellipse2D.Double(-2D, -2D, 4D, 4D));
-                    //设置线和点的颜色。
-//                    GeneralPath generalpath = new GeneralPath();
-//                    generalpath.moveTo(0.0F, -3F);
-//                    generalpath.lineTo(0.0F, 3F);
-//                    generalpath.lineTo(-3F, 3F);
-//                    generalpath.closePath();
-//                    xylineandshaperenderer2.setSeriesShape(0, generalpath);
-                    xylineandshaperenderer2.setSeriesPaint(0, Color.yellow);
-                    xylineandshaperenderer2.setSeriesFillPaint(0, Color.black   );
-                    xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer2.setUseFillPaint(true);
-                    xylineandshaperenderer2.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(0.5F));
-//                    xylineandshaperenderer2.setBaseItemLabelsVisible(true);
-
-
-                }
-                for(int k=0;k<one_mode.size();k++ )
-                {
+                one_mode = nor_model_mode.get(key);
+//                for (int j = 0; j < one.size(); j++) {
+//                    count++;
+//                    DataItems _nor_model = new DataItems();
+//                    _nor_model = one.get(j);
+//                    XYDataset xydataset2 = createmodeDataset(_nor_model);
+//                    XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
+//                    xyplot.setDataset(j + 1, xydataset2);
+//                    xyplot.setRenderer(1 + j, xylineandshaperenderer2);
+//                    //设置不可见到点。
+//                    xylineandshaperenderer2.setBaseShapesVisible(true);
+//                    //设置可以看见线。
+//                    xylineandshaperenderer2.setSeriesLinesVisible(0, true);
+//                    xylineandshaperenderer2.setSeriesShape(0, double1);
+////                    xylineandshaperenderer2.setSeriesShape(0, new java.awt.geom.Ellipse2D.Double(-2D, -2D, 4D, 4D));
+//                    //设置线和点的颜色。
+////                    GeneralPath generalpath = new GeneralPath();
+////                    generalpath.moveTo(0.0F, -3F);
+////                    generalpath.lineTo(0.0F, 3F);
+////                    generalpath.lineTo(-3F, 3F);
+////                    generalpath.closePath();
+////                    xylineandshaperenderer2.setSeriesShape(0, generalpath);
+//                    xylineandshaperenderer2.setSeriesPaint(0, Color.red);
+//                    xylineandshaperenderer2.setSeriesFillPaint(0, Color.black   );
+//                    xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.black);
+//                    xylineandshaperenderer2.setUseFillPaint(true);
+//                    xylineandshaperenderer2.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+//                    xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(0.5F));
+////                    xylineandshaperenderer2.setBaseItemLabelsVisible(true);
+//
+//
+//                }
+                DataItems _nor_model_1=new DataItems();
+                for (int k = 0; k < one_mode.size(); k++) {
                     DataItems _nor_model_mode = new DataItems();
                     _nor_model_mode = one_mode.get(k);
-                    XYDataset xydataset2_mode = createmodeDataset(_nor_model_mode);
-                    XYLineAndShapeRenderer xylineandshaperenderer2_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1+one.size(), xydataset2_mode);
-                    xyplot.setRenderer(k + 1+one.size(), xylineandshaperenderer2_mode);
-                    //设置不可见到点。
-                    xylineandshaperenderer2_mode.setBaseShapesVisible(true);
-                    //设置可以看见线。
-                    xylineandshaperenderer2_mode.setSeriesLinesVisible(0, false);
+                    for (int j = 0; j < _nor_model_mode.getLength(); j++)
+                    {
+                        _nor_model_1.add1Data(_nor_model_mode.getElementAt(j));
+                    }
+
+
+                }
+                XYDataset xydataset2_mode = createmodeDataset(_nor_model_1);
+                XYLineAndShapeRenderer xylineandshaperenderer2_mode = new XYLineAndShapeRenderer();
+                xyplot.setDataset(2 , xydataset2_mode);
+                xyplot.setRenderer(2 , xylineandshaperenderer2_mode);
+                //设置不可见到点。
+                xylineandshaperenderer2_mode.setBaseShapesVisible(true);
+                //设置可以看见线。
+                xylineandshaperenderer2_mode.setSeriesLinesVisible(0, false);
 //                    xylineandshaperenderer2.setSeriesShape(0, double1);
 //                    xylineandshaperenderer2.setSeriesShape(0, new java.awt.geom.Ellipse2D.Double(-2D, -2D, 4D, 4D));
-                    //设置线和点的颜色。
-                    GeneralPath generalpath = new GeneralPath();
-                    generalpath.moveTo(-3F, -6F);
-                    generalpath.lineTo(-3F, -12F);
+                //设置线和点的颜色。
+                GeneralPath generalpath = new GeneralPath();
+                generalpath.moveTo(-3F, -6F);
+                generalpath.lineTo(-3F, -12F);
 //                    generalpath.lineTo(-3F, 3F);
 //                    generalpath.closePath();
-                    xylineandshaperenderer2_mode.setSeriesShape(0, generalpath);
-                    xylineandshaperenderer2_mode.setSeriesPaint(0, Color.black);
-                    xylineandshaperenderer2_mode.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer2_mode.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer2_mode.setUseFillPaint(true);
-                    xylineandshaperenderer2_mode.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer2_mode.setSeriesStroke(0, new BasicStroke(2F));
-                }
+                xylineandshaperenderer2_mode.setSeriesShape(0, generalpath);
+                xylineandshaperenderer2_mode.setSeriesPaint(0, Color.black);
+                xylineandshaperenderer2_mode.setSeriesFillPaint(0, Color.black);
+                xylineandshaperenderer2_mode.setSeriesOutlinePaint(0, Color.black);
+                xylineandshaperenderer2_mode.setUseFillPaint(true);
+                xylineandshaperenderer2_mode.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+                xylineandshaperenderer2_mode.setSeriesStroke(0, new BasicStroke(2F));
             }
             if (i == 1) {
                 second = nor_model.get(key);
-                second_mode=nor_model_mode.get(key);
-                for (int j = 0; j < second.size(); j++) {
-                    XYDataset xydataset3 = createmodeDataset(second.get(j));
-                    XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size(), xydataset3);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size(), xylineandshaperenderer3);
-                    //设置不可见到点。
-                    xylineandshaperenderer3.setBaseShapesVisible(true);
-                    //设置可以看见线。
-                    xylineandshaperenderer3.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
-
-                    xylineandshaperenderer3.setSeriesLinesVisible(0, true);
-                    xylineandshaperenderer3.setSeriesShape(0, double1);
-//                    GeneralPath generalpath = new GeneralPath();
-//                    generalpath.moveTo(0.0F, 6F);
-//                    generalpath.lineTo(3F, 6F);
-//                    generalpath.moveTo(3F, 6F);
-//                    generalpath.lineTo(3F, 3F);
-//                    generalpath.moveTo(3F, 3F);
-//                    generalpath.lineTo(0F, 3F);
-//                    generalpath.moveTo(0F, 3F);
-//                    generalpath.lineTo(0F, 0F);
-//                    generalpath.moveTo(0F,0F);
-//                    generalpath.lineTo(3F,0F);
-////                    generalpath.lineTo(-3F, 3F);
-////                    generalpath.closePath();
-//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
-                    //设置线和点的颜色。
-                    xylineandshaperenderer3.setSeriesPaint(0, Color.yellow);
-                    xylineandshaperenderer3.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer3.setUseFillPaint(true);
-                    xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(0.5F));
-                    xylineandshaperenderer3.setBaseItemLabelsVisible(false);
+                second_mode = nor_model_mode.get(key);
+//                for (int j = 0; j < second.size(); j++) {
+//                    XYDataset xydataset3 = createmodeDataset(second.get(j));
+//                    XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
+//                    xyplot.setDataset(j + 1 + one.size()+one_mode.size(), xydataset3);
+//                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size(), xylineandshaperenderer3);
+//                    //设置不可见到点。
+//                    xylineandshaperenderer3.setBaseShapesVisible(true);
+//                    //设置可以看见线。
+//                    xylineandshaperenderer3.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
+//
+//                    xylineandshaperenderer3.setSeriesLinesVisible(0, true);
+//                    xylineandshaperenderer3.setSeriesShape(0, double1);
+////                    GeneralPath generalpath = new GeneralPath();
+////                    generalpath.moveTo(0.0F, 6F);
+////                    generalpath.lineTo(3F, 6F);
+////                    generalpath.moveTo(3F, 6F);
+////                    generalpath.lineTo(3F, 3F);
+////                    generalpath.moveTo(3F, 3F);
+////                    generalpath.lineTo(0F, 3F);
+////                    generalpath.moveTo(0F, 3F);
+////                    generalpath.lineTo(0F, 0F);
+////                    generalpath.moveTo(0F,0F);
+////                    generalpath.lineTo(3F,0F);
+//////                    generalpath.lineTo(-3F, 3F);
+//////                    generalpath.closePath();
+////                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
+//                    //设置线和点的颜色。
+//                    xylineandshaperenderer3.setSeriesPaint(0, Color.red);
+//                    xylineandshaperenderer3.setSeriesFillPaint(0, Color.black);
+//                    xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.black);
+//                    xylineandshaperenderer3.setUseFillPaint(true);
+//                    xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+//                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(0.5F));
+//                    xylineandshaperenderer3.setBaseItemLabelsVisible(false);
+//
+//
+//                }
+                DataItems _nor_model_2=new DataItems();
+                for (int k = 0; k < second_mode.size(); k++) {
+                    DataItems _nor_model_mode = new DataItems();
+                    _nor_model_mode = second_mode.get(k);
+                    for (int j = 0; j < _nor_model_mode.getLength(); j++)
+                    {
+                        _nor_model_2.add1Data(_nor_model_mode.getElementAt(j));
+                    }
 
 
                 }
-                for(int k=0;k<second_mode.size();k++)
-                {
-                    XYDataset xydataset3_mode = createmodeDataset(second_mode.get(k));
-                    XYLineAndShapeRenderer xylineandshaperenderer3_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size(), xydataset3_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size(), xylineandshaperenderer3_mode);
+                    XYDataset xydataset3_mode = createmodeDataset(_nor_model_2);
+                XYLineAndShapeRenderer xylineandshaperenderer3_mode = new XYLineAndShapeRenderer();
+                    xyplot.setDataset(3 , xydataset3_mode);
+                    xyplot.setRenderer(3 , xylineandshaperenderer3_mode);
                     //设置不可见到点。
                     xylineandshaperenderer3_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
@@ -374,8 +389,8 @@ public class ChartPanelShowFI extends JPanel {
                     generalpath.lineTo(0F, -9F);
                     generalpath.moveTo(0F, -9F);
                     generalpath.lineTo(0F, -6F);
-                    generalpath.moveTo(0F,-6F);
-                    generalpath.lineTo(3F,-6F);
+                    generalpath.moveTo(0F, -6F);
+                    generalpath.lineTo(3F, -6F);
 
                     xylineandshaperenderer3_mode.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
@@ -387,121 +402,138 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer3_mode.setSeriesStroke(0, new BasicStroke(2F));
                     xylineandshaperenderer3_mode.setBaseItemLabelsVisible(false);
                 }
-            }
             if (i == 2) {
                 third = nor_model.get(key);
-                third_mode=nor_model_mode.get(key);
-                for (int j = 0; j < third.size(); j++) {
-                    XYDataset xydataset4 = createmodeDataset(third.get(j));
-                    XYLineAndShapeRenderer xylineandshaperenderer4 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size() + second.size()+second_mode.size(), xydataset4);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size() + second.size()+second_mode.size(), xylineandshaperenderer4);
-                    //设置不可见到点。
-                    xylineandshaperenderer4.setBaseShapesVisible(true);
-                    //设置可以看见线。
-//                    xylineandshaperenderer4.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -2D, 3D, 3D));
-                    xylineandshaperenderer4.setSeriesLinesVisible(0, true);
-//                    GeneralPath generalpath = new GeneralPath();
-//                    generalpath.moveTo(0.0F, -2F);
-//                    generalpath.lineTo(2F, 2F);
-//                    generalpath.lineTo(-2F, 2F);
-//                    generalpath.closePath();
-//                    xylineandshaperenderer4.setSeriesShape(0, generalpath);
-                    xylineandshaperenderer4.setSeriesShape(0, double1);
-                    //设置线和点的颜色。
-                    xylineandshaperenderer4.setSeriesPaint(0, Color.yellow);
-                    xylineandshaperenderer4.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer4.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer4.setUseFillPaint(true);
-                    xylineandshaperenderer4.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer4.setSeriesStroke(0, new BasicStroke(0.5F));
-                    xylineandshaperenderer4.setBaseItemLabelsVisible(false);
+                third_mode = nor_model_mode.get(key);
+//                for (int j = 0; j < third.size(); j++) {
+//                    XYDataset xydataset4 = createmodeDataset(third.get(j));
+//                    XYLineAndShapeRenderer xylineandshaperenderer4 = new XYLineAndShapeRenderer();
+//                    xyplot.setDataset(j + 1 + one.size()+one_mode.size() + second.size()+second_mode.size(), xydataset4);
+//                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size() + second.size()+second_mode.size(), xylineandshaperenderer4);
+//                    //设置不可见到点。
+//                    xylineandshaperenderer4.setBaseShapesVisible(true);
+//                    //设置可以看见线。
+////                    xylineandshaperenderer4.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -2D, 3D, 3D));
+//                    xylineandshaperenderer4.setSeriesLinesVisible(0, true);
+////                    GeneralPath generalpath = new GeneralPath();
+////                    generalpath.moveTo(0.0F, -2F);
+////                    generalpath.lineTo(2F, 2F);
+////                    generalpath.lineTo(-2F, 2F);
+////                    generalpath.closePath();
+////                    xylineandshaperenderer4.setSeriesShape(0, generalpath);
+//                    xylineandshaperenderer4.setSeriesShape(0, double1);
+//                    //设置线和点的颜色。
+//                    xylineandshaperenderer4.setSeriesPaint(0, Color.red);
+//                    xylineandshaperenderer4.setSeriesFillPaint(0, Color.black);
+//                    xylineandshaperenderer4.setSeriesOutlinePaint(0, Color.black);
+//                    xylineandshaperenderer4.setUseFillPaint(true);
+//                    xylineandshaperenderer4.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+//                    xylineandshaperenderer4.setSeriesStroke(0, new BasicStroke(0.5F));
+//                    xylineandshaperenderer4.setBaseItemLabelsVisible(false);
+//
+//
+//                }
+                DataItems _nor_model_3=new DataItems();
+                for (int k = 0; k < third.size(); k++) {
+                    DataItems _nor_model_mode = new DataItems();
+                    _nor_model_mode = third_mode.get(k);
+                    for (int j = 0; j < _nor_model_mode.getLength(); j++)
+                    {
+                        _nor_model_3.add1Data(_nor_model_mode.getElementAt(j));
+                    }
 
 
                 }
-                for(int k=0;k<third_mode.size();k++)
-                {
-                    XYDataset xydataset4_mode = createmodeDataset(third_mode.get(k));
-                    XYLineAndShapeRenderer xylineandshaperenderer4_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size(), xydataset4_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size(), xylineandshaperenderer4_mode);
-                    //设置不可见到点。
-                    xylineandshaperenderer4_mode.setBaseShapesVisible(true);
-                    //设置可以看见线。
+                XYDataset xydataset4_mode = createmodeDataset(_nor_model_3);
+                XYLineAndShapeRenderer xylineandshaperenderer4_mode = new XYLineAndShapeRenderer();
+                xyplot.setDataset(4, xydataset4_mode);
+                xyplot.setRenderer(4, xylineandshaperenderer4_mode);
+                //设置不可见到点。
+                xylineandshaperenderer4_mode.setBaseShapesVisible(true);
+                //设置可以看见线。
 
-                    xylineandshaperenderer4_mode.setSeriesLinesVisible(0, false);
-                    //xylineandshaperenderer3.setSeriesShape(0, double1);
-                    GeneralPath generalpath = new GeneralPath();
-                    generalpath.moveTo(-1.5F, -18F);
-                    generalpath.lineTo(1.5F, -18F);
-                    generalpath.moveTo(1.5F, -18F);
-                    generalpath.lineTo(1.5F, -15F);
-                    generalpath.moveTo(1.5F, -15F);
-                    generalpath.lineTo(-1.5F, -15F);
-                    generalpath.moveTo(1.5F, -15F);
-                    generalpath.lineTo(1.5F, -12F);
-                    generalpath.moveTo(1.5F,-12F);
-                    generalpath.lineTo(-1.5F,-12F);
+                xylineandshaperenderer4_mode.setSeriesLinesVisible(0, false);
+                //xylineandshaperenderer3.setSeriesShape(0, double1);
+                GeneralPath generalpath = new GeneralPath();
+                generalpath.moveTo(-1.5F, -9F);
+                generalpath.lineTo(1.5F, -9F);
+                generalpath.moveTo(1.5F, -9F);
+                generalpath.lineTo(1.5F, -6F);
+                generalpath.moveTo(1.5F, -6F);
+                generalpath.lineTo(-1.5F, -6F);
+                generalpath.moveTo(1.5F, -6F);
+                generalpath.lineTo(1.5F, -3F);
+                generalpath.moveTo(1.5F, -3F);
+                generalpath.lineTo(-1.5F, -3F);
 
-                    xylineandshaperenderer4_mode.setSeriesShape(0, generalpath);
-                    //设置线和点的颜色。
-                    xylineandshaperenderer4_mode.setSeriesPaint(0, Color.black);
-                    xylineandshaperenderer4_mode.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer4_mode.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer4_mode.setUseFillPaint(true);
-                    xylineandshaperenderer4_mode.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer4_mode.setSeriesStroke(0, new BasicStroke(2F));
-                    xylineandshaperenderer4_mode.setBaseItemLabelsVisible(false);
-                }
+
+                xylineandshaperenderer4_mode.setSeriesShape(0, generalpath);
+                //设置线和点的颜色。
+                xylineandshaperenderer4_mode.setSeriesPaint(0, Color.black);
+                xylineandshaperenderer4_mode.setSeriesFillPaint(0, Color.black);
+                xylineandshaperenderer4_mode.setSeriesOutlinePaint(0, Color.black);
+                xylineandshaperenderer4_mode.setUseFillPaint(true);
+                xylineandshaperenderer4_mode.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+                xylineandshaperenderer4_mode.setSeriesStroke(0, new BasicStroke(2F));
+                xylineandshaperenderer4_mode.setBaseItemLabelsVisible(false);
             }
+
+
             if (i == 3) {
                 fourth = nor_model.get(key);
-                fourth_mode=nor_model_mode.get(key);
-                for (int j = 0; j < fourth.size(); j++) {
-                    XYDataset xydataset5 = createmodeDataset(fourth.get(j));
-                    XYLineAndShapeRenderer xylineandshaperenderer5 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size(), xydataset5);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size(), xylineandshaperenderer5);
-                    //设置不可见到点。
-                    xylineandshaperenderer5.setBaseShapesVisible(true);
-                    //设置可以看见线。
-                    xylineandshaperenderer5.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
-
-                    xylineandshaperenderer5.setSeriesLinesVisible(0, true);
-                    xylineandshaperenderer5.setSeriesShape(0, double1);
-//                    GeneralPath generalpath = new GeneralPath();
-//                    generalpath.moveTo(0.0F, 6F);
-//                    generalpath.lineTo(3F, 6F);
-//                    generalpath.moveTo(3F, 6F);
-//                    generalpath.lineTo(3F, 3F);
-//                    generalpath.moveTo(3F, 3F);
-//                    generalpath.lineTo(0F, 3F);
-//                    generalpath.moveTo(0F, 3F);
-//                    generalpath.lineTo(0F, 0F);
-//                    generalpath.moveTo(0F,0F);
-//                    generalpath.lineTo(3F,0F);
-////                    generalpath.lineTo(-3F, 3F);
-////                    generalpath.closePath();
-//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
-                    //设置线和点的颜色。
-                    xylineandshaperenderer5.setSeriesPaint(0, Color.yellow);
-                    xylineandshaperenderer5.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer5.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer5.setUseFillPaint(true);
-                    xylineandshaperenderer5.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer5.setSeriesStroke(0, new BasicStroke(0.5F));
-                    xylineandshaperenderer5.setBaseItemLabelsVisible(false);
+                fourth_mode = nor_model_mode.get(key);
+//                for (int j = 0; j < fourth.size(); j++) {
+//                    XYDataset xydataset5 = createmodeDataset(fourth.get(j));
+//                    XYLineAndShapeRenderer xylineandshaperenderer5 = new XYLineAndShapeRenderer();
+//                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size(), xydataset5);
+//                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size(), xylineandshaperenderer5);
+//                    //设置不可见到点。
+//                    xylineandshaperenderer5.setBaseShapesVisible(true);
+//                    //设置可以看见线。
+//                    xylineandshaperenderer5.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
+//
+//                    xylineandshaperenderer5.setSeriesLinesVisible(0, true);
+//                    xylineandshaperenderer5.setSeriesShape(0, double1);
+////                    GeneralPath generalpath = new GeneralPath();
+////                    generalpath.moveTo(0.0F, 6F);
+////                    generalpath.lineTo(3F, 6F);
+////                    generalpath.moveTo(3F, 6F);
+////                    generalpath.lineTo(3F, 3F);
+////                    generalpath.moveTo(3F, 3F);
+////                    generalpath.lineTo(0F, 3F);
+////                    generalpath.moveTo(0F, 3F);
+////                    generalpath.lineTo(0F, 0F);
+////                    generalpath.moveTo(0F,0F);
+////                    generalpath.lineTo(3F,0F);
+//////                    generalpath.lineTo(-3F, 3F);
+//////                    generalpath.closePath();
+////                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
+//                    //设置线和点的颜色。
+//                    xylineandshaperenderer5.setSeriesPaint(0, Color.red);
+//                    xylineandshaperenderer5.setSeriesFillPaint(0, Color.black);
+//                    xylineandshaperenderer5.setSeriesOutlinePaint(0, Color.black);
+//                    xylineandshaperenderer5.setUseFillPaint(true);
+//                    xylineandshaperenderer5.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+//                    xylineandshaperenderer5.setSeriesStroke(0, new BasicStroke(0.5F));
+//                    xylineandshaperenderer5.setBaseItemLabelsVisible(false);
+//
+//
+//                }
+                DataItems _nor_model_4=new DataItems();
+                for (int k = 0; k < fourth_mode.size(); k++) {
+                    DataItems _nor_model_mode = new DataItems();
+                    _nor_model_mode = fourth_mode.get(k);
+                    for (int j = 0; j < _nor_model_mode.getLength(); j++)
+                    {
+                        _nor_model_4.add1Data(_nor_model_mode.getElementAt(j));
+                    }
 
 
                 }
-                for(int k=0;k<fourth_mode.size();k++)
-                {
-                    XYDataset xydataset5_mode = createmodeDataset(fourth_mode.get(k));
+                    XYDataset xydataset5_mode = createmodeDataset(_nor_model_4);
                     XYLineAndShapeRenderer xylineandshaperenderer5_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
-                            +fourth.size(), xydataset5_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
-                            +fourth.size(), xylineandshaperenderer5_mode);
+                    xyplot.setDataset(5, xydataset5_mode);
+                    xyplot.setRenderer(5, xylineandshaperenderer5_mode);
                     //设置不可见到点。
                     xylineandshaperenderer5_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
@@ -528,63 +560,66 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer5_mode.setBaseItemLabelsVisible(false);
                 }
 
-            }
+
             if (i == 4) {
                 fifth = nor_model.get(key);
-                fifth_mode=nor_model_mode.get(key);
-                for (int j = 0; j < fifth.size(); j++) {
-                    XYDataset xydataset6 = createmodeDataset(fifth.get(j));
-                    XYLineAndShapeRenderer xylineandshaperenderer6 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
-                            +fourth.size()+fourth_mode.size(), xydataset6);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
-                            +fourth.size()+fourth_mode.size(), xylineandshaperenderer6);
-                    //设置不可见到点。
-                    xylineandshaperenderer6.setBaseShapesVisible(true);
-                    //设置可以看见线。
-                    xylineandshaperenderer6.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
-
-                    xylineandshaperenderer6.setSeriesLinesVisible(0, true);
-                    xylineandshaperenderer6.setSeriesShape(0, double1);
-//                    GeneralPath generalpath = new GeneralPath();
-//                    generalpath.moveTo(0.0F, 6F);
-//                    generalpath.lineTo(3F, 6F);
-//                    generalpath.moveTo(3F, 6F);
-//                    generalpath.lineTo(3F, 3F);
-//                    generalpath.moveTo(3F, 3F);
-//                    generalpath.lineTo(0F, 3F);
-//                    generalpath.moveTo(0F, 3F);
-//                    generalpath.lineTo(0F, 0F);
-//                    generalpath.moveTo(0F,0F);
-//                    generalpath.lineTo(3F,0F);
-////                    generalpath.lineTo(-3F, 3F);
-////                    generalpath.closePath();
-//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
-                    //设置线和点的颜色。
-                    xylineandshaperenderer6.setSeriesPaint(0, Color.yellow);
-                    xylineandshaperenderer6.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer6.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer6.setUseFillPaint(true);
-                    xylineandshaperenderer6.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer6.setSeriesStroke(0, new BasicStroke(0.5F));
-                    xylineandshaperenderer6.setBaseItemLabelsVisible(false);
+                fifth_mode = nor_model_mode.get(key);
+//                for (int j = 0; j < fifth.size(); j++) {
+//                    XYDataset xydataset6 = createmodeDataset(fifth.get(j));
+//                    XYLineAndShapeRenderer xylineandshaperenderer6 = new XYLineAndShapeRenderer();
+//                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+//                            +fourth.size()+fourth_mode.size(), xydataset6);
+//                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+//                            +fourth.size()+fourth_mode.size(), xylineandshaperenderer6);
+//                    //设置不可见到点。
+//                    xylineandshaperenderer6.setBaseShapesVisible(true);
+//                    //设置可以看见线。
+//                    xylineandshaperenderer6.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
+//
+//                    xylineandshaperenderer6.setSeriesLinesVisible(0, true);
+//                    xylineandshaperenderer6.setSeriesShape(0, double1);
+////                    GeneralPath generalpath = new GeneralPath();
+////                    generalpath.moveTo(0.0F, 6F);
+////                    generalpath.lineTo(3F, 6F);
+////                    generalpath.moveTo(3F, 6F);
+////                    generalpath.lineTo(3F, 3F);
+////                    generalpath.moveTo(3F, 3F);
+////                    generalpath.lineTo(0F, 3F);
+////                    generalpath.moveTo(0F, 3F);
+////                    generalpath.lineTo(0F, 0F);
+////                    generalpath.moveTo(0F,0F);
+////                    generalpath.lineTo(3F,0F);
+//////                    generalpath.lineTo(-3F, 3F);
+//////                    generalpath.closePath();
+////                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
+//                    //设置线和点的颜色。
+//                    xylineandshaperenderer6.setSeriesPaint(0, Color.red);
+//                    xylineandshaperenderer6.setSeriesFillPaint(0, Color.black);
+//                    xylineandshaperenderer6.setSeriesOutlinePaint(0, Color.black);
+//                    xylineandshaperenderer6.setUseFillPaint(true);
+//                    xylineandshaperenderer6.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+//                    xylineandshaperenderer6.setSeriesStroke(0, new BasicStroke(0.5F));
+//                    xylineandshaperenderer6.setBaseItemLabelsVisible(false);
+//
+//
+//                }
+                DataItems _nor_model_5=new DataItems();
+                for (int k = 0; k < fifth_mode.size(); k++) {
+                    DataItems _nor_model_mode = new DataItems();
+                    _nor_model_mode = fifth_mode.get(k);
+                    for (int j = 0; j < _nor_model_mode.getLength(); j++)
+                    {
+                        _nor_model_5.add1Data(_nor_model_mode.getElementAt(j));
+                    }
 
 
                 }
-                for(int k=0;k<fifth_mode.size();k++)
-                {
-                    XYDataset xydataset6_mode = createmodeDataset(fifth_mode.get(k));
+                    XYDataset xydataset6_mode = createmodeDataset(_nor_model_5);
                     XYLineAndShapeRenderer xylineandshaperenderer6_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()
-                            +second.size()+second_mode.size()
-                            +third.size()+third_mode.size()
-                            +fourth.size()+fourth_mode.size()
-                            +fifth.size(), xydataset6_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()
-                            +second.size()+second_mode.size()
-                            +third.size()+third_mode.size()
-                            +fourth.size()+fourth_mode.size()
-                            +fifth.size(), xylineandshaperenderer6_mode);
+                    xyplot.setDataset(6
+                          , xydataset6_mode);
+                    xyplot.setRenderer(6
+                           , xylineandshaperenderer6_mode);
                     //设置不可见到点。
                     xylineandshaperenderer6_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
@@ -598,10 +633,10 @@ public class ChartPanelShowFI extends JPanel {
                     generalpath.lineTo(0.0F, -9F);
                     generalpath.moveTo(0.0F, -9F);
                     generalpath.lineTo(3.0F, -9F);
-                    generalpath.moveTo(3.0F,-9F);
-                    generalpath.lineTo(3.0F,-6F);
-                    generalpath.moveTo(3.0F,-6F);
-                    generalpath.lineTo(0.0F,-6F);
+                    generalpath.moveTo(3.0F, -9F);
+                    generalpath.lineTo(3.0F, -6F);
+                    generalpath.moveTo(3.0F, -6F);
+                    generalpath.lineTo(0.0F, -6F);
 
                     xylineandshaperenderer6_mode.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
@@ -613,65 +648,66 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer6_mode.setSeriesStroke(0, new BasicStroke(2F));
                     xylineandshaperenderer6_mode.setBaseItemLabelsVisible(false);
                 }
-            }
+
             if (i == 5) {
                 sixth = nor_model.get(key);
-                sixth_mode=nor_model_mode.get(key);
-                for (int j = 0; j < sixth.size(); j++) {
-                    XYDataset xydataset7 = createmodeDataset(sixth.get(j));
-                    XYLineAndShapeRenderer xylineandshaperenderer7 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
-                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size(), xydataset7);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
-                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size(), xylineandshaperenderer7);
-                    //设置不可见到点。
-                    xylineandshaperenderer7.setBaseShapesVisible(true);
-                    //设置可以看见线。
-                    xylineandshaperenderer7.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
-
-                    xylineandshaperenderer7.setSeriesLinesVisible(0, true);
-                    xylineandshaperenderer7.setSeriesShape(0, double1);
-//                    GeneralPath generalpath = new GeneralPath();
-//                    generalpath.moveTo(0.0F, 6F);
-//                    generalpath.lineTo(3F, 6F);
-//                    generalpath.moveTo(3F, 6F);
-//                    generalpath.lineTo(3F, 3F);
-//                    generalpath.moveTo(3F, 3F);
-//                    generalpath.lineTo(0F, 3F);
-//                    generalpath.moveTo(0F, 3F);
-//                    generalpath.lineTo(0F, 0F);
-//                    generalpath.moveTo(0F,0F);
-//                    generalpath.lineTo(3F,0F);
-////                    generalpath.lineTo(-3F, 3F);
-////                    generalpath.closePath();
-//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
-                    //设置线和点的颜色。
-                    xylineandshaperenderer7.setSeriesPaint(0, Color.yellow);
-                    xylineandshaperenderer7.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer7.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer7.setUseFillPaint(true);
-                    xylineandshaperenderer7.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer7.setSeriesStroke(0, new BasicStroke(0.5F));
-                    xylineandshaperenderer7.setBaseItemLabelsVisible(false);
+                sixth_mode = nor_model_mode.get(key);
+//                for (int j = 0; j < sixth.size(); j++) {
+//                    XYDataset xydataset7 = createmodeDataset(sixth.get(j));
+//                    XYLineAndShapeRenderer xylineandshaperenderer7 = new XYLineAndShapeRenderer();
+//                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+//                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size(), xydataset7);
+//                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+//                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size(), xylineandshaperenderer7);
+//                    //设置不可见到点。
+//                    xylineandshaperenderer7.setBaseShapesVisible(true);
+//                    //设置可以看见线。
+//                    xylineandshaperenderer7.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
+//
+//                    xylineandshaperenderer7.setSeriesLinesVisible(0, true);
+//                    xylineandshaperenderer7.setSeriesShape(0, double1);
+////                    GeneralPath generalpath = new GeneralPath();
+////                    generalpath.moveTo(0.0F, 6F);
+////                    generalpath.lineTo(3F, 6F);
+////                    generalpath.moveTo(3F, 6F);
+////                    generalpath.lineTo(3F, 3F);
+////                    generalpath.moveTo(3F, 3F);
+////                    generalpath.lineTo(0F, 3F);
+////                    generalpath.moveTo(0F, 3F);
+////                    generalpath.lineTo(0F, 0F);
+////                    generalpath.moveTo(0F,0F);
+////                    generalpath.lineTo(3F,0F);
+//////                    generalpath.lineTo(-3F, 3F);
+//////                    generalpath.closePath();
+////                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
+//                    //设置线和点的颜色。
+//                    xylineandshaperenderer7.setSeriesPaint(0, Color.red);
+//                    xylineandshaperenderer7.setSeriesFillPaint(0, Color.black);
+//                    xylineandshaperenderer7.setSeriesOutlinePaint(0, Color.black);
+//                    xylineandshaperenderer7.setUseFillPaint(true);
+//                    xylineandshaperenderer7.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+//                    xylineandshaperenderer7.setSeriesStroke(0, new BasicStroke(0.5F));
+//                    xylineandshaperenderer7.setBaseItemLabelsVisible(false);
+//
+//
+//                }
+                DataItems _nor_model_6=new DataItems();
+                for (int k = 0; k < sixth_mode.size(); k++) {
+                    DataItems _nor_model_mode = new DataItems();
+                    _nor_model_mode = sixth_mode.get(k);
+                    for (int j = 0; j < _nor_model_mode.getLength(); j++)
+                    {
+                        _nor_model_6.add1Data(_nor_model_mode.getElementAt(j));
+                    }
 
 
                 }
-                for(int k=0;k<sixth_mode.size();k++)
-                {
-                    XYDataset xydataset7_mode = createmodeDataset(sixth_mode.get(k));
+                    XYDataset xydataset7_mode = createmodeDataset(_nor_model_6);
                     XYLineAndShapeRenderer xylineandshaperenderer7_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()
-                            +second.size()+second_mode.size()
-                            +third.size()+third_mode.size()
-                            +fourth.size()+fourth.size()
-                            +fifth.size()+fifth_mode.size()
-                            +sixth.size(), xydataset7_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()
-                            +second.size()+second_mode.size()
-                            +third.size()+third_mode.size()
-                            +fourth.size()+fourth.size()
-                            +fifth.size()+fifth_mode.size()
-                            +sixth.size(), xylineandshaperenderer7_mode);
+                    xyplot.setDataset(7
+                           , xydataset7_mode);
+                    xyplot.setRenderer(7,
+                            xylineandshaperenderer7_mode);
                     //设置不可见到点。
                     xylineandshaperenderer7_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
@@ -691,8 +727,8 @@ public class ChartPanelShowFI extends JPanel {
                     generalpath.lineTo(3.0F, -6F);
                     generalpath.moveTo(3.0F, -6F);
                     generalpath.lineTo(0.0F, -6F);
-                    generalpath.moveTo(0.0F,-6F);
-                    generalpath.lineTo(0.0F,-9F);
+                    generalpath.moveTo(0.0F, -6F);
+                    generalpath.lineTo(0.0F, -9F);
                     xylineandshaperenderer7_mode.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
                     xylineandshaperenderer7_mode.setSeriesPaint(0, Color.black);
@@ -703,70 +739,69 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer7_mode.setSeriesStroke(0, new BasicStroke(2F));
                     xylineandshaperenderer7_mode.setBaseItemLabelsVisible(false);
                 }
-            }
+
             //未设置图形
 
             if (i == 6) {
 
                 seventh = nor_model.get(key);
-                seventh_mode=nor_model_mode.get(key);
-                for (int j = 0; j < seventh.size(); j++) {
-                    XYDataset xydataset8 = createmodeDataset(seventh.get(j));
-                    XYLineAndShapeRenderer xylineandshaperenderer8 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
-                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size(), xydataset8);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
-                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size(), xylineandshaperenderer8);
-                    //设置不可见到点。
-                    xylineandshaperenderer8.setBaseShapesVisible(true);
-                    //设置可以看见线。
-                    xylineandshaperenderer8.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
-
-                    xylineandshaperenderer8.setSeriesLinesVisible(0, true);
-                    xylineandshaperenderer8.setSeriesShape(0, double1);
-//                    GeneralPath generalpath = new GeneralPath();
-//                    generalpath.moveTo(0.0F, 6F);
-//                    generalpath.lineTo(3F, 6F);
-//                    generalpath.moveTo(3F, 6F);
-//                    generalpath.lineTo(3F, 3F);
-//                    generalpath.moveTo(3F, 3F);
-//                    generalpath.lineTo(0F, 3F);
-//                    generalpath.moveTo(0F, 3F);
-//                    generalpath.lineTo(0F, 0F);
-//                    generalpath.moveTo(0F,0F);
-//                    generalpath.lineTo(3F,0F);
-////                    generalpath.lineTo(-3F, 3F);
-////                    generalpath.closePath();
-//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
-                    //设置线和点的颜色。
-                    xylineandshaperenderer8.setSeriesPaint(0, Color.yellow);
-                    xylineandshaperenderer8.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer8.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer8.setUseFillPaint(true);
-                    xylineandshaperenderer8.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer8.setSeriesStroke(0, new BasicStroke(0.5F));
-                    xylineandshaperenderer8.setBaseItemLabelsVisible(false);
+                seventh_mode = nor_model_mode.get(key);
+//                for (int j = 0; j < seventh.size(); j++) {
+//                    XYDataset xydataset8 = createmodeDataset(seventh.get(j));
+//                    XYLineAndShapeRenderer xylineandshaperenderer8 = new XYLineAndShapeRenderer();
+//                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+//                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size(), xydataset8);
+//                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+//                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size(), xylineandshaperenderer8);
+//                    //设置不可见到点。
+//                    xylineandshaperenderer8.setBaseShapesVisible(true);
+//                    //设置可以看见线。
+//                    xylineandshaperenderer8.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
+//
+//                    xylineandshaperenderer8.setSeriesLinesVisible(0, true);
+//                    xylineandshaperenderer8.setSeriesShape(0, double1);
+////                    GeneralPath generalpath = new GeneralPath();
+////                    generalpath.moveTo(0.0F, 6F);
+////                    generalpath.lineTo(3F, 6F);
+////                    generalpath.moveTo(3F, 6F);
+////                    generalpath.lineTo(3F, 3F);
+////                    generalpath.moveTo(3F, 3F);
+////                    generalpath.lineTo(0F, 3F);
+////                    generalpath.moveTo(0F, 3F);
+////                    generalpath.lineTo(0F, 0F);
+////                    generalpath.moveTo(0F,0F);
+////                    generalpath.lineTo(3F,0F);
+//////                    generalpath.lineTo(-3F, 3F);
+//////                    generalpath.closePath();
+////                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
+//                    //设置线和点的颜色。
+//                    xylineandshaperenderer8.setSeriesPaint(0, Color.red);
+//                    xylineandshaperenderer8.setSeriesFillPaint(0, Color.black);
+//                    xylineandshaperenderer8.setSeriesOutlinePaint(0, Color.black);
+//                    xylineandshaperenderer8.setUseFillPaint(true);
+//                    xylineandshaperenderer8.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+//                    xylineandshaperenderer8.setSeriesStroke(0, new BasicStroke(0.5F));
+//                    xylineandshaperenderer8.setBaseItemLabelsVisible(false);
+//
+//
+//                }
+                DataItems _nor_model_7=new DataItems();
+                for (int k = 0; k < seventh_mode.size(); k++) {
+                    DataItems _nor_model_mode = new DataItems();
+                    _nor_model_mode = seventh_mode.get(k);
+                    for (int j = 0; j < _nor_model_mode.getLength(); j++)
+                    {
+                        _nor_model_7.add1Data(_nor_model_mode.getElementAt(j));
+                    }
 
 
                 }
-                for(int k=0;k<seventh_mode.size();k++)
-                {
-                    XYDataset xydataset8_mode = createmodeDataset(seventh_mode.get(k));
+                    XYDataset xydataset8_mode = createmodeDataset(_nor_model_7);
                     XYLineAndShapeRenderer xylineandshaperenderer8_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()
-                            +second.size()+second_mode.size()
-                            +third.size()+third_mode.size()
-                            +fourth.size()+fourth.size()
-                            +fifth.size()+fifth_mode.size()
-                            +sixth.size()+sixth_mode.size()
-                            +seventh.size(), xydataset8_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()
-                            +second.size()+second_mode.size()
-                            +third.size()+third_mode.size()
-                            +fourth.size()+fourth.size()
-                            +fifth.size()+fifth_mode.size()
-                            +sixth.size()+sixth_mode.size()
-                            +seventh.size(), xylineandshaperenderer8_mode);
+                    xyplot.setDataset(8
+                   , xydataset8_mode);
+                    xyplot.setRenderer(8
+                           , xylineandshaperenderer8_mode);
                     //设置不可见到点。
                     xylineandshaperenderer8_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
@@ -793,71 +828,68 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer8_mode.setBaseItemLabelsVisible(false);
                 }
 
-            }
+
             if (i == 7) {
                 eighth = nor_model.get(key);
-                eighth_mode=nor_model_mode.get(key);
-                for (int j = 0; j < eighth.size(); j++) {
-                    XYDataset xydataset9 = createmodeDataset(eighth.get(j));
-                    XYLineAndShapeRenderer xylineandshaperenderer9 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
-                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size(), xydataset9);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
-                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size(), xylineandshaperenderer9);
-                    //设置不可见到点。
-                    xylineandshaperenderer9.setBaseShapesVisible(true);
-                    //设置可以看见线。
-                    xylineandshaperenderer9.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
-
-                    xylineandshaperenderer9.setSeriesLinesVisible(0, true);
-                    xylineandshaperenderer9.setSeriesShape(0, double1);
-//                    GeneralPath generalpath = new GeneralPath();
-//                    generalpath.moveTo(0.0F, 6F);
-//                    generalpath.lineTo(3F, 6F);
-//                    generalpath.moveTo(3F, 6F);
-//                    generalpath.lineTo(3F, 3F);
-//                    generalpath.moveTo(3F, 3F);
-//                    generalpath.lineTo(0F, 3F);
-//                    generalpath.moveTo(0F, 3F);
-//                    generalpath.lineTo(0F, 0F);
-//                    generalpath.moveTo(0F,0F);
-//                    generalpath.lineTo(3F,0F);
-////                    generalpath.lineTo(-3F, 3F);
-////                    generalpath.closePath();
-//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
-                    //设置线和点的颜色。
-                    xylineandshaperenderer9.setSeriesPaint(0, Color.yellow);
-                    xylineandshaperenderer9.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer9.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer9.setUseFillPaint(true);
-                    xylineandshaperenderer9.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer9.setSeriesStroke(0, new BasicStroke(0.5F));
-                    xylineandshaperenderer9.setBaseItemLabelsVisible(false);
+                eighth_mode = nor_model_mode.get(key);
+//                for (int j = 0; j < eighth.size(); j++) {
+//                    XYDataset xydataset9 = createmodeDataset(eighth.get(j));
+//                    XYLineAndShapeRenderer xylineandshaperenderer9 = new XYLineAndShapeRenderer();
+//                    xyplot.setDataset(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+//                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
+//                            +seventh.size()+seventh_mode.size(), xydataset9);
+//                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size()+second.size()+second_mode.size()+third.size()+third_mode.size()
+//                            +fourth.size()+fourth_mode.size()+fifth.size()+fifth_mode.size()+sixth.size()+sixth_mode.size()
+//                            +seventh.size()+seventh_mode.size(), xylineandshaperenderer9);
+//                    //设置不可见到点。
+//                    xylineandshaperenderer9.setBaseShapesVisible(true);
+//                    //设置可以看见线。
+//                    xylineandshaperenderer9.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
+//
+//                    xylineandshaperenderer9.setSeriesLinesVisible(0, true);
+//                    xylineandshaperenderer9.setSeriesShape(0, double1);
+////                    GeneralPath generalpath = new GeneralPath();
+////                    generalpath.moveTo(0.0F, 6F);
+////                    generalpath.lineTo(3F, 6F);
+////                    generalpath.moveTo(3F, 6F);
+////                    generalpath.lineTo(3F, 3F);
+////                    generalpath.moveTo(3F, 3F);
+////                    generalpath.lineTo(0F, 3F);
+////                    generalpath.moveTo(0F, 3F);
+////                    generalpath.lineTo(0F, 0F);
+////                    generalpath.moveTo(0F,0F);
+////                    generalpath.lineTo(3F,0F);
+//////                    generalpath.lineTo(-3F, 3F);
+//////                    generalpath.closePath();
+////                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
+//                    //设置线和点的颜色。
+//                    xylineandshaperenderer9.setSeriesPaint(0, Color.red);
+//                    xylineandshaperenderer9.setSeriesFillPaint(0, Color.black);
+//                    xylineandshaperenderer9.setSeriesOutlinePaint(0, Color.black);
+//                    xylineandshaperenderer9.setUseFillPaint(true);
+//                    xylineandshaperenderer9.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+//                    xylineandshaperenderer9.setSeriesStroke(0, new BasicStroke(0.5F));
+//                    xylineandshaperenderer9.setBaseItemLabelsVisible(false);
+//
+//
+//                }
+                DataItems _nor_model_8=new DataItems();
+                for (int k = 0; k < eighth_mode.size(); k++) {
+                    DataItems _nor_model_mode = new DataItems();
+                    _nor_model_mode = eighth_mode.get(k);
+                    for (int j = 0; j < _nor_model_mode.getLength(); j++)
+                    {
+                        _nor_model_8.add1Data(_nor_model_mode.getElementAt(j));
+                    }
 
 
                 }
-                for(int k=0;k<eighth_mode.size();k++)
-                {
-                    XYDataset xydataset9_mode = createmodeDataset(eighth_mode.get(k));
+                    XYDataset xydataset9_mode = createmodeDataset(_nor_model_8);
                     XYLineAndShapeRenderer xylineandshaperenderer9_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()
-                            +second.size()+second_mode.size()
-                            +third.size()+third_mode.size()
-                            +fourth.size()+fourth.size()
-                            +fifth.size()+fifth_mode.size()
-                            +sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size()
-                            +eighth.size(), xydataset9_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()
-                            +second.size()+second_mode.size()
-                            +third.size()+third_mode.size()
-                            +fourth.size()+fourth.size()
-                            +fifth.size()+fifth_mode.size()
-                            +sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size()
-                            +eighth.size(), xylineandshaperenderer9_mode);
+                    xyplot.setDataset(9
+                            , xydataset9_mode);
+                    xyplot.setRenderer(9
+                        , xylineandshaperenderer9_mode);
                     //设置不可见到点。
                     xylineandshaperenderer9_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
@@ -873,14 +905,14 @@ public class ChartPanelShowFI extends JPanel {
                     generalpath.lineTo(1.5F, -15F);
                     generalpath.moveTo(1.5F, -15F);
                     generalpath.lineTo(-1.5F, -15F);
-                    generalpath.moveTo(-1.5F,-15F);
-                    generalpath.lineTo(-1.5F,-18F);
-                    generalpath.moveTo(-1.5F,-15F);
-                    generalpath.lineTo(-1.5F,-12F);
-                    generalpath.moveTo(-1.5F,-12F);
-                    generalpath.lineTo(1.5F,-12F);
-                    generalpath.moveTo(1.5F,-12F);
-                    generalpath.lineTo(1.5F,-15F);
+                    generalpath.moveTo(-1.5F, -15F);
+                    generalpath.lineTo(-1.5F, -18F);
+                    generalpath.moveTo(-1.5F, -15F);
+                    generalpath.lineTo(-1.5F, -12F);
+                    generalpath.moveTo(-1.5F, -12F);
+                    generalpath.lineTo(1.5F, -12F);
+                    generalpath.moveTo(1.5F, -12F);
+                    generalpath.lineTo(1.5F, -15F);
 
                     xylineandshaperenderer9_mode.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
@@ -892,70 +924,64 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer9_mode.setSeriesStroke(0, new BasicStroke(2F));
                     xylineandshaperenderer9_mode.setBaseItemLabelsVisible(false);
                 }
-            }
-            if (i==8)
-            {
-                second = nor_model.get(key);
-                second_mode=nor_model_mode.get(key);
-                for (int j = 0; j < second.size(); j++) {
-                    XYDataset xydataset3 = createmodeDataset(second.get(j));
-                    XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size(), xydataset3);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size(), xylineandshaperenderer3);
-                    //设置不可见到点。
-                    xylineandshaperenderer3.setBaseShapesVisible(true);
-                    //设置可以看见线。
-                    xylineandshaperenderer3.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
 
-                    xylineandshaperenderer3.setSeriesLinesVisible(0, true);
-                    xylineandshaperenderer3.setSeriesShape(0, double1);
-//                    GeneralPath generalpath = new GeneralPath();
-//                    generalpath.moveTo(0.0F, 6F);
-//                    generalpath.lineTo(3F, 6F);
-//                    generalpath.moveTo(3F, 6F);
-//                    generalpath.lineTo(3F, 3F);
-//                    generalpath.moveTo(3F, 3F);
-//                    generalpath.lineTo(0F, 3F);
-//                    generalpath.moveTo(0F, 3F);
-//                    generalpath.lineTo(0F, 0F);
-//                    generalpath.moveTo(0F,0F);
-//                    generalpath.lineTo(3F,0F);
-////                    generalpath.lineTo(-3F, 3F);
-////                    generalpath.closePath();
-//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
-                    //设置线和点的颜色。
-                    xylineandshaperenderer3.setSeriesPaint(0, Color.yellow);
-                    xylineandshaperenderer3.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer3.setUseFillPaint(true);
-                    xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(0.5F));
-                    xylineandshaperenderer3.setBaseItemLabelsVisible(false);
+            if (i == 8) {
+                ninth = nor_model.get(key);
+                ninth = nor_model_mode.get(key);
+//                for (int j = 0; j < second.size(); j++) {
+//                    XYDataset xydataset3 = createmodeDataset(second.get(j));
+//                    XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
+//                    xyplot.setDataset(j + 1 + one.size()+one_mode.size(), xydataset3);
+//                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size(), xylineandshaperenderer3);
+//                    //设置不可见到点。
+//                    xylineandshaperenderer3.setBaseShapesVisible(true);
+//                    //设置可以看见线。
+//                    xylineandshaperenderer3.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
+//
+//                    xylineandshaperenderer3.setSeriesLinesVisible(0, true);
+//                    xylineandshaperenderer3.setSeriesShape(0, double1);
+////                    GeneralPath generalpath = new GeneralPath();
+////                    generalpath.moveTo(0.0F, 6F);
+////                    generalpath.lineTo(3F, 6F);
+////                    generalpath.moveTo(3F, 6F);
+////                    generalpath.lineTo(3F, 3F);
+////                    generalpath.moveTo(3F, 3F);
+////                    generalpath.lineTo(0F, 3F);
+////                    generalpath.moveTo(0F, 3F);
+////                    generalpath.lineTo(0F, 0F);
+////                    generalpath.moveTo(0F,0F);
+////                    generalpath.lineTo(3F,0F);
+//////                    generalpath.lineTo(-3F, 3F);
+//////                    generalpath.closePath();
+////                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
+//                    //设置线和点的颜色。
+//                    xylineandshaperenderer3.setSeriesPaint(0, Color.red);
+//                    xylineandshaperenderer3.setSeriesFillPaint(0, Color.black);
+//                    xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.black);
+//                    xylineandshaperenderer3.setUseFillPaint(true);
+//                    xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+//                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(0.5F));
+//                    xylineandshaperenderer3.setBaseItemLabelsVisible(false);
+//
+//
+//                }
+                DataItems _nor_model_9=new DataItems();
+                for (int k = 0; k < ninth_mode.size(); k++) {
+                    DataItems _nor_model_mode = new DataItems();
+                    _nor_model_mode = ninth_mode.get(k);
+                    for (int j = 0; j < _nor_model_mode.getLength(); j++)
+                    {
+                        _nor_model_9.add1Data(_nor_model_mode.getElementAt(j));
+                    }
 
 
                 }
-                for(int k=0;k<ninth_mode.size();k++)
-                {
-                    XYDataset xydataset10_mode = createmodeDataset(ninth_mode.get(k));
+                    XYDataset xydataset10_mode = createmodeDataset(_nor_model_9);
                     XYLineAndShapeRenderer xylineandshaperenderer10_mode = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(k + 1 + one.size()+one_mode.size()
-                            +second.size()+second_mode.size()
-                            +third.size()+third_mode.size()
-                            +fourth.size()+fourth.size()
-                            +fifth.size()+fifth_mode.size()
-                            +sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size()
-                            +eighth.size()+eighth_mode.size()
-                            +ninth.size(), xydataset10_mode);
-                    xyplot.setRenderer(k + 1 + one.size()+one_mode.size()
-                            +second.size()+second_mode.size()
-                            +third.size()+third_mode.size()
-                            +fourth.size()+fourth.size()
-                            +fifth.size()+fifth_mode.size()
-                            +sixth.size()+sixth_mode.size()
-                            +seventh.size()+seventh_mode.size()
-                            +eighth.size()+eighth_mode.size()
-                            +ninth.size(), xylineandshaperenderer10_mode);
+                    xyplot.setDataset(10
+                          , xydataset10_mode);
+                    xyplot.setRenderer(10
+                            , xylineandshaperenderer10_mode);
                     //设置不可见到点。
                     xylineandshaperenderer10_mode.setBaseShapesVisible(true);
                     //设置可以看见线。
@@ -971,12 +997,12 @@ public class ChartPanelShowFI extends JPanel {
                     generalpath.lineTo(0.0F, -9F);
                     generalpath.moveTo(0.0F, -9F);
                     generalpath.lineTo(3.0F, -9F);
-                    generalpath.moveTo(3.0F,-9F);
-                    generalpath.lineTo(3.0F,-12F);
-                    generalpath.moveTo(3.0F,-9F);
-                    generalpath.lineTo(3.0F,-6F);
-                    generalpath.moveTo(3.0F,-6F);
-                    generalpath.lineTo(0.0F,-6F);
+                    generalpath.moveTo(3.0F, -9F);
+                    generalpath.lineTo(3.0F, -12F);
+                    generalpath.moveTo(3.0F, -9F);
+                    generalpath.lineTo(3.0F, -6F);
+                    generalpath.moveTo(3.0F, -6F);
+                    generalpath.lineTo(0.0F, -6F);
 
                     xylineandshaperenderer10_mode.setSeriesShape(0, generalpath);
                     //设置线和点的颜色。
@@ -988,106 +1014,107 @@ public class ChartPanelShowFI extends JPanel {
                     xylineandshaperenderer10_mode.setSeriesStroke(0, new BasicStroke(2F));
                     xylineandshaperenderer10_mode.setBaseItemLabelsVisible(false);
                 }
-            }
-            if (i==9)
-            {
-                second = nor_model.get(key);
-                second_mode=nor_model_mode.get(key);
-                for (int j = 0; j < second.size(); j++) {
-                    XYDataset xydataset3 = createmodeDataset(second.get(j));
-                    XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
-                    xyplot.setDataset(j + 1 + one.size()+one_mode.size(), xydataset3);
-                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size(), xylineandshaperenderer3);
-                    //设置不可见到点。
-                    xylineandshaperenderer3.setBaseShapesVisible(true);
-                    //设置可以看见线。
-                    xylineandshaperenderer3.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
 
-                    xylineandshaperenderer3.setSeriesLinesVisible(0, true);
-                    xylineandshaperenderer3.setSeriesShape(0, double1);
+//            if (i == 9) {
+//                second = nor_model.get(key);
+//                second_mode = nor_model_mode.get(key);
+////                for (int j = 0; j < second.size(); j++) {
+////                    XYDataset xydataset3 = createmodeDataset(second.get(j));
+////                    XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
+////                    xyplot.setDataset(j + 1 + one.size()+one_mode.size(), xydataset3);
+////                    xyplot.setRenderer(j + 1 + one.size()+one_mode.size(), xylineandshaperenderer3);
+////                    //设置不可见到点。
+////                    xylineandshaperenderer3.setBaseShapesVisible(true);
+////                    //设置可以看见线。
+////                    xylineandshaperenderer3.setSeriesShape(0, new java.awt.geom.Rectangle2D.Double(-2D, -4.5D, 4D, 9D));
+////
+////                    xylineandshaperenderer3.setSeriesLinesVisible(0, true);
+////                    xylineandshaperenderer3.setSeriesShape(0, double1);
+//////                    GeneralPath generalpath = new GeneralPath();
+//////                    generalpath.moveTo(0.0F, 6F);
+//////                    generalpath.lineTo(3F, 6F);
+//////                    generalpath.moveTo(3F, 6F);
+//////                    generalpath.lineTo(3F, 3F);
+//////                    generalpath.moveTo(3F, 3F);
+//////                    generalpath.lineTo(0F, 3F);
+//////                    generalpath.moveTo(0F, 3F);
+//////                    generalpath.lineTo(0F, 0F);
+//////                    generalpath.moveTo(0F,0F);
+//////                    generalpath.lineTo(3F,0F);
+////////                    generalpath.lineTo(-3F, 3F);
+////////                    generalpath.closePath();
+//////                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
+////                    //设置线和点的颜色。
+////                    xylineandshaperenderer3.setSeriesPaint(0, Color.red);
+////                    xylineandshaperenderer3.setSeriesFillPaint(0, Color.black);
+////                    xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.black);
+////                    xylineandshaperenderer3.setUseFillPaint(true);
+////                    xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+////                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(0.5F));
+////                    xylineandshaperenderer3.setBaseItemLabelsVisible(false);
+////
+////
+////                }
+////            }
+//                for (int k = 0; k < tenth_mode.size(); k++) {
+//                    XYDataset xydataset11_mode = createmodeDataset(tenth_mode.get(k));
+//                    XYLineAndShapeRenderer xylineandshaperenderer11_mode = new XYLineAndShapeRenderer();
+//                    xyplot.setDataset(k + 1 +  one_mode.size()
+//                            + second_mode.size()
+//                             + third_mode.size()
+//                             + fourth.size()
+//                             + fifth_mode.size()
+//                             + sixth_mode.size()
+//                           + seventh_mode.size()
+//                            + eighth_mode.size()
+//                             + ninth_mode.size()
+//                            , xydataset11_mode);
+//                    xyplot.setRenderer(k + 1 +  + one_mode.size()
+//                           + second_mode.size()
+//                          + third_mode.size()
+//                           + fourth.size()
+//                           + fifth_mode.size()
+//                            + sixth_mode.size()
+//                            + seventh_mode.size()
+//                          + eighth_mode.size()
+//                            + ninth_mode.size()
+//                          , xylineandshaperenderer11_mode);
+//                    //设置不可见到点。
+//                    xylineandshaperenderer11_mode.setBaseShapesVisible(true);
+//                    //设置可以看见线。
+//
+//                    xylineandshaperenderer11_mode.setSeriesLinesVisible(0, false);
+//                    //xylineandshaperenderer3.setSeriesShape(0, double1);
 //                    GeneralPath generalpath = new GeneralPath();
-//                    generalpath.moveTo(0.0F, 6F);
-//                    generalpath.lineTo(3F, 6F);
-//                    generalpath.moveTo(3F, 6F);
-//                    generalpath.lineTo(3F, 3F);
-//                    generalpath.moveTo(3F, 3F);
-//                    generalpath.lineTo(0F, 3F);
-//                    generalpath.moveTo(0F, 3F);
-//                    generalpath.lineTo(0F, 0F);
-//                    generalpath.moveTo(0F,0F);
-//                    generalpath.lineTo(3F,0F);
-////                    generalpath.lineTo(-3F, 3F);
-////                    generalpath.closePath();
-//                    xylineandshaperenderer3.setSeriesShape(0, generalpath);
-                    //设置线和点的颜色。
-                    xylineandshaperenderer3.setSeriesPaint(0, Color.yellow);
-                    xylineandshaperenderer3.setSeriesFillPaint(0, Color.black);
-                    xylineandshaperenderer3.setSeriesOutlinePaint(0, Color.black);
-                    xylineandshaperenderer3.setUseFillPaint(true);
-                    xylineandshaperenderer3.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                    xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(0.5F));
-                    xylineandshaperenderer3.setBaseItemLabelsVisible(false);
-
-
-                }
-            }
-            for(int k=0;k<tenth_mode.size();k++)
-            {
-                XYDataset xydataset11_mode = createmodeDataset(tenth_mode.get(k));
-                XYLineAndShapeRenderer xylineandshaperenderer11_mode = new XYLineAndShapeRenderer();
-                xyplot.setDataset(k + 1 + one.size()+one_mode.size()
-                        +second.size()+second_mode.size()
-                        +third.size()+third_mode.size()
-                        +fourth.size()+fourth.size()
-                        +fifth.size()+fifth_mode.size()
-                        +sixth.size()+sixth_mode.size()
-                        +seventh.size()+seventh_mode.size()
-                        +eighth.size()+eighth_mode.size()
-                        +ninth.size()+ninth_mode.size()
-                        +tenth.size(), xydataset11_mode);
-                xyplot.setRenderer(k + 1 + one.size()+one_mode.size()
-                        +second.size()+second_mode.size()
-                        +third.size()+third_mode.size()
-                        +fourth.size()+fourth.size()
-                        +fifth.size()+fifth_mode.size()
-                        +sixth.size()+sixth_mode.size()
-                        +seventh.size()+seventh_mode.size()
-                        +eighth.size()+eighth_mode.size()
-                        +ninth.size()+ninth_mode.size()
-                        +tenth.size(), xylineandshaperenderer11_mode);
-                //设置不可见到点。
-                xylineandshaperenderer11_mode.setBaseShapesVisible(true);
-                //设置可以看见线。
-
-                xylineandshaperenderer11_mode.setSeriesLinesVisible(0, false);
-                //xylineandshaperenderer3.setSeriesShape(0, double1);
-                GeneralPath generalpath = new GeneralPath();
-                generalpath.moveTo(0.0F, -12F);
-                generalpath.lineTo(3.0F, -12F);
-                generalpath.moveTo(0.0F, -12F);
-                generalpath.lineTo(0.0F, -6F);
-                generalpath.moveTo(0.0F, -6F);
-                generalpath.lineTo(3.0F, -6F);
-                generalpath.moveTo(3.0F,-6F);
-                generalpath.lineTo(3.0F,-12F);
-                generalpath.moveTo(-3.0F,-12F);
-                generalpath.lineTo(-3.0F,-6F);
-
-
-                xylineandshaperenderer11_mode.setSeriesShape(0, generalpath);
-                //设置线和点的颜色。
-                xylineandshaperenderer11_mode.setSeriesPaint(0, Color.black);
-                xylineandshaperenderer11_mode.setSeriesFillPaint(0, Color.black);
-                xylineandshaperenderer11_mode.setSeriesOutlinePaint(0, Color.black);
-                xylineandshaperenderer11_mode.setUseFillPaint(true);
-                xylineandshaperenderer11_mode.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-                xylineandshaperenderer11_mode.setSeriesStroke(0, new BasicStroke(2F));
-                xylineandshaperenderer11_mode.setBaseItemLabelsVisible(false);
-            }
+//                    generalpath.moveTo(0.0F, -12F);
+//                    generalpath.lineTo(3.0F, -12F);
+//                    generalpath.moveTo(0.0F, -12F);
+//                    generalpath.lineTo(0.0F, -6F);
+//                    generalpath.moveTo(0.0F, -6F);
+//                    generalpath.lineTo(3.0F, -6F);
+//                    generalpath.moveTo(3.0F, -6F);
+//                    generalpath.lineTo(3.0F, -12F);
+//                    generalpath.moveTo(-3.0F, -12F);
+//                    generalpath.lineTo(-3.0F, -6F);
+//
+//
+//                    xylineandshaperenderer11_mode.setSeriesShape(0, generalpath);
+//                    //设置线和点的颜色。
+//                    xylineandshaperenderer11_mode.setSeriesPaint(0, Color.black);
+//                    xylineandshaperenderer11_mode.setSeriesFillPaint(0, Color.black);
+//                    xylineandshaperenderer11_mode.setSeriesOutlinePaint(0, Color.black);
+//                    xylineandshaperenderer11_mode.setUseFillPaint(true);
+//                    xylineandshaperenderer11_mode.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+//                    xylineandshaperenderer11_mode.setSeriesStroke(0, new BasicStroke(2F));
+//                    xylineandshaperenderer11_mode.setBaseItemLabelsVisible(false);
+//                }
+//
+//            }
 
         }
         jfreechart.getLegend().setVisible(false);
         return jfreechart;
     }
 }
+
 

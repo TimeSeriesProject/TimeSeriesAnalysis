@@ -9,57 +9,30 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.HashMap;
+import java.io.File;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.LookAndFeel;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 
-import cn.InstFS.wkr.NetworkMining.Miner.MinerNodeResults;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerProtocolResults;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.PathMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.ProtocolAssMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.SingleNodeOrNodePairMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsSM;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogConfigTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettingTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PanelConfigTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PanelListAllTasks;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.ProcessBarShow;
 import cn.InstFS.wkr.NetworkMining.UIs.SimulationUIs.PanelControlSimulationTime;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JSplitPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JSeparator;
-import javax.swing.JCheckBox;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import com.l2fprod.common.swing.LookAndFeelTweaks;
-
-import javax.swing.JToolBar;
+import org.jfree.chart.JFreeChart;
 
 public class MainFrame extends JFrame {
 	public static MainFrame topFrame;
 	public static int numTxtOutput = 10;
 	public static int ii;
-	// é”Ÿæ¥è¾¾æ‹·é”Ÿæ–¤æ‹·Frame
 	DialogConfigTask dialogConfigTask;
 	
 	private PanelListAllTasks panelListAllEvents;
@@ -68,8 +41,8 @@ public class MainFrame extends JFrame {
 	
 	private JPanel contentPane;
 	private JTextArea txtOutput;
-	private JCheckBox chckAutoShowResults;	
-	
+	private JCheckBox chckAutoShowResults;
+
 	/**
 	 * Launch the application.
 	 */
@@ -92,16 +65,11 @@ public class MainFrame extends JFrame {
 
 	/**
 	 * Create the frame.
-	 * @throws UnsupportedLookAndFeelException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 * @throws ClassNotFoundException 
 	 */
-	public MainFrame() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+	public MainFrame() {
 		MainFrame.topFrame = this;
-		setTitle("ç½‘ç»œè§„å¾‹æŒ–æ˜åˆ†æè½¯ä»¶");
-		UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-
+		setTitle("ÍøÂçÍÚ¾ò¹æÂÉÄ£ÄâÆ÷");
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
@@ -116,24 +84,11 @@ public class MainFrame extends JFrame {
 		contentPane.add(toolBar, BorderLayout.NORTH);
 		toolBar.setSize(100, 20);
 		
-		JMenu mnFile = new JMenu("æ–‡ä»¶(F)");
+		JMenu mnFile = new JMenu("ÎÄ¼ş(F)");
 		mnFile.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(mnFile);
 		
-		
-		
-		
-		JMenuItem menuParse = new JMenuItem("Pcapè§£æ(P)");
-		menuParse.setMnemonic(KeyEvent.VK_P);
-		menuParse.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new ProcessBarShow();
-			}
-		});
-		mnFile.add(menuParse);
-		
-		JMenuItem menuExit = new JMenuItem("é€€å‡º(X)");
+		JMenuItem menuExit = new JMenuItem("ÍË³ö(X)");
 		menuExit.setMnemonic(KeyEvent.VK_X);
 		menuExit.addActionListener(new ActionListener() {			
 			@Override
@@ -142,12 +97,20 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnFile.add(menuExit);
-		
-		JMenu mnTools = new JMenu("ä»»åŠ¡(T)");
+		JMenuItem menuLoad=new JMenuItem("¼ÓÔØÎÄ¼ş£¨L)");
+		menuLoad.setMnemonic(KeyEvent.VK_L);
+		menuLoad.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				chooseFiles();
+			}
+		});
+		mnFile.add(menuLoad);
+		JMenu mnTools = new JMenu("ÈÎÎñ(T)");
 		mnTools.setMnemonic(KeyEvent.VK_T);
 		menuBar.add(mnTools);
 		
-		JMenuItem menuConfigEvent = new JMenuItem("é…ç½®ä»»åŠ¡(P)");
+		JMenuItem menuConfigEvent = new JMenuItem("ÅäÖÃÈÎÎñ(P)");
 		menuConfigEvent.setMnemonic(KeyEvent.VK_P);
 		menuConfigEvent.addActionListener(new ActionListener() {			
 			@Override
@@ -155,11 +118,10 @@ public class MainFrame extends JFrame {
 				JFrame jf=new JFrame();
 				DialogSettingTask dialogSettingTask=new DialogSettingTask(jf);
 				dialogSettingTask.setVisible(true);
-
 			}
 		});
 		
-		JMenuItem menuStartMiningAll = new JMenuItem("å…¨éƒ¨å¼€å§‹æŒ–æ˜(S)");
+		JMenuItem menuStartMiningAll = new JMenuItem("È«²¿¿ªÊ¼ÍÚ¾ò(S)");
 		menuStartMiningAll.setMnemonic(KeyEvent.VK_S);
 		menuStartMiningAll.addActionListener(new ActionListener() {			
 			@Override
@@ -169,7 +131,7 @@ public class MainFrame extends JFrame {
 		});
 		mnTools.add(menuStartMiningAll);
 		
-		JMenuItem menuStopMiningAll = new JMenuItem("å…¨éƒ¨åœæ­¢æŒ–æ˜(E)");
+		JMenuItem menuStopMiningAll = new JMenuItem("È«²¿Í£Ö¹ÍÚ¾ò(E)");
 		menuStopMiningAll.setMnemonic(KeyEvent.VK_E);
 		menuStopMiningAll.addActionListener(new ActionListener() {
 			@Override
@@ -183,88 +145,11 @@ public class MainFrame extends JFrame {
 		mnTools.add(separator);
 		mnTools.add(menuConfigEvent);
 		
-		
-		
-		//TODO åŠ å…¥è§„å¾‹æŒ–æ˜æŒ‰é’®
-		JMenu miner=new JMenu("è§„å¾‹æŒ–æ˜(G)");
-		miner.setMnemonic(KeyEvent.VK_G);
-		menuBar.add(miner);
-		
-		JMenuItem minerPeriodRules = new JMenuItem("å‘¨æœŸè§„å¾‹(P)");
-		minerPeriodRules.setMnemonic(KeyEvent.VK_P);
-		minerPeriodRules.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				SingleNodeOrNodePairMinerFactory periodMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-				periodMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
-				periodMinerFactory.setTaskRange(TaskRange.NodePairRange);
-				periodMinerFactory.detect();
-				HashMap<TaskCombination, MinerNodeResults> timesMap=
-						NetworkMinerFactory.getInstance().startAllNodeMiners(periodMinerFactory.getMiningObject());
-				
-				periodMinerFactory.reset();
-				periodMinerFactory.setMiningObject(MiningObject.MiningObject_Traffic);
-				periodMinerFactory.detect();
-				HashMap<TaskCombination, MinerNodeResults> trafficMap=
-						NetworkMinerFactory.getInstance().startAllNodeMiners(periodMinerFactory.getMiningObject());
-				HashMap<String, HashMap<TaskCombination, MinerNodeResults>> map=
-						new HashMap<String, HashMap<TaskCombination,MinerNodeResults>>();
-				
-				map.put("æµé‡", trafficMap);
-				map.put("é€šä¿¡æ¬¡æ•°", timesMap);
-				panelListAllEvents.refreshAllTasks();
-			}
-		});
-		miner.add(minerPeriodRules);
-		
-		JMenuItem minerOutlies = new JMenuItem("å¼‚å¸¸æ£€æµ‹(O)");
-		minerOutlies.setMnemonic(KeyEvent.VK_O);
-		minerOutlies.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				SingleNodeOrNodePairMinerFactory periodMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-				periodMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
-				periodMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
-				periodMinerFactory.setMethod(MiningMethod.MiningMethods_OutliesMining);
-				periodMinerFactory.detect();
-				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_OutliesMining);
-				panelListAllEvents.refreshAllTasks();
-			}
-		});
-		miner.add(minerOutlies);
-		
-		JMenuItem minerFrequency = new JMenuItem("é¢‘ç¹æ¨¡å¼æŒ–æ˜(F)");
-		minerFrequency.setMnemonic(KeyEvent.VK_F);
-		minerFrequency.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ProtocolAssMinerFactory factory=ProtocolAssMinerFactory.getInstance();
-				factory.setMiningObject(MiningObject.MiningObject_Traffic);
-				factory.detect();
-				HashMap<TaskCombination, MinerProtocolResults> timesMap=
-						NetworkMinerFactory.getInstance().startAllProtocolMiners(factory.getMiningObject());
-				panelListAllEvents.refreshAllTasks();
-			}
-		});
-		miner.add(minerFrequency);
-		                                           
-		JMenuItem minerPath = new JMenuItem("é€šä¿¡è·¯å¾„è§„å¾‹(T)");
-		minerPath.setMnemonic(KeyEvent.VK_T);
-		minerPath.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				PathMinerFactory pathFactory=PathMinerFactory.getInstance();
-				pathFactory.minerPathPeriod();
-				NetworkMinerFactory.getInstance().startAllMiners(MiningMethod.MiningMethods_PathProbilityMining);
-				panelListAllEvents.refreshAllTasks();
-			}
-		});
-		miner.add(minerPath);
-		JMenu mnView = new JMenu("è§†å›¾(V)");
+		JMenu mnView = new JMenu("ÊÓÍ¼(V)");
 		mnView.setMnemonic(KeyEvent.VK_V);
 		menuBar.add(mnView);
 		
-		chckAutoShowResults = new JCheckBox("è‡ªåŠ¨æ˜¾ç¤ºç»“æœ");
+		chckAutoShowResults = new JCheckBox("×Ô¶¯ÏÔÊ¾½á¹û");
 		chckAutoShowResults.setSelected(UtilsUI.autoChangeResultsPanel);
 		chckAutoShowResults.addActionListener(new ActionListener() {			
 			@Override
@@ -274,7 +159,7 @@ public class MainFrame extends JFrame {
 		});
 		mnView.add(chckAutoShowResults);
 		
-//		toolBar.add(new PanelControlSimulationTime());
+		toolBar.add(new PanelControlSimulationTime());
 		
 		
 		JSplitPane splitPane = new JSplitPane();
@@ -303,13 +188,12 @@ public class MainFrame extends JFrame {
 	private void exitProgram(){
 		System.exit(0);
 	}
-	private void openFrameConfigTask(){
-		if (dialogConfigTask != null && dialogConfigTask.isDisplayable())
-			dialogConfigTask.setVisible(true);
-		else{
+	private void openFrameConfigTask() {
+
 			dialogConfigTask = new DialogConfigTask(this);
 			dialogConfigTask.setVisible(true);
-		}
+
+
 	}
 	public void appendOutput(String str){
 		if (!str.startsWith("\r\n") && txtOutput.getText().length() != 0)
@@ -341,4 +225,42 @@ public class MainFrame extends JFrame {
 	public TaskElement getSelectedTask(){
 		return panelListAllEvents.getSelectedTask();
 	}
-}
+	private void chooseFiles()
+	{
+
+		JFileChooser jfc=new JFileChooser();
+		jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );
+		jfc.showDialog(new JLabel(), "Ñ¡ÔñÎÄ¼ş");
+		File file=jfc.getSelectedFile();
+		if(file.isDirectory()){
+			System.out.println("ÎÄ¼ş¼Ğ:"+file.getAbsolutePath());
+		}else if(file.isFile()){
+			System.out.println("ÎÄ¼ş:"+file.getAbsolutePath());
+		}
+//		showProgress sh=new showProgress("¼ÓÔØ",1,100);
+//		Thread t = new Thread(sh);
+//		t.start();
+
+//		Thread thread = new Thread(new Runnable() {
+//			public void run() {
+//				try {
+//					showProgress();
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//		thread.start();
+
+		System.out.println(jfc.getSelectedFile().getName());
+
+
+	}
+
+//
+
+	}
+
+
+
+
