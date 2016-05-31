@@ -61,8 +61,7 @@ public class CompositeSWTChart extends Composite {
 		 
 		FillLayout fillLayout = (FillLayout) c1.getLayout();
 		fillLayout.type = SWT.VERTICAL;
-		TimeSeriesChart2 c2 = new TimeSeriesChart2(this, SWT.NULL, 0, 0,
-				new double[] {}, new double[] {});
+		TimeSeriesChart2 c2 = new TimeSeriesChart2(this, SWT.NULL, pp);
 
 	}
 
@@ -73,10 +72,6 @@ public class CompositeSWTChart extends Composite {
 		shell.setSize(1600, 900);
 		shell.setLayout(new FillLayout());
 		shell.setText("Test for jfreechart running with SWT");
-		
-		
-		
-		
 		
 		//这里需要传一个DataItems dataitems
 		//CompositeSWTChart tab1 = new CompositeSWTChart(shell, SWT.NONE);
