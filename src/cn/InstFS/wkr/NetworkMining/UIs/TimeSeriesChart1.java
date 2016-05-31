@@ -42,8 +42,10 @@ package cn.InstFS.wkr.NetworkMining.UIs;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -349,8 +351,8 @@ public class TimeSeriesChart1 extends Composite {
 		for (int i = 0; i < _nor_model.size(); i++) {
 			
 			XYDataset xydataset2 = createmodeDataset(_nor_model.get(i));
-			xyplot.setDataset(i + 2, xydataset2);
-			xyplot.setRenderer(2 + i, xylineandshaperenderer2);
+			xyplot.setDataset(2, xydataset2);
+			xyplot.setRenderer(2 , xylineandshaperenderer2);
 		}
 		
 	XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
@@ -370,11 +372,17 @@ public class TimeSeriesChart1 extends Composite {
 	//遍历DataItems上的点
 		for (int i = 0; i < _abnor_model.size(); i++) {
 			System.out.println("360:i= "+i);
+
+
 			XYDataset xydataset3 = createmodeDataset(_abnor_model.get(i));
+		//	Date date2=new Date();
+		//	long seconds2 =date2.getTime();      // 秒
+		//	System.out.println("seconds1:"+seconds1+" seconds2:"+seconds2+"差值:"+  (seconds2-seconds1));
 			
-			xyplot.setDataset(i + 2 + _nor_model.size(), xydataset3);
-			xyplot.setRenderer(i + 2 + _nor_model.size(),
+			xyplot.setDataset(3, xydataset3);
+			xyplot.setRenderer(3,
 					xylineandshaperenderer3);
+			
 		
 		}
 		jfreechart.getLegend().setVisible(false);
@@ -413,7 +421,7 @@ public class TimeSeriesChart1 extends Composite {
 		 */
 
 	}
-
+	//取出DataItems类型中的y值，返回XYDataset
 	public static XYDataset createmodeDataset(DataItems normal) {
 		// 获取正常数据的长度、
 		int length = normal.getLength();
@@ -450,6 +458,7 @@ public class TimeSeriesChart1 extends Composite {
 			temp = abnor.getElementAt(i);
 			xyseries.add((double) temp.getTime().getTime(),
 					Double.parseDouble(temp.getData()));
+			//为什么要添加两遍？
 			xyseries.add((double) temp.getTime().getTime(),
 					Double.parseDouble(temp.getData()));
 
