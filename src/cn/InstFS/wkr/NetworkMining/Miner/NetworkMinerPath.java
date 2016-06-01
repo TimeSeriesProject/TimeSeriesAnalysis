@@ -137,6 +137,7 @@ class PathTimerTask extends TimerTask{
 		results.setInputData(oriDataItems);
 		HashMap<String, MinerResultsPM> retPathPM=new HashMap<String, MinerResultsPM>();
 		HashMap<String, MinerResultsOM> retPathOM=new HashMap<String, MinerResultsOM>();
+		HashMap<String, DataItems> retPathOriDataItems = new HashMap<>();
 		for(TaskElement task:tasks){
 			dataItems=oriDataItems;
 			
@@ -185,6 +186,7 @@ class PathTimerTask extends TimerTask{
 				seq.remove(0);
 				newItem.setData(seq);
 				newItem.setTime(dataItems.getTime());
+				retPathOriDataItems.put(name,newItem);
 
 				switch (task.getMiningMethod()){
 					case MiningMethods_PeriodicityMining:
@@ -259,6 +261,7 @@ class PathTimerTask extends TimerTask{
 		}
 		results.getRetPath().setRetPM(retPathPM);
 		results.getRetPath().setRetOM(retPathOM);
+		results.getRetPath().setPathOriDataItems(retPathOriDataItems);
 		results.getRetPath().setMaxAndMinValue();
 		isRunning = false;
 		isOver.setIsover(true);;
@@ -301,7 +304,7 @@ class PathTimerTask extends TimerTask{
 			if(Math.abs(outliesLen-itemLen)<=1){
 				int confidence=0;
 				for(String item:outlies.getData()){
-					if(Double.parseDouble(item)>=8000){
+					if(Double.parseDouble(item)>=80){
 						retOM.setHasOutlies(true);
 						confidence++;
 					}
