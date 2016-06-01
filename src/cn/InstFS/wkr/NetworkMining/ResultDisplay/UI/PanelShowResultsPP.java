@@ -1,10 +1,9 @@
 package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerResults;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerResultsPM;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.*;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -18,6 +17,7 @@ import java.util.Map;
 public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
 
     private INetworkMiner miner;
+    private MiningMethod miningMethod;
     ChartPanelShowTs chart1;
     int count=0;
 
@@ -29,7 +29,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
         setLayout(new GridLayout(0, 1, 0, 0));
         chart1 = new ChartPanelShowTs("路径挖掘", "时间", "值", null);
         add(chart1);
-
+        miningMethod = task.getMiningMethod();
         InitMiner(task);
     }
 
@@ -82,7 +82,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
     public void displayMinerResults(MinerResults rslt) {
         if (rslt == null || rslt.getRetPath() == null)
             return;
-        else if(count==0)
+        else if(count==0 && miningMethod.equals(MiningMethod.MiningMethods_PeriodicityMining))
         {
             JScrollPane jsp = new JScrollPane();
             JPanel jp=new JPanel();
@@ -138,50 +138,64 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             add(jsp);
 
             for(Integer key:sortPeriod.keySet())
+            {
+                int numPeriod=key;
+                int numfirstPeriod=0;// TODO: 2016/5/31 多路径下最可能子周期值
+                ArrayList<String> oneSeries = sortPeriod.get(key);
+                ArrayList<DataItems> pathNor=new ArrayList<>();
+                ArrayList<String> pathname=new ArrayList<String>();
+                for(int i=0;i<oneSeries.size();i++)
                 {
-                    int numPeriod=key;
-                    int numfirstPeriod=0;// TODO: 2016/5/31 多路径下最可能子周期值
-                    ArrayList<String> oneSeries = sortPeriod.get(key);
-                    ArrayList<DataItems> pathNor=new ArrayList<>();
-                    ArrayList<String> pathname=new ArrayList<String>();
-                    for(int i=0;i<oneSeries.size();i++)
-                    {
-                        if (i%3 == 0 && i!=0) { //限制一张表中最多3条周期相同的路径
-                            DataItems nor=new DataItems();
-                            DataItems abnor=new DataItems();
-                            JFreeChart jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod);
-                            ChartPanel chartpanel = new ChartPanel(jf);
-                            jp.add(chartpanel);
+                    if (i%3 == 0 && i!=0) { //限制一张表中最多3条周期相同的路径
+                        DataItems nor=new DataItems();
+                        DataItems abnor=new DataItems();
+                        JFreeChart jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod);
+                        ChartPanel chartpanel = new ChartPanel(jf);
+                        jp.add(chartpanel);
 
-                            jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod);
-                            chartpanel = new ChartPanel(jf);
-                            jp.add(chartpanel);
-                            jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod);
-                            chartpanel = new ChartPanel(jf);
-                            jp.add(chartpanel);
-                            jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod);
-                            chartpanel = new ChartPanel(jf);
-                            jp.add(chartpanel);
-
-
-                            pathNor = new ArrayList<>();
-                            pathname = new ArrayList<>();
-                        }
-                        String tempName=oneSeries.get(i);
-                        pathname.add(tempName);
-                        pathNor.add(pathDataItems.get(tempName));
-                        numfirstPeriod = firstPeriod.get(tempName);
+                        pathNor = new ArrayList<>();
+                        pathname = new ArrayList<>();
                     }
-                    DataItems nor=new DataItems();
-                    DataItems abnor=new DataItems();
-                    JFreeChart jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod);
-                    ChartPanel chartpanel = new ChartPanel(jf);
-                    jp.add(chartpanel);
-
-                    repaint();
-                    validate();
-
+                    String tempName=oneSeries.get(i);
+                    pathname.add(tempName);
+                    pathNor.add(pathDataItems.get(tempName));
+                    numfirstPeriod = firstPeriod.get(tempName);
                 }
+                DataItems nor=new DataItems();
+                DataItems abnor=new DataItems();
+                JFreeChart jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod);
+                ChartPanel chartpanel = new ChartPanel(jf);
+                jp.add(chartpanel);
+
+                repaint();
+                validate();
+
+            }
+
+            count++;
+        }else if (count==0 && miningMethod.equals(MiningMethod.MiningMethods_OutliesMining)) {
+            JScrollPane jsp = new JScrollPane();
+            JPanel jp=new JPanel();
+            remove(chart1);
+
+
+            HashMap<String, MinerResultsOM> resultOM = rslt.getRetPath().getRetOM();
+            HashMap<String, DataItems> oriItems = rslt.getRetPath().getPathOriDataItems();
+            for (Map.Entry<String, MinerResultsOM> entry: resultOM.entrySet()) {
+                String pathName = entry.getKey();
+                MinerResultsOM result = entry.getValue();
+                DataItems outliesItems = result.getOutlies();
+                DataItems oriData = oriItems.get(pathName);
+                ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", "值", null);
+                chart.displayDataItems(oriData);
+                jp.add(chart);
+                JFreeChart jf = ChartPanelShowAbd.createChart(outliesItems);
+                ChartPanel chartpanel = new ChartPanel(jf);
+                jp.add(chartpanel);
+            }
+            jp.setLayout(new GridLayout(0,2));
+            jsp.setViewportView(jp);
+            add(jsp);
 
             count++;
         }

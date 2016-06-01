@@ -11,10 +11,12 @@ public class MinerResultsPath {
 	private HashMap<String, MinerResultsOM> retOM;
 	private int minOutliesConfidence = 0;
 	private int maxOutliesConfidence = 0;
+	private HashMap<String, DataItems> pathOriDataItems;
 
 	public MinerResultsPath() {
 		retPM = new HashMap<String, MinerResultsPM>();
 		retOM = new HashMap<String, MinerResultsOM>();
+		pathOriDataItems = new HashMap<>();
 	}
 
 	public HashMap<String, MinerResultsPM> getRetPM() {
@@ -33,6 +35,13 @@ public class MinerResultsPath {
 		this.retOM = retOM;
 	}
 
+	public HashMap<String, DataItems> getPathOriDataItems() {
+		return pathOriDataItems;
+	}
+
+	public void setPathOriDataItems(HashMap<String, DataItems> pathOriDataItems) {
+		this.pathOriDataItems = pathOriDataItems;
+	}
 
 	public void setMaxAndMinValue() {
 		setMaxOrMinPeriod(1);

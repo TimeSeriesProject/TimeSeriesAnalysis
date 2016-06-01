@@ -179,7 +179,8 @@ public class DataItems {
 		}else{
 			throw new RuntimeException("get element at index i,i超出dataite界限");
 		}
-		ii.setProb(prob.get(i));
+		if (prob.size()!=0)
+			ii.setProb(prob.get(i));
 		return ii;
 	}	
 	public List<Date> getTime() {

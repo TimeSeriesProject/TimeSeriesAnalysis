@@ -225,8 +225,8 @@ public class ChartPanelShowPP extends JPanel {
         for (int i = 0; i < _nor_model.size(); i++) {
             XYDataset xydataset2 = createmodeDataset(_nor_model.get(i),name.get(i));
             XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
-            xyplot.setDataset( i+2, xydataset2);
-            xyplot.setRenderer(i+2 , xylineandshaperenderer2);
+            xyplot.setDataset( i, xydataset2);
+            xyplot.setRenderer(i , xylineandshaperenderer2);
             //设置不可见到点。
             xylineandshaperenderer2.setBaseShapesVisible(false);
             //设置可以看见线。
