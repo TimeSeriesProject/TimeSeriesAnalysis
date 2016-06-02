@@ -166,12 +166,9 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 JFreeChart jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod);
                 ChartPanel chartpanel = new ChartPanel(jf);
                 jp.add(chartpanel);
-
-                repaint();
-                validate();
-
             }
-
+            repaint();
+            validate();
             count++;
         }else if (count==0 && miningMethod.equals(MiningMethod.MiningMethods_OutliesMining)) {
             JScrollPane jsp = new JScrollPane();
@@ -189,14 +186,23 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", "值", null);
                 chart.displayDataItems(oriData);
                 jp.add(chart);
-                JFreeChart jf = ChartPanelShowAbd.createChart(outliesItems);
+                JFreeChart jf;
+                if (!result.isHasOutlies()) {
+                    jf = ChartPanelShowAb.createChart(new DataItems(),new DataItems());
+                } else if (result.isIslinkDegree()) {
+                    jf = ChartPanelShowAbd.createChart(outliesItems);
+                } else {
+                    jf = ChartPanelShowAb.createChart(oriData, outliesItems);
+                }
                 ChartPanel chartpanel = new ChartPanel(jf);
                 jp.add(chartpanel);
+
             }
             jp.setLayout(new GridLayout(0,2));
             jsp.setViewportView(jp);
             add(jsp);
-
+            repaint();
+            validate();
             count++;
         }
     }

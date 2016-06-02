@@ -70,6 +70,10 @@ public class TaskCombination {
 	public void setName(){
 		this.name=range+"_"+protocol;
 	}
+	public void setName(MinerType type){
+		if (type.equals(MinerType.MiningType_Path))
+			this.name=range+"_路径";
+	}
 
 	public HashMap<String, HashMap<String, DataItems>> getEachIpProtocolItems() {
 		return eachIpProtocolItems;

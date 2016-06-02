@@ -93,7 +93,7 @@ public class PathMinerFactory {
 		taskCombination.setRange(dataFile.getName().substring(0, dataFile.getName().lastIndexOf(".")));
 		taskCombination.setMinerType(MinerType.MiningType_Path);
 		taskCombination.setMiningObject(miningObject.toString());
-		taskCombination.setName();
+		taskCombination.setName(MinerType.MiningType_Path);
 		TaskElement.add1Task(taskCombination, false);
 	}
 	

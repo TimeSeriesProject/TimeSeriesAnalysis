@@ -210,9 +210,21 @@ class PathTimerTask extends TimerTask{
 					case MiningMethods_OutliesMining:
 						IMinerOM omMethod = null;
 						MinerResultsOM retOM = new MinerResultsOM();
+
+						SeriesStatistics seriesStatistics=new SeriesStatistics(newItem);
+						seriesStatistics.statistics();
+						if(seriesStatistics.getComplex()>1.5){
+							task.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
+						}
+
 						if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)){
 							omMethod = new PointPatternDetection(newItem,2,10);
 							retOM.setIslinkDegree(true);
+						}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
+							omMethod=new FastFourierOutliesDetection(newItem);
+							FastFourierOutliesDetection.setAmplitudeRatio(0.7);
+							FastFourierOutliesDetection.setVarK(3.0);
+							retOM.setIslinkDegree(false);
 						}
 						omMethod.TimeSeriesAnalysis();
 						setOMResults(retOM, omMethod);
@@ -264,7 +276,7 @@ class PathTimerTask extends TimerTask{
 		results.getRetPath().setPathOriDataItems(retPathOriDataItems);
 		results.getRetPath().setMaxAndMinValue();
 		isRunning = false;
-		isOver.setIsover(true);;
+		isOver.setIsover(true);
 		System.out.println(taskCombination.getName()+" over");
 		if (displayer != null)
 			displayer.displayMinerResults(results);

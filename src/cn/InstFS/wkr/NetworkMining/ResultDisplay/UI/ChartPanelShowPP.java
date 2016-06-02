@@ -254,7 +254,7 @@ public class ChartPanelShowPP extends JPanel {
      */
     private static Color getColor (Object item) {
         if (colorTable.containsKey(item)) return colorTable.get(item);
-        Color color = new Color(Color.HSBtoRGB(random.nextFloat(), 1.0f, 1.0f));
+        Color color = new Color(Color.HSBtoRGB(random.nextFloat() * 19, 1.0f, 1.0f));   // 第一个参数为0-1的浮点数*360，若超过1则取小数位，乘上19扩大颜色变动范围
         colorTable.put(item, color);
         return color;
     }
