@@ -96,15 +96,24 @@ public class TimeSeriesChart1 extends Composite {
 
 	public TimeSeriesChart1(Composite parent, int style, ProtoclPair pp) {
 		super(parent, style);
+		DataItems dataitems1=DataItemsNormalization(pp.getDataItems1(),1);
+		
+		DataItems dataitems2=DataItemsNormalization(pp.getDataItems2(),0);
+	//	dataitems1.setData(DataItemsNormalization(dataitems1.data));
+		
+		
+	//	dataitems2.setData(DataItemsNormalization(dataitems1.data));
 		// _nor_model_保存DataItem1对应的曲线线段
 		// _abnor_model_保存DataItem2对应的曲线线段
 		// LinePos 標标注两条曲线每一个key线段的起始位置和终点位置
 		System.out.println(" DataItems1 lengh="
-				+ pp.getDataItems1().getLength());
+				+ dataitems1.getLength());
 		_nor_model_ = new ArrayList<DataItems>();
 		_abnor_model_ = new ArrayList<DataItems>();
 		
-		
+		//归一化两条曲线
+		//ArrayList<DataItems> DataItem1normalization=
+
 		
 		
 		
@@ -122,10 +131,10 @@ public class TimeSeriesChart1 extends Composite {
 		while (lineposIt1.hasNext()) {
 			LinePos temp1 = (LinePos) lineposIt1.next();
 			// LinePos temp2=(LinePos)lineposIt2.next();
-			_nor_model_.add(this.getDataItems(pp.getDataItems1(),
+			_nor_model_.add(this.getDataItems(dataitems1,
 					(temp1).A_start, temp1.A_end));
 			// System.out.println(" A_start="+(temp1).A_start+"  "+"A_end="+temp1.A_end);
-			_abnor_model_.add(this.getDataItems(pp.getDataItems2(),
+			_abnor_model_.add(this.getDataItems(dataitems2,
 					(temp1).B_start, temp1.B_end));
 			// System.out.println(" B_start="+(temp1).B_start+"  "+"B_end="+temp1.B_end);
 		}
@@ -134,9 +143,10 @@ public class TimeSeriesChart1 extends Composite {
 		// 传入
 /*		JFreeChart chart = ChartPanelShowFP.createChart(_nor_model_, _abnor_model_,
 				pp.getDataItems1(), pp.getDataItems2());*/
+		String chartname="协议"+pp.getProtocol1()+"/"+"协议"+pp.getProtocol2()+"时间序列"+"(置信度："+pp.confidence+")";
 		JFreeChart chart = createChart2(_nor_model_, _abnor_model_,
-				pp.getDataItems1(), pp.getDataItems2());
-		System.out.println(" 154");
+				dataitems1, dataitems2,chartname);
+	
 		// JFreeChart chart =
 		// createChart(createDataset(ip1,ip2,ip1data,ip2data));
 		System.out.println("ChartComposite init...");
@@ -163,10 +173,73 @@ public class TimeSeriesChart1 extends Composite {
 
 	}
 	
+	//归一化DataItems中的List<String>
+	public DataItems DataItemsNormalization(DataItems data,int addanumber){
+		DataItems ret=new DataItems();
+		ret.setTime(data.getTime());
+		ret.setNonNumData(data.getNonNumData());
+		ret.setProbMap(data.getProbMap());
+		ret.setVarSet(data.getVarSet());
+			ret.setProb(data.getProb());	
+		ret.setDiscreteNodes(data.getDiscreteNodes());
+		ret.setGranularity(data.getGranularity());
+	
+		ret.setDiscreteStrings(data.getDiscreteStrings());
+		
+	
+		//ret.s
+		
+		List<String> datanormolization = new ArrayList<String>();
+		//List<String> data=d.getData();
+		Iterator it=data.data.iterator();
+		//找出最大值最小值
+		if(it.hasNext()){
+			double min=Double.valueOf((String) it.next()).doubleValue(); 
+			double max=min;
+			while(it.hasNext()){
+				double temp=Double.valueOf((String) it.next()).doubleValue();
+				if(max<temp){
+					max=temp;
+				}else if(min>temp){
+					min=temp;
+				}
+			}
+			//最大值减最小值提前计算，提高效率
+			double t=max-min;
+			//重置迭代器
+			it=data.data.iterator();
+			while(it.hasNext()){
+				double temp2=Double.valueOf((String) it.next()).doubleValue();
+				double temp2normalization = 0;
 
-    public static JFreeChart createChart2(ArrayList<DataItems> _nor_model, ArrayList<DataItems> _abnor_model, DataItems nor, DataItems abnor) {
+				if(t!=0){
+					temp2normalization=(temp2-min)/t+addanumber;
+					//System.out.println("temp2normalization="+temp2normalization);
+				}				
+				datanormolization.add(Double.toString(temp2normalization));
+			}
+		
+			//把归一化后的List<String> datanormolization 加入DataItems
+			ret.setData(datanormolization);
+			
+			
+		}else{
+			System.out.println(" TimeSeriesChart1 function DataItemsNormalization  data is null");
+		}
+		
+		
+		
+		
+		
+		//int max=data.
+		
+		return ret;
+		
+	}
+	
+    public static JFreeChart createChart2(ArrayList<DataItems> _nor_model, ArrayList<DataItems> _abnor_model, DataItems nor, DataItems abnor,String chartname) {
         XYDataset xydataset = createNormalDataset(nor);
-        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 多元任务", "时间", "值", xydataset);
+        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(chartname, "时间", "值", xydataset);
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);

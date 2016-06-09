@@ -100,9 +100,9 @@ public class TimeSeriesChart2 extends Composite {
 	public TimeSeriesChart2(Composite parent, int style, ProtoclPair pp) {
 		super(parent, style);
 	
-
+		String chartname="协议"+pp.getProtocol1()+"/"+"协议"+pp.getProtocol2()+"时间序列"+"(置信度："+pp.confidence+")";
 		//传入
-		JFreeChart chart = createChart( pp.getDataItems1(), pp.getDataItems2());
+		JFreeChart chart = createChart( pp.getDataItems1(), pp.getDataItems2(),chartname);
 		// JFreeChart chart =
 		// createChart(createDataset(ip1,ip2,ip1data,ip2data));
 
@@ -154,10 +154,10 @@ public class TimeSeriesChart2 extends Composite {
 		return xyseriescollection;
 	}
 
-	public static JFreeChart createChart(DataItems nor, DataItems abnor) {
+	public static JFreeChart createChart(DataItems nor, DataItems abnor,String title) {
 		//第一条线
 		XYDataset xydataset1 = createNormalDataset(nor);
-		JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 多元任务",
+		JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(title,
 				"时间", "值", xydataset1);
 		XYPlot xyplot = (XYPlot) jfreechart.getPlot();
 
