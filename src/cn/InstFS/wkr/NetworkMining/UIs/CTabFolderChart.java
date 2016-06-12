@@ -65,7 +65,7 @@ public  class CTabFolderChart extends CTabFolder {
 		// Disable the check that prevents subclassing of SWT components
 	}
 
-	public  void createTabItem(String tabItemName,int index, ProtoclPair pp) {
+	public  CTabItem createTabItem(String tabItemName,int index, ProtoclPair pp) {
 
 			CTabItem mainTabItem = new CTabItem(this, SWT.CLOSE);
 			map.put(mainTabItem, index);
@@ -105,6 +105,7 @@ public  class CTabFolderChart extends CTabFolder {
 			sc.setContent(tab1item);
 			mainTabItem.setControl(com);
 			// �������
+			return mainTabItem;
 	}
 	
 	

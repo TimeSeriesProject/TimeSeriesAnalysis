@@ -1,7 +1,9 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -18,6 +20,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -41,6 +44,7 @@ public class CompositeTable extends Composite {
 	CTabFolderChart tab = null;
 	TableItem[] itemList = null;
 	int[] index = null;
+	Map<Integer,CTabItem> maptabitem;
 
 	public CompositeTable(Composite parent, int style, String ip,
 			List<ProtoclPair> protocolPairList, CTabFolderChart tab) {
@@ -52,27 +56,9 @@ public class CompositeTable extends Composite {
 
 		iplabel = new Label(this, SWT.NULL);
 		iplabel.setText(ip);
+		maptabitem=new HashMap<Integer,CTabItem>();
 		createTable(this, SWT.NULL, protocolPairList);
-/*		if (CompositeProtocolConfidence.tableIndex[0] == 0) {
-			// 问题出在这
-			Iterator it = protocolPairList.iterator();
-			
-			 * TableColumn columnpro1=table.getColumn(1); TableColumn
-			 * columnpro2=table.getColumn(2);
-			 
-			TableItem tableItem = table.getItem(0);
 
-			ProtoclPair pp = (ProtoclPair) it.next();
-			if ((pp.getProtocol1().equals(tableItem.getText(1)))
-					&& (pp.getProtocol2().equals(tableItem.getText(2)))) {
-				System.out.println("table协议匹配ok");
-				tab.createTabItem(
-						itemList[0].getText(0) + "/" + itemList[0].getText(1),
-						0, pp);
-				CompositeProtocolConfidence.tableIndex[0] = 1;
-			}
-
-		}*/
 
 	}
 
@@ -125,13 +111,21 @@ public class CompositeTable extends Composite {
 								&& (pp.getProtocol2().equals(tableItem
 										.getText(2)))) {
 							System.out.println("table协议匹配ok");
-							tab.createTabItem(itemList[itemIndex].getText(0)
-									+ "/" + itemList[itemIndex].getText(1),
+							CTabItem tabitem=tab.createTabItem(itemList[itemIndex].getText(1)
+									+ "/" + itemList[itemIndex].getText(2),
 									itemIndex, pp);
+							maptabitem.put(itemIndex, tabitem);
 							CompositeProtocolConfidence.tableIndex[itemIndex] = 1;
+							
 						}
 					}
 
+				}
+				else{
+					//选中对应的tab
+					tab.setSelection(maptabitem.get(itemIndex));
+				//	tab.setSelection(tab.getItem(itemIndex));
+					
 				}
 
 			}
