@@ -86,6 +86,7 @@ public class PathMinerFactory {
 		}
 		
 		TaskCombination taskCombination = new TaskCombination();
+		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_Statistics));
 		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_PeriodicityMining));
 		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_OutliesMining));
 		taskCombination.setDataItems(di);
@@ -122,6 +123,11 @@ public class PathMinerFactory {
 			taskName = fileName + "_路径_" + miningObject.toString() + "_异常检测_auto";
 			task.setTaskName(taskName);
 			task.setComments("ip为"+file.getName()+"的路径"+ miningObject.toString()+"异常检测");
+			break;
+		case MiningMethods_Statistics:
+			taskName = fileName + "路径" + miningObject.toString() + "_统计_auto";
+			task.setTaskName(taskName);
+			task.setComments("ip为"+file.getName()+"的路径"+ miningObject.toString()+"统计");
 			break;
 		default:
 			break;

@@ -9,10 +9,10 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.geom.Arc2D;
+import java.util.*;
 
 public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
 
@@ -200,6 +200,58 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             }
             jp.setLayout(new GridLayout(0,2));
             jsp.setViewportView(jp);
+            add(jsp);
+            repaint();
+            validate();
+            count++;
+        }else if (count==0 && miningMethod.equals(MiningMethod.MiningMethods_Statistics)) {
+            remove(chart1);
+            JScrollPane jsp = new JScrollPane();
+
+            ArrayList<Map.Entry<String, MinerResultsStatistics> >resultList = new ArrayList<>(rslt.getRetPath().getRetStatistic().entrySet());
+            ArrayList<Map.Entry<String, Double>> pathProbList = new ArrayList<>(rslt.getRetPath().getPathProb().entrySet());
+            Collections.sort(pathProbList,new Comparator<Map.Entry<String, Double> >()
+            {
+                @Override
+                public int compare(Map.Entry<String,Double> o1, Map.Entry<String,Double> o2) {
+                    return o2.getValue().compareTo(o1.getValue());
+                }
+            });
+
+            int size = resultList.size();
+            String data[][]=new String[size][6];
+            int i = 0;
+
+            for (Map.Entry<String, Double> entry : pathProbList) {
+                String pathName = entry.getKey();
+                MinerResultsStatistics retStatistic = rslt.getRetPath().getRetStatistic().get(pathName);
+
+                data[i][0] = pathName;
+                data[i][1]=String.format("%5.3f",retStatistic.getMean());
+                data[i][2]=String.format("%5.3f",retStatistic.getStd());
+                data[i][3]=String.format("%5.3f",retStatistic.getSampleENtropy());
+                data[i][4]=String.format("%5.3f",retStatistic.getComplex());
+                data[i][5]=String.format("%5.3f",entry.getValue());
+                i++;
+            }
+
+            String colNames[]={"路径序列","平均值","标准差","平均熵","复杂度","通信概率"};
+
+
+            DefaultTableModel model=new DefaultTableModel(data,colNames){
+                public   boolean   isCellEditable(int   row,   int   column)
+                {
+                    return   false;
+                };
+
+            };
+
+
+            JTable listTable = new JTable(model);
+            listTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+            listTable.setAutoscrolls(true);
+            listTable.getColumnModel().getColumn(0).setPreferredWidth(180);
+            jsp.setViewportView(listTable);
             add(jsp);
             repaint();
             validate();
