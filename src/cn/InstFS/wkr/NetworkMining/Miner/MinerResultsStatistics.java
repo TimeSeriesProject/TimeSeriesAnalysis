@@ -6,7 +6,7 @@ public class MinerResultsStatistics {
 	private double complex;
 	private double sampleENtropy;
 	private int span;
-	
+
 	
 	public MinerResultsStatistics(){}
 	

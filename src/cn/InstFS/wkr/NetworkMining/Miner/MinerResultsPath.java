@@ -12,11 +12,14 @@ public class MinerResultsPath {
 	private int minOutliesConfidence = 0;
 	private int maxOutliesConfidence = 0;
 	private HashMap<String, DataItems> pathOriDataItems;
+	private HashMap<String, MinerResultsStatistics> retStatistic;
+	private HashMap<String, Double> pathProb;
 
 	public MinerResultsPath() {
 		retPM = new HashMap<String, MinerResultsPM>();
 		retOM = new HashMap<String, MinerResultsOM>();
 		pathOriDataItems = new HashMap<>();
+		retStatistic = new HashMap<>();
 	}
 
 	public HashMap<String, MinerResultsPM> getRetPM() {
@@ -41,6 +44,14 @@ public class MinerResultsPath {
 
 	public void setPathOriDataItems(HashMap<String, DataItems> pathOriDataItems) {
 		this.pathOriDataItems = pathOriDataItems;
+	}
+
+	public HashMap<String, MinerResultsStatistics> getRetStatistic() {
+		return retStatistic;
+	}
+
+	public void setRetStatistic(HashMap<String, MinerResultsStatistics> retStatistic) {
+		this.retStatistic = retStatistic;
 	}
 
 	public void setMaxAndMinValue() {
@@ -126,6 +137,14 @@ public class MinerResultsPath {
 				return true;
 		}
 		return false;
+	}
+
+	public HashMap<String, Double> getPathProb() {
+		return pathProb;
+	}
+
+	public void setPathProb(HashMap<String, Double> pathProb) {
+		this.pathProb = pathProb;
 	}
 
 }

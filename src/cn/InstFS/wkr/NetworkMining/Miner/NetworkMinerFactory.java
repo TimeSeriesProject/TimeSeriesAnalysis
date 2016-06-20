@@ -365,11 +365,12 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						allMiners.put(task, minerPM);
 						break;
 					case MiningMethods_Statistics:
-						/*NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
-						statistics.results.setRetStatistics(resultsMap.get(taskCombination).getRetStatistics());
+						NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
+						statistics.results.getRetPath().setRetStatistic(resultsMap.get(taskCombination).getRetStatistic());
+						statistics.results.getRetPath().setPathProb(resultsMap.get(taskCombination).getPathProb());
 						statistics.isOver.setIsover(true);
 						statistics.results.di=taskCombination.getDataItems();
-						allMiners.put(task, statistics);*/
+						allMiners.put(task, statistics);
 						break;
 					default:
 						break;

@@ -402,7 +402,7 @@ public class PathListFrame extends JFrame{
         int row=listTable.getSelectedRow();
         //得到所在行的第一个列的值，作为下面事件传递的参数
         PathDetailFrame PathFrame=new PathDetailFrame(resultList.get(row).getKey());
-        PathFrame.setTitle( "ip: "+resultList.get(row).getKey().getRange()+" protocol: "+resultList.get(row).getKey().getProtocol()+" "+resultList.get(row).getKey().getMiningObject()+"规律");
+        PathFrame.setTitle( "ip: "+resultList.get(row).getKey().getRange()+" 路径 "+resultList.get(row).getKey().getMiningObject()+"规律");
         PathFrame.setVisible(true);
         System.out.println("selectrow:"+row);
     }
