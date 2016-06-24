@@ -44,7 +44,7 @@ public class CompositeTable extends Composite {
 	CTabFolderChart tab = null;
 	TableItem[] itemList = null;
 	int[] index = null;
-	Map<Integer,CTabItem> maptabitem;
+	Map<Integer, CTabItem> maptabitem;
 
 	public CompositeTable(Composite parent, int style, String ip,
 			List<ProtoclPair> protocolPairList, CTabFolderChart tab) {
@@ -56,9 +56,8 @@ public class CompositeTable extends Composite {
 
 		iplabel = new Label(this, SWT.NULL);
 		iplabel.setText(ip);
-		maptabitem=new HashMap<Integer,CTabItem>();
+		maptabitem = new HashMap<Integer, CTabItem>();
 		createTable(this, SWT.NULL, protocolPairList);
-
 
 	}
 
@@ -95,37 +94,34 @@ public class CompositeTable extends Composite {
 					TableItem tableItem = table.getItem(itemIndex);
 					while (it.hasNext()) {
 						ProtoclPair pp = (ProtoclPair) it.next();
-						System.out.println("协议1："
-								+ pp.getProtocol1()
-								+ "!"
-								+ pp.getProtocol1()
-										.equals(tableItem.getText(1)));
-						System.out.println("协议2："
-								+ pp.getProtocol2()
-								+ "!"
-								+ pp.getProtocol2()
-										.equals(tableItem.getText(2)));
-						System.out.println("table协议1：" + tableItem.getText(1));
-						System.out.println("table协议2：" + tableItem.getText(2));
+						/*
+						 * System.out.println("协议1：" + pp.getProtocol1() + "!" +
+						 * pp.getProtocol1() .equals(tableItem.getText(1)));
+						 * System.out.println("协议2：" + pp.getProtocol2() + "!" +
+						 * pp.getProtocol2() .equals(tableItem.getText(2)));
+						 * System.out.println("table协议1：" +
+						 * tableItem.getText(1)); System.out.println("table协议2："
+						 * + tableItem.getText(2));
+						 */
 						if ((pp.getProtocol1().equals(tableItem.getText(1)))
 								&& (pp.getProtocol2().equals(tableItem
 										.getText(2)))) {
-							System.out.println("table协议匹配ok");
-							CTabItem tabitem=tab.createTabItem(itemList[itemIndex].getText(1)
-									+ "/" + itemList[itemIndex].getText(2),
+							// System.out.println("table协议匹配ok");
+							CTabItem tabitem = tab.createTabItem(
+									itemList[itemIndex].getText(1) + "/"
+											+ itemList[itemIndex].getText(2),
 									itemIndex, pp);
 							maptabitem.put(itemIndex, tabitem);
 							CompositeProtocolConfidence.tableIndex[itemIndex] = 1;
-							
+
 						}
 					}
 
-				}
-				else{
-					//选中对应的tab
+				} else {
+					// 选中对应的tab
 					tab.setSelection(maptabitem.get(itemIndex));
-				//	tab.setSelection(tab.getItem(itemIndex));
-					
+					// tab.setSelection(tab.getItem(itemIndex));
+
 				}
 
 			}
@@ -146,8 +142,10 @@ public class CompositeTable extends Composite {
 		int countIndex = 0;
 		while (it1.hasNext()) {
 			ProtoclPair temp = (ProtoclPair) it1.next();
-			System.out.println("协议1：" + temp.getProtocol1() + "  协议2："
-					+ temp.getProtocol1() + "	置信度：" + temp.confidence);
+			/*
+			 * System.out.println("协议1：" + temp.getProtocol1() + "  协议2：" +
+			 * temp.getProtocol1() + "	置信度：" + temp.confidence);
+			 */
 			final TableItem t = new TableItem(table, SWT.None);
 			t.setText(new String[] { "" + (countIndex++),
 					"" + temp.getProtocol1(), "" + temp.getProtocol2(),
