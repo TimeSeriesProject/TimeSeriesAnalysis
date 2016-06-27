@@ -19,6 +19,9 @@ import java.util.Map.Entry;
 
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
+
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
+
 import javax.swing.JCheckBox;
 /**
  * 该面板用于显示多类挖掘结果的通用性信息，如离散化节点、时间粒度、原始序列等
@@ -52,14 +55,14 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 		gbc_lblGranularity.insets = new Insets(0, 0, 0, 5);
 		gbc_lblGranularity.gridx = 0;
 		gbc_lblGranularity.gridy = 0;
-		add(lblGranularity, gbc_lblGranularity);
+		add(lblGranularity, gbc_lblGranularity);//添加时间粒度标签
 		
 //		chckShowOrigDataItems = new JCheckBox("显示原始数据（慢）");
-		GridBagConstraints gbc_chckShowOrigDataItems = new GridBagConstraints();
-		gbc_chckShowOrigDataItems.anchor = GridBagConstraints.WEST;
-		gbc_chckShowOrigDataItems.insets = new Insets(0, 0, 0, 5);
-		gbc_chckShowOrigDataItems.gridx = 1;
-		gbc_chckShowOrigDataItems.gridy = 1;
+		//GridBagConstraints gbc_chckShowOrigDataItems = new GridBagConstraints();
+		//gbc_chckShowOrigDataItems.anchor = GridBagConstraints.WEST;
+		//gbc_chckShowOrigDataItems.insets = new Insets(0, 0, 0, 5);
+		//gbc_chckShowOrigDataItems.gridx = 1;
+		//gbc_chckShowOrigDataItems.gridy = 1;
 //		add(chckShowOrigDataItems, gbc_chckShowOrigDataItems);
 //		chckShowOrigDataItems.addActionListener(new ActionListener() {			
 //			@Override
@@ -67,14 +70,14 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 //				refreshInputData();
 //			}
 //		});
-//		
-		chartTs = new ChartPanelShowTs("实际值","时间","值",null);
+		
+		chartTs = new ChartPanelShowTs("实际值","时间","值",null);//横纵坐标和标题
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.gridheight = 2;
 		gbc_panel.fill = GridBagConstraints.BOTH;
 		gbc_panel.gridx = 1;
 		gbc_panel.gridy = 2;
-		add(chartTs, gbc_panel);
+		add(chartTs, gbc_panel);//添加横纵坐标描述
 		
 		txtDiscreteNodes = new JTextArea("离散化\r\n区间与值：\r\n");
 		txtDiscreteNodes.setEditable(false);
@@ -84,9 +87,9 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 		gbc_txtDiscreteNodes.fill = GridBagConstraints.BOTH;
 		gbc_txtDiscreteNodes.gridx = 0;
 		gbc_txtDiscreteNodes.gridy = 1;
-		add(txtDiscreteNodes, gbc_txtDiscreteNodes);	
+		add(txtDiscreteNodes, gbc_txtDiscreteNodes);//添加文字描述	
 	}
-	
+
 	public void displayMinerResults(MinerResults rets){
 		this.rslts = rets;
 		TaskElement task = rets.getMiner().getTask();
@@ -127,6 +130,7 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 		txtDiscreteNodes.setVisible(false);
 		chartTs.displayDataItems(di);		
 	}
+	
 	private String formatStrOrNumber(Double str){
 		return decimalFormat.format(str);
 	}

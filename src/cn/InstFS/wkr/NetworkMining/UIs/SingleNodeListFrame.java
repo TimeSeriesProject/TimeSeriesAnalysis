@@ -94,7 +94,7 @@ public class SingleNodeListFrame extends JFrame {
 					
 					NetworkMinerFactory.getInstance();
 					SingleNodeOrNodePairMinerFactory singleNodeMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-					singleNodeMinerFactory.dataPath="F:\\parse\\traffic";
+					singleNodeMinerFactory.dataPath="D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\data\\out\\traffic";
 					singleNodeMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
 					singleNodeMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
 					singleNodeMinerFactory.detect();
