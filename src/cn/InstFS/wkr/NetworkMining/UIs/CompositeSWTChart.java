@@ -56,7 +56,7 @@ public class CompositeSWTChart extends Composite {
 		/////////////////
 
 		TimeSeriesChart1 c1 = new TimeSeriesChart1(this, SWT.NULL, pp);
-		 System.out.println("CompositeSWTChart 调用 TimeSeriesChart1 结束");
+		// System.out.println("CompositeSWTChart 调用 TimeSeriesChart1 结束");
 		 
 		 
 		FillLayout fillLayout = (FillLayout) c1.getLayout();

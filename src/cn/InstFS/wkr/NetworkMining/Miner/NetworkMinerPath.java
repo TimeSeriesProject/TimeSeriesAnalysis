@@ -1,22 +1,9 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import WaveletUtil.PointPatternDetection;
-import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
-import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
-import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
-import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
-import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
+import cn.InstFS.wkr.NetworkMining.DataInputs.*;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsPM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
@@ -138,6 +125,7 @@ class PathTimerTask extends TimerTask{
 		HashMap<String, MinerResultsPM> retPathPM=new HashMap<String, MinerResultsPM>();
 		HashMap<String, MinerResultsOM> retPathOM=new HashMap<String, MinerResultsOM>();
 		HashMap<String, DataItems> retPathOriDataItems = new HashMap<>();
+		HashMap<String, MinerResultsStatistics> retPathStatistic = new HashMap<>();
 		for(TaskElement task:tasks){
 			dataItems=oriDataItems;
 			
@@ -189,6 +177,13 @@ class PathTimerTask extends TimerTask{
 				retPathOriDataItems.put(name,newItem);
 
 				switch (task.getMiningMethod()){
+					case MiningMethods_Statistics:
+						MinerResultsStatistics retStatistics = new MinerResultsStatistics();
+						SeriesStatistics seriesStatistics=new SeriesStatistics(newItem);
+						seriesStatistics.statistics();
+						setStatisticResults(retStatistics,seriesStatistics);
+						retPathStatistic.put(name, retStatistics);
+						break;
 					case MiningMethods_PeriodicityMining:
 						IMinerPM pmMethod = null;
 						if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
@@ -210,9 +205,21 @@ class PathTimerTask extends TimerTask{
 					case MiningMethods_OutliesMining:
 						IMinerOM omMethod = null;
 						MinerResultsOM retOM = new MinerResultsOM();
+
+						/*SeriesStatistics seriesStatistics=new SeriesStatistics(newItem);
+						seriesStatistics.statistics();*/
+						if(retPathStatistic.get(name).getComplex()>1.5){
+							task.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
+						}
+
 						if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)){
 							omMethod = new PointPatternDetection(newItem,2,10);
 							retOM.setIslinkDegree(true);
+						}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
+							omMethod=new FastFourierOutliesDetection(newItem);
+							FastFourierOutliesDetection.setAmplitudeRatio(0.7);
+							FastFourierOutliesDetection.setVarK(3.0);
+							retOM.setIslinkDegree(false);
 						}
 						omMethod.TimeSeriesAnalysis();
 						setOMResults(retOM, omMethod);
@@ -259,16 +266,26 @@ class PathTimerTask extends TimerTask{
 			}*/
 
 		}
+		HashMap<String, Double> pathProb = getPathProb(retPathOriDataItems);
+		results.getRetPath().setPathProb(pathProb);
 		results.getRetPath().setRetPM(retPathPM);
 		results.getRetPath().setRetOM(retPathOM);
+		results.getRetPath().setRetStatistic(retPathStatistic);
 		results.getRetPath().setPathOriDataItems(retPathOriDataItems);
 		results.getRetPath().setMaxAndMinValue();
 		isRunning = false;
-		isOver.setIsover(true);;
+		isOver.setIsover(true);
 		System.out.println(taskCombination.getName()+" over");
 		if (displayer != null)
 			displayer.displayMinerResults(results);
 		timer.cancel();
+	}
+
+	private void setStatisticResults(MinerResultsStatistics retStatistic,SeriesStatistics statistics){
+		retStatistic.setMean(statistics.getMean());
+		retStatistic.setStd(statistics.getStd());
+		retStatistic.setComplex(statistics.getComplex());
+		retStatistic.setSampleENtropy(statistics.getSampleEntropy());
 	}
 	
 	private void setPMResults(MinerResults results,IMinerPM pmMethod, String path){
@@ -318,6 +335,45 @@ class PathTimerTask extends TimerTask{
 				}
 			}
 		}
+	}
+
+	/**
+	 * 获取通信的主要路径
+	 * @param pathDataItems 各条路径dataItems，各小时上的通信次数/流量和
+	 * @return pathProb
+	 */
+	private HashMap<String, Double> getPathProb(HashMap<String, DataItems> pathDataItems){
+		HashMap<String, Integer> total = new HashMap<>();
+		HashMap<String, Double> pathProb = new HashMap<>();
+		int totalTimes = 0;
+
+		for (Map.Entry<String, DataItems> entry: pathDataItems.entrySet()) {
+			String pathName = entry.getKey();
+			DataItems di = entry.getValue();
+			int times = 0;
+			for (String value : di.getData()) {
+				times += Integer.parseInt(value);
+			}
+			total.put(pathName, times);
+			totalTimes += times;
+		}
+
+		for (Map.Entry<String, Integer> entry: total.entrySet()) {
+			String pathName = entry.getKey();
+			double value = entry.getValue();
+			pathProb.put(pathName, value/totalTimes);
+		}
+
+
+
+		/*Iterator totalKeys = total.keySet().iterator();
+		while (totalKeys.hasNext()){
+			String key = (String)totalKeys.next();
+			float value = total.get(key);
+			pathProb.put(key, (double) (value/totalTimes));
+		}*/
+//		System.out.println("主要路径："+ primaryPath.toString() + "次数"+ total.get(primaryPath));
+		return pathProb;
 	}
 }
 

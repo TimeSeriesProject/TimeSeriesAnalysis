@@ -65,7 +65,7 @@ public class NetworkFactory {
 		taskCombination.setTaskRange(TaskRange.WholeNetworkRange);
 		taskCombination.setMiningObject(miningObject.toString());
 		taskCombination.setMinerType(MinerType.MiningTypes_WholeNetwork);
-		taskCombination.setRange("");
+		taskCombination.setRange(dataPath + miningObject.toString());
 		taskCombination.setName();
 		taskCombination.setDataItems(dataItems);
 		taskCombination.getTasks().add(generateTask(3600,
