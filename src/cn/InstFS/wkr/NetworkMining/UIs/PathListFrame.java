@@ -107,7 +107,9 @@ public class PathListFrame extends JFrame{
             }
             this.resultMaps.put(entry.getKey(), map);
         }
-        this.resultMap=this.resultMaps.get("通信次数");
+        ArrayList<String> miningObjectList = new ArrayList<>(resultMaps.keySet());
+        this.resultMap = this.resultMaps.get(miningObjectList.get(0));
+//        this.resultMap=this.resultMaps.get("通信次数");
         loadModel();
         initModel();
         initialize();
@@ -344,9 +346,13 @@ public class PathListFrame extends JFrame{
         JLabel objectLabel=new JLabel("选择挖掘对象");
         selectPanel.add(objectLabel);
         miningObjectComboBox = new JComboBox<String>();
-        miningObjectComboBox.addItem("流量");
-        miningObjectComboBox.addItem("通信次数");
-        miningObjectComboBox.setSelectedIndex(1);
+
+        ArrayList<String> miningObjectList = new ArrayList<>(resultMaps.keySet());
+        for (String s: miningObjectList)
+            miningObjectComboBox.addItem(s);
+//        miningObjectComboBox.addItem("流量");
+//        miningObjectComboBox.addItem("通信次数");
+        miningObjectComboBox.setSelectedIndex(0);
         miningObjectComboBox.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent event)
@@ -408,7 +414,7 @@ public class PathListFrame extends JFrame{
     }
 
     void initialize() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setTitle("路径规律挖掘");
         setBounds(100, 100, 1500, 900);
         try {

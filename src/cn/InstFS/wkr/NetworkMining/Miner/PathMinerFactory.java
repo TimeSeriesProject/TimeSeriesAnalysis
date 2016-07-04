@@ -12,8 +12,9 @@ import java.util.Map.Entry;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
+import org.apache.commons.math3.analysis.function.Min;
 
-public class PathMinerFactory {
+public class PathMinerFactory extends MinerFactorySettings{
 	private static PathMinerFactory inst;
 	public static boolean isMining=false;
 	public String dataPath="E:\\parsePcap\\route\\10.0.13.2_10.0.2.2.csv";
@@ -22,7 +23,16 @@ public class PathMinerFactory {
 	private TaskRange taskRange = TaskRange.NodePairRange;
 	private MiningMethod method;
 	
-	private PathMinerFactory(){}
+	private PathMinerFactory(){
+		super();
+		List<MiningObject> miningObjectList = this.getMiningObjectList();
+		miningObjectList.add(MiningObject.MiningObject_Times);
+		miningObjectList.add(MiningObject.MiningObject_Traffic);
+
+		List<MiningObject> miningObjectCheck = this.getMiningObjectsChecked();
+		miningObjectCheck.add(MiningObject.MiningObject_Times);
+		miningObjectCheck.add(MiningObject.MiningObject_Traffic);
+	}
 	public static PathMinerFactory getInstance(){
 		if(inst==null){
 			isMining=false;

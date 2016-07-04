@@ -68,7 +68,7 @@ public class MainFrame extends JFrame {
 	 */
 	public MainFrame() {
 		MainFrame.topFrame = this;
-		setTitle("ÍøÂçÍÚ¾ò¹æÂÉÄ£ÄâÆ÷");
+		setTitle("ç½‘ç»œæŒ–æ˜è§„å¾‹æ¨¡æ‹Ÿå™¨");
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
@@ -84,11 +84,11 @@ public class MainFrame extends JFrame {
 		contentPane.add(toolBar, BorderLayout.NORTH);
 		toolBar.setSize(100, 20);
 		
-		JMenu mnFile = new JMenu("ÎÄ¼ş(F)");
+		JMenu mnFile = new JMenu("æ–‡ä»¶(F)");
 		mnFile.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(mnFile);
 		
-		JMenuItem menuExit = new JMenuItem("ÍË³ö(X)");
+		JMenuItem menuExit = new JMenuItem("é€€å‡º(X)");
 		menuExit.setMnemonic(KeyEvent.VK_X);
 		menuExit.addActionListener(new ActionListener() {			
 			@Override
@@ -97,7 +97,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnFile.add(menuExit);
-		JMenuItem menuLoad=new JMenuItem("¼ÓÔØÎÄ¼ş£¨L)");
+		JMenuItem menuLoad=new JMenuItem("åŠ è½½æ–‡ä»¶ï¼ˆL)");
 		menuLoad.setMnemonic(KeyEvent.VK_L);
 		menuLoad.addActionListener(new ActionListener() {
 			@Override
@@ -106,11 +106,11 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnFile.add(menuLoad);
-		JMenu mnTools = new JMenu("ÈÎÎñ(T)");
+		JMenu mnTools = new JMenu("ä»»åŠ¡(T)");
 		mnTools.setMnemonic(KeyEvent.VK_T);
 		menuBar.add(mnTools);
 		
-		JMenuItem menuConfigEvent = new JMenuItem("ÅäÖÃÈÎÎñ(P)");
+		JMenuItem menuConfigEvent = new JMenuItem("é…ç½®ä»»åŠ¡(P)");
 		menuConfigEvent.setMnemonic(KeyEvent.VK_P);
 		menuConfigEvent.addActionListener(new ActionListener() {			
 			@Override
@@ -121,7 +121,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		
-		JMenuItem menuStartMiningAll = new JMenuItem("È«²¿¿ªÊ¼ÍÚ¾ò(S)");
+		JMenuItem menuStartMiningAll = new JMenuItem("å…¨éƒ¨å¼€å§‹æŒ–æ˜(S)");
 		menuStartMiningAll.setMnemonic(KeyEvent.VK_S);
 		menuStartMiningAll.addActionListener(new ActionListener() {			
 			@Override
@@ -131,7 +131,7 @@ public class MainFrame extends JFrame {
 		});
 		mnTools.add(menuStartMiningAll);
 		
-		JMenuItem menuStopMiningAll = new JMenuItem("È«²¿Í£Ö¹ÍÚ¾ò(E)");
+		JMenuItem menuStopMiningAll = new JMenuItem("å…¨éƒ¨åœæ­¢æŒ–æ˜(E)");
 		menuStopMiningAll.setMnemonic(KeyEvent.VK_E);
 		menuStopMiningAll.addActionListener(new ActionListener() {
 			@Override
@@ -145,11 +145,11 @@ public class MainFrame extends JFrame {
 		mnTools.add(separator);
 		mnTools.add(menuConfigEvent);
 		
-		JMenu mnView = new JMenu("ÊÓÍ¼(V)");
+		JMenu mnView = new JMenu("è§†å›¾(V)");
 		mnView.setMnemonic(KeyEvent.VK_V);
 		menuBar.add(mnView);
 		
-		chckAutoShowResults = new JCheckBox("×Ô¶¯ÏÔÊ¾½á¹û");
+		chckAutoShowResults = new JCheckBox("è‡ªåŠ¨æ˜¾ç¤ºç»“æœ");
 		chckAutoShowResults.setSelected(UtilsUI.autoChangeResultsPanel);
 		chckAutoShowResults.addActionListener(new ActionListener() {			
 			@Override
@@ -230,14 +230,14 @@ public class MainFrame extends JFrame {
 
 		JFileChooser jfc=new JFileChooser();
 		jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );
-		jfc.showDialog(new JLabel(), "Ñ¡ÔñÎÄ¼ş");
+		jfc.showDialog(new JLabel(), "é€‰æ‹©æ–‡ä»¶");
 		File file=jfc.getSelectedFile();
 		if(file.isDirectory()){
-			System.out.println("ÎÄ¼ş¼Ğ:"+file.getAbsolutePath());
+			System.out.println("æ–‡ä»¶å¤¹:"+file.getAbsolutePath());
 		}else if(file.isFile()){
-			System.out.println("ÎÄ¼ş:"+file.getAbsolutePath());
+			System.out.println("æ–‡ä»¶:"+file.getAbsolutePath());
 		}
-//		showProgress sh=new showProgress("¼ÓÔØ",1,100);
+//		showProgress sh=new showProgress("åŠ è½½",1,100);
 //		Thread t = new Thread(sh);
 //		t.start();
 

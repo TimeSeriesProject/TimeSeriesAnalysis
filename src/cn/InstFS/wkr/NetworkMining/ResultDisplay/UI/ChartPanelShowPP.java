@@ -42,6 +42,7 @@ public class ChartPanelShowPP extends JPanel {
     JFreeChart chart;
     Shape itemShape; // = new Ellipse2D.Double(-2,-2, 4, 4);
     private static Map<Object, Color> colorTable = new HashMap<>();
+    private static int colorCount;
     private static Random random = new Random();
 
 
@@ -254,7 +255,10 @@ public class ChartPanelShowPP extends JPanel {
      */
     private static Color getColor (Object item) {
         if (colorTable.containsKey(item)) return colorTable.get(item);
-        Color color = new Color(Color.HSBtoRGB(random.nextFloat() * 19, 1.0f, 1.0f));   // 第一个参数为0-1的浮点数*360，若超过1则取小数位，乘上19扩大颜色变动范围
+        //Color color = new Color(Color.HSBtoRGB(random.nextFloat() * 19, 1.0f, 1.0f));   // 第一个参数为0-1的浮点数*360，若超过1则取小数位，乘上19扩大颜色变动范围
+        int remainder = colorCount%3;
+        Color color = remainder == 0? Color.BLUE :(remainder == 1? Color.GREEN: Color.ORANGE);
+        colorCount++;
         colorTable.put(item, color);
         return color;
     }
