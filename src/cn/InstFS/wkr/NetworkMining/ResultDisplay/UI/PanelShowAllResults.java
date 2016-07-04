@@ -73,7 +73,7 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 		if (panel != null){
 			add((JPanel)panel, task.getTaskName());
 			allPanels.put(task, panel);
-		}		
+		}
 		return ;
 	}
 

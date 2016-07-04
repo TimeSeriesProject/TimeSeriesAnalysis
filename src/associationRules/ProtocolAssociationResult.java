@@ -31,6 +31,9 @@ public class ProtocolAssociationResult {
 	public void setProtocol2(String p){
 		protocol2 = p;
 	}
+	public void setConfidence(double d){
+		confidence = d;
+	}
 	public void setDataItems1(DataItems data){
 		dataItems1 = data;
 	}
@@ -45,6 +48,9 @@ public class ProtocolAssociationResult {
 	}
 	public String getProtocol2(){
 		return protocol2;
+	}
+	public double getConfidence(){
+		return confidence;
 	}
 	public DataItems getDataItems1(){
 		return dataItems1;

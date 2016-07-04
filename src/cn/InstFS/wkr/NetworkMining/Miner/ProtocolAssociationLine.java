@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import test.ProtocolAssociationTest;
+//import test.ProtocolAssociationTest;
 import lineAssociation.BottomUpLinear;
 import lineAssociation.ClusterWrapper;
 import lineAssociation.DPCluster;

@@ -96,9 +96,9 @@ public class ChartPanelShowTs extends JPanel{
 	public void displayDataItems(DataItems items){
 		if (items == null)
 			return;
-		TimeSeriesCollection tsc = new TimeSeriesCollection();
+		TimeSeriesCollection tsc = new TimeSeriesCollection();//时间显示
 		
-		TimeSeries ts = new TimeSeries("序列值");
+		TimeSeries ts = new TimeSeries("序列值");//生成序列图
 				
 		int len = items.getLength();
 		for (int i = 0; i < len; i ++){

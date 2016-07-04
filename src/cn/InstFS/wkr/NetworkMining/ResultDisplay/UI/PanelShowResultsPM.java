@@ -67,6 +67,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 		gbc_panel_1.gridy = 0;
 		add(subPanel, gbc_panel_1);
 		
+		//以下用来显示文字描述一栏
 		JPanel panel = new JPanel(new GridLayout(0, 3));
 		lblIsPeriod = new JLabel("是否周期:");
 		lblPeriodValue = new JLabel("周期值:");
@@ -83,6 +84,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 		gbc_panel.gridy = 1;
 		add(panel, gbc_panel);
 		
+		//设置检查框
 		chckShowFeatureVal = new JCheckBox("显示特征值");
 		panel.add(chckShowFeatureVal);
 		chckShowFeatureVal.addActionListener(new ActionListener() {			
@@ -92,6 +94,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 			}
 		});
 		
+		//显示周期内分布
 		chartDistribute = new ChartPanelShowScatterPlot("周期内分布", "周期内的点", "值", null);
 		GridBagConstraints gbc_chartDistribute = new GridBagConstraints();
 		gbc_chartDistribute.fill = GridBagConstraints.BOTH;
@@ -128,7 +131,9 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 	public void displayMinerResults(MinerResults rets) {
 		if (rets == null)
 			return;
-		subPanel.displayMinerResults(rets);
+		subPanel.displayMinerResults(rets);//显示时间序列图像
+		
+		//以下显示中间说明栏信息
 		if (rets.getMiner() == null||
 				!rets.getMiner().getClass().equals(NetworkMinerPM.class))
 			return;
