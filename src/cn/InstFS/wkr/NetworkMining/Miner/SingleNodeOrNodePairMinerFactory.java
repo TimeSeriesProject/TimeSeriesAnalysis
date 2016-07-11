@@ -2,6 +2,7 @@ package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -15,15 +16,24 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
-public class SingleNodeOrNodePairMinerFactory {
+public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	private static SingleNodeOrNodePairMinerFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="./tasks1/";
+	public String dataPath="C:\\data\\out\\traffic";
 	private MiningObject miningObject;
 	private TaskRange taskRange;
 	private MiningMethod method;
 	
-	private SingleNodeOrNodePairMinerFactory(){}
+	private SingleNodeOrNodePairMinerFactory(){
+		super();
+		List<MiningObject> miningObjectList = this.getMiningObjectList();
+		miningObjectList.add(MiningObject.MiningObject_Times);
+		miningObjectList.add(MiningObject.MiningObject_Traffic);
+
+		List<MiningObject> miningObjectCheck = this.getMiningObjectsChecked();
+		miningObjectCheck.add(MiningObject.MiningObject_Times);
+		miningObjectCheck.add(MiningObject.MiningObject_Traffic);
+	}
 	
 	public static SingleNodeOrNodePairMinerFactory getInstance(){
 		if(inst==null){
@@ -82,7 +92,7 @@ public class SingleNodeOrNodePairMinerFactory {
 		//事先读取每一个IP上，每一个协议的DataItems
 		if(ip.equals("10.0.13.2"))
 			System.out.println();
-		int granularity=3600;
+		int granularity= Integer.parseInt(this.getGranularity());
 		if(taskRange.toString().equals(TaskRange.SingleNodeRange.toString())){
 			HashMap<String, DataItems> rawDataItems=null;
 			switch (miningObject) {

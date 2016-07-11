@@ -99,7 +99,7 @@ public class AssociationIpListFrame extends JFrame {
 //					ProtocolAssMinerFactory.getInstance();
 					NetworkMinerFactory.getInstance();
 					ProtocolAssMinerFactory protocolAssFactory = ProtocolAssMinerFactory.getInstance();
-					protocolAssFactory.dataPath="D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\data\\out\\traffic";
+					protocolAssFactory.dataPath="C:\\data\\out\\traffic";
 					protocolAssFactory.setMiningObject(MiningObject.MiningObject_Traffic);
 //					protocolAssFactory.setTaskRange(TaskRange.SingleNodeRange);
 					protocolAssFactory.detect();
