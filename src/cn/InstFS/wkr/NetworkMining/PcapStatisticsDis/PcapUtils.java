@@ -214,50 +214,6 @@ class RouteGen implements Callable {
         bw.close();
     }
 
-//    public Boolean call2() {
-//        try {
-//            int count = 0;
-//
-//            List<String> lines = Files.readAllLines(Paths.get(path),
-//                    Charset.defaultCharset());
-//            for (String curLine : lines) {
-//                count++;
-////				if(count%100000==0)
-////					System.out.println("readsrc "+count);
-////				System.out.println(curLine);
-//                if (curLine.length() < 2)
-//                    continue;
-//                String str[] = curLine.split(",");
-////				System.out.println(str.length);
-//                PcapData data = new PcapData();
-////				for(int i=0;i<str.length;i++)
-////					System.out.println(str[i]);
-//                data.setSrcIP(str[0]);
-//                data.setDstIP(str[1]);
-//                data.setSrcPort(Integer.parseInt(str[2]));
-//                data.setDstPort(Integer.parseInt(str[3]));
-//                data.setTime_s(Long.parseLong(str[4]));
-//                data.setTime_ms(Long.parseLong(str[5]));
-//                data.setTTL(Integer.parseInt(str[8]));
-//                data.setTraffic(Integer.valueOf(str[7]));
-//                data.setPcapFile(str[6]);
-//                datas.add(data);
-//            }
-//
-//            gen();
-//            datas = null;
-//            System.gc();
-//            pcapUtils.setGenedRouteNum(pcapUtils.getGenedRouteNum() + 1);
-//            System.out.println("getGenedRouteNum()" + pcapUtils.getGenedRouteNum());
-//
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            //System.out.println("........");
-//            e.printStackTrace();
-//        }
-//        return true;
-//    }
-
     public Boolean call() {
         try {
 
