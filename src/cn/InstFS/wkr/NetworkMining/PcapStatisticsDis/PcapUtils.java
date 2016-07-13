@@ -7,34 +7,77 @@ import java.util.*;
 import java.util.concurrent.*;
 
 class Parser implements Callable {
-    FileChannel fc = null;
-    long length = 0;
-    MappedByteBuffer is = null;
-//    InputStream is = null;
-    String file;
+    private File file = null;
+    private long length = 0;
+    private long pLength = 0;
+    private static long position = 0;
+    private static long part = 0;
+    //    FileChannel fc = null;
+//    MappedByteBuffer is = null;
+//    String fileName;
     ConcurrentHashMap<RecordKey, Integer> trafficRecords;
     private HashMap<String, BufferedWriter> bws;
     String path;
     PcapUtils pcapUtils;
 
-    Parser(FileChannel fc, PcapUtils pcapUtils, MappedByteBuffer is, String file, ConcurrentHashMap<RecordKey, Integer> trafficRecords, HashMap<String, BufferedWriter> bws, String path) {
-        this.fc = fc;
-        this.pcapUtils = pcapUtils;
-        this.is = is;
+    Parser(PcapUtils pcapUtils, File file, ConcurrentHashMap<RecordKey, Integer> trafficRecords, HashMap<String, BufferedWriter> bws, String path) {
         this.file = file;
+        this.pcapUtils = pcapUtils;
         this.trafficRecords = trafficRecords;
         this.bws = bws;
         this.path = path;
     }
 
+    public static long getPart() {
+        return part;
+    }
+
+    public static long getPosition() {
+        return position;
+    }
+
+    public static void setPosition(long position) {
+        Parser.position = position;
+    }
+
     public Boolean call() {
         try {
-            PcapParser.unpack(fc, is, file, trafficRecords, bws, path);
-            pcapUtils.setParsedNum(pcapUtils.getParsedNum() + 1);
-            System.out.println("getParsedNum()" + pcapUtils.getParsedNum());
-            fc.close();
+            FileChannel fc = new FileInputStream(file).getChannel();
+            length = fc.size();
+            String fileName = file.getName();
+            int index = fileName.lastIndexOf(".");
+            fileName = fileName.substring(0, index);
+            if (length <= Integer.MAX_VALUE) {
+                MappedByteBuffer is = fc.map(FileChannel.MapMode.READ_ONLY, 0, length);
+                PcapParser.unpack(fc, is, fileName, trafficRecords, bws, path);
+
+                pcapUtils.setParsedNum(pcapUtils.getParsedNum() + 1);
+                System.out.println("getParsedNum()" + pcapUtils.getParsedNum());
+                is = null;
+                System.gc();
+                fc.close();
+            } else {
+//                long partition = (long) Math.ceil(length / (1024 * 1024 * 1024));
+                long partition = length / (1024 * 1024 * 100) + 1;
+                part = partition;
+                System.out.println("partition: " + partition);
+                MappedByteBuffer header = fc.map(FileChannel.MapMode.READ_ONLY, 0, 24);
+                int linkType = PcapParser.hUnpack(header);
+                setPosition(header.position());//读取文件头后的position24
+                for (int i = 1; i <= partition; i++) {
+                    pLength = length * i / partition - position;//position初值为0，不用+1，否则fc.map溢出
+                    System.out.println("pLength: " + pLength);
+                    System.out.println("参数position：" + position);
+                    MappedByteBuffer is = fc.map(FileChannel.MapMode.READ_ONLY, position, pLength);
+
+                    PcapParser.pUnpack(i, pLength, linkType, is, fileName, bws, path);
+                    System.out.println("执行结束");
+                    is = null;
+                    System.gc();
+                }
+                fc.close();
+            }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return true;
@@ -412,10 +455,10 @@ public class PcapUtils {
 
     public static void main(String[] args) throws IOException, FileNotFoundException {
         long a = System.currentTimeMillis();
-        String fpath = "E:\\pcap";
+        String fpath = "E:\\pcap1";
         PcapUtils pcapUtils = new PcapUtils();
         //pcapUtils.readInput(fpath,1);
-        pcapUtils.readInput(fpath, "E:\\out");
+        pcapUtils.readInput(fpath, "E:\\out1");
         long b = System.currentTimeMillis();
         System.out.println("时间：" + (b - a) / 1000);
         //pcapUtils.generateRoute("C:\\data\\out\\routesrc","C:\\data\\out");
@@ -460,17 +503,9 @@ public class PcapUtils {
         ExecutorService exec = Executors.newFixedThreadPool(16);
         ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
         for (int i = 0; i < fileList.size(); i++) {
-            FileChannel fc = new FileInputStream(fileList.get(i)).getChannel();
-            long length = 0;
-            MappedByteBuffer is =  fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-//            InputStream is = new FileInputStream(fileList.get(i));
-            String file = fileList.get(i).getName();
-            int index = file.lastIndexOf(".");
-            file = file.substring(0, index);
+            File file = fileList.get(i);
 
-//			System.out.println(file);
-
-            Parser parser = new Parser(fc, this, is, file, trafficRecords, bws, outpath);
+            Parser parser = new Parser(this, file, trafficRecords, bws, outpath);
             results.add(exec.submit(parser));
             System.out.println("循环parsepcap");
         }

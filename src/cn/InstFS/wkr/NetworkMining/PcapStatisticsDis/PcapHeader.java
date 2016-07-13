@@ -2,7 +2,7 @@ package cn.InstFS.wkr.NetworkMining.PcapStatisticsDis;
 
 public class PcapHeader {
     private int magic;//文件识别头,为0xA1B2C3D4
-    private short magor_version;//主要版本
+    private short major_version;//主要版本
     private short minor_version;//次要版本
     private int timezone;//当地标准时间
     private int sigflags;//时间戳的精度
@@ -35,12 +35,12 @@ public class PcapHeader {
         this.magic = magic;
     }
 
-    public short getMagor_version() {
-        return magor_version;
+    public short getMajor_version() {
+        return major_version;
     }
 
-    public void setMagor_version(short magor_version) {
-        this.magor_version = magor_version;
+    public void setMajor_version(short magor_version) {
+        this.major_version = magor_version;
     }
 
     public short getMinor_version() {
@@ -87,7 +87,7 @@ public class PcapHeader {
     public String toString() {
         StringBuilder s = new StringBuilder();
         s.append("magic=").append("0x" + Integer.toHexString(this.magic));
-        s.append("\nmagor_version=").append(this.magor_version);
+        s.append("\nmagor_version=").append(this.major_version);
         s.append("\nminor_version=").append(this.minor_version);
         s.append("\ntimezone=").append(this.timezone);
         s.append("\nsigflags=").append(this.sigflags);
