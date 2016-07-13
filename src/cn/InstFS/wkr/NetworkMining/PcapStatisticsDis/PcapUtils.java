@@ -261,92 +261,36 @@ class RouteGen implements Callable {
     public Boolean call() {
         try {
 
-//            InputStreamReader in = new InputStreamReader(new FileInputStream(path), "UTF-8");
-//            BufferedReader bin = new BufferedReader(in, 5 * 1024 * 1024);
-//            String curLine = null;
-//            int count = 0;
-//
-//            while ((curLine = bin.readLine()) != null) {
-//                count++;
-////				if(count%100000==0)
-////					System.out.println("readsrc "+count);
-////				System.out.println(curLine);
-//                if (curLine.length() < 2)
-//                    continue;
-//                String str[] = curLine.split(",");
-////				System.out.println(str.length);
-//                PcapData data = new PcapData();
-////				for(int i=0;i<str.length;i++)
-////					System.out.println(str[i]);
-//                data.setSrcIP(str[0]);
-//                data.setDstIP(str[1]);
-//                data.setSrcPort(Integer.parseInt(str[2]));
-//                data.setDstPort(Integer.parseInt(str[3]));
-//                data.setTime_s(Long.parseLong(str[4]));
-//                data.setTime_ms(Long.parseLong(str[5]));
-//                data.setTTL(Integer.parseInt(str[8]));
-//                data.setTraffic(Integer.valueOf(str[7]));
-//                data.setPcapFile(str[6]);
-//                //if(count<10)
-//                datas.add(data);
-//
-//            }
-//            bin.close();
+            InputStreamReader in = new InputStreamReader(new FileInputStream(path), "UTF-8");
+            BufferedReader bin = new BufferedReader(in, 5 * 1024 * 1024);
+            String curLine = null;
+            int count = 0;
 
-            FileChannel fc = new FileInputStream(new File(path)).getChannel();
-            long length = fc.size();
-            MappedByteBuffer buffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-            System.out.println("length: " + length);
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < (int) length; i++) {
-                if (buffer.get(i) == 10) {//判断遇到换行符，处理此行数据
-                    String a = sb.toString().substring(0, sb.toString().length() - 1);
-//                    System.out.println(sb.toString());
-                    String str[] = a.split(",");
-//                    System.out.println("88 " + str[8]);
+            while ((curLine = bin.readLine()) != null) {
+                count++;
+//				if(count%100000==0)
+//					System.out.println("readsrc "+count);
+//				System.out.println(curLine);
+                if (curLine.length() < 2)
+                    continue;
+                String str[] = curLine.split(",");
 //				System.out.println(str.length);
-                    PcapData data = new PcapData();
-                    data.setSrcIP(str[0]);
-                    data.setDstIP(str[1]);
-                    data.setSrcPort(Integer.parseInt(str[2]));
-                    data.setDstPort(Integer.parseInt(str[3]));
-                    data.setTime_s(Long.parseLong(str[4]));
-                    data.setTime_ms(Long.parseLong(str[5]));
-                    data.setTTL(Integer.parseInt(str[8]));
-                    data.setTraffic(Integer.valueOf(str[7]));
-                    data.setPcapFile(str[6]);
-                    //if(count<10)
-                    datas.add(data);
-                    sb.delete(0, sb.length());
-                } else if (i == length - 1) {//判断到了最后一行，处理此行数据
-                    sb.append((char) buffer.get(i));
-//                    System.out.println(sb.toString());
-                    String str[] = sb.toString().split(",");
-//				System.out.println(str.length);
-                    PcapData data = new PcapData();
+                PcapData data = new PcapData();
 //				for(int i=0;i<str.length;i++)
 //					System.out.println(str[i]);
-                    data.setSrcIP(str[0]);
-                    data.setDstIP(str[1]);
-                    data.setSrcPort(Integer.parseInt(str[2]));
-                    data.setDstPort(Integer.parseInt(str[3]));
-                    data.setTime_s(Long.parseLong(str[4]));
-                    data.setTime_ms(Long.parseLong(str[5]));
-                    data.setTTL(Integer.parseInt(str[8]));
-                    data.setTraffic(Integer.valueOf(str[7]));
-                    data.setPcapFile(str[6]);
-                    //if(count<10)
-                    datas.add(data);
-                } else {//拼接成一行数据
-                    sb.append((char) buffer.get(i));
-                }
+                data.setSrcIP(str[0]);
+                data.setDstIP(str[1]);
+                data.setSrcPort(Integer.parseInt(str[2]));
+                data.setDstPort(Integer.parseInt(str[3]));
+                data.setTime_s(Long.parseLong(str[4]));
+                data.setTime_ms(Long.parseLong(str[5]));
+                data.setTTL(Integer.parseInt(str[8]));
+                data.setTraffic(Integer.valueOf(str[7]));
+                data.setPcapFile(str[6]);
+                //if(count<10)
+                datas.add(data);
             }
-            sb = null;
-            fc.close();
-
-
-            //断点
+            bin.close();
             gen();
             datas = null;
             System.gc();
