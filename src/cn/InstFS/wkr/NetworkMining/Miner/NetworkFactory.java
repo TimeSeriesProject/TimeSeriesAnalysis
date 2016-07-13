@@ -23,10 +23,11 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
  * @author 艾长青
  *
  */
-public class NetworkFactory {
+public class NetworkFactory extends MinerFactorySettings {
 	private static NetworkFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="./tasks1/";
+	public String dataPath="C:\\data\\out\\route";
+
 	private TaskRange taskRange= TaskRange.WholeNetworkRange;
 	private MiningObject miningObject ;
 	
@@ -37,7 +38,14 @@ public class NetworkFactory {
 		this.miningObject = miningObject;
 	}
 	NetworkFactory(){
-		
+		super();
+		List<MiningObject> miningObjectList = this.getMiningObjectList();
+		miningObjectList.add(MiningObject.MiningObject_Cluster);
+		miningObjectList.add(MiningObject.MiningObject_Diameter);
+
+		List<MiningObject> miningObjectCheck = this.getMiningObjectsChecked();
+		miningObjectCheck.add(MiningObject.MiningObject_Cluster);
+		miningObjectCheck.add(MiningObject.MiningObject_Diameter);
 	}
 	public static NetworkFactory getInstance(){
 		if(inst == null){
@@ -56,7 +64,8 @@ public class NetworkFactory {
 		isMining=true;
 		TaskElement task = new TaskElement();
 		task.setSourcePath(dataPath);
-		task.setGranularity(3600);
+		int granularity = Integer.parseInt(this.getGranularity());
+		task.setGranularity(granularity);
 		task.setMiningObject(miningObject.toString());
 		CWNetworkReader reader = new CWNetworkReader(task);
 		DataItems dataItems = reader.readInputByText();
@@ -68,13 +77,13 @@ public class NetworkFactory {
 		taskCombination.setRange(dataPath + miningObject.toString());
 		taskCombination.setName();
 		taskCombination.setDataItems(dataItems);
-		taskCombination.getTasks().add(generateTask(3600,
+		taskCombination.getTasks().add(generateTask(granularity,
 				miningObject.toString(),  MiningMethod.MiningMethods_PeriodicityMining));
-		taskCombination.getTasks().add(generateTask(3600,
+		taskCombination.getTasks().add(generateTask(granularity,
 				miningObject.toString(),  MiningMethod.MiningMethods_OutliesMining));
-		taskCombination.getTasks().add(generateTask(3600,
+		taskCombination.getTasks().add(generateTask(granularity,
 				miningObject.toString(),  MiningMethod.MiningMethods_Statistics));
-		taskCombination.getTasks().add(generateTask(3600,
+		taskCombination.getTasks().add(generateTask(granularity,
 				miningObject.toString(), MiningMethod.MiningMethods_SequenceMining));
 		
 		TaskElement.add1Task(taskCombination, false);
@@ -113,4 +122,26 @@ public class NetworkFactory {
 		task.setProtocol("");
 		return task;
 	}
+
+	@Override
+	public TaskRange getTaskRange() {
+		return taskRange;
+	}
+
+	@Override
+	public void setTaskRange(TaskRange taskRange) {
+		this.taskRange = taskRange;
+	}
+
+	@Override
+	public String getDataPath() {
+		return dataPath;
+	}
+
+	@Override
+	public void setDataPath(String dataPath) {
+		this.dataPath = dataPath;
+	}
+
+
 }

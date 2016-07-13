@@ -57,7 +57,7 @@ public class WholeNetworkFrame extends JFrame{
 					JFrame.setDefaultLookAndFeelDecorated(true); 
 					NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
 					NetworkFactory networkFactory = NetworkFactory.getInstance();
-					networkFactory.dataPath="C:\\data\\out\\route";;
+					networkFactory.dataPath="C:\\data\\out\\route";
 					networkFactory.setMiningObject(MiningObject.MiningObject_Cluster);
 					networkFactory.detect();
 					

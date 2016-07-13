@@ -18,6 +18,7 @@ public abstract class MinerFactorySettings {
     private List<MiningObject> miningObjectsChecked = new ArrayList<>();
     private TaskRange taskRange;
     private String granularity = "3600";
+    private boolean isModified = false;
 
     public MinerFactorySettings() {
 
@@ -59,5 +60,11 @@ public abstract class MinerFactorySettings {
 
     public void setMiningObjectsChecked(List<MiningObject> miningObjectsChecked) {
         this.miningObjectsChecked = miningObjectsChecked;
+    }
+    public boolean isModified() {
+        return isModified;
+    }
+    public void setModified(boolean modified) {
+        isModified = modified;
     }
 }

@@ -8,6 +8,14 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettingTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettings;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.ProcessBarShow;
 import org.apache.commons.math3.analysis.function.Min;
+import org.apache.commons.math3.ml.neuralnet.Network;
+import org.jvnet.substance.*;
+import org.jvnet.substance.border.StandardBorderPainter;
+import org.jvnet.substance.painter.StandardGradientPainter;
+import org.jvnet.substance.skin.NebulaBrickWallSkin;
+import org.jvnet.substance.skin.SubstanceBusinessBlackSteelLookAndFeel;
+import org.jvnet.substance.theme.SubstanceBottleGreenTheme;
+import org.jvnet.substance.title.MatteHeaderPainter;
 
 import javax.swing.*;
 
@@ -32,6 +40,7 @@ public class win10_window extends JFrame {
     boolean isNetworkStructureMined=false;
     boolean isSingleNodeMined=false;
     boolean isNodePairMined = false;
+    boolean isPathMined = false;
     
     public boolean isNetworkStructureMined() {
 		return isNetworkStructureMined;
@@ -53,7 +62,20 @@ public class win10_window extends JFrame {
 	}
 	public void mineNetworkStructor()
 	{
-		NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
+        networkStructureresultMaps.clear();
+        NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+
+        NetworkFactory networkFactory = NetworkFactory.getInstance();
+        List<MiningObject> miningObjectList = networkFactory.getMiningObjectsChecked();
+
+        for (MiningObject ob: miningObjectList) {
+            networkFactory.reset();
+            networkFactory.setMiningObject(ob);
+            networkFactory.detect();
+            HashMap<TaskCombination, MinerNodeResults> objectMap=NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(ob);
+            networkStructureresultMaps.put(ob.toString(), objectMap);
+        }
+		/*NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
 		NetworkFactory networkFactory = NetworkFactory.getInstance();
 		networkFactory.dataPath="C:\\data\\out\\route";
 		networkFactory.reset();
@@ -69,12 +91,25 @@ public class win10_window extends JFrame {
 		networkFactory.detect();
 		
 		HashMap<TaskCombination, MinerNodeResults> diameter = NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(MiningObject.MiningObject_Diameter);
-		networkStructureresultMaps.put(MiningObject.MiningObject_Diameter.toString(),diameter);
+		networkStructureresultMaps.put(MiningObject.MiningObject_Diameter.toString(),diameter);*/
 		isNetworkStructureMined=true;
 	}
 	public void mineSingleNode()
 	{
-		NetworkMinerFactory.getInstance();
+        singleNoderesultMaps.clear();
+        NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+
+        SingleNodeOrNodePairMinerFactory singleNodeMinerFactory = SingleNodeOrNodePairMinerFactory.getInstance();
+        List<MiningObject> miningObjectList = singleNodeMinerFactory.getMiningObjectsChecked();
+
+        for (MiningObject ob: miningObjectList) {
+            singleNodeMinerFactory.reset();
+            singleNodeMinerFactory.setMiningObject(ob);
+            singleNodeMinerFactory.detect();
+            HashMap<TaskCombination, MinerNodeResults> objectMap=NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
+            singleNoderesultMaps.put(ob.toString(), objectMap);
+        }
+		/*NetworkMinerFactory.getInstance();
 		SingleNodeOrNodePairMinerFactory singleNodeMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
 		singleNodeMinerFactory.dataPath="C:\\data\\out\\traffic";
 		singleNodeMinerFactory.reset();
@@ -86,7 +121,7 @@ public class win10_window extends JFrame {
 		singleNodeMinerFactory.reset();
 		singleNodeMinerFactory.setMiningObject(MiningObject.MiningObject_Traffic);
 		singleNodeMinerFactory.detect();
-		singleNoderesultMaps.put(MiningObject.MiningObject_Traffic.toString(),NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Traffic));
+		singleNoderesultMaps.put(MiningObject.MiningObject_Traffic.toString(),NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Traffic));*/
 		isSingleNodeMined=true;
 	}
 	public void mineNodePair()
@@ -108,9 +143,24 @@ public class win10_window extends JFrame {
 		isNodePairMined=true;
 	}
 
-    public void settingsPath() {
+    private void settingsWholeNetwork() {
         NetworkMinerFactory.getInstance();
-        DialogSettings dialog = new DialogSettings(PathMinerFactory.getInstance());
+        DialogSettings dialog = new DialogSettings(NetworkFactory.getInstance(), "网络结构规律挖掘配置");
+        dialog.pack();
+        dialog.setVisible(true);
+    }
+
+    private void settingsPath() {
+        NetworkMinerFactory.getInstance();
+        DialogSettings dialog = new DialogSettings(PathMinerFactory.getInstance(), "承载路径规律挖掘配置");
+        dialog.pack();
+        dialog.setVisible(true);
+    }
+
+    private void settingsSingleNode() {
+        NetworkMinerFactory.getInstance();
+        SingleNodeOrNodePairMinerFactory.getInstance().setTaskRange(TaskRange.SingleNodeRange);
+        DialogSettings dialog = new DialogSettings(SingleNodeOrNodePairMinerFactory.getInstance(),"节点规律挖掘配置");
         dialog.pack();
         dialog.setVisible(true);
     }
@@ -129,7 +179,7 @@ public class win10_window extends JFrame {
             HashMap<TaskCombination, MinerResultsPath> objectMap=NetworkMinerFactory.getInstance().startAllPathMiners(ob);
             pathResultsMaps.put(ob.toString(), objectMap);
         }
-
+        isPathMined = true;
     }
 
 	public static void main(String[] args) {
@@ -296,10 +346,13 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO Auto-generated method stub
-            	if(isNetworkStructureMined==false)
+                settingsWholeNetwork();
+                if (NetworkFactory.getInstance().isModified())
+                    isNetworkStructureMined = false;
+            	/*if(isNetworkStructureMined==false)
             		mineNetworkStructor();
             	WholeNetworkFrame wholeNetworkFrame = new WholeNetworkFrame(networkStructureresultMaps);
-            	wholeNetworkFrame.setVisible(true);
+            	wholeNetworkFrame.setVisible(true);*/
             }
         });
         //Pcap 解析响应
@@ -319,7 +372,8 @@ public class win10_window extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // TODO Auto-generated method stub
             	settingsPath();
-
+                if (PathMinerFactory.getInstance().isModified())
+                    isPathMined = false;
 
             }
         });			//设置按钮响应
@@ -344,9 +398,13 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO Auto-generated method stub
-                JFrame jf=new JFrame();
+                settingsSingleNode();
+                if (SingleNodeOrNodePairMinerFactory.getInstance().isModified())
+                    isSingleNodeMined = false;
+
+                /*JFrame jf=new JFrame();
                 DialogSettingTask dialogSettingTask=new DialogSettingTask(jf);
-                dialogSettingTask.setVisible(true);
+                dialogSettingTask.setVisible(true);*/
 
             	/*if(isSingleNodeMined==false)
             		mineSingleNode();
@@ -401,8 +459,10 @@ public class win10_window extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             // TODO Auto-generated method stub
-        	if(isNetworkStructureMined==false)
+        	if(!isNetworkStructureMined)
         		mineNetworkStructor();
+            WholeNetworkFrame wholeNetworkFrame = new WholeNetworkFrame(networkStructureresultMaps);
+            wholeNetworkFrame.setVisible(true);
 
         }
     });
@@ -412,8 +472,10 @@ public class win10_window extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             // TODO Auto-generated method stub
-        	if(isSingleNodeMined==false)
+        	if(!isSingleNodeMined)
         		mineSingleNode();
+            SingleNodeListFrame singleNodeListFrame = new SingleNodeListFrame(singleNoderesultMaps);
+            singleNodeListFrame.setVisible(true);
 			
         }
     });
@@ -435,7 +497,8 @@ public class win10_window extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             // TODO Auto-generated method stub
-            minePath();
+            if (!isPathMined)
+                minePath();
             PathListFrame pathListFrame = new PathListFrame(pathResultsMaps);
             pathListFrame.setVisible(true);
 

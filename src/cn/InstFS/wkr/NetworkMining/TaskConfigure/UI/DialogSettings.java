@@ -35,8 +35,10 @@ public class DialogSettings extends JDialog {
     private JLabel labelMiningObject = new JLabel("挖掘对象");
     private List<JCheckBox> objectCheckBoxes = new ArrayList<>();
 
-    public DialogSettings(MinerFactorySettings factorySettings){
+    public DialogSettings(MinerFactorySettings factorySettings, String title){
         this.settings = factorySettings;
+        this.settings.setModified(false);
+        this.setTitle(title);
 
         setContentPane(contentPane);
         setModal(true);
@@ -153,6 +155,7 @@ public class DialogSettings extends JDialog {
         if (isModified(settings)) {
             getData(settings);
             System.out.println("modified");
+            settings.setModified(true);
         }
 //        factorySettings.setDataPath(dataPath.getText());
 
@@ -201,7 +204,7 @@ public class DialogSettings extends JDialog {
     public static void main(String[] args) {
         NetworkMinerFactory.getInstance();
 
-        DialogSettings dialog = new DialogSettings(PathMinerFactory.getInstance());
+        DialogSettings dialog = new DialogSettings(PathMinerFactory.getInstance(),"test");
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);
