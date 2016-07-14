@@ -4,6 +4,7 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
@@ -12,7 +13,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 
 //import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 
-public abstract class IParamsNetworkMining {
+public abstract class IParamsNetworkMining implements Serializable{
 	public static String spliter = "__\t__";
 	
 	public abstract boolean equals(IParamsNetworkMining params);
