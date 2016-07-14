@@ -1,10 +1,11 @@
 package cn.InstFS.wkr.NetworkMining.Params;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 
-public class ParamsSM extends IParamsNetworkMining{
+public class ParamsSM extends IParamsNetworkMining implements Serializable{
 	
 	private double minSupport;	// 最小支持度
 	private int sizeWindow;	// 时间窗长	（单位为秒）

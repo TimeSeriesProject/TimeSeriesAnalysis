@@ -3,12 +3,13 @@ package cn.InstFS.wkr.NetworkMining.Params;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 
-public class ParamsPM extends IParamsNetworkMining {
+public class ParamsPM extends IParamsNetworkMining implements Serializable{
 	private Double periodThreshold;  //PM参数，确定周期的平均熵阈值
 	public ParamsPM() {
 		periodThreshold = 0.2;

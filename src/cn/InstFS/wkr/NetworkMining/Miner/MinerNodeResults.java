@@ -1,6 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
-public class MinerNodeResults {
+import java.io.Serializable;
+
+public class MinerNodeResults implements Serializable{
 	private MinerResultsStatistics retStatistics;
 	private MinerResultsPM retPM;
 	private MinerResultsOM retOM;

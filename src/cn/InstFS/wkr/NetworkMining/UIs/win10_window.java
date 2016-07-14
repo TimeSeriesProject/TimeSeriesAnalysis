@@ -1,7 +1,9 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
 import cn.InstFS.wkr.NetworkMining.Miner.*;
+import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSetting;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettingTask;
@@ -9,6 +11,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettings;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.ProcessBarShow;
 import org.apache.commons.math3.analysis.function.Min;
 import org.apache.commons.math3.ml.neuralnet.Network;
+import org.jfree.data.gantt.Task;
 import org.jvnet.substance.*;
 import org.jvnet.substance.border.StandardBorderPainter;
 import org.jvnet.substance.painter.StandardGradientPainter;
@@ -22,6 +25,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 import java.util.List;
 import java.util.HashMap;
 
@@ -68,13 +72,35 @@ public class win10_window extends JFrame {
         NetworkFactory networkFactory = NetworkFactory.getInstance();
         List<MiningObject> miningObjectList = networkFactory.getMiningObjectsChecked();
 
+        // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
+            MiningResultsFile resultsFile = new MiningResultsFile(ob);
+            HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
+            if (resultsFile.hasFile(networkFactory)) {  // 已有，直接读取
+                objectMap = (HashMap<TaskCombination, MinerNodeResults>) resultsFile.file2ResultMap();
+                networkStructureresultMaps.put(ob.toString(), objectMap);
+                NetworkMinerFactory.getInstance().taskCombinationAdd2allMiner(objectMap); //由读取的结果objectMap添加相应的miner，以供显示
+            } else {    // 没有，则重新挖掘并保存
+                networkFactory.reset();
+                networkFactory.setMiningObject(ob);
+                networkFactory.detect();
+                objectMap = NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(ob);
+                networkStructureresultMaps.put(ob.toString(), objectMap);
+                MiningResultsFile newResultsFile = new MiningResultsFile(ob);
+                newResultsFile.resultMap2File(networkFactory, objectMap);
+            }
+        }
+
+        /*for (MiningObject ob: miningObjectList) {
             networkFactory.reset();
             networkFactory.setMiningObject(ob);
             networkFactory.detect();
             HashMap<TaskCombination, MinerNodeResults> objectMap=NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(ob);
             networkStructureresultMaps.put(ob.toString(), objectMap);
-        }
+
+            MiningResultsFile resultsFile = new MiningResultsFile(ob);
+            resultsFile.resultMap2File(networkFactory, objectMap);
+        }*/
 		/*NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
 		NetworkFactory networkFactory = NetworkFactory.getInstance();
 		networkFactory.dataPath="C:\\data\\out\\route";
@@ -102,13 +128,32 @@ public class win10_window extends JFrame {
         SingleNodeOrNodePairMinerFactory singleNodeMinerFactory = SingleNodeOrNodePairMinerFactory.getInstance();
         List<MiningObject> miningObjectList = singleNodeMinerFactory.getMiningObjectsChecked();
 
+        // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
+            MiningResultsFile resultsFile = new MiningResultsFile(ob);
+            HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
+            if (resultsFile.hasFile(singleNodeMinerFactory)) {  // 已有，直接读取
+                objectMap = (HashMap<TaskCombination, MinerNodeResults>) resultsFile.file2ResultMap();
+                singleNoderesultMaps.put(ob.toString(), objectMap);
+                NetworkMinerFactory.getInstance().taskCombinationAdd2allMiner(objectMap); //由读取的结果objectMap添加相应的miner，以供显示
+            } else {    // 没有，则重新挖掘并保存
+                singleNodeMinerFactory.reset();
+                singleNodeMinerFactory.setMiningObject(ob);
+                singleNodeMinerFactory.detect();
+                objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
+                singleNoderesultMaps.put(ob.toString(), objectMap);
+                MiningResultsFile newResultsFile = new MiningResultsFile(ob);
+                newResultsFile.resultMap2File(singleNodeMinerFactory, objectMap);
+            }
+        }
+
+        /*for (MiningObject ob: miningObjectList) {
             singleNodeMinerFactory.reset();
             singleNodeMinerFactory.setMiningObject(ob);
             singleNodeMinerFactory.detect();
             HashMap<TaskCombination, MinerNodeResults> objectMap=NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
             singleNoderesultMaps.put(ob.toString(), objectMap);
-        }
+        }*/
 		/*NetworkMinerFactory.getInstance();
 		SingleNodeOrNodePairMinerFactory singleNodeMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
 		singleNodeMinerFactory.dataPath="C:\\data\\out\\traffic";
@@ -126,7 +171,31 @@ public class win10_window extends JFrame {
 	}
 	public void mineNodePair()
 	{
-		NetworkMinerFactory.getInstance();
+        nodePairresultMaps.clear();
+        NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+
+        SingleNodeOrNodePairMinerFactory nodePairMinerFactory = SingleNodeOrNodePairMinerFactory.getPairInstance();
+        List<MiningObject> miningObjectList = nodePairMinerFactory.getMiningObjectsChecked();
+
+        // 判断是否含有该挖掘对象结果文件
+        for (MiningObject ob: miningObjectList) {
+            MiningResultsFile resultsFile = new MiningResultsFile(ob);
+            HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
+            if (resultsFile.hasFile(nodePairMinerFactory)) {  // 已有，直接读取
+                objectMap = (HashMap<TaskCombination, MinerNodeResults>) resultsFile.file2ResultMap();
+                nodePairresultMaps.put(ob.toString(), objectMap);
+                NetworkMinerFactory.getInstance().taskCombinationAdd2allMiner(objectMap); //由读取的结果objectMap添加相应的miner，以供显示
+            } else {    // 没有，则重新挖掘并保存
+                nodePairMinerFactory.reset();
+                nodePairMinerFactory.setMiningObject(ob);
+                nodePairMinerFactory.detect();
+                objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
+                nodePairresultMaps.put(ob.toString(), objectMap);
+                MiningResultsFile newResultsFile = new MiningResultsFile(ob);
+                newResultsFile.resultMap2File(nodePairMinerFactory, objectMap);
+            }
+        }
+        /*NetworkMinerFactory.getInstance();
 		SingleNodeOrNodePairMinerFactory nodePairMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
 		nodePairMinerFactory.dataPath="C:\\data\\out\\traffic";
 		nodePairMinerFactory.reset();
@@ -139,7 +208,7 @@ public class win10_window extends JFrame {
 		nodePairMinerFactory.setMiningObject(MiningObject.MiningObject_Traffic);
 		nodePairMinerFactory.setTaskRange(TaskRange.NodePairRange);
 		nodePairMinerFactory.detect();
-		nodePairresultMaps.put(MiningObject.MiningObject_Traffic.toString(),NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Traffic));
+		nodePairresultMaps.put(MiningObject.MiningObject_Traffic.toString(),NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Traffic));*/
 		isNodePairMined=true;
 	}
 
@@ -165,12 +234,48 @@ public class win10_window extends JFrame {
         dialog.setVisible(true);
     }
 
+    private void settingsNodePair() {
+        NetworkMinerFactory.getInstance();
+        SingleNodeOrNodePairMinerFactory.getPairInstance().setTaskRange(TaskRange.NodePairRange);
+        DialogSettings dialog = new DialogSettings(SingleNodeOrNodePairMinerFactory.getPairInstance(),"链路规律挖掘配置");
+        dialog.pack();
+        dialog.setVisible(true);
+    }
+
     public void minePath() {
         pathResultsMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
-        PathMinerFactory pathMinerFactory=PathMinerFactory.getInstance();
+        PathMinerFactory pathMinerFactory = PathMinerFactory.getInstance();
         List<MiningObject> miningObjectList = pathMinerFactory.getMiningObjectsChecked();
+
+        // 判断是否含有该挖掘对象结果文件
+        for (MiningObject ob: miningObjectList) {
+            MiningResultsFile resultsFile = new MiningResultsFile(ob);
+            HashMap<TaskCombination, MinerResultsPath> objectMap = new HashMap<>();
+            if (resultsFile.hasFile(pathMinerFactory)) {  // 已有，直接读取
+                objectMap = (HashMap<TaskCombination, MinerResultsPath>) resultsFile.file2ResultMap();
+                pathResultsMaps.put(ob.toString(), objectMap);
+                NetworkMinerFactory.getInstance().taskCombinationAdd2allMiner(objectMap); //由读取的结果objectMap添加相应的miner，以供显示
+            } else {    // 没有，则重新挖掘并保存
+                pathMinerFactory.reset();
+                pathMinerFactory.setMiningObject(ob);
+                pathMinerFactory.detect();
+                objectMap = NetworkMinerFactory.getInstance().startAllPathMiners(ob);
+                pathResultsMaps.put(ob.toString(), objectMap);
+                MiningResultsFile newResultsFile = new MiningResultsFile(ob);
+                newResultsFile.resultMap2File(pathMinerFactory, objectMap);
+            }
+        }
+
+
+        /*if (pathMinerFactory.isOnlyObjectModified() && pathResultsMaps.size()!=0) { // 尚未进行过挖掘
+            miningObjectList = pathMinerFactory.getMiningObjectsAdded(); //只挖掘新选的object
+            for (MiningObject m : pathMinerFactory.getMiningObjectsDeleted()) {
+                pathResultsMaps.remove(m.toString());
+            }
+        } else
+            pathResultsMaps.clear();
 
         for (MiningObject ob: miningObjectList) {
             pathMinerFactory.reset();
@@ -178,7 +283,7 @@ public class win10_window extends JFrame {
             pathMinerFactory.detect();
             HashMap<TaskCombination, MinerResultsPath> objectMap=NetworkMinerFactory.getInstance().startAllPathMiners(ob);
             pathResultsMaps.put(ob.toString(), objectMap);
-        }
+        }*/
         isPathMined = true;
     }
 
@@ -446,11 +551,9 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO Auto-generated method stub
-            	if(isNodePairMined==false)
-            		mineNodePair();
-            	NodePairListFrame nodePairListFrame = new NodePairListFrame(nodePairresultMaps);
-            	nodePairListFrame.setVisible(true);
-				
+                settingsNodePair();
+                if (SingleNodeOrNodePairMinerFactory.getPairInstance().isModified())
+                    isNodePairMined = false;
             }
         });
         //挖掘网络结构按钮设置
@@ -485,9 +588,10 @@ public class win10_window extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             // TODO Auto-generated method stub
-        	if(isNodePairMined==false)
+        	if(!isNodePairMined)
         		mineNodePair();
-		
+            NodePairListFrame nodePairListFrame = new NodePairListFrame(nodePairresultMaps);
+            nodePairListFrame.setVisible(true);
 
         }
     });

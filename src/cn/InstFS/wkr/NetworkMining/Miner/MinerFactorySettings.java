@@ -5,6 +5,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import org.apache.commons.math3.analysis.function.Min;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,16 +13,20 @@ import java.util.List;
  * @author Arbor vlinyq@gmail.com
  * @date 2016/6/30
  */
-public abstract class MinerFactorySettings {
+public abstract class MinerFactorySettings implements Serializable{
     private String dataPath;
+    private String minerType;
     private List<MiningObject> miningObjectList = new ArrayList<>();
     private List<MiningObject> miningObjectsChecked = new ArrayList<>();
     private TaskRange taskRange;
     private String granularity = "3600";
     private boolean isModified = false;
+    private boolean isOnlyObjectModified = false;
+    private List<MiningObject> miningObjectsAdded = new ArrayList<>();
+    private List<MiningObject> miningObjectsDeleted = new ArrayList<>();
 
-    public MinerFactorySettings() {
-
+    public MinerFactorySettings(String minerType) {
+        this.minerType = minerType;
     }
 
     public String getDataPath() {
@@ -38,6 +43,14 @@ public abstract class MinerFactorySettings {
 
     public void setTaskRange(TaskRange taskRange) {
         this.taskRange = taskRange;
+    }
+
+    public String getMinerType() {
+        return minerType;
+    }
+
+    public void setMinerType(String minerType) {
+        this.minerType = minerType;
     }
 
     public String getGranularity() {
@@ -66,5 +79,29 @@ public abstract class MinerFactorySettings {
     }
     public void setModified(boolean modified) {
         isModified = modified;
+    }
+
+    public List<MiningObject> getMiningObjectsAdded() {
+        return miningObjectsAdded;
+    }
+
+    public void setMiningObjectsAdded(List<MiningObject> miningObjectsAdded) {
+        this.miningObjectsAdded = miningObjectsAdded;
+    }
+
+    public boolean isOnlyObjectModified() {
+        return isOnlyObjectModified;
+    }
+
+    public void setOnlyObjectModified(boolean onlyObjectModified) {
+        isOnlyObjectModified = onlyObjectModified;
+    }
+
+    public List<MiningObject> getMiningObjectsDeleted() {
+        return miningObjectsDeleted;
+    }
+
+    public void setMiningObjectsDeleted(List<MiningObject> miningObjectsDeleted) {
+        this.miningObjectsDeleted = miningObjectsDeleted;
     }
 }

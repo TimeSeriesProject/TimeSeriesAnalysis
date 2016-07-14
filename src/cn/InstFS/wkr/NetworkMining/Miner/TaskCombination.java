@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +10,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
-public class TaskCombination {
+public class TaskCombination implements Serializable{
 	private List<TaskElement> tasks;
 	private DataItems dataItems;
 	private HashMap<String, HashMap<String, DataItems>> eachIpProtocolItems;

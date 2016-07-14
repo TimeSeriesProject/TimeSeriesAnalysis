@@ -17,6 +17,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
+import com.sun.javafx.tk.Toolkit;
 
 public class NetworkMinerFactory implements ITaskElementEventListener{
 	private static NetworkMinerFactory inst;
@@ -193,48 +194,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			if(!taskCombination.getMiningObject().equals(miningObject.toString())||
 					!taskCombination.getMinerType().equals(MinerType.MiningType_SinglenodeOrNodePair))
 				continue;
-			for(TaskElement task:taskCombination.getTasks()){
-				switch (task.getMiningMethod()) {
-				case MiningMethods_OutliesMining:
-					NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
-					minerOM.results.setRetOM(resultsMap.get(taskCombination).getRetOM());
-					if(minerOM.results.getRetOM().isIslinkDegree()){
-						System.out.println("true");
-					}
-					minerOM.results.di=taskCombination.getDataItems();
-					minerOM.isOver.setIsover(true);
-					allMiners.put(task, minerOM);
-					break;
-				case MiningMethods_PeriodicityMining:
-					NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
-					minerPM.results.setRetPM(resultsMap.get(taskCombination).getRetPM());
-					minerPM.isOver.setIsover(true);
-					minerPM.results.di=taskCombination.getDataItems();
-					allMiners.put(task, minerPM);
-					break;
-				case MiningMethods_SequenceMining:
-					NetworkMinerSM minerSM=new NetworkMinerSM(task, null);
-					minerSM.results.setRetSM(resultsMap.get(taskCombination).getRetSM());
-					minerSM.isOver.setIsover(true);
-					if(minerSM.results.getRetSM().isHasFreItems()){
-						System.out.println(minerSM.results.getRetSM().getPatterns().getData().size());
-					}else{
-						System.out.println(taskCombination.getName()+" none freitems");
-					}
-					minerSM.results.di=taskCombination.getDataItems();
-					allMiners.put(task, minerSM);
-					break;
-				case MiningMethods_Statistics:
-					NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
-					statistics.results.setRetStatistics(resultsMap.get(taskCombination).getRetStatistics());
-					statistics.isOver.setIsover(true);
-					statistics.results.di=taskCombination.getDataItems();
-					allMiners.put(task, statistics);
-					break;
-				default:
-					break;
-				}
-			}
+			taskAdd2allMiner(taskCombination, resultsMap);
 		}
 		return resultsMap;
 	}
@@ -251,48 +211,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			if(!taskCombination.getMiningObject().equals(miningObject.toString())||
 					!taskCombination.getMinerType().equals(MinerType.MiningTypes_WholeNetwork))
 				continue;
-			for(TaskElement task:taskCombination.getTasks()){
-				switch (task.getMiningMethod()) {
-				case MiningMethods_OutliesMining:
-					NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
-					if(minerOM.results.getRetOM().isIslinkDegree()){
-						System.out.println("true");
-					}
-					minerOM.results.setRetOM(resultsMap.get(taskCombination).getRetOM());
-					minerOM.results.di=taskCombination.getDataItems();
-					minerOM.isOver.setIsover(true);
-					allMiners.put(task, minerOM);
-					break;
-				case MiningMethods_PeriodicityMining:
-					NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
-					minerPM.results.setRetPM(resultsMap.get(taskCombination).getRetPM());
-					minerPM.isOver.setIsover(true);
-					minerPM.results.di=taskCombination.getDataItems();
-					allMiners.put(task, minerPM);
-					break;
-				case MiningMethods_SequenceMining:
-					NetworkMinerSM minerSM=new NetworkMinerSM(task, null);
-					minerSM.results.setRetSM(resultsMap.get(taskCombination).getRetSM());
-					minerSM.isOver.setIsover(true);
-					if(minerSM.results.getRetSM().isHasFreItems()){
-						System.out.println(minerSM.results.getRetSM().getPatterns().getData().size());
-					}else{
-						System.out.println(taskCombination.getName()+" none freitems");
-					}
-					minerSM.results.di=taskCombination.getDataItems();
-					allMiners.put(task, minerSM);
-					break;
-				case MiningMethods_Statistics:
-					NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
-					statistics.results.setRetStatistics(resultsMap.get(taskCombination).getRetStatistics());
-					statistics.isOver.setIsover(true);
-					statistics.results.di=taskCombination.getDataItems();
-					allMiners.put(task, statistics);
-					break;
-				default:
-					break;
-				}
-			}
+			taskAdd2allMiner(taskCombination, resultsMap);
 		}
 		return resultsMap;
 	}
@@ -346,36 +265,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			if(!taskCombination.getMiningObject().equals(miningObject.toString())||
 					!taskCombination.getMinerType().equals(MinerType.MiningType_Path))
 				continue;
-			for(TaskElement task:taskCombination.getTasks()){
-				switch (task.getMiningMethod()) {
-					case MiningMethods_OutliesMining:
-						NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
-						minerOM.results.getRetPath().setRetOM(resultsMap.get(taskCombination).getRetOM());
-						minerOM.results.getRetPath().setPathOriDataItems(resultsMap.get(taskCombination).getPathOriDataItems());
-						minerOM.results.di=taskCombination.getDataItems();
-						minerOM.isOver.setIsover(true);
-						allMiners.put(task, minerOM);
-						break;
-					case MiningMethods_PeriodicityMining:
-						NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
-						minerPM.results.getRetPath().setRetPM(resultsMap.get(taskCombination).getRetPM());
-						minerPM.isOver.setIsover(true);
-						minerPM.results.getRetPath().setPathOriDataItems(resultsMap.get(taskCombination).getPathOriDataItems());
-						minerPM.results.di=taskCombination.getDataItems();
-						allMiners.put(task, minerPM);
-						break;
-					case MiningMethods_Statistics:
-						NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
-						statistics.results.getRetPath().setRetStatistic(resultsMap.get(taskCombination).getRetStatistic());
-						statistics.results.getRetPath().setPathProb(resultsMap.get(taskCombination).getPathProb());
-						statistics.isOver.setIsover(true);
-						statistics.results.di=taskCombination.getDataItems();
-						allMiners.put(task, statistics);
-						break;
-					default:
-						break;
-				}
-			}
+			taskAdd2allMiner(taskCombination,resultsMap);
 		}
 		return resultsMap;
 	}
@@ -488,6 +378,97 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			allMiners.get(task).stop();
 		}
 	}
+
+	public void taskCombinationAdd2allMiner(HashMap<TaskCombination, ?> resultsMap) {
+		for (TaskCombination taskCombination: resultsMap.keySet()) {
+			taskAdd2allMiner(taskCombination, resultsMap);
+		}
+	}
+
+	/*public void taskCombinationAdd2allMiner(HashMap<TaskCombination, MinerResultsPath> resultsMap) {
+		for
+	}*/
+
+	private void taskAdd2allMiner(TaskCombination taskCombination, HashMap<TaskCombination, ?> resultsMap) {
+		if (resultsMap.get(taskCombination) instanceof MinerNodeResults) {
+			MinerNodeResults results = (MinerNodeResults) resultsMap.get(taskCombination);
+			for (TaskElement task : taskCombination.getTasks()) {
+				switch (task.getMiningMethod()) {
+					case MiningMethods_OutliesMining:
+						NetworkMinerOM minerOM = new NetworkMinerOM(task, null);
+						if (minerOM.results.getRetOM().isIslinkDegree()) {
+							System.out.println("true");
+						}
+						minerOM.results.setRetOM(results.getRetOM());
+						minerOM.results.di = taskCombination.getDataItems();
+						minerOM.isOver.setIsover(true);
+						allMiners.put(task, minerOM);
+						break;
+					case MiningMethods_PeriodicityMining:
+						NetworkMinerPM minerPM = new NetworkMinerPM(task, null);
+						minerPM.results.setRetPM(results.getRetPM());
+						minerPM.isOver.setIsover(true);
+						minerPM.results.di = taskCombination.getDataItems();
+						allMiners.put(task, minerPM);
+						break;
+					case MiningMethods_SequenceMining:
+						NetworkMinerSM minerSM = new NetworkMinerSM(task, null);
+						minerSM.results.setRetSM(results.getRetSM());
+						minerSM.isOver.setIsover(true);
+						if (minerSM.results.getRetSM().isHasFreItems()) {
+							System.out.println(minerSM.results.getRetSM().getPatterns().getData().size());
+						} else {
+							System.out.println(taskCombination.getName() + " none freitems");
+						}
+						minerSM.results.di = taskCombination.getDataItems();
+						allMiners.put(task, minerSM);
+						break;
+					case MiningMethods_Statistics:
+						NetworkMinerStatistics statistics = new NetworkMinerStatistics(task, null);
+						statistics.results.setRetStatistics(results.getRetStatistics());
+						statistics.isOver.setIsover(true);
+						statistics.results.di = taskCombination.getDataItems();
+						allMiners.put(task, statistics);
+						break;
+					default:
+						break;
+				}
+			}
+		} else if (resultsMap.get(taskCombination) instanceof MinerResultsPath){
+			MinerResultsPath results= (MinerResultsPath) resultsMap.get(taskCombination);
+			for(TaskElement task:taskCombination.getTasks()){
+				switch (task.getMiningMethod()) {
+					case MiningMethods_OutliesMining:
+						NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
+						minerOM.results.getRetPath().setRetOM(results.getRetOM());
+						minerOM.results.getRetPath().setPathOriDataItems(results.getPathOriDataItems());
+						minerOM.results.di=taskCombination.getDataItems();
+						minerOM.isOver.setIsover(true);
+						allMiners.put(task, minerOM);
+						break;
+					case MiningMethods_PeriodicityMining:
+						NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
+						minerPM.results.getRetPath().setRetPM(results.getRetPM());
+						minerPM.isOver.setIsover(true);
+						minerPM.results.getRetPath().setPathOriDataItems(results.getPathOriDataItems());
+						minerPM.results.di=taskCombination.getDataItems();
+						allMiners.put(task, minerPM);
+						break;
+					case MiningMethods_Statistics:
+						NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
+						statistics.results.getRetPath().setRetStatistic(results.getRetStatistic());
+						statistics.results.getRetPath().setPathProb(results.getPathProb());
+						statistics.isOver.setIsover(true);
+						statistics.results.di=taskCombination.getDataItems();
+						allMiners.put(task, statistics);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+	}
+
 	@Override
 	public void onTaskAdded(TaskElement task) {
 		createMiner(task);

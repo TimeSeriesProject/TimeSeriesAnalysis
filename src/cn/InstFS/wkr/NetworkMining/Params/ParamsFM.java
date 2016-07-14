@@ -3,10 +3,11 @@ package cn.InstFS.wkr.NetworkMining.Params;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-public class ParamsFM extends IParamsNetworkMining {
+public class ParamsFM extends IParamsNetworkMining implements Serializable {
     //高斯滑动窗口模型算法参数
     private int initWindowSize = 10;//初始窗口大小
     private int maxWindowSize = 30;//最大窗口大小

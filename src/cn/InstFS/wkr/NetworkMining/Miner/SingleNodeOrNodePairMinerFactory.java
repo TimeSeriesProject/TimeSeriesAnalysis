@@ -18,14 +18,15 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
 public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	private static SingleNodeOrNodePairMinerFactory inst;
+	private static SingleNodeOrNodePairMinerFactory pairInst;
 	public static boolean isMining=false;
 	public String dataPath="C:\\data\\out\\traffic";
 	private MiningObject miningObject;
 	private TaskRange taskRange;
 	private MiningMethod method;
 	
-	private SingleNodeOrNodePairMinerFactory(){
-		super();
+	private SingleNodeOrNodePairMinerFactory(String minertype){
+		super(minertype);
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Times);
 		miningObjectList.add(MiningObject.MiningObject_Traffic);
@@ -38,9 +39,17 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	public static SingleNodeOrNodePairMinerFactory getInstance(){
 		if(inst==null){
 			isMining=false;
-			inst=new SingleNodeOrNodePairMinerFactory();
+			inst=new SingleNodeOrNodePairMinerFactory("节点规律挖掘");
 		}
 		return inst;
+	}
+
+	public static SingleNodeOrNodePairMinerFactory getPairInstance() {
+		if(pairInst==null){
+			isMining=false;
+			pairInst=new SingleNodeOrNodePairMinerFactory("链路规律挖掘");
+		}
+		return pairInst;
 	}
 	
 	public MiningMethod getMethod() {

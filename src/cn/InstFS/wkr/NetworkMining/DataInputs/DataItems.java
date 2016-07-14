@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +29,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
-public class DataItems {
+public class DataItems implements Serializable {
 	public List<Date> time;
 	public List<String> data;
 	public List<Map<String, Integer>> NonNumData; //非数值型DataItems 各时间粒度的items出现次数

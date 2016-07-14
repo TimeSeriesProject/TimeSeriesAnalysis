@@ -38,14 +38,14 @@ public class DialogSettings extends JDialog {
     public DialogSettings(MinerFactorySettings factorySettings, String title){
         this.settings = factorySettings;
         this.settings.setModified(false);
+        this.settings.setOnlyObjectModified(false);
         this.setTitle(title);
-
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonSave);
         initLayout();
-        addEventListener();
         setData(factorySettings);
+        addEventListener();
 
     }
 
@@ -117,7 +117,7 @@ public class DialogSettings extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 JFileChooser chooser = new JFileChooser();
                 chooser = new JFileChooser();
-                chooser.setCurrentDirectory(new File("."));
+                chooser.setCurrentDirectory(new File(dataPath.getText()));
                 chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
                 //
                 // disable the "All files" option.
@@ -190,16 +190,32 @@ public class DialogSettings extends JDialog {
         if (fieldGranularity.getText() != null ? !fieldGranularity.getText().equals(data.getGranularity()) : data.getGranularity() != null)
             return true;
 
-        List<MiningObject> objectList = settings.getMiningObjectsChecked();
-        for (JCheckBox cb: objectCheckBoxes)
-                if(cb.isSelected() != objectList.contains(MiningObject.fromString(cb.getText())) )
-                    return true;
+        List<MiningObject> objectList = settings.getMiningObjectsChecked(); // 原已选checkBoxList
+        settings.getMiningObjectsAdded().clear();
+        settings.getMiningObjectsDeleted().clear();
+        boolean flag = false;
+
+        for (JCheckBox cb: objectCheckBoxes) {
+            if (cb.isSelected() && !objectList.contains(MiningObject.fromString(cb.getText()))) {// 新选择的checkBox
+                settings.getMiningObjectsAdded().add(MiningObject.fromString(cb.getText()));
+                settings.setOnlyObjectModified(true);
+                flag = true;
+            } else if (!cb.isSelected() && objectList.contains(MiningObject.fromString(cb.getText()))) {//取消选择的checkBox
+                settings.getMiningObjectsDeleted().add(MiningObject.fromString(cb.getText()));
+                settings.setOnlyObjectModified(true);
+                flag = true;
+            }
+        }
+
+        return flag;
+/*                if(cb.isSelected() != objectList.contains(MiningObject.fromString(cb.getText())) )
+                    return true;*/
 
         /*for (JCheckBox cb: objectCheckBoxes) {
             if (!cb.isSelected())   //未修改时全部checkbox都是selected
                 return true;
         }*/
-        return false;
+        //return false;
     }
     public static void main(String[] args) {
         NetworkMinerFactory.getInstance();

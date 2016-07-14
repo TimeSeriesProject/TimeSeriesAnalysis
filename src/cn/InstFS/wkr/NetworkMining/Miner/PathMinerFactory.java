@@ -24,7 +24,7 @@ public class PathMinerFactory extends MinerFactorySettings{
 	private MiningMethod method;
 	
 	private PathMinerFactory(){
-		super();
+		super(MinerType.MiningType_Path.toString());
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Times);
 		miningObjectList.add(MiningObject.MiningObject_Traffic);

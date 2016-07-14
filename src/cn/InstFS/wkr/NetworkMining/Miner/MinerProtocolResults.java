@@ -1,12 +1,13 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import associationRules.ProtocolAssociationResult;
 
-public class MinerProtocolResults {
+public class MinerProtocolResults implements Serializable{
 	private MinerResultsFP_Line retFP;
 	private MinerResultsFP_Whole retSim;
 	public MinerProtocolResults() {

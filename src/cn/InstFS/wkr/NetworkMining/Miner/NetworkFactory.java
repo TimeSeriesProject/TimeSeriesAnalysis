@@ -38,7 +38,7 @@ public class NetworkFactory extends MinerFactorySettings {
 		this.miningObject = miningObject;
 	}
 	NetworkFactory(){
-		super();
+		super(MinerType.MiningTypes_WholeNetwork.toString());
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Cluster);
 		miningObjectList.add(MiningObject.MiningObject_Diameter);

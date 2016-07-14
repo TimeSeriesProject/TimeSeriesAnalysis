@@ -3,7 +3,9 @@ package cn.InstFS.wkr.NetworkMining.Miner;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
 
-public class MinerResultsOM{
+import java.io.Serializable;
+
+public class MinerResultsOM implements Serializable{
 	ParamsTSA params;	// 或者 java.util.Properties params;
 	
 	private DataItems outlies;
