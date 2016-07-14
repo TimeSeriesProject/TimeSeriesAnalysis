@@ -148,39 +148,6 @@ public class Client {
                         default:
                             break;
                     }
-//                    HashMap<TaskCombination, MinerNodeResults> timesMap=NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Times);
-//                    HashMap<TaskCombination, MinerResultsPath> timesMap = NetworkMinerFactory.getInstance().startAllPathMinersDis(MiningObject.fromString(taskCombination.getMiningObject()));
-//**************      HashMap<TaskCombination, MinerResultsPath> timesMap = NetworkMinerFactory.getInstance().startAllPathMinersDis(MiningObject.MiningObject_Traffic);
-
-//                    System.out.println("result length : " + timesMap.size());
-//                    TaskCombinationResult taskCombinationResult = new TaskCombinationResult();
-//                    NetworkMinerFactory.getInstance().showNodeMiners(MiningObject.MiningObject_Times, timesMap,
-//                            taskCombinationResult.getAllMiners());
-
-//                    for (Map.Entry<TaskCombination, MinerNodeResults> entry : timesMap.entrySet()) {
-////                        taskCombinationResult.setName(entry.getKey().getName());
-//                        taskCombinationResult.setName(entry.getKey().getName());
-//                        taskCombinationResult.setMinerNodeResults(entry.getValue());
-//                    }
-
-//                    for (Map.Entry<TaskCombination, MinerResultsPath> entry : timesMap.entrySet()) {
-//                        taskCombinationResult.setName(entry.getKey().getName());
-//                        taskCombinationResult.setMinerResultsPath(entry.getValue());
-//                    }
-
-//                    taskCombinationResult.setAllMiners(NetworkMinerFactory.getInstance().getAllMiners());
-//                    for (Map.Entry<TaskElement, INetworkMiner> entry : taskCombinationResult.getAllMiners().entrySet()) {
-//                        System.out.println("taskelementname: " + entry.getKey().getTaskName());
-//                    }
-//                    long a = System.currentTimeMillis();
-//                    clientInit.sendResult(taskCombinationResult);//将结果发送回去
-//                    System.out.println("结果已返回");
-                    //线程等待
-//                    Random ra = new Random();
-//                    Thread.sleep((ra.nextInt(8) + 1) * 1000);
-//                    Thread.sleep(3);
-//                    long b = System.currentTimeMillis();
-//                    System.out.println("返回时间：" + (b - a));
                 }
             } catch (IOException e) {
                 System.out.println("客户端关闭");

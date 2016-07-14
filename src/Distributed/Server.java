@@ -25,8 +25,6 @@ import java.util.concurrent.locks.*;
 public class Server {
     private static Server server;
     private static ServerStart serverStart;
-    //    private Timer timer = new Timer();
-//    private AwakeTask awakeTask = new AwakeTask(timer);
     private static int count = 0;//发送次数
     private static boolean singleNodeTimeFlag = true;//判断是否生成result界面
     private static boolean singleNodeTrafficFlag = true;//判断是否生成result界面
@@ -299,7 +297,6 @@ public class Server {
 
     public void isNetworkOver( MiningObject miningObject) {
         if (miningObject.equals(MiningObject.MiningObject_Cluster)) {
-            System.out.println("进入簇系数");
             while (networkClusterFlag) {
                 if (networkClusterFlag) {
                     try {
@@ -312,11 +309,10 @@ public class Server {
                 }
             }
         } else if (miningObject.equals(MiningObject.MiningObject_Diameter)) {
-            System.out.println("进入直径");
             while (networkDiameterFlag) {
                 if (networkDiameterFlag) {
                     try {
-                        Thread.sleep(10000);
+                        Thread.sleep(11000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -342,7 +338,6 @@ public class Server {
             }
         } else if (miningObject.equals(MiningObject.MiningObject_Traffic)) {
             while (pathTrafficFlag) {
-                System.out.println("进入pathTrafficFlag");
                 if (pathTrafficFlag) {
                     try {
                         Thread.sleep(10000);
@@ -446,8 +441,6 @@ public class Server {
         System.out.println("显示singleNode结果....");
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-//                singleNodeResultMaps.put("通信次数", singleNodeTimes);
-//                singleNodeResultMaps.put("流量", singleNodeTraffic);
                 JFrame.setDefaultLookAndFeelDecorated(true);
                 SingleNodeListFrame frame = new SingleNodeListFrame(singleNodeResultMaps);
                 frame.setVisible(true);
