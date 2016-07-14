@@ -2,6 +2,7 @@ package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
 
 
-public class MinerResults {
+public class MinerResults implements Serializable {
 	private INetworkMiner miner;
 	
 	private Date dateProcess;

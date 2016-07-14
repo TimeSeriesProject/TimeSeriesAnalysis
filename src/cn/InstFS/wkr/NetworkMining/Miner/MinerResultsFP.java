@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.Map;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
-public class MinerResultsFP {
+public class MinerResultsFP implements Serializable {
 	private List<DataItems> originItems;
 	private Map<Integer, List<String>> associateRules;
 	public MinerResultsFP(){

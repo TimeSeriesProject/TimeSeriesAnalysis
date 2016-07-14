@@ -1,6 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
-public class MinerResultsStatistics {
+import java.io.Serializable;
+
+public class MinerResultsStatistics implements Serializable {
 	private double mean;
 	private double std;
 	private double complex;

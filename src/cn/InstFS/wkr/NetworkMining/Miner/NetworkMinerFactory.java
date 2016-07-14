@@ -38,6 +38,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		INetworkMiner miner = null;
 		if (task == null)
 			return null;
+		System.out.println("allminers 1::::::" + allMiners.size());
 		if (allMiners.containsKey(task))
 			return allMiners.get(task);
 		if(task.getTaskRange().equals(TaskRange.NodePairRange)){
@@ -89,6 +90,33 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			break;
 		default:
 			break;
+		}
+		allCombinationMiners.put(taskCombination, miner);
+		return miner;
+	}
+
+	public INetworkMiner createMinerDis(TaskCombination taskCombination){
+		allCombinationMiners.clear();//客户端allCombinationMiners只有一个，需要先清空
+		if (taskCombination == null)
+			return null;
+		if (allCombinationMiners.containsKey(taskCombination))
+			return allCombinationMiners.get(allCombinationMiners);
+		INetworkMiner miner=null;
+		switch (taskCombination.getMinerType()) {
+			case MiningType_SinglenodeOrNodePair:
+				miner=new NetworkMinerNode(taskCombination);
+				break;
+			case MiningType_ProtocolAssociation:
+				miner=new ProtocolAssMiner(taskCombination);
+				break;
+			case MiningType_Path:
+				miner = new NetworkMinerPath(taskCombination);
+				break;
+			case MiningTypes_WholeNetwork:
+				miner=new NetworkMinerNode(taskCombination);
+				break;
+			default:
+				break;
 		}
 		allCombinationMiners.put(taskCombination, miner);
 		return miner;
@@ -238,6 +266,123 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		}
 		return resultsMap;
 	}
+
+	public HashMap<TaskCombination, MinerNodeResults> startAllNodeMinersDis(MiningObject miningObject){
+		HashMap<TaskCombination, MinerNodeResults>resultsMap=
+				new HashMap<TaskCombination,MinerNodeResults>();
+		startMinerOneByOne(MinerType.MiningType_SinglenodeOrNodePair,miningObject);
+		waitUtilAllMinerOver(MinerType.MiningType_SinglenodeOrNodePair, miningObject, resultsMap, null,null);
+
+//		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
+//		System.out.println("allCombinationMiners ::::" + allCombinationMiners.size());
+//		while(iterator.hasNext()){
+//			Entry<TaskCombination, INetworkMiner> entry=iterator.next();
+//			TaskCombination taskCombination=entry.getKey();
+//			if(!taskCombination.getMiningObject().equals(miningObject.toString())||
+//					!taskCombination.getMinerType().equals(MinerType.MiningType_SinglenodeOrNodePair))
+//				continue;
+//			for(TaskElement task:taskCombination.getTasks()){
+//				switch (task.getMiningMethod()) {
+//				case MiningMethods_OutliesMining:
+//					NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
+//					minerOM.results.setRetOM(resultsMap.get(taskCombination).getRetOM());
+//					if(minerOM.results.getRetOM().isIslinkDegree()){
+//						System.out.println("true");
+//					}
+//					minerOM.results.di=taskCombination.getDataItems();
+//					minerOM.isOver.setIsover(true);
+//					allMiners.put(task, minerOM);
+//					break;
+//				case MiningMethods_PeriodicityMining:
+//					NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
+//					minerPM.results.setRetPM(resultsMap.get(taskCombination).getRetPM());
+//					minerPM.isOver.setIsover(true);
+//					minerPM.results.di=taskCombination.getDataItems();
+//					allMiners.put(task, minerPM);
+//					break;
+//				case MiningMethods_SequenceMining:
+//					NetworkMinerSM minerSM=new NetworkMinerSM(task, null);
+//					minerSM.results.setRetSM(resultsMap.get(taskCombination).getRetSM());
+//					minerSM.isOver.setIsover(true);
+//					if(minerSM.results.getRetSM().isHasFreItems()){
+//						System.out.println(minerSM.results.getRetSM().getPatterns().getData().size());
+//					}else{
+//						System.out.println(taskCombination.getName()+" none freitems");
+//					}
+//					minerSM.results.di=taskCombination.getDataItems();
+//					allMiners.put(task, minerSM);
+//					break;
+//				case MiningMethods_Statistics:
+//					NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
+//					statistics.results.setRetStatistics(resultsMap.get(taskCombination).getRetStatistics());
+//					statistics.isOver.setIsover(true);
+//					statistics.results.di=taskCombination.getDataItems();
+//					allMiners.put(task, statistics);
+//					break;
+//				default:
+//					break;
+//				}
+//			}
+//		}
+		return resultsMap;
+	}
+
+	public void showNodeMinersDis(MiningObject miningObject, HashMap<TaskCombination, MinerNodeResults> resultsMap) {
+//		allMiners.clear();
+		Iterator<Entry<TaskCombination, MinerNodeResults>>iterator=resultsMap.entrySet().iterator();
+//		System.out.println("allCombinationMiners ::::" + resultsMap.size());
+		while(iterator.hasNext()){
+			Entry<TaskCombination, MinerNodeResults> entry=iterator.next();
+			TaskCombination taskCombination=entry.getKey();
+			if(!taskCombination.getMiningObject().equals(miningObject.toString())||
+					!taskCombination.getMinerType().equals(MinerType.MiningType_SinglenodeOrNodePair))
+				continue;
+			for(TaskElement task:taskCombination.getTasks()){
+				switch (task.getMiningMethod()) {
+					case MiningMethods_OutliesMining:
+						NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
+						minerOM.results.setRetOM(resultsMap.get(taskCombination).getRetOM());
+						if(minerOM.results.getRetOM().isIslinkDegree()){
+							System.out.println("true");
+						}
+						minerOM.results.di=taskCombination.getDataItems();
+						minerOM.isOver.setIsover(true);
+						allMiners.put(task, minerOM);
+						break;
+					case MiningMethods_PeriodicityMining:
+						NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
+						minerPM.results.setRetPM(resultsMap.get(taskCombination).getRetPM());
+						minerPM.isOver.setIsover(true);
+						minerPM.results.di=taskCombination.getDataItems();
+						allMiners.put(task, minerPM);
+						break;
+					case MiningMethods_SequenceMining:
+						NetworkMinerSM minerSM=new NetworkMinerSM(task, null);
+						minerSM.results.setRetSM(resultsMap.get(taskCombination).getRetSM());
+						minerSM.isOver.setIsover(true);
+						if(minerSM.results.getRetSM().isHasFreItems()){
+							System.out.println(minerSM.results.getRetSM().getPatterns().getData().size());
+						}else{
+							System.out.println(taskCombination.getName()+" none freitems");
+						}
+						minerSM.results.di=taskCombination.getDataItems();
+						allMiners.put(task, minerSM);
+						break;
+					case MiningMethods_Statistics:
+						NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
+						statistics.results.setRetStatistics(resultsMap.get(taskCombination).getRetStatistics());
+						statistics.isOver.setIsover(true);
+						statistics.results.di=taskCombination.getDataItems();
+						allMiners.put(task, statistics);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		System.out.println("allminers 2::::::" + allMiners.size());
+	}
+
 	public HashMap<TaskCombination, MinerNodeResults> startAllNetworkStructrueMiners(MiningObject miningObject){
 		HashMap<TaskCombination, MinerNodeResults>resultsMap=
 				new HashMap<TaskCombination,MinerNodeResults>();
@@ -294,8 +439,76 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 				}
 			}
 		}
+//		System.out.println("allminers 2::::::" + allMiners.size());
 		return resultsMap;
 	}
+
+	public HashMap<TaskCombination, MinerNodeResults> startAllNetworkStructrueMinersDis(MiningObject miningObject){
+		HashMap<TaskCombination, MinerNodeResults>resultsMap=
+				new HashMap<TaskCombination,MinerNodeResults>();
+		startMinerOneByOne(MinerType.MiningTypes_WholeNetwork,miningObject);
+		waitUtilAllMinerOver(MinerType.MiningTypes_WholeNetwork, miningObject, resultsMap, null,null);
+		return resultsMap;
+	}
+
+	public void showNetWorkMinersDis(MiningObject miningObject, HashMap<TaskCombination, MinerNodeResults> resultsMap) {
+//		allMiners.clear();
+		Iterator<Entry<TaskCombination, MinerNodeResults>>iterator=resultsMap.entrySet().iterator();
+//		System.out.println("allCombinationMiners ::::" + resultsMap.size());
+		while(iterator.hasNext()){
+			Entry<TaskCombination, MinerNodeResults> entry=iterator.next();
+			TaskCombination taskCombination=entry.getKey();
+			if(!taskCombination.getMiningObject().equals(miningObject.toString())||
+					!taskCombination.getMinerType().equals(MinerType.MiningTypes_WholeNetwork))
+				continue;
+			for(TaskElement task:taskCombination.getTasks()){
+				switch (task.getMiningMethod()) {
+					case MiningMethods_OutliesMining:
+						NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
+						if(minerOM.results.getRetOM().isIslinkDegree()){
+							System.out.println("true");
+						}
+						minerOM.results.setRetOM(resultsMap.get(taskCombination).getRetOM());
+						minerOM.results.di=taskCombination.getDataItems();
+						minerOM.isOver.setIsover(true);
+						allMiners.put(task, minerOM);
+						break;
+					case MiningMethods_PeriodicityMining:
+						NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
+						minerPM.results.setRetPM(resultsMap.get(taskCombination).getRetPM());
+						minerPM.isOver.setIsover(true);
+						minerPM.results.di=taskCombination.getDataItems();
+						allMiners.put(task, minerPM);
+						break;
+					case MiningMethods_SequenceMining:
+						NetworkMinerSM minerSM=new NetworkMinerSM(task, null);
+						minerSM.results.setRetSM(resultsMap.get(taskCombination).getRetSM());
+						minerSM.isOver.setIsover(true);
+						if(minerSM.results.getRetSM().isHasFreItems()){
+							System.out.println(minerSM.results.getRetSM().getPatterns().getData().size());
+						}else{
+							System.out.println(taskCombination.getName()+" none freitems");
+						}
+						minerSM.results.di=taskCombination.getDataItems();
+						allMiners.put(task, minerSM);
+						break;
+					case MiningMethods_Statistics:
+						NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
+						statistics.results.setRetStatistics(resultsMap.get(taskCombination).getRetStatistics());
+						statistics.isOver.setIsover(true);
+						statistics.results.di=taskCombination.getDataItems();
+						allMiners.put(task, statistics);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		System.out.println("allminers 2::::::" + allMiners.size());
+	}
+
+
+
 	public HashMap<TaskCombination, MinerProtocolResults> startAllProtocolMiners(MiningObject miningObject){
 		HashMap<TaskCombination, MinerProtocolResults>resultsMap=
 				new HashMap<TaskCombination,MinerProtocolResults>();
@@ -380,13 +593,111 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		return resultsMap;
 	}
 
+	//分布式路径
+	public HashMap<TaskCombination, MinerResultsPath> startAllPathMinersDis(MiningObject miningObject){
+		HashMap<TaskCombination, MinerResultsPath>resultsMap=
+				new HashMap<TaskCombination,MinerResultsPath>();
+		startMinerOneByOne(MinerType.MiningType_Path,miningObject);
+		waitUtilAllMinerOver(MinerType.MiningType_Path, miningObject, null, null,resultsMap);
+
+//		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
+//		while(iterator.hasNext()){
+//			Entry<TaskCombination, INetworkMiner> entry=iterator.next();
+//			TaskCombination taskCombination=entry.getKey();
+//			if(!taskCombination.getMiningObject().equals(miningObject.toString())||
+//					!taskCombination.getMinerType().equals(MinerType.MiningType_Path))
+//				continue;
+//			for(TaskElement task:taskCombination.getTasks()){
+//				switch (task.getMiningMethod()) {
+//					case MiningMethods_OutliesMining:
+//						NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
+//						minerOM.results.getRetPath().setRetOM(resultsMap.get(taskCombination).getRetOM());
+//						minerOM.results.getRetPath().setPathOriDataItems(resultsMap.get(taskCombination).getPathOriDataItems());
+//						minerOM.results.di=taskCombination.getDataItems();
+//						minerOM.isOver.setIsover(true);
+//						allMiners.put(task, minerOM);
+//						break;
+//					case MiningMethods_PeriodicityMining:
+//						NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
+//						minerPM.results.getRetPath().setRetPM(resultsMap.get(taskCombination).getRetPM());
+//						minerPM.isOver.setIsover(true);
+//						minerPM.results.getRetPath().setPathOriDataItems(resultsMap.get(taskCombination).getPathOriDataItems());
+//						minerPM.results.di=taskCombination.getDataItems();
+//						allMiners.put(task, minerPM);
+//						break;
+//					case MiningMethods_Statistics:
+//						/*NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
+//						statistics.results.setRetStatistics(resultsMap.get(taskCombination).getRetStatistics());
+//						statistics.isOver.setIsover(true);
+//						statistics.results.di=taskCombination.getDataItems();
+//						allMiners.put(task, statistics);*/
+//						break;
+//					default:
+//						break;
+//				}
+//			}
+//		}
+		return resultsMap;
+	}
+
+	public void showPathMinersDis(MiningObject miningObject, HashMap<TaskCombination, MinerResultsPath> resultsMap){
+		//获取全部的TaskCombination，resultsMap中有，客户端allCombinationMiners没有，TaskCombinationList中也有
+		Iterator<Entry<TaskCombination, MinerResultsPath>>iterator=resultsMap.entrySet().iterator();
+//		System.out.println("allCombinationMiners :::: " + resultsMap.size());
+		while(iterator.hasNext()){
+			Entry<TaskCombination, MinerResultsPath> entry=iterator.next();
+			TaskCombination taskCombination=entry.getKey();
+			if(!taskCombination.getMiningObject().equals(miningObject.toString())||
+					!taskCombination.getMinerType().equals(MinerType.MiningType_Path))
+				continue;
+			for(TaskElement task:taskCombination.getTasks()){
+				switch (task.getMiningMethod()) {
+					case MiningMethods_OutliesMining:
+						NetworkMinerOM minerOM =new NetworkMinerOM(task,null);
+						minerOM.results.getRetPath().setRetOM(resultsMap.get(taskCombination).getRetOM());
+						minerOM.results.getRetPath().setPathOriDataItems(resultsMap.get(taskCombination).getPathOriDataItems());
+						minerOM.results.di=taskCombination.getDataItems();
+						minerOM.isOver.setIsover(true);
+						allMiners.put(task, minerOM);
+						break;
+					case MiningMethods_PeriodicityMining:
+						NetworkMinerPM minerPM=new NetworkMinerPM(task, null);
+						minerPM.results.getRetPath().setRetPM(resultsMap.get(taskCombination).getRetPM());
+						minerPM.isOver.setIsover(true);
+						minerPM.results.getRetPath().setPathOriDataItems(resultsMap.get(taskCombination).getPathOriDataItems());
+						minerPM.results.di=taskCombination.getDataItems();
+						allMiners.put(task, minerPM);
+						break;
+					case MiningMethods_Statistics:
+						NetworkMinerStatistics statistics=new NetworkMinerStatistics(task, null);
+						statistics.results.getRetPath().setRetStatistic(resultsMap.get(taskCombination).getRetStatistic());
+						statistics.results.getRetPath().setPathProb(resultsMap.get(taskCombination).getPathProb());
+						statistics.isOver.setIsover(true);
+						statistics.results.di=taskCombination.getDataItems();
+						allMiners.put(task, statistics);
+						break;
+					default:
+						break;
+				}
+			}
+			System.out.println("allMiners 2:::::: " + allMiners.size());
+		}
+	}
+
 	private void startMinerOneByOne(MinerType minerType,MiningObject miningObject){
+		System.out.println("allCombinationMiners: " + allCombinationMiners.size());
 		Iterator<Entry<TaskCombination, INetworkMiner>>iterator=allCombinationMiners.entrySet().iterator();
 		while(iterator.hasNext()){
 			Entry<TaskCombination, INetworkMiner> entry=iterator.next();
+			System.out.println("1:" + entry.getKey().getMinerType() + minerType );
+			System.out.println("2:" + entry.getKey().getMiningObject() + miningObject.toString() );
+			System.out.println("3:" + entry.getValue().isOver() );
 			if(!entry.getKey().getMinerType().equals(minerType)||!entry.getKey().getMiningObject()
-					.equals(miningObject.toString())||entry.getValue().isOver())
+					.equals(miningObject.toString())||entry.getValue().isOver()){
+				System.out.println();
+				System.out.println("执行过了，不执行，跳过");
 				continue;
+			}
 			entry.getValue().start();
 			try {
 				Thread.sleep(1000);
@@ -495,7 +806,8 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	
 	@Override
 	public void onTaskAdded(TaskCombination task) {
-		createMiner(task);
+//		createMiner(task);
+		createMinerDis(task);
 	}
 	
 	@Override

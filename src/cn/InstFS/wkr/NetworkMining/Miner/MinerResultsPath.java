@@ -1,10 +1,11 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
-public class MinerResultsPath {
+public class MinerResultsPath implements Serializable {
 	private HashMap<String, MinerResultsPM> retPM;
 	private int minPeriod = 0;
 	private int maxPeriod = 0;

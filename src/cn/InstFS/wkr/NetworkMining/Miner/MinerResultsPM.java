@@ -1,12 +1,13 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsPM;
 
-public class MinerResultsPM{
+public class MinerResultsPM implements Serializable {
 	boolean hasPeriod;
 	boolean hasPartialPeriod;
 	ParamsPM params;	// 或者 java.util.Properties params;

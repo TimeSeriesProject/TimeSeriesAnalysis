@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,7 @@ import associationRules.ProtoclPair;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
 
-public class MinerResultsFP_Line {
+public class MinerResultsFP_Line implements Serializable {
 
 	String ip = "";
 	double confidence = 0.0;
