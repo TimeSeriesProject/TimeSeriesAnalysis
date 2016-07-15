@@ -55,7 +55,7 @@ public class Server {
     private HashMap<String, HashMap<TaskCombination, MinerNodeResults>> networkResultMaps = new HashMap<String, HashMap<TaskCombination, MinerNodeResults>>();
 
     //    private ReadWriteLock mapLock = new ReentrantReadWriteLock();
-    private ReadWriteLock countLock = new ReentrantReadWriteLock();
+    private Lock countLock = new ReentrantLock();
     private ReadWriteLock isRunningLock = new ReentrantReadWriteLock();
     private Lock resultLock = new ReentrantLock();
     private Lock cLock = new ReentrantLock();
@@ -242,7 +242,7 @@ public class Server {
         pathMinerFactoryDis.detect();
     }*/
 
-    public void SingleNode(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject){
+    public void SingleNode(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject) {
         genSingleNodeTask(singleNodeOrNodePairMinerFactoryDis, miningObject);
         initMap(MinerType.MiningType_SinglenodeOrNodePair);
         awakeThread();
@@ -250,7 +250,7 @@ public class Server {
         isSingleNodeOver(miningObject);
     }
 
-    public void path(PathMinerFactoryDis pathMinerFactoryDis, MiningObject miningObject){
+    public void path(PathMinerFactoryDis pathMinerFactoryDis, MiningObject miningObject) {
         genPathTask(pathMinerFactoryDis, miningObject);
         initMap(MinerType.MiningType_Path);
         awakeThread();
@@ -258,7 +258,7 @@ public class Server {
         isPathOver(miningObject);
     }
 
-    public void network(NetworkFactoryDis networkFactoryDis, MiningObject miningObject){
+    public void network(NetworkFactoryDis networkFactoryDis, MiningObject miningObject) {
         genNetworkTask(networkFactoryDis, miningObject);
         initMap(MinerType.MiningTypes_WholeNetwork);
         awakeThread();
@@ -267,7 +267,7 @@ public class Server {
     }
 
 
-    public void isSingleNodeOver( MiningObject miningObject) {
+    public void isSingleNodeOver(MiningObject miningObject) {
         if (miningObject.equals(MiningObject.MiningObject_Times)) {
             while (singleNodeTimeFlag) {
                 if (singleNodeTimeFlag) {
@@ -295,7 +295,7 @@ public class Server {
         }
     }
 
-    public void isNetworkOver( MiningObject miningObject) {
+    public void isNetworkOver(MiningObject miningObject) {
         if (miningObject.equals(MiningObject.MiningObject_Cluster)) {
             while (networkClusterFlag) {
                 if (networkClusterFlag) {
@@ -323,7 +323,7 @@ public class Server {
         }
     }
 
-    public void isPathOver( MiningObject miningObject) {
+    public void isPathOver(MiningObject miningObject) {
         if (miningObject.equals(MiningObject.MiningObject_Times)) {
             while (pathTimeFlag) {
                 if (pathTimeFlag) {
@@ -378,19 +378,19 @@ public class Server {
         }
     }
 
-    private static void genSingleNodeTask(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject){
+    private static void genSingleNodeTask(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject) {
         singleNodeOrNodePairMinerFactoryDis.reset();
         singleNodeOrNodePairMinerFactoryDis.setMiningObject(miningObject);
         singleNodeOrNodePairMinerFactoryDis.detect();
     }
 
-    private static void genNetworkTask(NetworkFactoryDis networkFactoryDis, MiningObject miningObject){
+    private static void genNetworkTask(NetworkFactoryDis networkFactoryDis, MiningObject miningObject) {
         networkFactoryDis.reset();
         networkFactoryDis.setMiningObject(miningObject);
         networkFactoryDis.detect();
     }
 
-    private static void genPathTask(PathMinerFactoryDis pathMinerFactoryDis, MiningObject miningObject){
+    private static void genPathTask(PathMinerFactoryDis pathMinerFactoryDis, MiningObject miningObject) {
         pathMinerFactoryDis.reset();
         pathMinerFactoryDis.setMiningObject(miningObject);
         pathMinerFactoryDis.detect();
@@ -539,12 +539,11 @@ public class Server {
                         /*for(Map.Entry<TaskCombination, String> entry : allCombinationTasks.entrySet()){
                             userClientObject.sendObject(entry.getKey());
                         }*/
-                        countLock.readLock().lock();
-                        if (count < tempList.size()) {
-                            countLock.readLock().unlock();
-                            isSuspend = true;
-                            countLock.writeLock().lock();
-                            try {
+                        countLock.lock();
+                        try {
+                            if (count < tempList.size()) {
+                                isSuspend = true;
+
                                 long a = System.currentTimeMillis();
                                 System.out.println("第" + count + "次发送" + tempList.size());
                                 userClientObject.sendObject(tempList.get(count));
@@ -552,39 +551,45 @@ public class Server {
                                 System.out.println("发送时间：" + (b - a));
                                 count += 1;
                                 System.out.println("第" + count + "次即将开始");
-                            } finally {
-                                countLock.writeLock().unlock();
                             }
-                        } else if (count == tempList.size()) {
-                            int temp = 0;//中途最后一个结果发回来，强行再发一次最后一个任务，防止客户端没有ready卡死
-                            countLock.readLock().unlock();
-                            //线程加锁，防止其他线程调用Map
-                            isSuspend = true;
-//                            mapLock.readLock().lock();
-//                            try {
-                            long a = System.currentTimeMillis();
-                            //找到没有完成的任务
+                        } finally {
+                            countLock.unlock();
+                        }
 
-                            for (Map.Entry<TaskCombination, String> entry : allCombinationTasks.entrySet()) {
-                                temp += 1;
-                                System.out.println("当前TaskCombination= " + entry.getKey().getName() +
-                                        " and String = " + entry.getValue());
-                                if (entry.getValue().equals("n")) {
-                                    userClientObject.sendObject(entry.getKey());
-//                                            isSuspend = false;
-                                    System.out.println("第二次发送的task：" + entry.getKey().getName());
-                                    break;
+                        countLock.lock();
+                        try {
+                            if (count == tempList.size()) {
+                                int temp = 0;//中途最后一个结果发回来，强行再发一次最后一个任务，防止客户端没有ready卡死
+                                //线程加锁，防止其他线程调用Map
+                                isSuspend = true;
+    //                            mapLock.readLock().lock();
+    //                            try {
+                                long a = System.currentTimeMillis();
+                                //找到没有完成的任务
+
+                                for (Map.Entry<TaskCombination, String> entry : allCombinationTasks.entrySet()) {
+                                    temp += 1;
+                                    System.out.println("当前TaskCombination= " + entry.getKey().getName() +
+                                            " and String = " + entry.getValue());
+                                    if (entry.getValue().equals("n")) {
+                                        userClientObject.sendObject(entry.getKey());
+//                                        isSuspend = false;
+                                        System.out.println("第二次发送的task：" + entry.getKey().getName());
+                                        break;
+                                    }
+                                    if (temp == allCombinationTasks.size()) {
+                                        userClientObject.sendObject(entry.getKey());
+                                    }
                                 }
-                                if (temp == allCombinationTasks.size()) {
-                                    userClientObject.sendObject(entry.getKey());
-                                }
+
+                                long b = System.currentTimeMillis();
+                                System.out.println("第二次发送时间：" + (b - a));
+    //                            } finally {
+    //                                mapLock.readLock().unlock();
+    //                            }
                             }
-
-                            long b = System.currentTimeMillis();
-                            System.out.println("第二次发送时间：" + (b - a));
-//                            } finally {
-//                                mapLock.readLock().unlock();
-//                            }
+                        } finally {
+                            countLock.unlock();
                         }
                     }
                     System.out.println("执行完毕");
