@@ -12,6 +12,7 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import org.junit.Assert;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -161,7 +162,8 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 	@Override
 	public void displayMinerResults(MinerResults rslt) {
 		DataItems nor=rslt.getInputData();
-		
+		//System.out.println("nor.size:"+nor.getLength());
+		System.out.println("length:"+nor.getLength()+"lastTime:"+nor.getLastTime());
 		
 		HashMap<String,ArrayList<DataItems>> f_model_nor= new HashMap<>();
 		
@@ -181,6 +183,8 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		else if(count==0)
 		{
 			DataItems nnor=new DataItems();
+			
+
 			 long startTime=System.currentTimeMillis();
 			if(freq!=null&&count==0){
 				HashMap<String,ArrayList<DataItems>> f_model_nor_mode=new HashMap<>();
@@ -191,10 +195,11 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 					String skey = key.toString();
 					ArrayList<String> astring = new ArrayList<>();
 					for (String s : freq.get(key)) {
-//					System.out.println(s);
+					//System.out.println(s);
 						astring.add(s);
 					}
 					nor_model.put(skey, astring);
+					//System.out.println(skey);
 				}
 				//显示结果
 //				System.out.println("f-normal-model");
@@ -240,35 +245,51 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 //							nor_line.add1Data(tempItem);
 //						}
 						DataItem tempItem = new DataItem();
-						tempItem.setTime(nor.getElementAt(first).getTime());
-						tempItem.setData(nor.getElementAt(first).getData());
 						DataItem tempMode=new DataItem();
-						nor_line.add1Data(tempItem);
-						nnor.add1Data(tempItem);
-					if(last!=nor.getLength()) {
-
-						tempItem.setTime(nor.getElementAt(last).getTime());
-						tempItem.setData(nor.getElementAt(last).getData());
-//						tempMode.setTime(nor.getElementAt(last).getTime());
-//						tempMode.setData(nor.getElementAt(last).getData());
-						nor_line.add1Data(tempItem);
-						nnor.add1Data(tempItem);
-					}
-					else {
-						tempItem.setTime(nor.getElementAt(last - 1).getTime());
-						tempItem.setData(nor.getElementAt(last - 1).getData());
-//						tempMode.setTime(nor.getElementAt(last - 1).getTime());
-//						tempMode.setData(nor.getElementAt(last - 1).getData());
-						nor_line.add1Data(tempItem);
-						nnor.add1Data(tempItem);
-					}
+						
+						/*System.out.println("nor.length:"+nor.data.size());
+						Assert.assertTrue(nor.data.size() == nor.time.size());						
+						System.out.println("first:"+first+" last:"+last);
+						System.out.println("data.size:"+nor.data.size()+" time.size:"+nor.time.size());*/
+						if(first<nor.getLength()){
+							
+							tempItem.setTime(nor.getElementAt(first).getTime());							
+							tempItem.setData(nor.getElementAt(first).getData());
+							
+							nor_line.add1Data(tempItem);
+							nnor.add1Data(tempItem);
+						}
+						
+						if(last<nor.getLength()) {
+	
+							tempItem.setTime(nor.getElementAt(last-1).getTime());
+							tempItem.setData(nor.getElementAt(last-1).getData());
+	
+							nor_line.add1Data(tempItem);
+							nnor.add1Data(tempItem);
+						}
+//					else {
+//						tempItem.setTime(nor.getElementAt(last - 1).getTime());
+//						tempItem.setData(nor.getElementAt(last - 1).getData());
+////						tempMode.setTime(nor.getElementAt(last - 1).getTime());
+////						tempMode.setData(nor.getElementAt(last - 1).getData());
+//						nor_line.add1Data(tempItem);
+//						nnor.add1Data(tempItem);
+//					}
 //
-					tempMode.setTime(nor.getElementAt((first + last) / 2).getTime());
-					tempMode.setData(Math.abs(Double.valueOf
-							(nor.getElementAt(last-1).getData())+Double.valueOf(nor.getElementAt(first).getData()))/2	+ "");
-					nor_line_mode.add1Data(tempMode);
-					nor_data.add(nor_line);
-					nor_data_mode.add(nor_line_mode);
+					if(first<nor.getLength()&&last<nor.getLength()){
+						tempMode.setTime(nor.getElementAt((first + last) / 2).getTime());
+						tempMode.setData(Math.abs(Double.valueOf
+								(nor.getElementAt(last-1).getData())+Double.valueOf(nor.getElementAt(first).getData()))/2	+ "");
+					}
+					//tempMode.setTime(nor.getElementAt((first + last) / 2).getTime());
+					//tempMode.setData(Math.abs(Double.valueOf
+					//		(nor.getElementAt(last-1).getData())+Double.valueOf(nor.getElementAt(first).getData()))/2	+ "");
+					if(tempMode.getData()!=null){
+						nor_line_mode.add1Data(tempMode);
+						nor_data.add(nor_line);
+						nor_data_mode.add(nor_line_mode);
+					}
 
 
 //						nor_data.add(nor_line);

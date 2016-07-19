@@ -56,6 +56,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	private String pathSource;
 	private String protocol;
 	private int patternNum;   //检测序列频繁模式时，确定序列的频繁项
+	private boolean isReadBetween = false; //判断是否读取区间文件
 	
 	public String getSourcePath() {
 		return sourcePath;
@@ -935,6 +936,10 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
 	}
-	
-	
+	public boolean getIsReadBetween(){
+		return isReadBetween;
+	}
+	public void setIsReadBetween(boolean b){
+		this.isReadBetween = b;
+	}
 }
