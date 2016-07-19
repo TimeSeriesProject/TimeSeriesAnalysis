@@ -25,29 +25,29 @@ import java.util.concurrent.locks.*;
 public class Server {
     private static Server server;
     private static ServerStart serverStart;
-    private static int count = 0;//发送次数
-    private static boolean singleNodeTimeFlag = true;//判断是否生成result界面
-    private static boolean singleNodeTrafficFlag = true;//判断是否生成result界面
-    private static boolean nodePairFlag = true;
-    private static boolean pathTimeFlag = true;
-    private static boolean pathTrafficFlag = true;
-    private static boolean networkClusterFlag = true;
-    private static boolean networkDiameterFlag = true;
+    private int count = 0;//发送次数
+    private boolean singleNodeTimeFlag = true;//判断是否生成result界面
+    private boolean singleNodeTrafficFlag = true;//判断是否生成result界面
+    private boolean nodePairFlag = true;
+    private boolean pathTimeFlag = true;
+    private boolean pathTrafficFlag = true;
+    private boolean networkClusterFlag = true;
+    private boolean networkDiameterFlag = true;
 
-    private static boolean ProtocolFlag = true;
+    private boolean ProtocolFlag = true;
 
-    private static boolean isRunning = false;//判断是否正在运行，解除挂起状态
+    private boolean isRunning = false;//判断是否正在运行，解除挂起状态
 
     private static ConcurrentHashMap<TaskCombination, String> allCombinationTasks = new ConcurrentHashMap<TaskCombination, String>();//带标签，所有不同类型任务
     //用于得到List<TaskCombination>,保存了全部的任务，并不断添加，Factory中allCombinationMiners服务端没有，客户端要clear
-    private static TaskCombinationList combinationList = new TaskCombinationList();
-    private static List<TaskCombination> tempList;
-    private static HashMap<TaskCombination, MinerNodeResults> singleNodeTimes = new HashMap<TaskCombination, MinerNodeResults>();
-    private static HashMap<TaskCombination, MinerNodeResults> singleNodeTraffic = new HashMap<TaskCombination, MinerNodeResults>();
-    private static HashMap<TaskCombination, MinerResultsPath> pathTimes = new HashMap<TaskCombination, MinerResultsPath>();
-    private static HashMap<TaskCombination, MinerResultsPath> pathTraffic = new HashMap<TaskCombination, MinerResultsPath>();
-    private static HashMap<TaskCombination, MinerNodeResults> networkCluster = new HashMap<TaskCombination, MinerNodeResults>();
-    private static HashMap<TaskCombination, MinerNodeResults> networkDiameter = new HashMap<TaskCombination, MinerNodeResults>();
+    private TaskCombinationList combinationList = new TaskCombinationList();
+    private List<TaskCombination> tempList;
+    private HashMap<TaskCombination, MinerNodeResults> singleNodeTimes = new HashMap<TaskCombination, MinerNodeResults>();
+    private HashMap<TaskCombination, MinerNodeResults> singleNodeTraffic = new HashMap<TaskCombination, MinerNodeResults>();
+    private HashMap<TaskCombination, MinerResultsPath> pathTimes = new HashMap<TaskCombination, MinerResultsPath>();
+    private HashMap<TaskCombination, MinerResultsPath> pathTraffic = new HashMap<TaskCombination, MinerResultsPath>();
+    private HashMap<TaskCombination, MinerNodeResults> networkCluster = new HashMap<TaskCombination, MinerNodeResults>();
+    private HashMap<TaskCombination, MinerNodeResults> networkDiameter = new HashMap<TaskCombination, MinerNodeResults>();
 
 
     private HashMap<String, HashMap<TaskCombination, MinerNodeResults>> singleNodeResultMaps = new HashMap<String, HashMap<TaskCombination, MinerNodeResults>>();
@@ -372,32 +372,32 @@ public class Server {
     public void setIsRunning(boolean isRunning) {
         isRunningLock.writeLock().lock();
         try {
-            Server.isRunning = isRunning;
+            this.isRunning = isRunning;
         } finally {
             isRunningLock.writeLock().unlock();
         }
     }
 
-    private static void genSingleNodeTask(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject) {
+    private void genSingleNodeTask(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject) {
         singleNodeOrNodePairMinerFactoryDis.reset();
         singleNodeOrNodePairMinerFactoryDis.setMiningObject(miningObject);
         singleNodeOrNodePairMinerFactoryDis.detect();
     }
 
-    private static void genNetworkTask(NetworkFactoryDis networkFactoryDis, MiningObject miningObject) {
+    private void genNetworkTask(NetworkFactoryDis networkFactoryDis, MiningObject miningObject) {
         networkFactoryDis.reset();
         networkFactoryDis.setMiningObject(miningObject);
         networkFactoryDis.detect();
     }
 
-    private static void genPathTask(PathMinerFactoryDis pathMinerFactoryDis, MiningObject miningObject) {
+    private void genPathTask(PathMinerFactoryDis pathMinerFactoryDis, MiningObject miningObject) {
         pathMinerFactoryDis.reset();
         pathMinerFactoryDis.setMiningObject(miningObject);
         pathMinerFactoryDis.detect();
     }
 
     //将所有TaskCombination放到map中
-    private static void initMap(MinerType minerType) {
+    private void initMap(MinerType minerType) {
         allCombinationTasks.clear();//先清空,每次任务只发送要执行的任务
         System.out.println("CombinationList 长度: " + combinationList.getTaskCombinationList().size());
         tempList = new ArrayList<TaskCombination>();
