@@ -38,7 +38,7 @@ public class Server {
 
     private boolean isRunning = false;//判断是否正在运行，解除挂起状态
 
-    private static ConcurrentHashMap<TaskCombination, String> allCombinationTasks = new ConcurrentHashMap<TaskCombination, String>();//带标签，所有不同类型任务
+    private ConcurrentHashMap<TaskCombination, String> allCombinationTasks = new ConcurrentHashMap<TaskCombination, String>();//带标签，所有不同类型任务
     //用于得到List<TaskCombination>,保存了全部的任务，并不断添加，Factory中allCombinationMiners服务端没有，客户端要clear
     private TaskCombinationList combinationList = new TaskCombinationList();
     private List<TaskCombination> tempList;
