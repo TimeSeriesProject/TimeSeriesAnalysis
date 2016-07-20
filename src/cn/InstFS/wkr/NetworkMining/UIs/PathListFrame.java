@@ -109,6 +109,7 @@ public class PathListFrame extends JFrame{
         }
         ArrayList<String> miningObjectList = new ArrayList<>(resultMaps.keySet());
         this.resultMap = this.resultMaps.get(miningObjectList.get(0));
+        System.out.println("resultMap:"+miningObjectList.get(0));
 //        this.resultMap=this.resultMaps.get("通信次数");
         loadModel();
         initModel();

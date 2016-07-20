@@ -3,7 +3,6 @@ package cn.InstFS.wkr.NetworkMining.UIs;
 import cn.InstFS.wkr.NetworkMining.Miner.*;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSetting;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettingTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettings;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.ProcessBarShow;
@@ -105,6 +104,7 @@ public class win10_window extends JFrame {
         for (MiningObject ob: miningObjectList) {
             singleNodeMinerFactory.reset();
             singleNodeMinerFactory.setMiningObject(ob);
+            singleNodeMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
             singleNodeMinerFactory.detect();
             HashMap<TaskCombination, MinerNodeResults> objectMap=NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
             singleNoderesultMaps.put(ob.toString(), objectMap);
@@ -128,7 +128,7 @@ public class win10_window extends JFrame {
 	{
 		NetworkMinerFactory.getInstance();
 		SingleNodeOrNodePairMinerFactory nodePairMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-		nodePairMinerFactory.dataPath="C:\\data\\out\\traffic";
+		nodePairMinerFactory.dataPath="F:\\TimeSeriesAnalysisdata\\parsePcap\\traffic";
 		nodePairMinerFactory.reset();
 		nodePairMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
 		nodePairMinerFactory.setTaskRange(TaskRange.NodePairRange);

@@ -56,6 +56,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	private String pathSource;
 	private String protocol;
 	private int patternNum;   //检测序列频繁模式时，确定序列的频繁项
+	private boolean isReadBetween = false; //判断是否读取区间文件
 
 	public String getSourcePath() {
 		return sourcePath;
@@ -65,17 +66,17 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		this.sourcePath = sourcePath;
 	}
 	private String miningObject;
-
+	
 	//离散化方法
 	private DiscreteMethod discreteMethod;
 	//离散化维度
 	private int discreteDimension;
 	private String discreteEndNodes;
-
+	
 	//时间粒度聚合方法
 	private AggregateMethod aggregateMethod;
 	private String filterCondition;
-
+	
 	private MiningMethod miningMethod;
 	private MiningAlgo miningAlgo;
 
@@ -84,7 +85,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	private String sqlStr;
 	private TaskRange taskRange;
 	private String range;
-
+	
 	public boolean isMining;
 	public static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
@@ -109,7 +110,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		example1.setRange("10.0.2.4,10.0.3.4");
 		example1.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
 	}
-
+	
 	public TaskRange getTaskRange() {
 		return taskRange;
 	}
@@ -135,7 +136,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSAExample.setTaskRange(TaskRange.NodePairRange);
 		TSAExample.setRange("10.0.1.1,10.0.1.2");
 	}
-
+	
 	public static TaskElement FPExample=new TaskElement();
 	static{
 		FPExample.setTaskName("大流量TSA测试");
@@ -153,7 +154,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		FPExample.setTaskRange(TaskRange.NodePairRange);
 		FPExample.setRange("10.0.1.1,10.0.1.2");
 	}
-
+	
 	public static TaskElement TSAExample1=new TaskElement();
 	static{
 		TSAExample1.setTaskName("大流量TSA测试");
@@ -172,7 +173,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSAExample1.setTaskRange(TaskRange.NodePairRange);
 		TSAExample1.setRange("10.0.1.1,10.0.1.2");
 	}
-
+	
 	public static TaskElement TSAExampleGauss=new TaskElement();
 	static{
 		TSAExampleGauss.setTaskName("大流量TSA测试");
@@ -190,7 +191,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSAExampleGauss.setTaskRange(TaskRange.NodePairRange);
 		TSAExampleGauss.setRange("10.0.1.1,10.0.1.2");
 	}
-
+	
 	public static TaskElement TSAExampleFourier=new TaskElement();
 	static{
 		TSAExampleFourier.setTaskName("大流量TSA测试");
@@ -209,7 +210,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSAExampleFourier.setTaskRange(TaskRange.NodePairRange);
 		TSAExampleFourier.setRange("10.0.1.1,10.0.1.2");
 	}
-
+	
 	public static TaskElement TSAExampleARIMA=new TaskElement();
 	static{
 		TSAExampleARIMA.setTaskName("大流量TSA测试");
@@ -228,7 +229,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSAExampleARIMA.setTaskRange(TaskRange.NodePairRange);
 		TSAExampleARIMA.setRange("10.0.1.1,10.0.1.2");
 	}
-
+	
 	public static TaskElement TSANeutralExample=new TaskElement();
 	static{
 		TSANeutralExample.setTaskName("大流量TSA测试");
@@ -273,9 +274,9 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		example2.setGranularity(3600);
 		example2.setRange("10.0.2.4,10.0.3.4");
 		example2.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-		example2.setMiningMethod(MiningMethod.MiningMethods_SequenceMining);
+		example2.setMiningMethod(MiningMethod.MiningMethods_SequenceMining);		
 	}
-
+	
 	public static TaskElement TSAExamplePM=new TaskElement();
 	static{
 		TSAExamplePM.setTaskName("大流量TSA测试");
@@ -293,7 +294,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSAExamplePM.setTaskRange(TaskRange.NodePairRange);
 		TSAExamplePM.setRange("10.0.1.1,10.0.1.2");
 	}
-
+	
 	public static TaskElement SMExample=new TaskElement();
 	static{
 		SMExample.setTaskName("大流量TSA测试");
@@ -311,7 +312,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		SMExample.setTaskRange(TaskRange.NodePairRange);
 		SMExample.setRange("10.0.1.1,10.0.1.2");
 	}
-
+	
 	public static TaskElement PathPMExample=new TaskElement();
 	static{
 		PathPMExample.setTaskName("网络路径周期");
@@ -330,7 +331,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		PathPMExample.setTaskRange(TaskRange.NodePairRange);
 		PathPMExample.setRange("10.0.1.0,10.0.2.0");
 	}
-
+	
 	public static TaskElement PathProbTrans=new TaskElement();
 	static{
 		PathProbTrans.setTaskName("路由器跳转概率预测");
@@ -349,8 +350,8 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		PathProbTrans.setTaskRange(TaskRange.NodePairRange);
 		PathProbTrans.setRange("10.0.1.0,10.0.2.0");
 	}
-
-
+	
+	
 	public static TaskElement ClusterPMExample=new TaskElement();
 	static{
 		ClusterPMExample.setTaskName("网络簇系数测试");
@@ -366,7 +367,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		ClusterPMExample.setDiscreteEndNodes("0,1");
 		ClusterPMExample.setTaskRange(TaskRange.WholeNetworkRange);
 	}
-
+	
 	public TaskElement() {
 		setTaskName("qq");
 		setFilterCondition("");
@@ -395,7 +396,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		setSourcePath("");
 		setSqlStr("");
 	}
-
+	
 	public String getDataSource() {
 		return dataSource;
 	}
@@ -409,8 +410,8 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		if (task != null)
 			task.copyTo(this);
 	}
-
-
+	
+	
 	/**
 	 * convert this object to String
 	 */
@@ -433,7 +434,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 			sb.append("-- not running");
 		return sb.toString();
 	}
-
+	
 	public Properties toProperties(){
 		Properties prop = new Properties();
 		putProp(prop, "miningMethod", getMiningMethod());
@@ -460,12 +461,12 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	private void putProp(Properties prop, String key, Object obj){
 		if (obj != null){
 			if (obj instanceof Date){
-
+				
 				prop.put(key, sdf.format(((Date)obj)));
-			}else
+			}else	
 				prop.put(key, obj.toString());
 		}
-
+			
 	}
 	public void copyTo(TaskElement task){
 		if (task == null)
@@ -492,7 +493,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		task.setSourcePath(this.getSourcePath());
 		task.setMiningParams(IParamsNetworkMining.newInstance(this.getMiningParams()));
 	}
-
+	
 	//生成Task的查询语句，以从数据库中读取DataItems
 	public String generateSqlStr(){
 		StringBuilder sb = new StringBuilder();
@@ -504,7 +505,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		if (getFilterCondition().length() > 0)
 			sb.append(getFilterCondition());
 		String pattern = sdf.toPattern().replace("mm", "mi").replace("HH", "HH24");
-
+		
 		sb.append(" AND to_date(substr(事件发生时间,0,14),'").append(pattern)
 		.append("') between ")
 		.append("to_date('")
@@ -514,7 +515,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		.append("to_date('")
 		.append(sdf.format(getDateEnd()))
 		.append("','").append(pattern).append("')");
-
+		
 		sb.append(" AND 1=1");
 
 		return sb.toString();
@@ -524,9 +525,9 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 			return;
 		String fpath = PATH_TO_SAVE_TASKS;
 		removeAllTasks();
-
+		
 		File dirEvents = new File(fpath);
-		if (!dirEvents.exists()){
+		if (!dirEvents.exists()){			
 			return;
 		}
 		File [] files = dirEvents.listFiles();
@@ -534,7 +535,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 			if (file.isFile()){
 				TaskElement task = LoadTask(file);
 				if (task.getTaskName() != null)
-					add1Task(task, false);
+					add1Task(task, false); 
 			}
 		}
 	}
@@ -557,12 +558,12 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 			if (saveToFile)
 				if (!SaveTask(task))
 					return false;
-
+			
 			allTasks.add(task);
 			notifyTaskListener(ITaskElementEventListener.TASK_ADD, task, ITaskElementEventListener.TASK_MODIFY_ELSE);
 			return true;
 		}
-
+		
 	}
 	public static boolean add1Task(TaskCombination task, boolean saveToFile){
 		if (allCombinationTasks == null)
@@ -574,19 +575,19 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 			notifyTaskListener(ITaskElementEventListener.TASK_ADD, task, ITaskElementEventListener.TASK_MODIFY_ELSE);
 			return true;
 		}
-
+		
 	}
 	public static void del1Task(TaskElement task){
 		if (task == null)
 			return;
 		if (allTasks.contains(task)){
 			allTasks.remove(task);
-
+			
 			String fname = PATH_TO_SAVE_TASKS + task.getTaskName() + ".xml";
 			File f = new File(fname);
 			if (f.exists())
 				f.delete();
-
+			
 			notifyTaskListener(ITaskElementEventListener.TASK_DEL, task,  ITaskElementEventListener.TASK_MODIFY_ELSE);
 		}
 	}
@@ -595,30 +596,30 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 			if (!allTasks.contains(task))
 				allTasks.add(task);
 			notifyTaskListener(ITaskElementEventListener.TASK_MODIFY, task, modify_type);
-		}
+		}		
 		return true;
-	}
+	}	
 	public static boolean display1Task(TaskElement task, int displayType){
 		notifyTaskListener(ITaskElementEventListener.TASK_DISPLAY, task,  ITaskElementEventListener.TASK_MODIFY_ELSE);
 		return true;
-	}
-
+	}	
+	
 	public static boolean modify1Task(TaskCombination task, int modify_type){
 		if (!allCombinationTasks.contains(task))
 			allCombinationTasks.add(task);
-		notifyTaskListener(ITaskElementEventListener.TASK_MODIFY, task, modify_type);
+		notifyTaskListener(ITaskElementEventListener.TASK_MODIFY, task, modify_type);		
 		return true;
-	}
+	}	
 	public static boolean display1Task(TaskCombination task, int displayType){
 		notifyTaskListener(ITaskElementEventListener.TASK_DISPLAY, task,  ITaskElementEventListener.TASK_MODIFY_ELSE);
 		return true;
-	}
-
+	}	
+	
 	//从xml文件中加载出一个Task
 	public static TaskElement LoadTask(File f){
 		FileInputStream fis = null;
 		InputStreamReader isr = null;
-
+		
 		TaskElement task = new TaskElement();
 		Properties prop = new Properties();
 		try{
@@ -640,7 +641,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 				else if (key.equalsIgnoreCase("aggregateMethod"))
 					task.setAggregateMethod(AggregateMethod.fromString(p.getValue().toString()));
 				else if (key.equalsIgnoreCase("filterCondition"))
-					task.setFilterCondition(p.getValue().toString());
+					task.setFilterCondition(p.getValue().toString());				
 				else if (key.equalsIgnoreCase("miningMethod"))
 					task.setMiningMethod(MiningMethod.fromString(p.getValue().toString()));
 				else if (key.equalsIgnoreCase("miningParams"))
@@ -691,7 +692,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		}
 		return task;
 	}
-
+	
 	public static boolean SaveTask(TaskElement ee){
 		FileOutputStream fos = null;
 		OutputStreamWriter osw = null;
@@ -699,7 +700,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 			JOptionPane.showMessageDialog(null, "没有事件名称！", "保存失败！", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
-
+		
 		try{
 			File f = new File(PATH_TO_SAVE_TASKS);
 			if (!f.exists())
@@ -728,7 +729,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	public void setRunning(boolean running){
 		this.isMining = running;
 	}
-
+	
 	public static void addTaskListener(ITaskElementEventListener listener){
 		listeners.add(listener);
 	}
@@ -806,7 +807,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	public void setMiningParams(IParamsNetworkMining miningParams) {
 		this.miningParams = miningParams;
 	}
-
+	
 
 
 	public MiningMethod getMiningMethod() {
@@ -854,7 +855,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	public void setGranularity(int granularity) {
 		this.granularity = granularity;
 	}
-
+	
 	@Override
 	public int compareTo(TaskElement o) {
 		return this.getTaskName().compareTo(o.getTaskName());
@@ -865,9 +866,9 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 			return this.getTaskName().equals(((TaskElement)arg0).getTaskName());
 		}else{
 			return false;
-		}
+		}	  
 	}
-
+	
 	@Override
 	public int hashCode() {
 		return this.getTaskName().hashCode();
@@ -903,7 +904,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	public void setRange(String range) {
 		this.range = range;
 	}
-
+	
 	public MiningAlgo getMiningAlgo() {
 		return miningAlgo;
 	}
@@ -935,6 +936,10 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
 	}
-
-
+	public boolean getIsReadBetween(){
+		return isReadBetween;
+	}
+	public void setIsReadBetween(boolean b){
+		this.isReadBetween = b;
+	}
 }

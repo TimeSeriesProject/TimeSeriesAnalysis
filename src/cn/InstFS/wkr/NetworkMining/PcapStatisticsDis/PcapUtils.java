@@ -6,38 +6,66 @@ import java.nio.channels.FileChannel;
 import java.util.*;
 import java.util.concurrent.*;
 
+class Node implements Callable {
+    private Map.Entry<String, ArrayList<PcapNode>> entry;
+    private String outPath;
+
+    Node(Map.Entry<String, ArrayList<PcapNode>> entry, String outPath) {
+        this.entry = entry;
+        this.outPath = outPath;
+    }
+
+    @Override
+    public Boolean call() throws Exception {
+        Collections.sort(entry.getValue());//排序
+        OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(outPath + "\\node\\" + entry.getKey() + ".txt"), "UTF-8");
+        BufferedWriter bw = new BufferedWriter(out);
+        for (int i = 0; i < entry.getValue().size(); i++) {
+            String curLine = entry.getValue().get(i).getTime_s() + "," +
+                    entry.getValue().get(i).getFileName() + "," + entry.getValue().get(i).getTraffic();
+            bw.write(curLine);
+            bw.newLine();
+        }
+        bw.close();
+        return true;
+    }
+}
+
 class Parser implements Callable {
     private File file = null;
-    private long length = 0;
-    private long pLength = 0;
-    private static long position = 0;
-    private static long part = 0;
-    //    FileChannel fc = null;
-//    MappedByteBuffer is = null;
-//    String fileName;
+    private long length;
+    private long pLength;
+    private long position;
+    private long part;
     ConcurrentHashMap<RecordKey, Integer> trafficRecords;
     private HashMap<String, BufferedWriter> bws;
+    private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap;
     String path;
     PcapUtils pcapUtils;
 
-    Parser(PcapUtils pcapUtils, File file, ConcurrentHashMap<RecordKey, Integer> trafficRecords, HashMap<String, BufferedWriter> bws, String path) {
+    Parser(PcapUtils pcapUtils, File file, ConcurrentHashMap<RecordKey, Integer> trafficRecords, HashMap<String, BufferedWriter> bws, ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap, String path) {
         this.file = file;
         this.pcapUtils = pcapUtils;
         this.trafficRecords = trafficRecords;
         this.bws = bws;
+        this.nodeMap = nodeMap;
         this.path = path;
+        this.length = 0;
+        this.pLength = 0;
+        this.position = 0;
+        this.part = 0;
     }
 
-    public static long getPart() {
+    public long getPart() {
         return part;
     }
 
-    public static long getPosition() {
+    public long getPosition() {
         return position;
     }
 
-    public static void setPosition(long position) {
-        Parser.position = position;
+    public void setPosition(long position) {
+        this.position = position;
     }
 
     public Boolean call() {
@@ -49,7 +77,7 @@ class Parser implements Callable {
             fileName = fileName.substring(0, index);
             if (length <= Integer.MAX_VALUE) {
                 MappedByteBuffer is = fc.map(FileChannel.MapMode.READ_ONLY, 0, length);
-                PcapParser.unpack(fc, is, fileName, trafficRecords, bws, path);
+                PcapParser.unpack(fc, is, fileName, trafficRecords, bws, nodeMap, path);
 
                 pcapUtils.setParsedNum(pcapUtils.getParsedNum() + 1);
                 System.out.println("getParsedNum()" + pcapUtils.getParsedNum());
@@ -57,24 +85,26 @@ class Parser implements Callable {
                 System.gc();
                 fc.close();
             } else {
-//                long partition = (long) Math.ceil(length / (1024 * 1024 * 1024));
-                long partition = length / (1024 * 1024 * 100) + 1;
+                long partition = length / (1024 * 1024 * 1024);
+//                long partition = 2;
                 part = partition;
-                System.out.println("partition: " + partition);
+//                System.out.println("partition: " + partition);
                 MappedByteBuffer header = fc.map(FileChannel.MapMode.READ_ONLY, 0, 24);
                 int linkType = PcapParser.hUnpack(header);
                 setPosition(header.position());//读取文件头后的position24
                 for (int i = 1; i <= partition; i++) {
                     pLength = length * i / partition - position;//position初值为0，不用+1，否则fc.map溢出
-                    System.out.println("pLength: " + pLength);
-                    System.out.println("参数position：" + position);
+//                    System.out.println(i + "pLength: " + pLength);
+//                    System.out.println(i + "参数position：" + position);
                     MappedByteBuffer is = fc.map(FileChannel.MapMode.READ_ONLY, position, pLength);
 
-                    PcapParser.pUnpack(i, pLength, linkType, is, fileName, bws, path);
-                    System.out.println("执行结束");
+                    position = PcapParser.pUnpack(position, part, i, pLength, linkType, is, fileName, bws, nodeMap, path);
+//                    System.out.println("执行结束");
                     is = null;
                     System.gc();
                 }
+                pcapUtils.setParsedNum(pcapUtils.getParsedNum() + 1);
+                System.out.println("getParsedNum()" + pcapUtils.getParsedNum());
                 fc.close();
             }
         } catch (IOException e) {
@@ -274,6 +304,7 @@ public class PcapUtils {
     TreeMap<RecordKey, Integer> sortedtrafficRecords = new TreeMap<RecordKey, Integer>();
     private ArrayList<File> fileList = new ArrayList<File>();
     private HashMap<String, BufferedWriter> bws = new HashMap<String, BufferedWriter>();
+    private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap = new ConcurrentHashMap<String, ArrayList<PcapNode>>();
 
     public enum Status {
         PREPARE("prepare"), PARSE("parse"), GENROUTE("genroute"), END("end");
@@ -355,10 +386,10 @@ public class PcapUtils {
 
     public static void main(String[] args) throws IOException, FileNotFoundException {
         long a = System.currentTimeMillis();
-        String fpath = "E:\\pcap1";
+        String fpath = "E:\\pcap";
         PcapUtils pcapUtils = new PcapUtils();
         //pcapUtils.readInput(fpath,1);
-        pcapUtils.readInput(fpath, "E:\\out1");
+        pcapUtils.readInput(fpath, "E:\\out");
         long b = System.currentTimeMillis();
         System.out.println("时间：" + (b - a) / 1000);
         //pcapUtils.generateRoute("C:\\data\\out\\routesrc","C:\\data\\out");
@@ -378,20 +409,20 @@ public class PcapUtils {
         for (int i = 0; i < fileList.size(); i++) {
 //			System.out.println(fileList.get(i).getAbsolutePath());
             RouteGen routeGen = new RouteGen(this, fileList.get(i).getAbsolutePath(), outPath, trafficRecords, comRecords);
-            results.add(exec.submit(routeGen));
-//            routeGen.call();
+//            results.add(exec.submit(routeGen));
+            routeGen.call();
         }
-        for (int i = 0; i < results.size(); i++) {
-            try {
-                results.get(i).get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } finally {
-                exec.shutdown();
-            }
-        }
+//        for (int i = 0; i < results.size(); i++) {
+//            try {
+//                results.get(i).get();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            } finally {
+//                exec.shutdown();
+//            }
+//        }
     }
 
     private void parsePcap(String fpath, String outpath) throws IOException, FileNotFoundException {
@@ -404,14 +435,10 @@ public class PcapUtils {
         ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
         for (int i = 0; i < fileList.size(); i++) {
             File file = fileList.get(i);
-
-            Parser parser = new Parser(this, file, trafficRecords, bws, outpath);
+            Parser parser = new Parser(this, file, trafficRecords, bws, nodeMap, outpath);
             results.add(exec.submit(parser));
-            System.out.println("循环parsepcap");
         }
-        System.out.println("结束第一个for");
         for (int i = 0; i < results.size(); i++) {
-            System.out.println("第二个for");
             try {
                 results.get(i).get();
             } catch (InterruptedException e) {
@@ -431,6 +458,42 @@ public class PcapUtils {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void generateNode(String outpath) {
+        //key = 文件名第一个字符
+        HashMap<String, ArrayList<PcapNode>> tResult = new HashMap<String, ArrayList<PcapNode>>();
+        for (Map.Entry<String, ArrayList<PcapNode>> entry : nodeMap.entrySet()) {
+            //合并list,重新维护一个hashmap，判断有无，合并
+            if (tResult.containsKey(entry.getKey().split("-")[0])) {
+                tResult.get(entry.getKey().split("-")[0]).addAll(entry.getValue());
+            } else {
+                tResult.put(entry.getKey().split("-")[0], entry.getValue());
+            }
+        }
+//        for (Map.Entry<String, ArrayList<PcapNode>> entry : tResult.entrySet()) {
+//            System.out.println("fffff: " + entry.getKey());
+//        }
+        ExecutorService exec = Executors.newFixedThreadPool(16);
+        ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
+        for (Map.Entry<String, ArrayList<PcapNode>> entry : tResult.entrySet()) {
+            Node node = new Node(entry, outpath);
+            results.add(exec.submit(node));
+        }
+
+        for (int i = 0; i < results.size(); i++) {
+            try {
+                results.get(i).get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } finally {
+                exec.shutdown();
+            }
+        }
+        nodeMap = null;
+        System.gc();
     }
 
     private void generateTraffic(String outpath) {
@@ -511,6 +574,9 @@ public class PcapUtils {
         folder = new File(outpath + "\\route");
         suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
 
+        folder = new File(outpath + "\\node");
+        suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
+
         folder = new File(outpath + "\\traffic");
         suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
         System.out.println(status);
@@ -519,14 +585,21 @@ public class PcapUtils {
         parsePcap(fpath, outpath);
         long b = System.currentTimeMillis();
         System.out.println("时间1：" + (b - a) / 1000);
-        System.out.println("parsepcap结束，route开始");
-        generateRoute(outpath + "\\routesrc", outpath);
+
+        System.out.println("parsepcap结束，node开始");
+        generateNode(outpath);
         long c = System.currentTimeMillis();
         System.out.println("时间2：" + (c - b) / 1000);
-        System.out.println("route结束，traffic开始");
-        generateTraffic(outpath);
+
+        System.out.println("node结束，route开始");
+        generateRoute(outpath + "\\routesrc", outpath);
         long d = System.currentTimeMillis();
         System.out.println("时间3：" + (d - c) / 1000);
+
+        System.out.println("route结束，traffic开始");
+        generateTraffic(outpath);
+        long e = System.currentTimeMillis();
+        System.out.println("时间3：" + (e - d) / 1000);
 
         status = Status.END;
         System.out.println("解析结束");
