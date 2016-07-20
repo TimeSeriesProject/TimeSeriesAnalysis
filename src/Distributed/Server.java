@@ -64,6 +64,10 @@ public class Server {
     long beginTime;
     long endTime;
 
+    private Server() {
+
+    }
+
     public static Server getInstance() {
         if (server != null) {
             return server;
@@ -562,8 +566,8 @@ public class Server {
                                 int temp = 0;//中途最后一个结果发回来，强行再发一次最后一个任务，防止客户端没有ready卡死
                                 //线程加锁，防止其他线程调用Map
                                 isSuspend = true;
-    //                            mapLock.readLock().lock();
-    //                            try {
+                                //                            mapLock.readLock().lock();
+                                //                            try {
                                 long a = System.currentTimeMillis();
                                 //找到没有完成的任务
 
@@ -584,9 +588,9 @@ public class Server {
 
                                 long b = System.currentTimeMillis();
                                 System.out.println("第二次发送时间：" + (b - a));
-    //                            } finally {
-    //                                mapLock.readLock().unlock();
-    //                            }
+                                //                            } finally {
+                                //                                mapLock.readLock().unlock();
+                                //                            }
                             }
                         } finally {
                             countLock.unlock();
