@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,52 +25,56 @@ public class PcapParser {
         int count = 0;
         reverseByteArray(buffer_4);
         header.setMagic(byteArrayToInt(buffer_4, 0));
-        System.out.println("magic " + header.getMagic());
+//        System.out.println("magic " + header.getMagic());
         is.get(buffer_2);
         reverseByteArray(buffer_2);
         header.setMajor_version(byteArrayToShort(buffer_2, 0));
-        System.out.println("major_version" + header.getMajor_version());
+//        System.out.println("major_version" + header.getMajor_version());
         is.get(buffer_2);
         reverseByteArray(buffer_2);
         header.setMinor_version(byteArrayToShort(buffer_2, 0));
-        System.out.println("minor_version" + header.getMinor_version());
+//        System.out.println("minor_version" + header.getMinor_version());
         is.get(buffer_4);
         reverseByteArray(buffer_4);
         header.setTimezone(byteArrayToInt(buffer_4, 0));
-        System.out.println("timezone" + header.getTimezone());
+//        System.out.println("timezone" + header.getTimezone());
         is.get(buffer_4);
         reverseByteArray(buffer_4);
         header.setSigflags(byteArrayToInt(buffer_4, 0));
-        System.out.println("sigflags" + header.getSigflags());
+//        System.out.println("sigflags" + header.getSigflags());
         is.get(buffer_4);
         reverseByteArray(buffer_4);
         header.setSnaplen(byteArrayToInt(buffer_4, 0));
-        System.out.println("snaplen" + header.getSnaplen());
+//        System.out.println("snaplen" + header.getSnaplen());
         is.get(buffer_4);
         reverseByteArray(buffer_4);
         header.setLinktype(byteArrayToInt(buffer_4, 0));
-        System.out.println("Linktype" + header.getLinktype());
+//        System.out.println("Linktype" + header.getLinktype());
         return header.getLinktype();
     }
 
-    public static void pUnpack(long i, long pLength, int linkType, MappedByteBuffer is, String fileName, HashMap<String, BufferedWriter> bws, String path) throws IOException {
+    public static long pUnpack(long position, long part, long i, long pLength, int linkType, MappedByteBuffer is, String fileName, HashMap<String, BufferedWriter> bws,  ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap, String path) throws IOException {
         byte[] buffer_4 = new byte[4];
         byte[] buffer_3 = new byte[3];
         byte[] buffer_2 = new byte[2];
         byte[] buffer_1 = new byte[1];
         byte[] buffer = new byte[5000];
+        ArrayList<PcapNode> nodeList = new ArrayList<PcapNode>();
         StringBuilder sb = new StringBuilder();
         int datalength;
         //参数is从0开始，capacity显示当前片段的容量，执行到最后一次时进行判断
-        while (is.hasRemaining() && (is.position() < pLength / 2 || (i == Parser.getPart()))) {
+        while (is.hasRemaining() && (is.position() < pLength / 2 || (i == part))) {
             datalength = 0;
             PcapData data = new PcapData();
+            PcapNode node = new PcapNode();
+            node.setFileName(fileName);//写入文件名
             is.get(buffer_4);
             if (!is.hasRemaining()) {
                 break;
             }
             reverseByteArray(buffer_4);
             data.setTime_s(byteArrayToLong(buffer_4, 0));
+            node.setTime_s(byteArrayToLong(buffer_4, 0));//写入时间
 //            System.out.println("Time_s" + data.getTime_s());
             is.get(buffer_4);
             reverseByteArray(buffer_4);
@@ -104,6 +109,8 @@ public class PcapParser {
             is.get(buffer_2);
             datalength += 2;
             data.setTraffic(byteArrayToShort(buffer_2, 0));
+            node.setTraffic(byteArrayToShort(buffer_2, 0));//写入流量
+            nodeList.add(node);
             is.get(buffer_4);//skip in order to get TTL
             datalength += 4;
             is.get(buffer_1);
@@ -152,11 +159,16 @@ public class PcapParser {
 
             }
         }
-        Parser.setPosition(Parser.getPosition() + is.position());
-        System.out.println("is.position：" + is.position());
+        //当切割文件时，防止覆盖
+        if (nodeMap.containsKey(fileName)) {
+            nodeMap.get(fileName).addAll(nodeList);
+        } else {
+            nodeMap.put(fileName, nodeList);
+        }
+        return (position + is.position());
     }
 
-    public static void unpack(FileChannel fc, MappedByteBuffer is, String fileName, ConcurrentHashMap<RecordKey, Integer> records, HashMap<String, BufferedWriter> bws, String path) throws IOException {
+    public static void unpack(FileChannel fc, MappedByteBuffer is, String fileName, ConcurrentHashMap<RecordKey, Integer> records, HashMap<String, BufferedWriter> bws, ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap, String path) throws IOException {
         byte[] buffer_4 = new byte[4];
         byte[] buffer_3 = new byte[3];
         byte[] buffer_2 = new byte[2];
@@ -165,6 +177,7 @@ public class PcapParser {
         byte[] buffer_10 = new byte[10];
         byte[] buffer = new byte[5000];
         PcapHeader header = new PcapHeader();
+        ArrayList<PcapNode> nodeList = new ArrayList<PcapNode>();
         is.get(buffer_4);
 //        int m = is.read(buffer_4);
 //        if (m != 4) {
@@ -173,37 +186,39 @@ public class PcapParser {
         int count = 0;
         reverseByteArray(buffer_4);
         header.setMagic(byteArrayToInt(buffer_4, 0));
-        System.out.println("magic " + header.getMagic());
+//        System.out.println("magic " + header.getMagic());
         is.get(buffer_2);
         reverseByteArray(buffer_2);
         header.setMajor_version(byteArrayToShort(buffer_2, 0));
-        System.out.println("major_version" + header.getMajor_version());
+//        System.out.println("major_version" + header.getMajor_version());
         is.get(buffer_2);
         reverseByteArray(buffer_2);
         header.setMinor_version(byteArrayToShort(buffer_2, 0));
-        System.out.println("minor_version" + header.getMinor_version());
+//        System.out.println("minor_version" + header.getMinor_version());
         is.get(buffer_4);
         reverseByteArray(buffer_4);
         header.setTimezone(byteArrayToInt(buffer_4, 0));
-        System.out.println("timezone" + header.getTimezone());
+//        System.out.println("timezone" + header.getTimezone());
         is.get(buffer_4);
         reverseByteArray(buffer_4);
         header.setSigflags(byteArrayToInt(buffer_4, 0));
-        System.out.println("sigflags" + header.getSigflags());
+//        System.out.println("sigflags" + header.getSigflags());
         is.get(buffer_4);
         reverseByteArray(buffer_4);
         header.setSnaplen(byteArrayToInt(buffer_4, 0));
-        System.out.println("snaplen" + header.getSnaplen());
+//        System.out.println("snaplen" + header.getSnaplen());
         is.get(buffer_4);
         reverseByteArray(buffer_4);
         header.setLinktype(byteArrayToInt(buffer_4, 0));
-        System.out.println("Linktype" + header.getLinktype());
+//        System.out.println("Linktype" + header.getLinktype());
         StringBuilder sb = new StringBuilder();
         int datalength;
         long num = 0;
         while (is.hasRemaining()) {
             datalength = 0;
             PcapData data = new PcapData();
+            PcapNode node = new PcapNode();
+            node.setFileName(fileName);//写入文件名
             is.get(buffer_4);
             if (!is.hasRemaining()) {
                 break;
@@ -213,6 +228,7 @@ public class PcapParser {
 //			    	System.out.println(count);
             reverseByteArray(buffer_4);
             data.setTime_s(byteArrayToLong(buffer_4, 0));
+            node.setTime_s(byteArrayToLong(buffer_4, 0));//写入时间
 //            System.out.println("Time_s" + data.getTime_s());
             is.get(buffer_4);
             reverseByteArray(buffer_4);
@@ -247,6 +263,8 @@ public class PcapParser {
             is.get(buffer_2);
             datalength += 2;
             data.setTraffic(byteArrayToShort(buffer_2, 0));
+            node.setTraffic(byteArrayToShort(buffer_2, 0));//写入流量
+            nodeList.add(node);
             is.get(buffer_4);//skip in order to get TTL
             datalength += 4;
             is.get(buffer_1);
@@ -294,6 +312,7 @@ public class PcapParser {
 
             }
         }
+        nodeMap.put(fileName, nodeList);
         fc.close();
     }
 
