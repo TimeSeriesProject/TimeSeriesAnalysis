@@ -43,6 +43,7 @@ package cn.InstFS.wkr.NetworkMining.UIs;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -114,16 +115,11 @@ public class TimeSeriesChart1 extends Composite {
 	public TimeSeriesChart1(Composite parent, int style, ProtoclPair pp) {
 		super(parent, style);
 		DataItems dataitems1 = DataItemsNormalization(pp.getDataItems1(), 1);
-
 		DataItems dataitems2 = DataItemsNormalization(pp.getDataItems2(), 0);
-		// dataitems1.setData(DataItemsNormalization(dataitems1.data));
 
-		// dataitems2.setData(DataItemsNormalization(dataitems1.data));
-		// _nor_model_保存DataItem1对应的曲线线段
-		// _abnor_model_保存DataItem2对应的曲线线段
-		// LinePos 标注两条曲线每一个key线段的起始位置和终点位置
-		/*
-		 * System.out.println(" DataItems1 lengh=" + dataitems1.getLength());
+		/* _nor_model_保存DataItem1对应的曲线线段
+		 * _abnor_model_保存DataItem2对应的曲线线段
+		 * LinePos 标注两条曲线每一个key线段的起始位置和终点位置
 		 */
 		_nor_model_ = new ArrayList<DataItems>();
 		_abnor_model_ = new ArrayList<DataItems>();
@@ -131,25 +127,28 @@ public class TimeSeriesChart1 extends Composite {
 		// 归一化两条曲线
 		// ArrayList<DataItems> DataItem1normalization=
 
-		ArrayList<LinePos> linepos1 = new ArrayList<LinePos>();
+		 ArrayList<LinePos> linepos1 = new ArrayList<LinePos>();
 		// System.out.println(" linepos1 :" + linepos1.size());
 
-		// 取出所有key值得线段linpos
 		for (Object se : pp.getMapAB().keySet()) {
-			ArrayList<LinePos> s = pp.getMapAB().get(se);
+			//ArrayList<LinePos> linepos1 = pp.getMapAB().get(se);
 			// System.out.println(" key :" + se + "	" + "value" + s.size());
-			linepos1.addAll(s);
-		}
-		Iterator lineposIt1 = linepos1.iterator();
-		while (lineposIt1.hasNext()) {
-			LinePos temp1 = (LinePos) lineposIt1.next();
-			// LinePos temp2=(LinePos)lineposIt2.next();
-			_nor_model_.add(this.getDataItems(dataitems1, (temp1).A_start,
-					temp1.A_end));
-			// System.out.println(" A_start="+(temp1).A_start+"  "+"A_end="+temp1.A_end);
-			_abnor_model_.add(this.getDataItems(dataitems2, (temp1).B_start,
-					temp1.B_end));
-			// System.out.println(" B_start="+(temp1).B_start+"  "+"B_end="+temp1.B_end);
+			// linepos1.addAll(s);
+
+			Iterator lineposIt1 = linepos1.iterator();
+			while (lineposIt1.hasNext()) {
+				LinePos temp1 = (LinePos) lineposIt1.next();
+				_nor_model_.add(this.getDataItems(dataitems1, (temp1).A_start,
+						temp1.A_end));
+			//	System.out.println(" A_start=" + (temp1).A_start + "  "
+			//			+ "A_end=" + temp1.A_end);
+				_abnor_model_.add(this.getDataItems(dataitems2,
+						(temp1).B_start, temp1.B_end));
+			//	System.out.println(" B_start=" + (temp1).B_start + "  "
+			//			+ "B_end=" + temp1.B_end);
+				//System.out.println("");
+			}
+			//System.out.println("******************");
 		}
 		/*
 		 * System.out.println(" _nor_model_ :" + _nor_model_.size());
@@ -166,19 +165,15 @@ public class TimeSeriesChart1 extends Composite {
 				dataitems2, pp.getMapAB(), chartname, pp.getProtocol1(),
 				pp.getProtocol2());
 
-		// JFreeChart chart =
-		// createChart(createDataset(ip1,ip2,ip1data,ip2data));
-		// System.out.println("ChartComposite init...");
 		ChartComposite frame = new ChartComposite(this, SWT.NONE, chart, true);
-		// System.out.println("ChartComposite finish");
 		frame.setDisplayToolTips(true);
 		frame.setHorizontalAxisTrace(false);
 		frame.setVerticalAxisTrace(false);
 		this.setLayout(new FillLayout());
-
-		// TODO Auto-generated constructor stub
 	}
-
+	/*
+	 * getDataItems 功能：通过start end 取出DataItems上的线段保存进一个新的DataItems并返回
+	 */
 	public static DataItems getDataItems(DataItems dataitems, int start, int end) {
 		DataItems ret = new DataItems();
 		// ret.setItems(items);
@@ -192,7 +187,9 @@ public class TimeSeriesChart1 extends Composite {
 
 	}
 
-	// 归一化DataItems中的List<String>
+	/*
+	 * 归一化DataItems中的List<String>,并且曲线向上平移addanumber个单位长度
+	 */
 	public DataItems DataItemsNormalization(DataItems data, int addanumber) {
 		DataItems ret = new DataItems();
 		ret.setTime(data.getTime());
@@ -251,6 +248,9 @@ public class TimeSeriesChart1 extends Composite {
 
 	}
 
+	/*
+	 * 创建图表函数
+	 */
 	public static JFreeChart createChart2(ArrayList<DataItems> _nor_model,
 			ArrayList<DataItems> _abnor_model, DataItems nor, DataItems abnor,
 			Map<String, ArrayList<LinePos>> mapAB, String chartname,
@@ -258,7 +258,6 @@ public class TimeSeriesChart1 extends Composite {
 		XYDataset xydataset = createNormalDataset(nor, protocol1);
 		JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(chartname,
 				"时间", "值", xydataset, true, true, false);
-		// jfreechart..getLegend()
 		XYPlot xyplot = (XYPlot) jfreechart.getPlot();
 		NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
 		numberaxis.setAutoRangeIncludesZero(false);
@@ -299,8 +298,8 @@ public class TimeSeriesChart1 extends Composite {
 				.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
 		xylineandshaperenderer1.setSeriesStroke(0, new BasicStroke(0.5F));
 
-		// xylineandshaperenderer1.setBaseItemLabelsVisible(true);
-		for (int i = 0; i < _nor_model.size(); i++) {
+		////标红代码处
+/*		for (int i = 0; i < _nor_model.size(); i++) {
 			XYDataset xydataset2 = createmodeDataset(_nor_model.get(i),
 					"_nor_model" + i);
 			XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
@@ -342,22 +341,15 @@ public class TimeSeriesChart1 extends Composite {
 					.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
 			xylineandshaperenderer3.setSeriesStroke(0, new BasicStroke(2.5F));
 
-		}
-
+		}*/
+		//标红代码结束
 		// 这里开始画虚线
 		// /////////////////////////////////
 		// 建立数据集
 
 		XYDataset xydataset4 = createDatasetAndLine(nor, abnor, mapAB, xyplot);
-		/*
-		 * XYLineAndShapeRenderer xylineandshaperenderer4 = new
-		 * XYLineAndShapeRenderer(); xyplot.setDataset(_abnor_model.size() +
-		 * _nor_model.size(), xydataset4);
-		 * xyplot.setRenderer(_abnor_model.size() + _nor_model.size(),
-		 * xylineandshaperenderer4);
-		 */
 
-		// //////显示两条折线中间的那条分界线，y=1
+		// 显示两条折线中间的那条分界线，y=1
 		ValueMarker valuemarker = new ValueMarker(1); // 水平线的值
 		valuemarker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
 		valuemarker.setPaint(Color.green); // 线条颜色
@@ -368,32 +360,8 @@ public class TimeSeriesChart1 extends Composite {
 		valuemarker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
 		valuemarker.setLabelTextAnchor(TextAnchor.BOTTOM_LEFT);
 		xyplot.addRangeMarker(valuemarker);
-		// ///////////////
+		////
 
-		/** 构造第一条虚线 */
-		/* xylineandshaperenderer4.setBaseShapesVisible(false); *//**
-		 * 
-		 * 设置折线中的端点图形是否可见
-		 */
-		/*
-		 * // xylineandshaperenderer4.addAnnotation(new XYTextAnnotation("wed",
-		 * 1D, 1D));
-		 * 
-		 * xylineandshaperenderer4.setSeriesStroke(0, new BasicStroke(1.0F, 1,
-		 * 1, 1.0F, new float[] {30F, 12F}, 0.0F)); //虚线生效处 //设置线和点的颜色。
-		 * xylineandshaperenderer4.setSeriesPaint(0, Color.blue);
-		 * xylineandshaperenderer4.setSeriesFillPaint(0, Color.blue);
-		 * xylineandshaperenderer4.setSeriesOutlinePaint(0, Color.blue); //
-		 * xylineandshaperenderer4.setUseFillPaint(true);
-		 * xylineandshaperenderer4.setBaseItemLabelGenerator(new
-		 * StandardXYItemLabelGenerator());
-		 * xylineandshaperenderer4.setBaseItemLabelsVisible(false);
-		 */
-		// xylineandshaperenderer4.setBaseItemLabelGenerator((XYItemLabelGenerator)
-		// new StandardCategoryItemLabelGenerator());
-		// Marker marker=new Marker();
-
-		// ///////////////////////////////////////////////////////////
 		jfreechart.getLegend().setVisible(false);
 		return jfreechart;
 	}
@@ -406,15 +374,21 @@ public class TimeSeriesChart1 extends Composite {
 
 		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 		// 为数据集添加数据
+		
 		int colorindex = 0;
 		for (Object se : mapAB.keySet()) {
 			ArrayList<LinePos> s = mapAB.get(se);
+
 			ArrayList<DataItems> dslist = new ArrayList<DataItems>();
 			Iterator it = s.iterator();
 			int i = 0;
-
+			System.out.println("**************");
+			System.out.println("模式="+se);
 			while (it.hasNext()) {
 				LinePos temp = (LinePos) it.next();
+			/*	System.out.println("A_start:"+temp.A_start+" "+"A_end:"+temp.A_end);
+				System.out.println("B_start:"+temp.B_start+" "+"B_end:"+temp.B_end);
+				System.out.println(" ");*/
 				/*
 				 * XYSeries xyseries1 = new XYSeries(se+"起点线段"+(i)); XYSeries
 				 * xyseries2 = new XYSeries(se+"终点线段"+i);
@@ -457,39 +431,36 @@ public class TimeSeriesChart1 extends Composite {
 					.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
 
 			xylineandshaperenderer.setBaseShapesVisible(false);
-			/** 设置折线中的端点图形是否可见 */
-			// xylineandshaperenderer4.addAnnotation(new XYTextAnnotation("wed",
-			// 1D, 1D));
-
 			xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(1.0F, 1,
-					1, 1.0F, new float[] { 30F, 12F }, 0.0F)); // 虚线生效处
-			// xylineandshaperenderer4.setUseFillPaint(true);
+					1, 1.0F, new float[] { 15F, 12F }, 0.0F)); // 虚线生效处
 			xylineandshaperenderer
 					.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
 			xylineandshaperenderer.setBaseItemLabelsVisible(false);
 
-			// 标记数字
-			GeneralPath generalpath = new GeneralPath();
-			generalpath.moveTo(0.0F, -18F);
-			generalpath.lineTo(0.0F, -12F);
-			generalpath.moveTo(-2F, -18F);
-			generalpath.lineTo(-2F, -15F);
-			generalpath.moveTo(-2F, -15F);
-			generalpath.lineTo(2F, -15F);
-
-			xylineandshaperenderer.setSeriesShape(0, generalpath);
-
+			System.out.println(" dslist.size()="+ dslist.size());
+			
+			
 			for (int i1 = 0; i1 < dslist.size(); i1++) {
-
-				// xylineandshaperenderer2.setSeriesStroke(0, new
-				// BasicStroke(2.5F));
 
 				XYDataset xydataset = createmodeDataset(dslist.get(i1),
 						se.toString());
+				
+				
+				
+				
+
+				
+		
+				//return xyseriescollection;
+				
+				
 				int datasetCount = xyplot.getDatasetCount();
-				xyplot.setDataset(datasetCount + i1, xydataset);
-				xyplot.setRenderer(datasetCount + i1, xylineandshaperenderer);
+			//	System.out.println("@@@@@@@@@@@datasetCount="+datasetCount);
+				xyplot.setDataset(datasetCount+1 , xydataset);
+				xyplot.setRenderer(datasetCount+1 , xylineandshaperenderer);
+
 			}
+
 
 		}
 		return xyseriescollection;
@@ -503,9 +474,6 @@ public class TimeSeriesChart1 extends Composite {
 		int length = normal.getLength();
 		int time[] = new int[length];
 		XYSeries xyseries = new XYSeries(protocol1);
-		//xyseries.setDescription("dugreui");
-		
-
 		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
 		// 为数据集添加数据
@@ -537,6 +505,7 @@ public class TimeSeriesChart1 extends Composite {
 			xyseries.add((double) temp.getTime().getTime(),
 					Double.parseDouble(temp.getData())); // 对应的横轴
 
+
 		}
 		xyseriescollection.addSeries(xyseries);
 		return xyseriescollection;
@@ -567,83 +536,10 @@ public class TimeSeriesChart1 extends Composite {
 	}
 
 	// 到这里结束
-	/**
-	 * Creates a chart.
-	 * 
-	 * @param dataset
-	 *            a dataset.
-	 * 
-	 * @return A chart.
+
+	/*
+	 * 获取颜色，下标从0开始
 	 */
-	private static JFreeChart createChart(XYDataset dataset) {
-
-		JFreeChart chart = ChartFactory.createTimeSeriesChart(
-				"Legal & General Unit Trust Prices", // title
-				"Date", // x-axis label
-				"Price Per Unit", // y-axis label
-				dataset, // data
-				true, // create legend?
-				true, // generate tooltips?
-				false // generate URLs?
-				);
-
-		chart.setBackgroundPaint(Color.white);
-
-		XYPlot plot = (XYPlot) chart.getPlot();
-		plot.setBackgroundPaint(Color.lightGray);
-		plot.setDomainGridlinePaint(Color.white);
-		plot.setRangeGridlinePaint(Color.white);
-		plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
-		plot.setDomainCrosshairVisible(true);
-		plot.setRangeCrosshairVisible(true);
-
-		/*
-		 * int k=dataset.getSeriesCount(); double margin = (1.0 - k * 0.08) / 3;
-		 * plot.getDomainAxis().setLowerMargin(margin);
-		 * plot.getDomainAxis().setUpperMargin(margin);
-		 */
-		// plot.getRenderer().set.setItemMargin(0.1);
-
-		XYItemRenderer r = plot.getRenderer();
-		if (r instanceof XYLineAndShapeRenderer) {
-			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
-			renderer.setBaseShapesVisible(false);
-			renderer.setBaseShapesFilled(false);
-		}
-
-		DateAxis axis = (DateAxis) plot.getDomainAxis();
-		axis.setDateFormatOverride(new SimpleDateFormat("MMM-yyyy"));
-		axis.setMinorTickMarkInsideLength((float) 3);
-		/*
-		 * axis.setItemMargin(0.8) ;//每个分类之间的间隔 axis.setMaxItemWidth(0.8) ;
-		 */
-
-		/*
-		 * int k=dataset.getSeriesCount(); double margin = (1.0 - k * 0.08) / 3;
-		 * axis.setLowerMargin(margin); axis.setUpperMargin(margin);
-		 */
-
-		return chart;
-
-	}
-
-	private static XYDataset createDataset() {
-
-		TimeSeries s1 = new TimeSeries("L&G European Index Trust");
-		// s1.add(new Hour(2, 2001), 181.8);
-		s1.add(new Month(3, 2001), 167.3);
-
-		TimeSeries s2 = new TimeSeries("L&G UK Index Trust");
-
-		s2.add(new Month(7, 2002), 101.6);
-
-		TimeSeriesCollection dataset = new TimeSeriesCollection();
-		dataset.addSeries(s1);
-		dataset.addSeries(s2);
-
-		return dataset;
-	}
-
 	public static Color getcolor(int i) {
 		switch (i) {
 		case 1:

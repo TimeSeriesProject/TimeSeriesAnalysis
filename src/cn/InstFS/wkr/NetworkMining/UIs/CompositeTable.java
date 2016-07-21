@@ -44,12 +44,14 @@ public class CompositeTable extends Composite {
 	CTabFolderChart tab = null;
 	TableItem[] itemList = null;
 	int[] index = null;
+	CompositeMainProtocolConfidence compositeMainProtocolConfidence=null;
 	Map<Integer, CTabItem> maptabitem;
 
 	public CompositeTable(Composite parent, int style, String ip,
-			List<ProtoclPair> protocolPairList, CTabFolderChart tab) {
+			List<ProtoclPair> protocolPairList, CTabFolderChart tab, CompositeMainProtocolConfidence compositeMainProtocolConfidence) {
 		super(parent, style);
 		this.tab = tab;
+		this.compositeMainProtocolConfidence=compositeMainProtocolConfidence;
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 1;
 		this.setLayout(layout);
@@ -63,8 +65,7 @@ public class CompositeTable extends Composite {
 
 	private void createTable(Composite composite, int style,
 			final List<ProtoclPair> protocolPairList) {
-		// TODO Auto-generated method stub
-		// ���ֱ��
+
 		GridData griddata = new org.eclipse.swt.layout.GridData();
 		griddata.horizontalAlignment = SWT.FILL;
 		griddata.grabExcessHorizontalSpace = true;
@@ -84,7 +85,7 @@ public class CompositeTable extends Composite {
 				// TODO Auto-generated method stub
 				// TableItem[] itemList=table.getItems();
 				int itemIndex = table.getSelectionIndex();
-				if (CompositeProtocolConfidence.tableIndex[itemIndex] == 0) {
+				if (compositeMainProtocolConfidence.tableIndex[itemIndex] == 0) {
 					// 问题出在这
 					Iterator it = protocolPairList.iterator();
 					/*
@@ -94,15 +95,6 @@ public class CompositeTable extends Composite {
 					TableItem tableItem = table.getItem(itemIndex);
 					while (it.hasNext()) {
 						ProtoclPair pp = (ProtoclPair) it.next();
-						/*
-						 * System.out.println("协议1：" + pp.getProtocol1() + "!" +
-						 * pp.getProtocol1() .equals(tableItem.getText(1)));
-						 * System.out.println("协议2：" + pp.getProtocol2() + "!" +
-						 * pp.getProtocol2() .equals(tableItem.getText(2)));
-						 * System.out.println("table协议1：" +
-						 * tableItem.getText(1)); System.out.println("table协议2："
-						 * + tableItem.getText(2));
-						 */
 						if ((pp.getProtocol1().equals(tableItem.getText(1)))
 								&& (pp.getProtocol2().equals(tableItem
 										.getText(2)))) {
@@ -112,7 +104,7 @@ public class CompositeTable extends Composite {
 											+ itemList[itemIndex].getText(2),
 									itemIndex, pp);
 							maptabitem.put(itemIndex, tabitem);
-							CompositeProtocolConfidence.tableIndex[itemIndex] = 1;
+							compositeMainProtocolConfidence.tableIndex[itemIndex] = 1;
 
 						}
 					}
