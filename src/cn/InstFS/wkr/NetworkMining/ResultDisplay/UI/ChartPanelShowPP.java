@@ -5,6 +5,7 @@ package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
  */
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -176,8 +177,17 @@ public class ChartPanelShowPP extends JPanel {
 
         for (int i = 0; i < length; i++) {
             DataItem temp = new DataItem();
-            temp = normal.getElementAt(i);
-            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData())); // 对应的横轴
+            temp = normal.getElementAt(i); 
+            Calendar cal = Calendar.getInstance();
+   		 	cal.set(2014, 9, 1, 0, 0, 0);
+   		 	Date date2 = cal.getTime();
+            Date date1 = temp.getTime();
+            long diff = date1.getTime()-date2.getTime();
+            //System.out.println("date1:"+date1.getTime()+" date2:"+date2.getTime());
+            //long days = diff/(3600*1000*24);
+            long hours = diff/(1000*3600);
+            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData()));
+            //xyseries.add((int)hours, Double.parseDouble(temp.getData()));// 对应的横轴
 
         }
         xyseriescollection.addSeries(xyseries);
@@ -190,6 +200,8 @@ public class ChartPanelShowPP extends JPanel {
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
+        NumberAxis numberAxis2 = (NumberAxis) xyplot.getDomainAxis();
+        
         java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(-4D, -4D, 6D, 6D);
         //设置异常点提示红点大小
         /*XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer) xyplot.getRenderer();
