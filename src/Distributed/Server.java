@@ -60,6 +60,12 @@ public class Server {
     private Lock resultLock = new ReentrantLock();
     private Lock cLock = new ReentrantLock();
     private Condition condition = cLock.newCondition();
+    private Lock pathLock = new ReentrantLock();
+    private Condition pathCon = pathLock.newCondition();
+    private Lock nodeLock = new ReentrantLock();
+    private Condition nodeCon = nodeLock.newCondition();
+    private Lock netLock = new ReentrantLock();
+    private Condition netCon = netLock.newCondition();
 
     long beginTime;
     long endTime;
@@ -272,86 +278,23 @@ public class Server {
 
 
     public void isSingleNodeOver(MiningObject miningObject) {
-        if (miningObject.equals(MiningObject.MiningObject_Times)) {
-            while (singleNodeTimeFlag) {
-                if (singleNodeTimeFlag) {
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    break;
-                }
-            }
-        } else if (miningObject.equals(MiningObject.MiningObject_Traffic)) {
-            while (singleNodeTrafficFlag) {
-                if (singleNodeTrafficFlag) {
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    break;
-                }
-            }
+        if (miningObject.equals(MiningObject.MiningObject_Times) ||
+                miningObject.equals(MiningObject.MiningObject_Traffic)) {
+            awaitNode();
         }
     }
 
     public void isNetworkOver(MiningObject miningObject) {
-        if (miningObject.equals(MiningObject.MiningObject_Cluster)) {
-            while (networkClusterFlag) {
-                if (networkClusterFlag) {
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    break;
-                }
-            }
-        } else if (miningObject.equals(MiningObject.MiningObject_Diameter)) {
-            while (networkDiameterFlag) {
-                if (networkDiameterFlag) {
-                    try {
-                        Thread.sleep(11000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    break;
-                }
-            }
+        if (miningObject.equals(MiningObject.MiningObject_Cluster) ||
+                miningObject.equals(MiningObject.MiningObject_Diameter)) {
+            awaitNet();
         }
     }
 
     public void isPathOver(MiningObject miningObject) {
-        if (miningObject.equals(MiningObject.MiningObject_Times)) {
-            while (pathTimeFlag) {
-                if (pathTimeFlag) {
-                    try {
-                        Thread.sleep(12000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    break;
-                }
-            }
-        } else if (miningObject.equals(MiningObject.MiningObject_Traffic)) {
-            while (pathTrafficFlag) {
-                if (pathTrafficFlag) {
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    break;
-                }
-            }
+        if (miningObject.equals(MiningObject.MiningObject_Times) ||
+                miningObject.equals(MiningObject.MiningObject_Traffic)) {
+            awaitPath();
         }
     }
 
@@ -370,6 +313,70 @@ public class Server {
             condition.signal();
         } finally {
             cLock.unlock();
+        }
+    }
+
+    private void awaitPath(){
+        pathLock.lock();
+        try {
+            System.out.println("path等待结果完成...");
+            pathCon.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            pathLock.unlock();
+        }
+    }
+
+    private void awakePath(){
+        pathLock.lock();
+        try {
+            pathCon.signal();
+        } finally {
+            pathLock.unlock();
+        }
+    }
+
+    private void awaitNode(){
+        nodeLock.lock();
+        try {
+            System.out.println("node等待结果完成...");
+            nodeCon.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            nodeLock.unlock();
+        }
+    }
+
+    private void awakeNode(){
+        nodeLock.lock();
+        try {
+            System.out.println("node唤醒...");
+            nodeCon.signal();
+        } finally {
+            nodeLock.unlock();
+        }
+    }
+
+    private void awaitNet(){
+        netLock.lock();
+        try {
+            System.out.println("net等待结果完成...");
+            netCon.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            netLock.unlock();
+        }
+    }
+
+    private void awakeNet(){
+        netLock.lock();
+        try {
+            netCon.signal();
+        } finally {
+            netLock.unlock();
         }
     }
 
@@ -679,6 +686,7 @@ public class Server {
                                                     singleNodeResultMaps.put(MiningObject.MiningObject_Times.toString(), singleNodeTimes);
                                                     singleNodeTimeFlag = false;//完成，后面未执行完的抛弃
                                                     setIsRunning(false);
+                                                    awakeNode();
                                                 } else {
                                                     awakeSingleThread();
                                                 }
@@ -706,6 +714,7 @@ public class Server {
                                                     singleNodeResultMaps.put(MiningObject.MiningObject_Traffic.toString(), singleNodeTraffic);
                                                     singleNodeTrafficFlag = false;
                                                     setIsRunning(false);
+                                                    awakeNode();
                                                 } else {
                                                     awakeSingleThread();
                                                 }
@@ -739,6 +748,7 @@ public class Server {
                                                     pathResultMaps.put(MiningObject.MiningObject_Times.toString(), pathTimes);//通信次数结果
                                                     pathTimeFlag = false;//完成，后面未执行完的抛弃
                                                     setIsRunning(false);
+                                                    awakePath();
                                                 } else {
                                                     awakeSingleThread();
                                                 }
@@ -766,6 +776,7 @@ public class Server {
                                                     pathResultMaps.put(MiningObject.MiningObject_Traffic.toString(), pathTraffic);
                                                     pathTrafficFlag = false;
                                                     setIsRunning(false);
+                                                    awakePath();
                                                 } else {
                                                     awakeSingleThread();
                                                 }
@@ -797,6 +808,7 @@ public class Server {
                                                     networkResultMaps.put(MiningObject.MiningObject_Cluster.toString(), networkCluster);//通信次数结果
                                                     networkClusterFlag = false;//完成，后面未执行完的抛弃
                                                     setIsRunning(false);
+                                                    awakeNet();
                                                 } else {
                                                     awakeSingleThread();
                                                 }
@@ -824,6 +836,7 @@ public class Server {
                                                     networkResultMaps.put(MiningObject.MiningObject_Diameter.toString(), networkDiameter);
                                                     networkDiameterFlag = false;
                                                     setIsRunning(false);
+                                                    awakeNet();
                                                 } else {
                                                     awakeSingleThread();
                                                 }
