@@ -25,53 +25,20 @@ import java.util.List;
 public class ChangeCompositeToSwingPanel extends Panel {
 	DisplayThread displayThread;
 	private Canvas canvas;
-	 static int CompositeCreateSymbol;
+	int CompositeCreateSymbol;
 	MinerResultsFP_Line minerresults;
-
-	// Composite composite=null;
 
 	public ChangeCompositeToSwingPanel(TaskCombination taskCombination2,
 			HashMap<TaskCombination, MinerProtocolResults> resultMaps2) {
 		minerresults = resultMaps2.get(taskCombination2).getRetFP();
 		displayThread = new DisplayThread();
-		CompositeCreateSymbol=0;
+		// CompositeCreateSymbol = 0;
 		displayThread.start();
 		canvas = new Canvas();
-		canvas.addComponentListener(new ComponentListener(){
 
-			@Override
-			public void componentResized(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void componentMoved(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void componentShown(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("rtyuiyftrtuiouyteryuiouyrt");
-			}
-
-			@Override
-			public void componentHidden(ComponentEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
 		setLayout(new BorderLayout());
 		add(canvas, BorderLayout.CENTER);
 
-	}
-	public void destroyCompositeThread(){
-		System.out.println("begin to stop thread...");
-		displayThread.exitThread();
-		System.out.println("finish to  stop thread...");
 	}
 
 	public void addNotify() {
@@ -82,43 +49,26 @@ public class ChangeCompositeToSwingPanel extends Panel {
 				Shell shell = SWT_AWT.new_Shell(displayThread.getDisplay(),
 						canvas);
 
-
 				shell.setLayout(new FillLayout());
-				if(CompositeCreateSymbol==1){
-					CompositeProtocolConfidence ui = new CompositeProtocolConfidence(
-						shell, SWT.NONE, minerresults);
-					CompositeCreateSymbol=0;
 
-					
-				}
+				CompositeMainProtocolConfidence ui = new CompositeMainProtocolConfidence(
+						shell, SWT.NONE, minerresults);
 
 			}
 
-		
 		});
 	}
-	//创建我的界面面板
-	public void createComposite() {
-				// TODO Auto-generated method stub
-		this.CompositeCreateSymbol=1;
-			}
+
+	// 创建我的界面面板
 	/*
-	 * public static void main(String[] args) { JFrame frame = new
-	 * JFrame("No Title"); ChangeCompositeToSwingPanel swingui = new
-	 * ChangeCompositeToSwingPanel(); // swingui.add(frame);
-	 * frame.getContentPane().add(swingui); //
-	 * ����frame�Ĵ�СΪ300x200���ҿɼ�Ĭ���ǲ��ɼ�� frame.setSize(300, 200);
-	 * frame.setVisible(true); //
-	 * ʹ���ϽǵĹرհ�ť��Ч�����û����䣬������ϽǵĹرհ�ťֻ�ܹرմ��ڣ��޷�������
-	 * frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	 * 
-	 * }
+	 * public void createComposite() { // TODO Auto-generated method stub
+	 * this.CompositeCreateSymbol = 1; }
 	 */
 
 	public class DisplayThread extends Thread {
 		private Display display;
 		Object sem = new Object();
-		private int exit=1;
+		private int exit = 1;
 
 		public void run() {
 			synchronized (sem) {
@@ -128,18 +78,32 @@ public class ChangeCompositeToSwingPanel extends Panel {
 			swtEventLoop();
 			// display.dispose();
 		}
-		public void exitThread(){
-			exit=0;
+
+		public void exitThread() {
+			exit = 0;
 		}
 
 		private void swtEventLoop() {
-			while (exit!=0) {
-				//System.out.println("swt running...");
-				if (!display.readAndDispatch()) {
-					display.sleep();
-				}
+
+			if (display == null) {
+				System.out.println("display is null!");
 			}
-			display.dispose();
+			display.syncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					while (exit != 0) {
+
+						if (!display.readAndDispatch()) {
+							display.sleep();
+						}
+
+					}
+					display.dispose();
+				}
+
+			});
+
 			//
 		}
 
