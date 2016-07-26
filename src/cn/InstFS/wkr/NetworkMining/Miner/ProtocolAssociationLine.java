@@ -69,7 +69,8 @@ public class ProtocolAssociationLine {
 		{
 			String ip = ip_iter.next();
 			mr_fp_l.ip = ip;
-			List<ProtocolDataItems> proDataList = ip_proData.get(ip);
+			List<ProtocolDataItems> proDataList2 = ip_proData.get(ip);
+			List<ProtocolDataItems> proDataList = compressData(proDataList);
 			
 			List<TreeMap<Integer,SymbolNode>> linesList = new ArrayList<TreeMap<Integer,SymbolNode>>();
 			List<TreeMap<Integer,Linear>> linesPosList = new ArrayList<TreeMap<Integer,Linear>>();
@@ -185,6 +186,7 @@ public class ProtocolAssociationLine {
 		}
 		return mr_fp_l;
 	}
+	
 	private TreeMap<Integer, Double> convertDataToTreeMap(
 			ProtocolDataItems protocolDataItems) {
 		
@@ -250,5 +252,41 @@ public class ProtocolAssociationLine {
 			ip_proData.put(ip, list);
 		}
 		System.out.println("过滤掉的ip有："+noProtocolNum);
+	}
+	/**
+	 * 功能：将数据的常数进行压缩，保证数据点在400以内
+	 * @param proDataList
+	 * @return
+	 */
+	private List<ProtocolDataItems> compressData(
+			List<ProtocolDataItems> proDataList) {
+
+		List<ProtocolDataItems> compressData = new ArrayList<ProtocolDataItems>();
+		for(int i = 0;i < proDataList.size();i++)
+		{
+			ProtocolDataItems pdi = proDataList.get(i);
+			if(pdi.dataItems.getLength() > 400)
+			{
+				int len = pdi.dataItems.getLength()/200;
+				
+				DataItems newData = new DataItems();
+				for(int j = 0;j < pdi.dataItems.getLength();j += len)
+				{
+					int size = pdi.dataItems.getLength() < j+len?pdi.dataItems.getLength():j+len;
+					int trafficSum  = 0;
+					for(int k = j;k < size;k++)
+					{
+						trafficSum += Integer.parseInt(pdi.dataItems.data.get(k));
+					}
+					newData.add1Data(pdi.dataItems.time.get(j), trafficSum+"");
+				}
+				ProtocolDataItems new_pdi = new ProtocolDataItems(pdi.protocolName,newData);
+				compressData.add(new_pdi);
+			}
+			else{
+				compressData.add(pdi);
+			}
+		}
+		return compressData;
 	}
 }

@@ -87,7 +87,9 @@ public class ProtocolAssociation {
 		while(ip_iter.hasNext())
 		{
 			String ip = ip_iter.next();
-			List<ProtocolDataItems> proDataList = ip_proData.get(ip);
+			List<ProtocolDataItems> proDataList2 = ip_proData.get(ip);
+			List<ProtocolDataItems> proDataList = mergeData(proDataList2);
+			
 			List<ProtocolAssociationResult> resultList = new ArrayList<ProtocolAssociationResult>();
 			for(int i = 0;i < proDataList.size();i++)
 			{
@@ -118,6 +120,7 @@ public class ProtocolAssociation {
 		}
 		return resultMap;
 	}
+
 	/**
 	 * 计算两协议的关联性
 	 * @param dataItems
@@ -327,6 +330,41 @@ public class ProtocolAssociation {
 			ip_proData.put(ip, list);
 		}
 		System.out.println("过滤掉的ip有："+noProtocolNum);
+	}
+	/**
+	 * 由于画图显示的需要，需要将图转化为200个数据点左右，所以当数据点的个数大于200，则进行合并。
+	 * @param proDataList2
+	 * @return
+	 */
+	private List<ProtocolDataItems> mergeData(
+			List<ProtocolDataItems> proDataList2) {
+		List<ProtocolDataItems> proDataList = new ArrayList<ProtocolDataItems>();
+		for(int i = 0;i < proDataList2.size();i++)
+		{
+			
+			if (proDataList2.get(i).dataItems.getLength() > 400) {
+				
+				int mergeLength = proDataList2.get(i).dataItems.getLength()/200;
+				DataItems dataItems = new DataItems();
+				for(int j = 0,k = 0;j < proDataList2.get(i).dataItems.getLength();j+= mergeLength,k++){
+					
+					int end = j+mergeLength < proDataList2.get(i).dataItems.getLength()?j+mergeLength:proDataList2.get(i).dataItems.getLength();
+					int m = k;
+					int trafficSum = 0;
+					for(;m < end;m++)
+					{
+						trafficSum += Integer.parseInt(proDataList2.get(i).dataItems.data.get(m));
+					}
+					dataItems.add1Data(proDataList2.get(i).dataItems.time.get(j), trafficSum+"");
+				}
+				ProtocolDataItems pdi = new ProtocolDataItems(proDataList2.get(i).getProtocolName(),dataItems);
+				proDataList.add(pdi);
+			}
+			else{
+				proDataList.add(proDataList2.get(i));
+			}
+		}
+		return proDataList;
 	}
 }
 
