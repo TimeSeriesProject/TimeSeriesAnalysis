@@ -94,5 +94,24 @@
 	<classpathentry kind="lib" path="lib/REngine.jar"/>
 	<classpathentry kind="lib" path="lib/RserveEngine.jar"/>
 	<classpathentry kind="lib" path="lib/substance.jar"/>
+	<classpathentry kind="lib" path="lib_src/demetra-tstoolkit-1.5.2-srcs.zip"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib_src/demetra-tstoolkit-1.5.2-srcs.zip"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib_src/jcalendar-1.4.src.zip"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib_src/jnetpcap.src.zip"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib_src/l2fprod-common-all-7.3.src.zip"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib_src/nbdemetra-sa-1.5.2-srcs.zip"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib_src/nbdemetra-ui-1.5.2.src.zip"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib/commons-math3-3.3.jar"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib/jnetpcap.jar"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib/mybatis-3.2.2.jar"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib/ojdbc6.jar"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib/REngine.jar"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib/RserveEngine.jar"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib/spmf.jar"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib/substance.jar"/>
+	<classpathentry kind="lib" path="F:/eclipseworkplace/TimeSeriesAnalysis/lib/weka.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.swt.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jface.jar"/>
+	<classpathentry kind="lib" path="lib/jfreechart-1.0.19/jfreechart-1.0.19/lib/jfreechart-1.0.19-swt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

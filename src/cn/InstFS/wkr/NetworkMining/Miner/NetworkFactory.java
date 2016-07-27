@@ -4,10 +4,13 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Calendar;
+import java.util.Date;
 
 import associationRules.ProtocolAssociationResult;
 import cn.InstFS.wkr.NetworkMining.DataInputs.CWNetworkReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
@@ -68,7 +71,19 @@ public class NetworkFactory extends MinerFactorySettings {
 		task.setGranularity(granularity);
 		task.setMiningObject(miningObject.toString());
 		CWNetworkReader reader = new CWNetworkReader(task);
-		DataItems dataItems = reader.readInputByText();
+		DataItems alldataItems = reader.readInputByText();
+
+		/*用于测试*/
+		/*Calendar cal1 = Calendar.getInstance();
+		Calendar cal2 = Calendar.getInstance();
+		cal1.set(2015, 10, 2, 0, 0, 0);
+		cal2.set(2015,11,21,0,0,0);
+		Date date1 = cal1.getTime();
+		Date date2 = cal2.getTime();
+		task.setIsReadBetween(true);
+		task.setDateStart(date1);
+		task.setDateEnd(date2);*/
+		DataItems dataItems = filtDataItems(alldataItems, task.getDateStart(), task.getDateEnd());
 		
 		TaskCombination taskCombination=new TaskCombination();
 		taskCombination.setTaskRange(TaskRange.WholeNetworkRange);
@@ -143,5 +158,19 @@ public class NetworkFactory extends MinerFactorySettings {
 		this.dataPath = dataPath;
 	}
 
+	/***
+	 * @author LYH
+	 * 功能：用于读取时间段内的DataItems*/
+	public DataItems filtDataItems(DataItems allDataItems,Date date1,Date date2){
+		DataItems dataItems = new DataItems();
+		for(int i=0;i<allDataItems.getTime().size();i++){
+			Date date = allDataItems.getElementAt(i).getTime();
+			if(date.compareTo(date1)>0 && date.compareTo(date2)<0){
+				DataItem dataItem = allDataItems.getElementAt(i);
+				dataItems.add1Data(dataItem);
+			}
+		}
+		return dataItems;
+	}
 
 }

@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Listener;
 import associationRules.ProtoclPair;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
-public  class CTabFolderChart extends CTabFolder {
+public class CTabFolderChart extends CTabFolder {
 
 	/**
 	 * Create the composite.
@@ -31,15 +31,18 @@ public  class CTabFolderChart extends CTabFolder {
 	 * @param style
 	 */
 	Display display = Display.getCurrent();
+	CompositeMainProtocolConfidence compositeMainProtocolConfidence;
 	Composite form = null;
 	int i;
-	Map<CTabItem,Integer> map=null;
+	Map<CTabItem, Integer> map = null;
 
-	public CTabFolderChart(Composite form, int style) {
+	public CTabFolderChart(Composite form, int style,
+			CompositeMainProtocolConfidence compositeMainProtocolConfidence) {
 
 		super(form, style);
 		this.form = form;
-		map=new HashMap<CTabItem,Integer>();
+		map = new HashMap<CTabItem, Integer>();
+		this.compositeMainProtocolConfidence = compositeMainProtocolConfidence;
 
 		// �����Զ���ѡ�����
 		// final CTabFolder folder = new CTabFolder(form, SWT.BORDER);
@@ -57,7 +60,7 @@ public  class CTabFolderChart extends CTabFolder {
 		// ��ʾ��󻯺���С����ť
 		this.setMinimizeVisible(true);
 		this.setMaximizeVisible(true);
-		
+
 	}
 
 	@Override
@@ -65,49 +68,45 @@ public  class CTabFolderChart extends CTabFolder {
 		// Disable the check that prevents subclassing of SWT components
 	}
 
-	public  CTabItem createTabItem(String tabItemName,int index, ProtoclPair pp) {
+	public CTabItem createTabItem(String tabItemName, int index, ProtoclPair pp) {
 
-			CTabItem mainTabItem = new CTabItem(this, SWT.CLOSE);
-			map.put(mainTabItem, index);
-			//���ü���Tabʵ��һ��TabItem�رպ�MainUI�Ŀɴ�ʹ�ܱ�־tableIndex��Ϊ0
-			mainTabItem.addDisposeListener(new DisposeListener(){
+		CTabItem mainTabItem = new CTabItem(this, SWT.CLOSE);
+		map.put(mainTabItem, index);
+		// ���ü���Tabʵ��һ��TabItem�رպ�MainUI�Ŀɴ�ʹ�ܱ�־tableIndex��Ϊ0
+		mainTabItem.addDisposeListener(new DisposeListener() {
 
-				@Override
-				public void widgetDisposed(DisposeEvent arg0) {
-					// TODO Auto-generated method stub
-					
-					//System.out.println("index="+map.get(arg0.widget));
-					CompositeProtocolConfidence.tableIndex[map.get(arg0.widget)]=0;
-					map.remove(arg0.widget);
-				}
-				
-			});
-			mainTabItem.setText(tabItemName);
-			this.setSelection(mainTabItem);
-			// �����tab ��ʾ�Ľ���
-			
-			Composite com=new Composite(this,SWT.NONE);
-			com.setLayout(new FillLayout());
-				// 创建一个滚动面板对象
-			 ScrolledComposite sc = new ScrolledComposite(com, SWT.H_SCROLL
-					| SWT.V_SCROLL | SWT.BORDER);
-			CompositeSWTChart tab1item = new CompositeSWTChart(sc, SWT.NONE, pp);
- 
-			sc.setExpandHorizontal(true);
-			sc.setExpandVertical(true);
-			int itemcount=pp.getDataItems1().getLength();
-			System.out.println("changdu:"+itemcount);
-		   sc.setMinWidth(800+itemcount*2);
-			sc.setMinWidth(800);
-		    sc.setMinHeight(400);
-		
-			// 将普通面板设置为受控的滚动面板
-			sc.setContent(tab1item);
-			mainTabItem.setControl(com);
-			// �������
-			return mainTabItem;
+			@Override
+			public void widgetDisposed(DisposeEvent arg0) {
+				// TODO Auto-generated method stub
+				compositeMainProtocolConfidence.tableIndex[map.get(arg0.widget)] = 0;
+				map.remove(arg0.widget);
+			}
+
+		});
+		mainTabItem.setText(tabItemName);
+		this.setSelection(mainTabItem);
+		// �����tab ��ʾ�Ľ���
+
+		Composite com = new Composite(this, SWT.NONE);
+		com.setLayout(new FillLayout());
+		// 创建一个滚动面板对象
+		ScrolledComposite sc = new ScrolledComposite(com, SWT.H_SCROLL
+				| SWT.V_SCROLL | SWT.BORDER);
+		CompositeSWTChart tab1item = new CompositeSWTChart(sc, SWT.NONE, pp);
+
+		sc.setExpandHorizontal(true);
+		sc.setExpandVertical(true);
+		int itemcount = pp.getDataItems1().getLength();
+		System.out.println("changdu:" + itemcount);
+		sc.setMinWidth(800 + itemcount * 2);
+		sc.setMinWidth(800);
+		sc.setMinHeight(400);
+
+		// 将普通面板设置为受控的滚动面板
+		sc.setContent(tab1item);
+		mainTabItem.setControl(com);
+		// �������
+		return mainTabItem;
 	}
-	
-	
 
 }

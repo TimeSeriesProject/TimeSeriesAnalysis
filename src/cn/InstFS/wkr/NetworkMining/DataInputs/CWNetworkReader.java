@@ -149,6 +149,7 @@ public class CWNetworkReader  implements IReader{
 	private int end		=	365*24*60*60-1;	
 	private int timeseg =   3*60*60; //锟斤拷锟斤拷锟斤拷锟斤拷
 	private DataItems dataItems = new DataItems();
+	boolean readDateBetween = false;
 	
 	public static void main(String[] args) 
 	{
@@ -194,7 +195,7 @@ public class CWNetworkReader  implements IReader{
 			for(int i=0;i<srcFiles.list().length;i++)
 			{
 				
-				TextReader textReader = new TextReader(path+"/"+srcFiles.list()[i]);
+				TextReader textReader = new TextReader(path+"/"+srcFiles.list()[i]);//文件列表
 				String curLine="";
 				String header =textReader.readLine(); //读取文件
 				while((curLine=textReader.readLine())!=null)
@@ -243,6 +244,7 @@ public class CWNetworkReader  implements IReader{
 	{
 		String path=task.getSourcePath();
 		File srcFiles=new File(path);
+		
 		try
 		{
 			for(int i=0;i<srcFiles.list().length;i++)
@@ -254,7 +256,7 @@ public class CWNetworkReader  implements IReader{
 				System.out.println("读取文件"+srcFiles.list()[i]);
 				while((curLine=textReader.readLine())!=null)
 				{
-					
+					//if(textReader.readLine())
 					//List<Map.Entry<Integer,Double>> mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet());
 					
 					String seg[]=curLine.split(",");
@@ -300,6 +302,7 @@ public class CWNetworkReader  implements IReader{
 			System.exit(0);
 		}
 	}
+
 	/**
 	 * 计算簇系数
 	 * @return
@@ -500,6 +503,7 @@ public class CWNetworkReader  implements IReader{
 //			 matrix.add(new Pair(linkList.get(i).start,linkList.get(i).end));
 //			 matrix.add(new Pair(linkList.get(i).end,linkList.get(i).start));
 //		}
+				
 		getMatrixList();
 		for(int i=0;i<matrixList.size();i++)
 		{
@@ -542,6 +546,7 @@ public class CWNetworkReader  implements IReader{
 //		Date date = second2Date(timeseg*presegnum);
 //		dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));\
 		getMatrixList();
+		
 		for(int i=0;i<matrixList.size();i++)
 		{
 			Date date = second2Date(task.getGranularity()*i);
@@ -588,5 +593,6 @@ public class CWNetworkReader  implements IReader{
 		// TODO Auto-generated method stub
 		return null;
 	}
-		
+	
+	
 }

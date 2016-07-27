@@ -1,6 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,7 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	private static SingleNodeOrNodePairMinerFactory inst;
 	private static SingleNodeOrNodePairMinerFactory pairInst;
 	public static boolean isMining=false;
-	public String dataPath="C:\\data\\out\\traffic";
+	public String dataPath="F:\\TimeSeriesAnalysisdata\\parsePcap\\traffic";
 	private MiningObject miningObject;
 	private TaskRange taskRange;
 	private MiningMethod method;
@@ -99,17 +101,42 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	private void parseFile(File dataFile,nodePairReader reader){
 		String ip=dataFile.getName().substring(0, dataFile.getName().lastIndexOf("."));
 		//事先读取每一个IP上，每一个协议的DataItems
-		if(ip.equals("10.0.13.2"))
-			System.out.println();
+		//if(ip.equals("10.0.13.2"))
+			//System.out.println();
 		int granularity= Integer.parseInt(this.getGranularity());
 		if(taskRange.toString().equals(TaskRange.SingleNodeRange.toString())){
 			HashMap<String, DataItems> rawDataItems=null;
 			switch (miningObject) {
 			case MiningObject_Traffic:
 				rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath());
+				//rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(),reader.getTask().getIsReadBetween(),reader.getTask().getDateStart(),reader.getTask().getDateEnd());
+				/**2016/7/14
+				 * @author LYH
+				 * 用于测试读取时间区间数据，单节点挖掘
+				 * **/
+				/*Calendar cal1 = Calendar.getInstance();
+				Calendar cal2 = Calendar.getInstance();
+				cal1.set(2014, 9, 1, 0, 0, 0);
+				cal2.set(2014,11,20,0,0,0);
+				Date date1 = cal1.getTime();
+				Date date2 = cal2.getTime();
+				rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(),true,date1,date2);*/
+				
 				break;
 			case MiningObject_Times:
 				rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath());
+				//rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),reader.getTask().getIsReadBetween(),reader.getTask().getDateStart(),reader.getTask().getDateEnd());
+				/**2016/7/14
+				 * @author LYH
+				 * 用于测试读取时间区间数据，单节点挖掘
+				 * **/
+				/*Calendar cal3 = Calendar.getInstance();
+				Calendar cal4 = Calendar.getInstance();
+				cal3.set(2014, 9, 10, 0, 0, 0);
+				cal4.set(2014,10,1,0,0,0);
+				Date date3 = cal3.getTime();
+				Date date4 = cal4.getTime();
+				rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),true,date3,date4);*/
 				break;
 			default:
 				break;
@@ -141,9 +168,31 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 			switch (miningObject) {
 			case MiningObject_Traffic:
 				ipPairRawDataItems=reader.readEachIpPairProtocolTrafficDataItems(dataFile.getAbsolutePath());
+				/**2016/7/14
+				 * @author LYH
+				 * 用于测试读取时间区间数据，单节点挖掘
+				 * **/
+				/*Calendar cal1 = Calendar.getInstance();
+				Calendar cal2 = Calendar.getInstance();
+				cal1.set(2014, 9, 1, 0, 0, 0);
+				cal2.set(2014,11,20,0,0,0);
+				Date date1 = cal1.getTime();
+				Date date2 = cal2.getTime();
+				ipPairRawDataItems=reader.readEachIpPairProtocolTrafficDataItems(dataFile.getAbsolutePath(),true,date1,date2);*/
 				break;
 			case MiningObject_Times:
 				ipPairRawDataItems=reader.readEachIpPairProtocolTimesDataItems(dataFile.getAbsolutePath());
+				/**2016/7/14
+				 * @author LYH
+				 * 用于测试读取时间区间数据，单节点挖掘
+				 * **/
+				/*Calendar cal3 = Calendar.getInstance();
+				Calendar cal4 = Calendar.getInstance();
+				cal3.set(2014, 9, 10, 0, 0, 0);
+				cal4.set(2014,10,1,0,0,0);
+				Date date3 = cal3.getTime();
+				Date date4 = cal4.getTime();
+				ipPairRawDataItems=reader.readEachIpPairProtocolTimesDataItems(dataFile.getAbsolutePath(),true,date3,date4);*/
 				break;
 			default:
 				break;

@@ -51,42 +51,33 @@ import org.eclipse.swt.widgets.TreeItem;
 import associationRules.ProtoclPair;
 import java.util.ArrayList;
 
-
-
 import cn.InstFS.wkr.NetworkMining.Miner.MinerResultsFP_Line;
 
-public class CompositeProtocolConfidence extends Composite {
-	public static int[] tableIndex = null;
-	public ArrayList<ProtoclPair> protocolPairList=null;
-	String ip=null;
-	public CompositeProtocolConfidence(Composite parent, int style, MinerResultsFP_Line minerresults) {
+public class CompositeMainProtocolConfidence extends Composite {
+	public int[] tableIndex = null;// 保存协议对左侧的协议索引值
+	public ArrayList<ProtoclPair> protocolPairList = null;
+	String ip = null;
+
+	public CompositeMainProtocolConfidence(Composite parent, int style,
+			MinerResultsFP_Line minerresults) {
 		super(parent, style);
-		// TODO Auto-generated constructor stub
-		// protocolPairList=minerresults.protocolPairList;
-		 ip=minerresults.getIp();
-		
-		// �������
-/*		int[] protocol1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-		int[] protocol2 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-		double[] confidence = { 0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2,
-				0.9, 0.5, 0.5 };*/
+		ip = minerresults.getIp();
+
 		this.setLayout(new FillLayout());
 
-		// �����������������ʽΪˮƽ����
 		SashForm form = new SashForm(this, SWT.HORIZONTAL | SWT.BORDER);
 		form.setLayout(new FillLayout());
-		// TopMenu topmenu = new TopMenu(shell, SWT.BAR);
-		// �������Ҳ�����
 		Composite win1 = new Composite(form, SWT.NONE);
 		win1.setLayout(new FillLayout());
 
-		CTabFolderChart tab = new CTabFolderChart(form, SWT.NONE);
-		form.setWeights(new int[] { 237, 821 });
+		CTabFolderChart tab = new CTabFolderChart(form, SWT.NONE,this);
+		form.setWeights(new int[] { 250, 800 });
 
 		System.out.println("ip=");
 
-		CompositeTable table = new CompositeTable(win1, SWT.BORDER | SWT.SINGLE,
-				ip, minerresults.protocolPairList, tab);
+		CompositeTable table = new CompositeTable(win1,
+				SWT.BORDER | SWT.SINGLE, ip, minerresults.protocolPairList,
+				tab, this);
 		tableIndex = new int[table.getTableIndexCount()];
 
 	}
