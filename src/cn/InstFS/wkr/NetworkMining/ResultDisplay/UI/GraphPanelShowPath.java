@@ -53,36 +53,61 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
     private ArrayList<Color> pathColor = new ArrayList<Color>(){{
         add(Color.BLACK);
         add(Color.BLUE);
+        add(new Color(121,232,113));
+        add(new Color(148,70,84));
+        add(new Color(232,129,34));
+        add(new Color(0,150,255));
+        add(new Color(153,12,232));
+        add(new Color(232,159,147));
+        add(new Color(55,34,72));
+        add(new Color(60,120,126));
         add(Color.GREEN);
         add(Color.MAGENTA);
         add(Color.RED);
     }};
-    public GraphPanelShowPath() {
-
+    public GraphPanelShowPath(ArrayList<String> pathList) {
+        this.pathList = pathList;
     }
 
     public void init() {
         g = new SparseMultigraph<>();
 
         // add vertex
-        Integer[] vertices = {1,2,3};
         NetworkVertex[] nodes = new NetworkVertex[20];
-        /*for (int i = 0; i< vertices.length; i++) {
-            NetworkVertex n = new NetworkVertex(vertices[i]);
-            nodes[vertices[i]] = n;
-            g.addVertex(n);
-        }*/
 
-        pathList = new ArrayList<String>(){{
+
+        /*pathList = new ArrayList<String>(){{
             add("1,0,13,14,4,5");
             add("1,0,10,12,4,6");
             add("2,0,8,9,4,5");
-//            add("3,0,8,4,6");
-        }};
+            add("3,0,8,4,6");
+            add("1,0,13,14,4,5");
+            add("1,0,10,12,4,6");
+            add("2,0,8,9,4,5");
+            add("3,0,8,4,6");
+            add("1,0,13,14,4,5");
+            add("1,0,10,12,4,6");
+            add("2,0,8,9,4,5");
+            add("3,0,8,4,6");
+        }};*/
+        HashMap ip2Vertice = new HashMap<String, Integer>(){
+            {
+                put("10.0.1.2", 1);
+                put("10.0.1.3", 2);
+                put("10.0.1.4", 3);
+                put("10.0.7.2", 0);
+                put("10.0.13.2", 0);
+                put("10.0.2.2", 5);
+                put("10.0.2.3", 6);
+                put("10.0.2.4", 7);
+            }
+        };
 
         int pathIdCount = 1;
         for (String s : pathList){
             String[] vertice =  s.split(",");
+            vertice[0] = ip2Vertice.get(vertice[0])+"";
+            vertice[vertice.length-1] = ip2Vertice.get(vertice[vertice.length-1])+"";
 
             for (int i = 0; i < vertice.length - 1; i++) {
                 int startId = Integer.parseInt(vertice[i]);
@@ -110,11 +135,11 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
 
         System.out.println("The graph = " + g.toString());
         Layout<NetworkVertex, NetworkEdge> layout = new FRLayout<>(g);
-        layout.setSize(new Dimension(300, 300));
+//        layout.setSize(new Dimension(600, 600));
 
 //        BasicVisualizationServer<Integer, String> vv = new BasicVisualizationServer<Integer, String>(layout);
         vv = new VisualizationViewer<NetworkVertex, NetworkEdge>(layout);
-        vv.setPreferredSize(new Dimension(350, 350));
+//        vv.setPreferredSize(new Dimension(650, 650));
 
 //        vv.getRenderContext().setEdgeStrokeTransformer();
         vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
@@ -190,7 +215,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
             public Paint apply(@Nullable NetworkEdge networkEdge) {
                 Paint p = Color.BLACK;
                 if (networkEdge.getPathID() < pathColor.size())
-                    p = pathColor.get(networkEdge.getPathID());
+                    p = pathColor.get(networkEdge.getPathID()%pathColor.size());
                 /*switch (networkEdge.getPathID()){
                     case 1:
                         p = Color.BLUE;
@@ -213,7 +238,9 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
                 if (g.getEdgeType(networkEdge).equals(EdgeType.UNDIRECTED))
                     return  new BasicStroke(1.0f, BasicStroke.CAP_ROUND,
                             BasicStroke.JOIN_MITER, 10.0f, new float[]{10.0f}, 0.0f);
-                return null;
+                else
+                    return new BasicStroke(2.0f);
+//                return null;
             }
         });
 //        vv.getRenderContext().setEdgeShapeTransformer(EdgeShape.quadCurve(g));
@@ -274,7 +301,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
             show_edge_panel.add(e_show_path);
 
             Label legend = new Label("------");
-            legend.setForeground(pathColor.get(i+1));
+            legend.setForeground(pathColor.get((i+1)%pathColor.size()));
             show_edge_panel.add(legend);
         }
 
@@ -337,7 +364,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
 //        ClusteringDemo and = new ClusteringDemo();
 //        EdgeLabelDemo and = new EdgeLabelDemo();
 //        ShortestPathDemo and = new ShortestPathDemo();
-        GraphPanelShowPath view = new GraphPanelShowPath();
+       /* GraphPanelShowPath view = new GraphPanelShowPath();
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(view);
@@ -345,7 +372,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
         view.init();
 
         frame.pack();
-        frame.setVisible(true);
+        frame.setVisible(true);*/
     }
 }
 

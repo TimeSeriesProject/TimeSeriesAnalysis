@@ -227,11 +227,13 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             int size = resultList.size();
             String data[][]=new String[size][6];
             int i = 0;
+            ArrayList<String> pathList = new ArrayList<>();
 
             for (Map.Entry<String, Double> entry : pathProbList) {
                 String pathName = entry.getKey();
                 MinerResultsStatistics retStatistic = rslt.getRetPath().getRetStatistic().get(pathName);
 
+                pathList.add(pathName);
                 data[i][0] = pathName;
                 data[i][1]=String.format("%5.3f",retStatistic.getMean()/1000);
                 data[i][2]=String.format("%5.3f",retStatistic.getStd()/1000);
@@ -258,7 +260,16 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             listTable.setAutoscrolls(true);
             listTable.getColumnModel().getColumn(0).setPreferredWidth(180);
             jsp.setViewportView(listTable);
+
+            JPanel jp = new JPanel();
+            jp.setLayout(new BorderLayout());
+            GraphPanelShowPath view = new GraphPanelShowPath(pathList);
+            jp.add(view, BorderLayout.CENTER);
+            view.init();
+            view.setVisible(true);
             add(jsp);
+            add(jp);
+
             repaint();
             validate();
             count++;
