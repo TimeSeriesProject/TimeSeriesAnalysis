@@ -30,8 +30,16 @@ public class PathMinerFactory extends MinerFactorySettings{
 		miningObjectList.add(MiningObject.MiningObject_Traffic);
 
 		List<MiningObject> miningObjectCheck = this.getMiningObjectsChecked();
-		miningObjectCheck.add(MiningObject.MiningObject_Times);
-		miningObjectCheck.add(MiningObject.MiningObject_Traffic);
+
+		miningObjectCheck.addAll(miningObjectList);
+		List<MiningMethod> miningMethodsList = this.getMiningMethodsList();
+		miningMethodsList.add(MiningMethod.MiningMethods_Statistics);
+		miningMethodsList.add(MiningMethod.MiningMethods_PeriodicityMining);
+		miningMethodsList.add(MiningMethod.MiningMethods_OutliesMining);
+
+		List<MiningMethod> miningMethodsCheck = this.getMiningMethodsChecked();
+		miningMethodsCheck.addAll(miningMethodsList);
+
 	}
 	public static PathMinerFactory getInstance(){
 		if(inst==null){
@@ -96,9 +104,9 @@ public class PathMinerFactory extends MinerFactorySettings{
 		}
 		
 		TaskCombination taskCombination = new TaskCombination();
-		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_Statistics));
-		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_PeriodicityMining));
-		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_OutliesMining));
+		for (MiningMethod methodChecked: this.getMiningMethodsChecked())
+			taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange, methodChecked));
+
 		taskCombination.setDataItems(di);
 		taskCombination.setTaskRange(TaskRange.NodePairRange);
 		taskCombination.setRange(dataFile.getName().substring(0, dataFile.getName().lastIndexOf(".")));

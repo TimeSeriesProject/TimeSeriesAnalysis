@@ -1,6 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.Miner;
 
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import org.apache.commons.math3.analysis.function.Min;
@@ -18,6 +19,9 @@ public abstract class MinerFactorySettings implements Serializable{
     private String minerType;
     private List<MiningObject> miningObjectList = new ArrayList<>();
     private List<MiningObject> miningObjectsChecked = new ArrayList<>();
+
+    private List<MiningMethod> miningMethodsList = new ArrayList<>();
+    private List<MiningMethod> miningMethodsChecked = new ArrayList<>();
     private TaskRange taskRange;
     private String granularity = "3600";
     private boolean isModified = false;
@@ -103,5 +107,21 @@ public abstract class MinerFactorySettings implements Serializable{
 
     public void setMiningObjectsDeleted(List<MiningObject> miningObjectsDeleted) {
         this.miningObjectsDeleted = miningObjectsDeleted;
+    }
+
+    public List<MiningMethod> getMiningMethodsList() {
+        return miningMethodsList;
+    }
+
+    public void setMiningMethodsList(List<MiningMethod> miningMethodsList) {
+        this.miningMethodsList = miningMethodsList;
+    }
+
+    public List<MiningMethod> getMiningMethodsChecked() {
+        return miningMethodsChecked;
+    }
+
+    public void setMiningMethodsChecked(List<MiningMethod> miningMethodsChecked) {
+        this.miningMethodsChecked = miningMethodsChecked;
     }
 }

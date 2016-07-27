@@ -3,6 +3,7 @@ package cn.InstFS.wkr.NetworkMining.TaskConfigure.UI;
 import cn.InstFS.wkr.NetworkMining.Miner.MinerFactorySettings;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.PathMinerFactory;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import org.apache.commons.math3.analysis.function.Min;
 
@@ -35,6 +36,9 @@ public class DialogSettings extends JDialog {
     private JLabel labelMiningObject = new JLabel("挖掘对象");
     private List<JCheckBox> objectCheckBoxes = new ArrayList<>();
 
+    private JLabel labelMiningMethod = new JLabel("挖掘方法");
+    private List<JCheckBox> methodCheckBoxes = new ArrayList<>();
+
     public DialogSettings(MinerFactorySettings factorySettings, String title){
         this.settings = factorySettings;
         this.settings.setModified(false);
@@ -64,6 +68,9 @@ public class DialogSettings extends JDialog {
         JPanel cbPane = addMiningObjectCB(settings.getMiningObjectList());
         topPane.add(cbPane);
 
+        /*topPane.add(labelMiningMethod);
+        JPanel methodCbPane = addMiningMethodsCB(settings.getMiningMethodsList());
+        topPane.add(methodCbPane);*/
 
         contentPane.setLayout(new BorderLayout());
         contentPane.add(topPane,BorderLayout.NORTH);
@@ -81,6 +88,18 @@ public class DialogSettings extends JDialog {
                 cb.setSelected(true);
             pane.add(cb);
             objectCheckBoxes.add(cb);
+        }
+        return pane;
+    }
+
+    private JPanel addMiningMethodsCB(List<MiningMethod> miningMethods) {
+        JPanel pane = new JPanel();
+        for (MiningMethod i: miningMethods) {
+            JCheckBox cb = new JCheckBox(i.toString());
+            if (settings.getMiningMethodsChecked().contains(i))
+                cb.setSelected(true);
+            pane.add(cb);
+            methodCheckBoxes.add(cb);
         }
         return pane;
     }
@@ -182,6 +201,12 @@ public class DialogSettings extends JDialog {
             if (cb.isSelected())
                 objectList.add(MiningObject.fromString(cb.getText()));
         }
+       /* List<MiningMethod> methodList = settings.getMiningMethodsChecked();
+        methodList.clear();
+        for (JCheckBox cb: methodCheckBoxes){
+            if(cb.isSelected())
+                methodList.add(MiningMethod.fromString(cb.getText()));
+        }*/
     }
 
     public boolean isModified(MinerFactorySettings data) {
@@ -206,6 +231,11 @@ public class DialogSettings extends JDialog {
                 flag = true;
             }
         }
+
+        /*for (JCheckBox cb: methodCheckBoxes){
+            if (cb.isSelected() != objectList.contains(MiningMethod.fromString(cb.getText())))
+                return true;
+        }*/
 
         return flag;
 /*                if(cb.isSelected() != objectList.contains(MiningObject.fromString(cb.getText())) )

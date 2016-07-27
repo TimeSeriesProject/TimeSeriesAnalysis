@@ -183,6 +183,12 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 MinerResultsOM result = entry.getValue();
                 DataItems outliesItems = result.getOutlies();
                 DataItems oriData = oriItems.get(pathName);
+
+                for (int i = 0; i< oriData.getData().size(); i++) {
+                    double data = Double.parseDouble(oriData.getData().get(i));
+                    oriData.getData().set(i, data/1000 + "");
+                }
+
                 ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", "值", null);
                 chart.displayDataItems(oriData);
                 jp.add(chart);
@@ -227,8 +233,8 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 MinerResultsStatistics retStatistic = rslt.getRetPath().getRetStatistic().get(pathName);
 
                 data[i][0] = pathName;
-                data[i][1]=String.format("%5.3f",retStatistic.getMean());
-                data[i][2]=String.format("%5.3f",retStatistic.getStd());
+                data[i][1]=String.format("%5.3f",retStatistic.getMean()/1000);
+                data[i][2]=String.format("%5.3f",retStatistic.getStd()/1000);
                 data[i][3]=String.format("%5.3f",retStatistic.getSampleENtropy());
                 data[i][4]=String.format("%5.3f",retStatistic.getComplex());
                 data[i][5]=String.format("%5.3f",entry.getValue());

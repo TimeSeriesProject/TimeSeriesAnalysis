@@ -177,7 +177,7 @@ public class ChartPanelShowPP extends JPanel {
         for (int i = 0; i < length; i++) {
             DataItem temp = new DataItem();
             temp = normal.getElementAt(i);
-            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData())); // 对应的横轴
+            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData()) / 1000); // 对应的横轴
 
         }
         xyseriescollection.addSeries(xyseries);

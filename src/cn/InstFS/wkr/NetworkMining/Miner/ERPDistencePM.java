@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.lang.model.element.Element;
 
+import net.mindview.util.CountingGenerator;
 import oracle.net.aso.k;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -93,6 +94,7 @@ public class ERPDistencePM implements IMinerPM {
 			seq.clear();
 			for(int i=0;i<numItems;i++){
 				seq.add((int)(Double.parseDouble(oriDi.getData().get(i)))+"");
+//				seq.add(Double.parseDouble(oriDi.getData().get(i))+"");
 			}
 			isPeriodExist(maxPeriod,null,seq);
 		}else{
@@ -288,7 +290,8 @@ public class ERPDistencePM implements IMinerPM {
 					minPredictValues[index]=Integer.MAX_VALUE;
 					maxPredictValues[index]=Integer.MIN_VALUE;
 				}
-				for(int j=0;j<di.getLength();j++){
+				int con = di.getLength() - di.getLength()%(i+1);	// 最后一个不完整周期不计入
+				for(int j=0;j< con;j++){
 					int value=(int)Double.parseDouble(seq.get(j));
 					predictValues[j%(i+1)]+=value;
 					if(minPredictValues[j%(i+1)]>value){

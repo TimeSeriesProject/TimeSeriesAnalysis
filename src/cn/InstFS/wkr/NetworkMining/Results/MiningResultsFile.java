@@ -4,6 +4,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.MinerFactorySettings;
 import cn.InstFS.wkr.NetworkMining.Miner.MinerNodeResults;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.UIs.WholeNetworkFrame;
 import com.sun.javafx.tk.Toolkit;
@@ -60,6 +61,7 @@ public class MiningResultsFile {
         File path = new File(dataPath);
         String[] list;
         final String fileName = genFileName(settings);
+//        final String reg = ".*"+fileName.substring(fileName.indexOf("_")+1)+"{1}";
         list = path.list(new FilenameFilter() {
             private Pattern pattern = Pattern.compile(fileName);
             @Override
@@ -67,6 +69,8 @@ public class MiningResultsFile {
                 return pattern.matcher(name).matches();
             }
         });
+
+
         if (list.length != 0) {
             this.fileName = list[0];
             return true;
@@ -88,6 +92,11 @@ public class MiningResultsFile {
         fileName.append(settings.getMinerType()).append("_");
         fileName.append(miningObject.toString()).append("_");   // 挖掘对象
         fileName.append(settings.getGranularity()); // 时间粒度
+
+        /*for (MiningMethod methodChecked: settings.getMiningMethodsChecked()) {
+            fileName.append(methodChecked).append(";");
+        }
+        fileName.deleteCharAt(fileName.length()-1);*/
 
         fileName.append(".ser");
 

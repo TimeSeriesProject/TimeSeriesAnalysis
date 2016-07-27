@@ -132,6 +132,8 @@ class PathTimerTask extends TimerTask{
 			List datas = new ArrayList();
 			if (task.getMiningObject().equals("流量")){
 				datas = dataItems.getNonNumData();
+				dataItems = DataPretreatment.changeDataToProb(dataItems);
+				datas = dataItems.getProbMap();
 			} else if (task.getMiningObject().equals("通信次数")) {
 				DataPretreatment.translateProbilityOfData(dataItems);//将跳转概率保存到文件中
 				dataItems = DataPretreatment.changeDataToProb(dataItems); //计算每条路径的概率
@@ -151,10 +153,11 @@ class PathTimerTask extends TimerTask{
 					if(map.containsKey(item)) {
 						if(map.get(item) instanceof Double){	//用于区别Double路径概率与Integer流量
 							int value=(int)((double)map.get(item)*1000);
+//							double value = (double) map.get(item);
 							seq.add(value+"");
 							row++;
 						}else if(map.get(item) instanceof Integer){
-							int value = (int) map.get(item);
+							int value = (int) map.get(item)*1000;
 							seq.add(value+"");
 							row++;
 						}
@@ -373,6 +376,29 @@ class PathTimerTask extends TimerTask{
 			pathProb.put(key, (double) (value/totalTimes));
 		}*/
 //		System.out.println("主要路径："+ primaryPath.toString() + "次数"+ total.get(primaryPath));
+
+		/*HashMap<String, Double> total = new HashMap<>();
+		HashMap<String, Double> pathProb = new HashMap<>();
+		int size = 0;
+
+		for (Map.Entry<String, DataItems> entry: pathDataItems.entrySet()) {
+			String pathName = entry.getKey();
+			DataItems di = entry.getValue();
+			double times = 0;
+			for (String value : di.getData()) {
+				times += Double.parseDouble(value);
+			}
+			total.put(pathName, times);
+			size = di.getData().size();
+		}
+
+		for (Map.Entry<String, Double> entry: total.entrySet()) {
+			String pathName = entry.getKey();
+			double value = entry.getValue();
+			pathProb.put(pathName, value/size);
+		}
+*/
+
 		return pathProb;
 	}
 }
