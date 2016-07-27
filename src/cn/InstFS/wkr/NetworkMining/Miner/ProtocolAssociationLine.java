@@ -70,7 +70,7 @@ public class ProtocolAssociationLine {
 			String ip = ip_iter.next();
 			mr_fp_l.ip = ip;
 			List<ProtocolDataItems> proDataList2 = ip_proData.get(ip);
-			List<ProtocolDataItems> proDataList = compressData(proDataList);
+			List<ProtocolDataItems> proDataList = compressData(proDataList2);
 			
 			List<TreeMap<Integer,SymbolNode>> linesList = new ArrayList<TreeMap<Integer,SymbolNode>>();
 			List<TreeMap<Integer,Linear>> linesPosList = new ArrayList<TreeMap<Integer,Linear>>();

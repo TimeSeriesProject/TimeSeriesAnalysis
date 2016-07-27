@@ -3,6 +3,8 @@ package lineAssociation;
 
 import java.util.TreeMap;
 
+import org.jnetpcap.util.Length;
+
 /**
  * Created by xzbang on 2015/12/29.
  */
@@ -32,6 +34,8 @@ public class BottomUpLinear {
         System.out.println("线段两两拟合完毕！");
         mergeLinear();//合并线段
         System.out.println("合并线段完毕！mergerPrice="+mergerPrice);
+        
+        
     }
 
     /**
@@ -155,7 +159,9 @@ public class BottomUpLinear {
             mergeNode(minNode);
             minNode = findMinNode(head);
         }
-
+        //合并线段长度很小的node
+        mergeAtLeastNum(head);
+        
         linears = new TreeMap<Integer, Linear>();
         now =head.after;
         linears.put(now.first.startTime,now.first);
@@ -165,8 +171,56 @@ public class BottomUpLinear {
             now = now.after;
         }
     }
-
     /**
+     * 将线段长度很小的合并到长的线段中去
+     * author:艾长青
+     * @param head
+     */
+    private void mergeAtLeastNum(Node head) {
+		
+    	//找到长度为1的节点
+    	Node minLengthNode = findMinLength(head);
+        while(minLengthNode!=null){
+        	mergeMinLengthNode(minLengthNode);
+        	minLengthNode = findMinNode(head);
+        }
+	}
+	/**
+     * @param head
+     * @return
+     * author:艾长青
+     */
+	private Node findMinLength(Node head) {
+		
+        Node now = head;
+        while(now.after!=null){
+            now=now.after;
+            int len = now.first.span+now.second.span;
+            if(len < 4)
+            	return now;
+        }
+        return null;
+	}
+	 /**
+     * @param minLengthNode
+     * author:艾长青
+     */
+    private void mergeMinLengthNode(Node minNode) {
+		
+    	Node before = minNode.before,after = minNode.after;
+        Linear first = minNode.first,second = minNode.second;
+        double newSlope = (datas.get(second.span+second.startTime)-first.startValue)/(second.span+second.startTime-first.startTime);
+        Linear newLinear = new Linear(Math.atan(newSlope),first.startTime,second.span+second.startTime-first.startTime,first.startValue);
+        newLinear.hspan = datas.get(second.span+second.startTime)-first.startValue;
+        before.second=newLinear;
+        before.after=after;
+        if (after != null) {
+            after.first = newLinear;
+            after.before = before;
+        }
+	}
+
+	/**
      * 合并最小代价节点
      * @param minNode
      */
