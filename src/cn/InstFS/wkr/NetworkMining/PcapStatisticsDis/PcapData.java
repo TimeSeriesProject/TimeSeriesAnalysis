@@ -107,9 +107,9 @@ public class PcapData implements Comparable {
     public int compareTo(Object arg0) {
         // TODO Auto-generated method stub
         PcapData data = (PcapData) arg0;
-        String str = srcIP + "_" + dstIP + "_" + srcPort + "_" + dstPort;
-        String str2 = data.srcIP + "_" + data.dstIP + "_" + data.srcPort + "_" + data.dstPort;
-        if (str.equals(str2)) {
+//        String str = srcIP + "_" + dstIP + "_" + srcPort + "_" + dstPort;
+//        String str2 = data.srcIP + "_" + data.dstIP + "_" + data.srcPort + "_" + data.dstPort;
+//        if (str.equals(str2)) {
             if (time_s == data.getTime_s()) {
                 if (time_ms == data.getTime_ms()) {
                     if (TTL == data.getTTL()) {
@@ -123,9 +123,9 @@ public class PcapData implements Comparable {
                 return time_ms < data.getTime_ms() ? -1 : 1;
             } else
                 return time_s < data.getTime_s() ? -1 : 1;
-        } else {
-            return str.compareTo(str2);
-        }
+//        } else {
+//            return str.compareTo(str2);
+//        }
     }
 
     public String getPcapFile() {
