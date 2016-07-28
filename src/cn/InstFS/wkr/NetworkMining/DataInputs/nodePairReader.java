@@ -435,6 +435,11 @@ public class nodePairReader implements IReader {
 				}
 			}
 		}
+		if(protocolDataItems == null || protocolDataItems.size() == 0)
+		{
+			System.out.println("readEachProtocolTrafficDataItems");
+			System.out.println("filePath:"+filePath);
+		}
 		return protocolDataItems;
 	}
 	
@@ -541,17 +546,17 @@ public class nodePairReader implements IReader {
 						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
 						if(dataItem.getTime().toString().equals(time.toString())){
 							int times=Integer.parseInt(dataItem.getData());
-							int addTimes=Integer.parseInt(proAndTraffic[1]);
+							int addTimes=Integer.parseInt(proAndTraffic[2]);
 							dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
 						}else{
-							dataItems.add1Data(time, proAndTraffic[1]);
+							dataItems.add1Data(time, proAndTraffic[2]);
 						}	
 					}else{
 						DataItems dataItems=new DataItems();
 						for(int i=rows-1;i>=0;i--){
 							dataItems.add1Data(parseTime(timeSpan-i), "0");
 						}
-						dataItems.add1Data(time, proAndTraffic[1]);
+						dataItems.add1Data(time, proAndTraffic[2]);
 						protocolDataItems.put(proAndTraffic[0], dataItems);
 					}
 				}else{
@@ -560,7 +565,7 @@ public class nodePairReader implements IReader {
 					for(int i=rows-1;i>=0;i--){
 						dataItems.add1Data(parseTime(timeSpan-i), "0");
 					}
-					dataItems.add1Data(time, proAndTraffic[1]);
+					dataItems.add1Data(time, proAndTraffic[2]);
 					dataItemsMap.put(proAndTraffic[0], dataItems);
 					ipPairProtocolDataItems.put(ipPair, dataItemsMap);
 				}
@@ -595,7 +600,6 @@ public class nodePairReader implements IReader {
 		String line=null;
 		int rows=0;//记录总共读取的行数
 		while((line=textUtils.readByrow())!=null){
-			System.out.println(line);
 			String[] items=line.split(",");
 			int timeSpan=Integer.parseInt(items[0]);
 			rows=timeSpan-0;
@@ -611,8 +615,7 @@ public class nodePairReader implements IReader {
 					//合并同一个IP，同一个协议的通信的流量要合并
 					if(dataItem.getTime().toString().equals(time.toString())){
 						int times=Integer.parseInt(dataItem.getData());
-						//int addTimes=Integer.parseInt(proAndTraffic[2]);
-						int addTimes=Integer.parseInt(proAndTraffic[1]);
+						int addTimes=Integer.parseInt(proAndTraffic[2]);
 						dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
 					}else if(dataItem.getTime().before(time)){
 						Date addtime=DataPretreatment.getDateAfter(dataItem.getTime(),3600*1000);
@@ -620,8 +623,7 @@ public class nodePairReader implements IReader {
 							dataItems.add1Data(addtime,"0");
 							addtime=DataPretreatment.getDateAfter(addtime, 3600*1000);
 						}
-						//dataItems.add1Data(addtime, proAndTraffic[2]);
-						dataItems.add1Data(addtime, proAndTraffic[1]);
+						dataItems.add1Data(addtime, proAndTraffic[2]);
 					}else{
 						throw new RuntimeException("读入文件"+filePath+"第"+rows+"行发生时间错位");
 					}	
@@ -630,7 +632,7 @@ public class nodePairReader implements IReader {
 					for(int i=rows-1;i>=0;i--){
 						dataItems.add1Data(parseTime(timeSpan-i), "0");
 					}
-					dataItems.add1Data(time, proAndTraffic[1]);
+					dataItems.add1Data(time, proAndTraffic[2]);
 					protocolDataItems.put(protocol, dataItems);
 				}
 			}
@@ -640,6 +642,11 @@ public class nodePairReader implements IReader {
 					value.add1Data(time,"0");
 				}
 			}
+		}
+		if(protocolDataItems == null || protocolDataItems.size() == 0)
+		{
+			System.out.println("readEachProtocolTimesDataItems");
+			System.out.println("filePath:"+filePath);
 		}
 		return protocolDataItems;
 	}
@@ -1573,4 +1580,60 @@ public class nodePairReader implements IReader {
 		DataItems dataItems=reader.readInputBetween(startDate, endDate);
 		System.out.println("over "+dataItems.getLength());
 	}
+
+	/**
+	 * 将一个节点(这里只考虑路由)的所有协议的通信量合并在同一时刻合并。当节点在该时候都没有通讯时，则认为该节点消失了
+	 * @param filePath
+	 * @return
+	 */
+	public HashMap<String, DataItems> readEachNodeDisapearEmergeDataItems(
+			String filePath,int timeSpan) {
+
+//		int timeSpan = 3600;
+		HashMap<String, DataItems> protocolDataItems = new HashMap<String, DataItems>();
+		TextUtils textUtils = new TextUtils();
+		textUtils.setTextPath(filePath);
+		textUtils.readByrow();
+		String line = null;
+		/**
+		 * 添加功能：统计节点出现与消失的情况，将当前节点所有协议的流量全部统计出来。
+		 */
+		DataItems sumDataItem = new DataItems();
+
+		int maxTime = Integer.MIN_VALUE;
+		while ((line = textUtils.readByrow()) != null) {
+			String[] items = line.split(",");
+			int timePoint = Integer.parseInt(items[0]);
+			if(timePoint > maxTime){
+				maxTime = timePoint;
+			}
+		}
+		for(int i = 0;i <= maxTime/timeSpan;i++)
+		{
+			sumDataItem.add1Data(parseTime(i*timeSpan), "0");
+		}
+		int index = 0;
+		while ((line = textUtils.readByrow()) != null) {
+			
+			String[] items = line.split(",");
+			int timePoint = Integer.parseInt(items[0]);
+			index = timePoint/timeSpan;
+			Date time = parseTime(timePoint/timeSpan*timeSpan);
+			int lastTraffic = Integer.parseInt(sumDataItem.getData().get(index));
+			int currentTraffic = Integer.parseInt(items[2]);
+			
+			if(lastTraffic > 0 || currentTraffic > 0){
+				continue;
+			}
+			else{
+				
+				sumDataItem.data.set(index, "1");
+			}
+			
+		}
+		
+		protocolDataItems.put("AllTraffic", sumDataItem);
+		return protocolDataItems;
+	}
+
 }
