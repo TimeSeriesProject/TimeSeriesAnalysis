@@ -22,9 +22,12 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	private static SingleNodeOrNodePairMinerFactory inst;
 	private static SingleNodeOrNodePairMinerFactory pairInst;
 	public static boolean isMining=false;
-	public String dataPath="F:\\TimeSeriesAnalysisdata\\parsePcap\\traffic";
+
+	public String dataPath="E:\\57data\\parsePcap\\out\\traffic";
+	public String rootPath = "E:\\57data\\parsePcap\\out\\rootDisapearEmerge";
+
 	private MiningObject miningObject;
-	private TaskRange taskRange;
+	private TaskRange taskRange = TaskRange.SingleNodeRange;
 	private MiningMethod method;
 	
 	private SingleNodeOrNodePairMinerFactory(String minertype){
@@ -32,10 +35,12 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Times);
 		miningObjectList.add(MiningObject.MiningObject_Traffic);
-
+		miningObjectList.add(MiningObject.MiningObject_NodeDisapearEmerge);
+		
 		List<MiningObject> miningObjectCheck = this.getMiningObjectsChecked();
 		miningObjectCheck.add(MiningObject.MiningObject_Times);
 		miningObjectCheck.add(MiningObject.MiningObject_Traffic);
+		miningObjectCheck.add(MiningObject.MiningObject_NodeDisapearEmerge);
 	}
 	
 	public static SingleNodeOrNodePairMinerFactory getInstance(){
@@ -85,8 +90,17 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 		
 		if(isMining)
 			return;
+		
 		isMining=true;
-		File dataDirectory=new File(dataPath);
+		File dataDirectory = null;
+		if(MiningObject.MiningObject_NodeDisapearEmerge.toString().equals(miningObject.toString()))
+		{
+			dataDirectory = new File(rootPath);
+		}
+		else{
+			dataDirectory = new File(dataPath);
+		}
+		
 		nodePairReader reader=new nodePairReader();
 		if(dataDirectory.isFile()){
 			parseFile(dataDirectory,reader);
@@ -137,6 +151,9 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 				Date date3 = cal3.getTime();
 				Date date4 = cal4.getTime();
 				rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),true,date3,date4);*/
+				break;
+			case MiningObject_NodeDisapearEmerge:
+				rawDataItems = reader.readEachNodeDisapearEmergeDataItems(dataFile.getAbsolutePath(),2);
 				break;
 			default:
 				break;
