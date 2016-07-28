@@ -9,6 +9,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
+import org.eclipse.swt.widgets.Layout;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
@@ -443,6 +444,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
         }else if (count==0 && miningMethod.equals(MiningMethod.MiningMethods_Statistics)) {
             remove(chart1);
             JScrollPane jsp = new JScrollPane();
+            JPanel jPanel = new JPanel();
 
             ArrayList<Map.Entry<String, MinerResultsStatistics> >resultList = new ArrayList<>(rslt.getRetPath().getRetStatistic().entrySet());
             ArrayList<Map.Entry<String, Double>> pathProbList = new ArrayList<>(rslt.getRetPath().getPathProb().entrySet());
@@ -488,14 +490,29 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             listTable.setAutoscrolls(true);
             listTable.getColumnModel().getColumn(0).setPreferredWidth(180);
             jsp.setViewportView(listTable);
+            
+            //以下用于绘制直方图
+            HashMap<String, String> probMap = new HashMap<String, String>();
+            probMap = getPpProbMap(pathProbList,rslt);
+            ChartPanelShowPPStatistics chat = new ChartPanelShowPPStatistics();
+            JFreeChart jfreeChart = chat.createChart(probMap);
+            chat.setVisible(true);
+            ChartPanel chartPanel = new ChartPanel(jfreeChart,false);
+            chartPanel.setPreferredSize(new Dimension(500,270));
+            jPanel.add(chartPanel);           
+            jsp.setPreferredSize(listTable.getMaximumSize());
+            jPanel.setLayout(new GridLayout(0,1));
             add(jsp);
+            add(jPanel);
             repaint();
             validate();
             count++;
         }
     }
     /**@author LYH
-     * 解析数据**/
+     * 解析原始数据
+     * 把dataItems中的ProbMap的数据转换到data中
+     * **/
     public List<List<String>> PMDetect(DataItems dataItems,TaskElement tasks){		
 			
 			List datas = new ArrayList();
@@ -550,7 +567,19 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
 			return newItem;
 			
     }
-    	
+    /**
+     * @author LYH
+     * 整合路径的概率分布数据**/
+    public HashMap<String, String> getPpProbMap(ArrayList<Map.Entry<String, Double>> pathProbList,MinerResults rslt){
+    	HashMap<String, String> map = new HashMap<String, String>();
+    	for (Map.Entry<String, Double> entry : pathProbList) {
+            String pathName = entry.getKey();
+            MinerResultsStatistics retStatistic = rslt.getRetPath().getRetStatistic().get(pathName);
+            String value=String.format("%5.3f",entry.getValue());
+            map.put(pathName, value);
+        }
+    	return map;
+    }
 }
 
 
