@@ -4,7 +4,11 @@ package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
  * Created by hidebumi on 2016/3/30.
  */
 import java.awt.*;
+import java.awt.List;
 import java.awt.geom.Ellipse2D;
+import java.lang.reflect.Array;
+import java.net.Inet4Address;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -12,12 +16,14 @@ import java.util.*;
 import javax.swing.JPanel;
 import javax.swing.text.SimpleAttributeSet;
 
+import org.apache.poi.hssf.util.HSSFColor.BLACK;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.labels.AbstractXYItemLabelGenerator;
 import org.jfree.chart.labels.StandardXYItemLabelGenerator;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
@@ -26,6 +32,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
@@ -34,6 +41,7 @@ import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleInsets;
 import org.jfree.util.ShapeUtilities;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
@@ -135,7 +143,15 @@ public class ChartPanelShowPP extends JPanel {
         for (int i = 0; i < length; i++) {
             DataItem temp = new DataItem();
             temp = normal.getElementAt(i);
-            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData())); // 对应的横轴
+
+            Calendar cal = Calendar.getInstance();
+   		 	cal.set(2014, 9, 1, 0, 0, 0);
+   		 	Date date1 = cal.getTime();
+   		 	Date date2 = temp.getTime();
+   		 	long diff = date2.getTime()-date1.getTime();
+   		 	long hour = diff/(1000*24*60);
+
+   		 	xyseries.add( i, Double.parseDouble(temp.getData())); // 对应的横轴
 
         }
         xyseriescollection.addSeries(xyseries);
@@ -177,19 +193,56 @@ public class ChartPanelShowPP extends JPanel {
         for (int i = 0; i < length; i++) {
             DataItem temp = new DataItem();
             temp = normal.getElementAt(i);
-            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData()) / 1000); // 对应的横轴
+
+            Calendar cal = Calendar.getInstance();
+   		 	cal.set(2014, 9, 1, 0, 0, 0);
+   		 	Date date1 = cal.getTime();
+   		 	Date date2 = temp.getTime();
+   		 	long diff = date2.getTime()-date1.getTime();
+   		 	long hour = diff/(1000*60*60);
+            //System.out.println("hour:"+hour+" data:"+Double.parseDouble(temp.getData()));
+            xyseries.add(i, Double.parseDouble(temp.getData()));
 
         }
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
+    public static ArrayList<XYDataset> createPeriodDataset(DataItems normal,int period){
 
+    	ArrayList<XYDataset> xyseriescollectionlist = new ArrayList<XYDataset>();
+
+    	double maxY = 0;
+    	for(int k=0;k<normal.getLength();k++){
+    		DataItem temp = normal.getElementAt(k);
+    		if(Double.parseDouble(temp.getData())>maxY){
+    			maxY = Double.parseDouble(temp.getData());
+    		}
+    	}
+    	int i=period;
+    	while(i<normal.getLength()){
+    		XYSeries xySeries = new XYSeries("竖直线"+i);
+    		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
+        	xySeries.add(i,0);
+    		xySeries.add(i,maxY);
+    		xyseriescollection.addSeries(xySeries);
+    		xyseriescollectionlist.add(xyseriescollection);
+    		i = i+period;
+    	}
+
+    	return xyseriescollectionlist;
+    }
     public static JFreeChart createChart(ArrayList<DataItems> _nor_model,ArrayList<String> name, DataItems nor, DataItems abnor,int period,int firstperiod) {
         XYDataset xydataset = createNormalDataset(nor);
-        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("周期值: "+period+"    "+"最可能子周期值 : "+firstperiod, "时间", "值", xydataset);
+        //JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("周期值: "+period+"    "+"最可能子周期值 : "+firstperiod, "时间", "值", xydataset);
+        //JFreeChart jfreechart = ChartFactory.createScatterPlot("周期值: "+period+"    "+"最可能子周期值 : "+firstperiod, "时间", "值", xydataset);
+        JFreeChart jfreechart = ChartFactory.createXYLineChart( "路径："+name.get(0)+"   周期值: "+period+"    "+"最可能子周期值 : "+firstperiod, "时间", "值", xydataset);
+        jfreechart.removeLegend();
+
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
+        xyplot.setAxisOffset(new RectangleInsets(10D, 10D, 10D, 10D));
         NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
+
         java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(-4D, -4D, 6D, 6D);
         //设置异常点提示红点大小
         /*XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer) xyplot.getRenderer();
@@ -224,24 +277,57 @@ public class ChartPanelShowPP extends JPanel {
 
         //xylineandshaperenderer1.setBaseItemLabelsVisible(true);
         for (int i = 0; i < _nor_model.size(); i++) {
-            XYDataset xydataset2 = createmodeDataset(_nor_model.get(i),name.get(i));
+            //System.out.println("normodle.length:"+_nor_model.get(i).getLength()+"name.length"+name.get(i).length());
+        	XYDataset xydataset2 = createmodeDataset(_nor_model.get(i),name.get(i));
+        	ArrayList<XYDataset> xyDatasetlist = createPeriodDataset(_nor_model.get(i), period);
+        	XYLineAndShapeRenderer xyLineAndShapeRenderer = (XYLineAndShapeRenderer) xyplot.getRenderer();
+        	xyLineAndShapeRenderer.setBaseShapesVisible(false);
+    		xyLineAndShapeRenderer.setBaseLinesVisible(true);
+    		Shape itemShape = ShapeUtilities.createDiamond((float) 0);
+    		xyLineAndShapeRenderer.setSeriesShape(0, itemShape);
+    		xyLineAndShapeRenderer.setSeriesPaint(0, new Color(255,0,0));
+    		xyLineAndShapeRenderer.setSeriesFillPaint(0, new Color(255,0,0));
+    		xyLineAndShapeRenderer.setSeriesStroke(0, new BasicStroke(1.0F, 1, 1, 1.0F, new float[] {10F, 6F}, 0.0F));
+    		xyLineAndShapeRenderer.setSeriesShapesVisible(0, true);
+    		xyLineAndShapeRenderer.setBaseItemLabelsVisible(false);
+    		for(int k=0;k<xyDatasetlist.size();k++){
+        		xyplot.setDataset(i+k+1, xyDatasetlist.get(k));
+        		xyplot.setRenderer(i+k+1,xyLineAndShapeRenderer);
+        		xyplot.setRenderer(i+k+1,xyLineAndShapeRenderer);
+        	}
             XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
             xyplot.setDataset( i, xydataset2);
             xyplot.setRenderer(i , xylineandshaperenderer2);
+            xylineandshaperenderer2.setBaseShapesVisible(false);
+//    		renderer.setBaseShape(itemShape);	// 好像不管用，必须用setSeriesShape
+            xylineandshaperenderer2.setBaseLinesVisible(true);
+//    		renderer.setBasePaint(new Color(0));	// 好像不管用，必须用setSeriesPaint
+
+    		//Shape itemShape = ShapeUtilities.createDiamond((float) 0);
+    		xylineandshaperenderer2.setSeriesShape(0, itemShape);
+    		xylineandshaperenderer2.setSeriesPaint(0, new Color(0,0,0));
+
             //设置不可见到点。
             xylineandshaperenderer2.setBaseShapesVisible(false);
+            xylineandshaperenderer2.setSeriesShapesVisible(i, true);
+            //设置图例显示
+            //LegendTitle legendTitle = new LegendTitle(jfreechart.getPlot());
+           // jfreechart.addLegend(legendTitle);
             //设置可以看见线。
-            xylineandshaperenderer2.setSeriesLinesVisible(0, true);
-            xylineandshaperenderer2.setSeriesShape(0, double1);
+            //xylineandshaperenderer2.setSeriesLinesVisible(i, true);
+            //xylineandshaperenderer2.setSeriesShape(i, double1);
             //设置线和点的颜色。
-            Color lineColor = getColor(xydataset2);
+            //xylineandshaperenderer2.setSeriesFillPaint(i, new Color(0, 0, 0));
+
+            //xylineandshaperenderer2.setSeriesShapesVisible(1, true);
+            /*Color lineColor = getColor(xydataset2);
             xylineandshaperenderer2.setSeriesPaint(0, lineColor);
             xylineandshaperenderer2.setSeriesFillPaint(0, lineColor);
             xylineandshaperenderer2.setSeriesOutlinePaint(0, lineColor);
             xylineandshaperenderer2.setUseFillPaint(true);
             xylineandshaperenderer2.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
             xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(1.5F));
-
+*/
         }
 
 //        jfreechart.getLegend().setVisible(false);
