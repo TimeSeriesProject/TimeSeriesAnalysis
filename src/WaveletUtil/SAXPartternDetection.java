@@ -153,6 +153,8 @@ public class SAXPartternDetection implements IMinerOM{
 			double dist2=innerSearch(i);
 			nearstDists.add(dist);
 		}
+		if(nearstDists.size() <= 0)
+			return ;
 		for(int i=0;i<patternLen-1;i++)
 			nearstDists.add(nearstDists.get(nearstDists.size()-1));
 		List<String> outliesData=transToString(nearstDists);

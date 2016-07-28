@@ -17,7 +17,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
-import com.sun.javafx.tk.Toolkit;
+//import com.sun.javafx.tk.Toolkit;
 
 public class NetworkMinerFactory implements ITaskElementEventListener{
 	private static NetworkMinerFactory inst;

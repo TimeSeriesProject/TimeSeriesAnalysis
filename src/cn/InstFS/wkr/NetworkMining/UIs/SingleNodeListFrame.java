@@ -396,7 +396,7 @@ public class SingleNodeListFrame extends JFrame {
 //		miningObjectComboBox.addItem("流量");
 //		miningObjectComboBox.addItem("通信次数");
 		miningObjectComboBox.setSelectedIndex(0);
-		miningObjectComboBox.addItem("结点出现消失");
+//		miningObjectComboBox.addItem("结点出现消失");
 		miningObjectComboBox.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent event)
