@@ -1390,7 +1390,7 @@ public class nodePairReader implements IReader {
 					if(preIndex==nowIndex){
 						int times=Integer.parseInt(dataItem.getData());
 						//int addTimes=Integer.parseInt(proAndTraffic[2]);
-						int addTimes=Integer.parseInt(proAndTraffic[1]);
+						int addTimes=Integer.parseInt(proAndTraffic[2]);
 						dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
 					}
 					else if(dataItem.getTime().before(time)){
@@ -1399,7 +1399,7 @@ public class nodePairReader implements IReader {
 							dataItems.add1Data(addtime,"0");
 							addtime=DataPretreatment.getDateAfter(addtime, 3600*1000);
 						}					
-						dataItems.add1Data(addtime, proAndTraffic[1]);
+						dataItems.add1Data(addtime, proAndTraffic[2]);
 					}
 					else{
 						throw new RuntimeException("读入文件"+filePath+"第"+indexs.get(indexs.size()-1)+"行发生时间错位");
@@ -1409,7 +1409,7 @@ public class nodePairReader implements IReader {
 					for(int i=indexs.get(0);i>start;i--){
 						dataItems.add1Data(parseTime(timeSpan-i), "0");
 					}
-					dataItems.add1Data(time, proAndTraffic[1]);
+					dataItems.add1Data(time, proAndTraffic[2]);
 					protocolDataItems.put(protocol, dataItems);
 				}
 			}
@@ -1417,24 +1417,25 @@ public class nodePairReader implements IReader {
 		}
 		return protocolDataItems;
 	}
-	/**
+	/**@author LYH
 	 * 读取指定IP文件每对接点中所有协议流量的DataItems
-	 * @param filePath IP文件地址
+	 * @param filePath IP文件地址,timeGran 时间粒度
 	 * @return Map<String,Map<String, DataItems>> ,其中key值为ip地址对，value值为Map<Key,DataItems>
 	 * 其中key为协议  DataItems为时间序列
 	 */
-	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTrafficDataItems(String filePath,boolean isReadBetween,Date date1,Date date2){
-		
+	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTrafficDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
+		int timegran = timeGran/3600;
+		int start = 0;
 		HashMap<String, Map<String, DataItems>>ipPairProtocolDataItems=new HashMap<String, Map<String,DataItems>>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
-		textUtils.readByrow();
+
 		String line=null;
 		int rows=0;//记录总共读取的行数
+		List<Integer> indexs = new ArrayList<Integer>();
 		while((line=textUtils.readByrow())!=null){
 			String[] items=line.split(",");
-			int timeSpan=Integer.parseInt(items[0]);
-			rows=timeSpan-0;
+			int timeSpan=Integer.parseInt(items[0]);			
 			Date time=parseTime(timeSpan*3600);
 			String protocolItems=items[items.length-1];
 			String[] eachProtocol=protocolItems.split(";");
@@ -1443,12 +1444,23 @@ public class nodePairReader implements IReader {
 				if(time.compareTo(date1)<0 || time.compareTo(date2)>0){
 					continue;
 				}
-			}	
+			}
+			indexs.add(timeSpan-start);
 			for(String protocol:eachProtocol){
 				String[] proAndTraffic=protocol.split(":");
 				if(ipPairProtocolDataItems.containsKey(ipPair)){
+					
 					Map<String, DataItems> protocolDataItems=ipPairProtocolDataItems.get(ipPair);
 					if(protocolDataItems.containsKey(proAndTraffic[0])){
+						int nowIndex = indexs.get(indexs.size()-1);
+						int preIndex = indexs.get(indexs.size()-2);
+						if(nowIndex-preIndex>1){
+							DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
+							DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
+							for(int j=preIndex+1;j<nowIndex;j++){
+								dataItems.add1Data(parseTime((j-start)*3600), "0");
+							}
+						}
 						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
 						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
 						if(dataItem.getTime().toString().equals(time.toString())){
@@ -1459,9 +1471,10 @@ public class nodePairReader implements IReader {
 							dataItems.add1Data(time, proAndTraffic[1]);
 						}	
 					}else{
-						DataItems dataItems=new DataItems();
-						for(int i=rows-1;i>=0;i--){
-							dataItems.add1Data(parseTime(timeSpan-i), "0");
+						DataItems dataItems=new DataItems();						
+						//处理第一行
+						for(int i=indexs.get(0);i>start;i--){
+							dataItems.add1Data(parseTime((timeSpan-i)*3600), "0");
 						}
 						dataItems.add1Data(time, proAndTraffic[1]);
 						protocolDataItems.put(proAndTraffic[0], dataItems);
@@ -1469,15 +1482,15 @@ public class nodePairReader implements IReader {
 				}else{
 					Map<String, DataItems> dataItemsMap=new HashMap<String, DataItems>();
 					DataItems dataItems=new DataItems();
-					for(int i=rows-1;i>=0;i--){
-						dataItems.add1Data(parseTime(timeSpan-i), "0");
+					for(int i=indexs.get(0);i>start;i--){
+						dataItems.add1Data(parseTime((timeSpan-i)*3600), "0");
 					}
 					dataItems.add1Data(time, proAndTraffic[1]);
 					dataItemsMap.put(proAndTraffic[0], dataItems);
 					ipPairProtocolDataItems.put(ipPair, dataItemsMap);
 				}
 			}
-			Iterator<Entry<String, Map<String, DataItems>>> iterator=
+			/*Iterator<Entry<String, Map<String, DataItems>>> iterator=
 					ipPairProtocolDataItems.entrySet().iterator();
 			while (iterator.hasNext()) {
 				Map<String, DataItems> itemMap=iterator.next().getValue();
@@ -1488,7 +1501,7 @@ public class nodePairReader implements IReader {
 						item.add1Data(time,"0");
 					}
 				}
-			}
+			}*/
 		}
 		return ipPairProtocolDataItems;
 	}
@@ -1498,7 +1511,7 @@ public class nodePairReader implements IReader {
 	 * @return Map<String,Map<String, DataItems>> ,其中key值为ip地址对，value值为Map<Key,DataItems>
 	 * 其中key为协议  DataItems为通信次数时间序列
 	 */
-	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTimesDataItems(String filePath,boolean isReadBetween,Date date1,Date date2){
+	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTimesDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
 		
 		HashMap<String, Map<String, DataItems>>ipPairProtocolDataItems=new HashMap<String, Map<String,DataItems>>();
 		TextUtils textUtils=new TextUtils();
