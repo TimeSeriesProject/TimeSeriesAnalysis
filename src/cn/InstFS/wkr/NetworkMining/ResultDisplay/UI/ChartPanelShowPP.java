@@ -201,7 +201,7 @@ public class ChartPanelShowPP extends JPanel {
    		 	long diff = date2.getTime()-date1.getTime();
    		 	long hour = diff/(1000*60*60);
             //System.out.println("hour:"+hour+" data:"+Double.parseDouble(temp.getData()));
-            xyseries.add(i, Double.parseDouble(temp.getData()));
+            xyseries.add(i, Double.parseDouble(temp.getData()) / 1000);
 
         }
         xyseriescollection.addSeries(xyseries);
@@ -214,8 +214,8 @@ public class ChartPanelShowPP extends JPanel {
     	double maxY = 0;
     	for(int k=0;k<normal.getLength();k++){
     		DataItem temp = normal.getElementAt(k);
-    		if(Double.parseDouble(temp.getData())>maxY){
-    			maxY = Double.parseDouble(temp.getData());
+    		if(Double.parseDouble(temp.getData())/1000>maxY){
+    			maxY = Double.parseDouble(temp.getData())/1000;
     		}
     	}
     	int i=period;

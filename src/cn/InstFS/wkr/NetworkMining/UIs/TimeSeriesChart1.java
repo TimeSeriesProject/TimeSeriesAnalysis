@@ -96,6 +96,7 @@ import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.TextAnchor;
 
+import ca.pfv.spmf.algorithms.frequentpatterns.lcm.Dataset;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.ChartPanelShowFI;
@@ -363,6 +364,8 @@ public class TimeSeriesChart1 extends Composite {
 		int modelcount = mapAB.keySet().size();
 		long off1 = dataitems1.getElementAt(0).getTime().getTime();
 		long off2 = dataitems2.getElementAt(0).getTime().getTime();
+		long unit = dataitems2.getElementAt(0).getTime().getTime()-off1;
+		
 
 		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 		// 为数据集添加数据
@@ -425,7 +428,7 @@ public class TimeSeriesChart1 extends Composite {
 				ds1.add1Data(d2);
 				// dslist.add(ds1);
 				XYDataset xydataset1 = createmodeDataset(ds1, off1,
-						se.toString() + 1);
+						se.toString() + 1,unit);
 
 				DataItem d3 = new DataItem();
 				d3 = dataitems1.getElementAt(temp.A_end);
@@ -436,7 +439,7 @@ public class TimeSeriesChart1 extends Composite {
 				ds2.add1Data(d4);
 				// dslist.add(ds2);
 				XYDataset xydataset2 = createmodeDataset(ds2, off1,
-						se.toString() + 2);
+						se.toString() + 2,unit);
 
 				int datasetCount = xyplot.getDatasetCount();
 				XYTextAnnotation localXYTextAnnotation = null;
@@ -526,7 +529,7 @@ public class TimeSeriesChart1 extends Composite {
 
 	// 取出DataItems类型中的y值，返回XYDataset
 	public static XYDataset createmodeDataset(DataItems normal, long offset1,
-			String protocol2) {
+			String protocol2,long unit) {
 		// 获取正常数据的长度、
 		int length = normal.getLength();
 		int time[] = new int[length];
@@ -534,7 +537,7 @@ public class TimeSeriesChart1 extends Composite {
 		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 		// 为数据集添加数据
 		long offset2 = normal.getElementAt(0).getTime().getTime();
-		int off = (int) ((offset2 - offset1) / 3600000);
+		int off = (int) ((offset2 - offset1) / unit);
 		for (int i = 0; i < length; i++) {
 			DataItem temp = new DataItem();
 

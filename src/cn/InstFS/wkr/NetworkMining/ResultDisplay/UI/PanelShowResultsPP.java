@@ -345,6 +345,8 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             jp.setLayout(new GridLayout(0,1));
             jsp.setViewportView(jp);
             add(jsp);
+
+            HashMap<String, DataItems> pathOriDataItems = rslt.getRetPath().getPathOriDataItems();
             /**帮助解读:
              * key:周期数值
              * i:周期数为key的第i个周期
@@ -371,7 +373,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                     //pathNor.add(pathDataItems.get(tempName));//每条路径一個週期内的dataitem
                     numfirstPeriod = firstPeriod.get(tempName);//周期值string
                     
-                    for(int j=0;j<alltaskCombination.size();j++){
+                   /* for(int j=0;j<alltaskCombination.size();j++){
                     	TaskCombination tc = alltaskCombination.get(j);
                     	if(tc.getRange().equals(range)&&tc.getTasks().contains(task)){
                     		taskCombination = tc;
@@ -387,13 +389,13 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                     		seq = ls;
                     	}
                     }
-                    DataItems newItems = readSeq(seq, taskCombination.getDataItems());
+                    DataItems newItems = readSeq(seq, taskCombination.getDataItems());*/
                     
                     
                     //pathname.add(tempName);
                 	//pathNor.add(taskCombination.getDataItems());
                     pathname.add(tempName);
-                	pathNor.add(newItems);
+                	pathNor.add(pathOriDataItems.get(tempName));
                     DataItems nor=new DataItems();
                     DataItems abnor=new DataItems();
                     
@@ -420,6 +422,12 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 MinerResultsOM result = entry.getValue();
                 DataItems outliesItems = result.getOutlies();
                 DataItems oriData = oriItems.get(pathName);
+
+                for (int i = 0; i< oriData.getData().size(); i++) {
+                    double data = Double.parseDouble(oriData.getData().get(i));
+                    oriData.getData().set(i, data/1000 + "");
+                }
+
                 ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", "值", null);
                 chart.displayDataItems(oriData);
                 jp.add(chart);
@@ -459,14 +467,16 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             int size = resultList.size();
             String data[][]=new String[size][6];
             int i = 0;
+            ArrayList<String> pathList = new ArrayList<>();
 
             for (Map.Entry<String, Double> entry : pathProbList) {
                 String pathName = entry.getKey();
                 MinerResultsStatistics retStatistic = rslt.getRetPath().getRetStatistic().get(pathName);
 
+                pathList.add(pathName);
                 data[i][0] = pathName;
-                data[i][1]=String.format("%5.3f",retStatistic.getMean());
-                data[i][2]=String.format("%5.3f",retStatistic.getStd());
+                data[i][1]=String.format("%5.3f",retStatistic.getMean()/1000);
+                data[i][2]=String.format("%5.3f",retStatistic.getStd()/1000);
                 data[i][3]=String.format("%5.3f",retStatistic.getSampleENtropy());
                 data[i][4]=String.format("%5.3f",retStatistic.getComplex());
                 data[i][5]=String.format("%5.3f",entry.getValue());
@@ -504,6 +514,16 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             jPanel.setLayout(new GridLayout(0,1));
             add(jsp);
             add(jPanel);
+
+            // 绘制路径结构图
+            JPanel jp = new JPanel();
+            jp.setLayout(new BorderLayout());
+            GraphPanelShowPath view = new GraphPanelShowPath(pathList);
+            jp.add(view, BorderLayout.CENTER);
+            view.init();
+            view.setVisible(true);
+            add(jp);
+
             repaint();
             validate();
             count++;
