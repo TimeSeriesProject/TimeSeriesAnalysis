@@ -32,7 +32,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -99,11 +98,11 @@ public class AssociationIpListFrame extends JFrame {
 //					ProtocolAssMinerFactory.getInstance();
 					NetworkMinerFactory.getInstance();
 					ProtocolAssMinerFactory protocolAssFactory = ProtocolAssMinerFactory.getInstance();
-					protocolAssFactory.dataPath="C:\\data\\out\\traffic";
+					protocolAssFactory.dataPath="F:\\CodeProject\\Java\\TimeSeriesAnalysis\\parse\\traffic4";
 					protocolAssFactory.setMiningObject(MiningObject.MiningObject_Traffic);
 //					protocolAssFactory.setTaskRange(TaskRange.SingleNodeRange);
 					protocolAssFactory.detect();
-					//resultMap: 协议对挖掘结果
+					
 					HashMap<TaskCombination, MinerProtocolResults> resultMap = NetworkMinerFactory.getInstance().startAllProtocolMiners(MiningObject.MiningObject_Traffic);
 					
 					System.out.println("size &&&"+resultMap.size());
@@ -173,7 +172,7 @@ public class AssociationIpListFrame extends JFrame {
     }
     
 	private void createTable()
-	{//生成协议对主界面
+	{
 		String data[][]=new String[resultList.size()][3];
 		for(int i=0;i<resultList.size();i++)
 		{
@@ -189,7 +188,8 @@ public class AssociationIpListFrame extends JFrame {
 	   
 	 
 	    DefaultTableModel model=new DefaultTableModel(data,colNames){
-	        public boolean isCellEditable(int row, int column){   
+	        public   boolean   isCellEditable(int   row,   int   column)   
+	        {   
 	        	return   false;   
 	        };
 	     
@@ -198,15 +198,13 @@ public class AssociationIpListFrame extends JFrame {
 	    listTable = new JTable(model);
 	    listTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 	    listTable.setAutoscrolls(true);
-	    listTable.setRowSelectionAllowed(false);
-	    listTable.setColumnSelectionAllowed(false);
 	    listTable.getColumnModel().getColumn(0).setPreferredWidth(180);
-	    listTable.setRowHeight(35);
+//	    listTable.setRowHeight(35);
 	    listTable.addMouseListener(new MouseAdapter(){
 	       
 	    	public void mouseClicked(MouseEvent e) {
 	        
-	    		if(e.getClickCount()==2 && listTable.getSelectedColumn()==1){//这里是双击事件,对置信度列动作
+	    		if(e.getClickCount()==2){//点击几次，这里是双击事件
 	    			System.out.println("双击跳转");
 	    			tableChanged();        
 	    		}
@@ -222,9 +220,7 @@ public class AssociationIpListFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				if(listTable.getSelectedColumn()==1){//对置信度列动作
-					tableChanged();
-				}
+				tableChanged();
 //								
 			}
 		});
@@ -277,7 +273,7 @@ public class AssociationIpListFrame extends JFrame {
 		selectPanel.add(sortLabel);
 		selectPanel.add(sortTypeComboBox);
 	    scrollPane = new JScrollPane();
-	    update();	  
+	   update();	  
 	}
 	
 	public void tableChanged()
