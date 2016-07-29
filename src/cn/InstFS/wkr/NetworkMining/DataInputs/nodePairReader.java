@@ -615,7 +615,7 @@ public class nodePairReader implements IReader {
 					//合并同一个IP，同一个协议的通信的流量要合并
 					if(dataItem.getTime().toString().equals(time.toString())){
 						int times=Integer.parseInt(dataItem.getData());
-						int addTimes=Integer.parseInt(proAndTraffic[2]);
+						int addTimes=Integer.parseInt(proAndTraffic[1]);
 						dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
 					}else if(dataItem.getTime().before(time)){
 						Date addtime=DataPretreatment.getDateAfter(dataItem.getTime(),3600*1000);
@@ -623,7 +623,7 @@ public class nodePairReader implements IReader {
 							dataItems.add1Data(addtime,"0");
 							addtime=DataPretreatment.getDateAfter(addtime, 3600*1000);
 						}
-						dataItems.add1Data(addtime, proAndTraffic[2]);
+						dataItems.add1Data(addtime, proAndTraffic[1]);
 					}else{
 						throw new RuntimeException("读入文件"+filePath+"第"+rows+"行发生时间错位");
 					}	
@@ -632,7 +632,7 @@ public class nodePairReader implements IReader {
 					for(int i=rows-1;i>=0;i--){
 						dataItems.add1Data(parseTime(timeSpan-i), "0");
 					}
-					dataItems.add1Data(time, proAndTraffic[2]);
+					dataItems.add1Data(time, proAndTraffic[1]);
 					protocolDataItems.put(protocol, dataItems);
 				}
 			}
@@ -1266,36 +1266,36 @@ public class nodePairReader implements IReader {
 			throw new RuntimeException("ip 参数数量不符合要求");
 		}
 	}
-	/**2016/7/14
+	/**2016/7/29
 	 * @author LYH
+	 * @param filePath IP文件地址,timeGran 时间粒度
+	 * @return Map<String,DataItems> ,其中key值为协议，value值为DataItems
 	 * 实现节点挖掘是读取时间段数据
 	 * **/
-	public HashMap<String, DataItems> readEachProtocolTrafficDataItems(String filePath,boolean isReadBetween,Date date1,Date date2){
-		
+	public HashMap<String, DataItems> readEachProtocolTrafficDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
+		int timegran = timeGran/3600;
 		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
-		textUtils.readByrow();
 		String line=null;
-		int rows=0;//记录总共读取的行数
+		int start=0;//记录总共读取的行数
+		List<Integer> indexs = new ArrayList<Integer>();
 		while((line=textUtils.readByrow())!=null){
 			String[] items=line.split(",");
 			int timeSpan=Integer.parseInt(items[0]);			 
-			rows=timeSpan-0;
 			Date time=parseTime(timeSpan*3600);
-			String protocolItems=items[items.length-1];
-			String[] eachProtocol=protocolItems.split(";");
 			/*读取时间区间数据*/
-			
-			if(isReadBetween&&time.compareTo(date1)<0){
-				continue;
-			}
-			if(isReadBetween&&time.compareTo(date2)>0){
-				continue;
-			}
-						
+			if(isReadBetween==true){
+				if(time.compareTo(date1)<0||time.compareTo(date2)>0){
+					continue;
+				}	
+			}		
+			indexs.add((timeSpan-start)/timegran);			
+			String protocolItems=items[items.length-1];
+			String[] eachProtocol=protocolItems.split(";");			
 			for(String protocol:eachProtocol){
 				String[] proAndTraffic=protocol.split(":");
+				
 				if(proAndTraffic.length==1){
 					String traffic=proAndTraffic[0];
 					proAndTraffic=new String[2];
@@ -1303,10 +1303,20 @@ public class nodePairReader implements IReader {
 					proAndTraffic[1]=traffic;
 				}
 				if(protocolDataItems.containsKey(proAndTraffic[0])){
+					int nowIndex = indexs.get(indexs.size()-1);
+					int preIndex = indexs.get(indexs.size()-2);
+					if(nowIndex-preIndex>1){
+						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
+						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
+						for(int j=preIndex+1;j<nowIndex;j++){
+							dataItems.add1Data(parseTime((j-start)*3600), "0");
+						}
+					}
 					DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
 					DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
 					//合并同一个IP，同一个协议的通信的流量要合并
-					if(dataItem.getTime().toString().equals(time.toString())){
+					//if(dataItem.getTime().toString().equals(time.toString())){
+					if(preIndex==nowIndex){
 						int traffic=Integer.parseInt(dataItem.getData());
 						int addTraffic=Integer.parseInt(proAndTraffic[1]);
 						dataItems.getData().set(dataItems.getLength()-1,(traffic+addTraffic)+"");
@@ -1315,24 +1325,19 @@ public class nodePairReader implements IReader {
 					}	
 				}else{
 					DataItems dataItems=new DataItems();
-					for(int i=rows-1;i>=0;i--){
-						dataItems.add1Data(parseTime(timeSpan-i), "0");
+					for(int i=indexs.get(0);i>start;i--){
+						//在第一行之前的补0
+						dataItems.add1Data(parseTime((timeSpan-i)*3600), "0");
 					}
 					dataItems.add1Data(time, proAndTraffic[1]);
 					protocolDataItems.put(proAndTraffic[0], dataItems);
 				}
 			}
-			Collection<DataItems>values=protocolDataItems.values();
-			for(DataItems value:values){
-				if(value.getLength()<rows){
-					value.add1Data(time,"0");
-				}
-			}
-		}
+		}	
 		//System.out.println("size:"+protocolDataItems.get("9").data.size());
 		return protocolDataItems;
 	}
-	/**
+	/**@author LYH
 	 * 读取时间段内的数据
 	 * 读取指定IP文件中所有协议通信次数的DataItems
 	 * @param filePath IP文件地址
@@ -1341,22 +1346,21 @@ public class nodePairReader implements IReader {
 	 * @return Map<String,DataItems> ,其中key值为协议，value值为DataItems
 	 * 
 	 */
-	public HashMap<String, DataItems> readEachProtocolTimesDataItems(String filePath,boolean isReadBetween,Date date1,Date date2){
-		
+	public HashMap<String, DataItems> readEachProtocolTimesDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
+		int timegran = timeGran/3600;
+		int start = 0;
 		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
 		//textUtils.readByrow();
 		String line=null;
-		int rows=0;//记录总共读取的行数
+		//int rows=0;//记录总共读取的行数
+		List<Integer> indexs = new ArrayList<Integer>();
 		while((line=textUtils.readByrow())!=null){
 			System.out.println(line);
 			String[] items=line.split(",");
-			int timeSpan=Integer.parseInt(items[0]);
-			rows=timeSpan-0;
+			int timeSpan=Integer.parseInt(items[0]);			
 			Date time=parseTime(timeSpan*3600);
-			String protocolItems=items[items.length-1];
-			String[] eachProtocol=protocolItems.split(";");
 			
 			/*读取时间区间数据*/
 			if(isReadBetween){
@@ -1364,45 +1368,52 @@ public class nodePairReader implements IReader {
 					continue;
 				}
 			}	
-			
+			indexs.add((timeSpan-start)/timegran);
+			String protocolItems=items[items.length-1];
+			String[] eachProtocol=protocolItems.split(";");			
 			for(String protocolTraffic:eachProtocol){
 				String[] proAndTraffic=protocolTraffic.split(":");
 				String protocol=proAndTraffic[0];
 				if(protocolDataItems.containsKey(protocol)){
+					int nowIndex = indexs.get(indexs.size()-1);
+					int preIndex = indexs.get(indexs.size()-2);
+					if(nowIndex-preIndex>1){
+						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
+						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
+						for(int j=preIndex+1;j<nowIndex;j++){
+							dataItems.add1Data(parseTime((j-start)*3600), "0");
+						}
+					}
 					DataItems dataItems=protocolDataItems.get(protocol);
 					DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
 					//合并同一个IP，同一个协议的通信的流量要合并
-					if(dataItem.getTime().toString().equals(time.toString())){
+					if(preIndex==nowIndex){
 						int times=Integer.parseInt(dataItem.getData());
 						//int addTimes=Integer.parseInt(proAndTraffic[2]);
 						int addTimes=Integer.parseInt(proAndTraffic[1]);
 						dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
-					}else if(dataItem.getTime().before(time)){
+					}
+					else if(dataItem.getTime().before(time)){
 						Date addtime=DataPretreatment.getDateAfter(dataItem.getTime(),3600*1000);
 						while(!addtime.toString().equals(time.toString())&&addtime.before(time)){
 							dataItems.add1Data(addtime,"0");
 							addtime=DataPretreatment.getDateAfter(addtime, 3600*1000);
-						}
-						//dataItems.add1Data(addtime, proAndTraffic[2]);
+						}					
 						dataItems.add1Data(addtime, proAndTraffic[1]);
-					}else{
-						throw new RuntimeException("读入文件"+filePath+"第"+rows+"行发生时间错位");
+					}
+					else{
+						throw new RuntimeException("读入文件"+filePath+"第"+indexs.get(indexs.size()-1)+"行发生时间错位");
 					}	
 				}else{
 					DataItems dataItems=new DataItems();
-					for(int i=rows-1;i>=0;i--){
+					for(int i=indexs.get(0);i>start;i--){
 						dataItems.add1Data(parseTime(timeSpan-i), "0");
 					}
 					dataItems.add1Data(time, proAndTraffic[1]);
 					protocolDataItems.put(protocol, dataItems);
 				}
 			}
-			Collection<DataItems>values=protocolDataItems.values();
-			for(DataItems value:values){
-				if(value.getLength()<rows){
-					value.add1Data(time,"0");
-				}
-			}
+			
 		}
 		return protocolDataItems;
 	}
@@ -1635,5 +1646,5 @@ public class nodePairReader implements IReader {
 		protocolDataItems.put("AllTraffic", sumDataItem);
 		return protocolDataItems;
 	}
-
+	
 }
