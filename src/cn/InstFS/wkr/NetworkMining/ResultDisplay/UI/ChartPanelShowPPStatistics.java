@@ -79,7 +79,7 @@ public class ChartPanelShowPPStatistics extends JPanel{
 		DefaultCategoryDataset dataSet=new DefaultCategoryDataset();
 		java.util.Iterator<Entry<String, String>> iter = map.entrySet().iterator();
 		while(iter.hasNext()){
-			HashMap.Entry entry = (HashMap.Entry)  iter.next();
+			Entry entry = (Entry)  iter.next();
 			dataSet.addValue(Double.parseDouble((String)entry.getValue()),"",(String)entry.getKey());
 		}
 		return dataSet;
