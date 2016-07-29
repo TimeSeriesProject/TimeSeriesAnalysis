@@ -1430,8 +1430,7 @@ public class nodePairReader implements IReader {
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
 
-		String line=null;
-		int rows=0;//记录总共读取的行数
+		String line=null;		
 		List<Integer> indexs = new ArrayList<Integer>();
 		while((line=textUtils.readByrow())!=null){
 			String[] items=line.split(",");
@@ -1512,17 +1511,18 @@ public class nodePairReader implements IReader {
 	 * 其中key为协议  DataItems为通信次数时间序列
 	 */
 	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTimesDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
-		
+		int timegran = timeGran/3600;
+		int start = 0;
 		HashMap<String, Map<String, DataItems>>ipPairProtocolDataItems=new HashMap<String, Map<String,DataItems>>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
 		textUtils.readByrow();
 		String line=null;
 		int rows=0;//记录总共读取的行数
+		List<Integer> indexs = new ArrayList<Integer>();
 		while((line=textUtils.readByrow())!=null){
 			String[] items=line.split(",");
-			int timeSpan=Integer.parseInt(items[0]);
-			rows=timeSpan-0;
+			int timeSpan=Integer.parseInt(items[0]);			
 			Date time=parseTime(timeSpan*3600);
 			String protocolItems=items[items.length-1];
 			String[] eachProtocol=protocolItems.split(";");
@@ -1532,42 +1532,52 @@ public class nodePairReader implements IReader {
 					continue;
 				}
 			}	
+			indexs.add(timeSpan-start);
 			for(String protocol:eachProtocol){
 				String[] proAndTraffic=protocol.split(":");
 				if(ipPairProtocolDataItems.containsKey(ipPair)){
 					Map<String, DataItems> protocolDataItems=ipPairProtocolDataItems.get(ipPair);
 					if(protocolDataItems.containsKey(proAndTraffic[0])){
+						int nowIndex = indexs.get(indexs.size()-1);
+						int preIndex = indexs.get(indexs.size()-2);
+						if(nowIndex-preIndex>1){
+							DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
+							DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
+							for(int j=preIndex+1;j<nowIndex;j++){
+								dataItems.add1Data(parseTime((j-start)*3600), "0");
+							}
+						}
 						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
 						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
 						if(dataItem.getTime().toString().equals(time.toString())){
 							int times=Integer.parseInt(dataItem.getData());
-							int addTimes=Integer.parseInt(proAndTraffic[1]);
+							int addTimes=Integer.parseInt(proAndTraffic[2]);
 							dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
 						}else{
-							dataItems.add1Data(time, proAndTraffic[1]);
+							dataItems.add1Data(time, proAndTraffic[2]);
 						}	
 					}else{
 						DataItems dataItems=new DataItems();
 						for(int i=rows-1;i>=0;i--){
 							dataItems.add1Data(parseTime(timeSpan-i), "0");
 						}
-						dataItems.add1Data(time, proAndTraffic[1]);
+						dataItems.add1Data(time, proAndTraffic[2]);
 						protocolDataItems.put(proAndTraffic[0], dataItems);
 					}
 				}else{
 					Map<String, DataItems> dataItemsMap=new HashMap<String, DataItems>();
 					DataItems dataItems=new DataItems();
-					for(int i=rows-1;i>=0;i--){
-						dataItems.add1Data(parseTime(timeSpan-i), "0");
+					for(int i=indexs.get(0);i>start;i--){
+						dataItems.add1Data(parseTime((timeSpan-i)*3600), "0");
 					}
-					dataItems.add1Data(time, proAndTraffic[1]);
+					dataItems.add1Data(time, proAndTraffic[2]);
 					dataItemsMap.put(proAndTraffic[0], dataItems);
 					ipPairProtocolDataItems.put(ipPair, dataItemsMap);
 				}
 			}
-			Iterator<Entry<String, Map<String, DataItems>>> iterator=
+			//Iterator<Entry<String, Map<String, DataItems>>> iterator=
 					ipPairProtocolDataItems.entrySet().iterator();
-			while (iterator.hasNext()) {
+			/*while (iterator.hasNext()) {
 				Map<String, DataItems> itemMap=iterator.next().getValue();
 				Iterator<Entry<String, DataItems>> mapIterator=itemMap.entrySet().iterator();
 				while(mapIterator.hasNext()){
@@ -1576,7 +1586,7 @@ public class nodePairReader implements IReader {
 						item.add1Data(time,"0");
 					}
 				}
-			}
+			}*/
 		}
 		return ipPairProtocolDataItems;
 	}
