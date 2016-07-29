@@ -101,7 +101,6 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.ChartPanelShowFI;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.ChartPanelShowFP;
-import ec.tstoolkit.modelling.arima.tramo.TramoSpecification.Default;
 import associationRules.LinePos;
 import associationRules.ProtoclPair;
 

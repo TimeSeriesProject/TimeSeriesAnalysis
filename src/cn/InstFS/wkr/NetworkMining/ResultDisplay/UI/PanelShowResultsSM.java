@@ -12,6 +12,7 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+
 import org.junit.Assert;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
@@ -22,11 +23,14 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.MainFrame;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
+
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
 import java.awt.GridBagLayout;
+
 import javax.swing.JLabel;
+
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.text.SimpleDateFormat;
@@ -35,6 +39,7 @@ import java.util.*;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
+
 import java.awt.GridLayout;
 
 public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
@@ -162,6 +167,14 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 	@Override
 	public void displayMinerResults(MinerResults rslt) {
 		DataItems nor=rslt.getInputData();
+		
+		//查看开始时间
+//		Calendar cal = Calendar.getInstance();
+//		cal.set(2014, 9, 1, 0, 0, 0);
+//		Date date1 = cal.getTime();
+//		Date date2 = nor.getElementAt(0).getTime();
+//		long diff = date2.getTime()-date1.getTime();
+//		long hour = diff/(1000*60*60);
 		//System.out.println("nor.size:"+nor.getLength());
 		System.out.println("length:"+nor.getLength()+"lastTime:"+nor.getLastTime());
 		
@@ -230,10 +243,12 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 						if (temp_processData[0] != null) {
 							String firstString = temp_processData[0];
 							first = Integer.parseInt(firstString);
+							
 						}
 						if (temp_processData.length > 1) {
 							String endString = temp_processData[1];
 							last = Integer.parseInt(endString);
+							
 						}
 						//System.out.println(first+" "+last);
 //						for (int k = first; k <= last; k++) {
@@ -247,10 +262,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 						DataItem tempItem = new DataItem();
 						DataItem tempMode=new DataItem();
 						
-						/*System.out.println("nor.length:"+nor.data.size());
-						Assert.assertTrue(nor.data.size() == nor.time.size());						
-						System.out.println("first:"+first+" last:"+last);
-						System.out.println("data.size:"+nor.data.size()+" time.size:"+nor.time.size());*/
+						
 						if(first<nor.getLength()){
 							
 							tempItem.setTime(nor.getElementAt(first).getTime());							
