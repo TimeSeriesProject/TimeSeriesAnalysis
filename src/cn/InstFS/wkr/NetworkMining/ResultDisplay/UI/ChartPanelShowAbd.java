@@ -38,6 +38,7 @@ import org.jfree.util.ShapeUtilities;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.UIs.TSATest;
 public class ChartPanelShowAbd extends JPanel{
     JFreeChart chart;
     Shape itemShape; // = new Ellipse2D.Double(-2,-2, 4, 4);
@@ -98,16 +99,20 @@ public class ChartPanelShowAbd extends JPanel{
     public void displayDataItems(DataItems items){
         if (items == null)
             return;
-        TimeSeriesCollection tsc = new TimeSeriesCollection();
+//        TimeSeriesCollection tsc = new TimeSeriesCollection();
+//        TimeSeries ts = new TimeSeries("序列值");
 
-        TimeSeries ts = new TimeSeries("序列值");
+        XYSeriesCollection tsc = new XYSeriesCollection();
+        XYSeries ts = new XYSeries("序列值");
+
 
         int len = items.getLength();
         for (int i = 0; i < len; i ++){
             DataItem item = items.getElementAt(i);
             Date date = item.getTime();
             double val = Double.parseDouble(item.getData());
-            ts.addOrUpdate(items.getTimePeriodOfElement(i), val);
+            //ts.addOrUpdate(items.getTimePeriodOfElement(i), val);
+            ts.add(i,val);
         }
         tsc.addSeries(ts);
         chart.getXYPlot().setDataset(tsc);
@@ -126,8 +131,8 @@ public class ChartPanelShowAbd extends JPanel{
         for (int i = 0; i <length; i++) {
             DataItem temp=new DataItem();
             temp=normal.getElementAt(i);
-            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData())); // 对应的横轴
-
+            //xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData())); // 对应的横轴
+            xyseries.add(i,Double.parseDouble(temp.getData()));
         }
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
@@ -148,8 +153,8 @@ public class ChartPanelShowAbd extends JPanel{
 
             DataItem temp=new DataItem();
             temp=abnor.getElementAt(i);
-            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
-            xyseries.add((double)temp.getTime().getTime(),Double.parseDouble(temp.getData()));
+            //xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
+            xyseries.add(i,Double.parseDouble(temp.getData()));
 
         }
         xyseriescollection.addSeries(xyseries);
@@ -170,7 +175,8 @@ public class ChartPanelShowAbd extends JPanel{
 //        xylineandshaperenderer.setSeriesOutlinePaint(0, Color.gray);
 //        xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
         XYDataset xydataset1 = createAbnormalDataset(abnor);
-        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("异常度检测", "时间", "值", xydataset1);
+        //JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("异常度检测", "时间", "值", xydataset1);
+        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "时间", "值", xydataset1);
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);

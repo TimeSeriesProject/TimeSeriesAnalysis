@@ -149,7 +149,7 @@ public class ChartPanelShowPP extends JPanel {
    		 	Date date1 = cal.getTime();
    		 	Date date2 = temp.getTime();
    		 	long diff = date2.getTime()-date1.getTime();
-   		 	long hour = diff/(1000*24*60);
+   		 	long hour = diff/(1000*60*60);
 
    		 	xyseries.add( i, Double.parseDouble(temp.getData())); // 对应的横轴
 

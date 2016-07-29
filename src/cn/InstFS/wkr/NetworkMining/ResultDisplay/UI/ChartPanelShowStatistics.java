@@ -64,7 +64,8 @@ public class ChartPanelShowStatistics extends JPanel {
     ChartPanelShowStatistics(String title, String timeAxisLabel, String valueAxisLabel,
                      XYDataset dataset/*, boolean legend, boolean tooltips, boolean urls*/) {
         this();
-        chart = ChartFactory.createTimeSeriesChart(title, timeAxisLabel, valueAxisLabel, dataset);
+        //chart = ChartFactory.createTimeSeriesChart(title, timeAxisLabel, valueAxisLabel, dataset);
+        chart = ChartFactory.createScatterPlot(title, timeAxisLabel, valueAxisLabel, dataset);
         ChartPanel p = new ChartPanel(chart);
         add(p, BorderLayout.CENTER);
 
@@ -106,16 +107,19 @@ public class ChartPanelShowStatistics extends JPanel {
     public void displayDataItems(DataItems items) {
         if (items == null)
             return;
-        TimeSeriesCollection tsc = new TimeSeriesCollection();
+        //TimeSeriesCollection tsc = new TimeSeriesCollection();
+        XYSeriesCollection tsc = new XYSeriesCollection();
 
-        TimeSeries ts = new TimeSeries("序列值");
+        //TimeSeries ts = new TimeSeries("序列值");
+        XYSeries ts = new XYSeries("序列值");
 
         int len = items.getLength();
         for (int i = 0; i < len; i++) {
             DataItem item = items.getElementAt(i);
             Date date = item.getTime();
             double val = Double.parseDouble(item.getData());
-            ts.addOrUpdate(items.getTimePeriodOfElement(i), val);
+            //ts.addOrUpdate(items.getTimePeriodOfElement(i), val);
+            ts.add(i,val);
         }
         tsc.addSeries(ts);
         chart.getXYPlot().setDataset(tsc);
