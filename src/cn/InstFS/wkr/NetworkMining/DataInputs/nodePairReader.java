@@ -1274,11 +1274,11 @@ public class nodePairReader implements IReader {
 	 * **/
 	public HashMap<String, DataItems> readEachProtocolTrafficDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
 		int timegran = timeGran/3600;
+		int start=0;
 		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
 		String line=null;
-		int start=0;//记录总共读取的行数
 		List<Integer> indexs = new ArrayList<Integer>();
 		while((line=textUtils.readByrow())!=null){
 			String[] items=line.split(",");
@@ -1289,8 +1289,10 @@ public class nodePairReader implements IReader {
 				if(time.compareTo(date1)<0||time.compareTo(date2)>0){
 					continue;
 				}	
-			}		
-			indexs.add((timeSpan-start)/timegran);			
+			}
+			
+			indexs.add(timeSpan-start);		
+							
 			String protocolItems=items[items.length-1];
 			String[] eachProtocol=protocolItems.split(";");			
 			for(String protocol:eachProtocol){
@@ -1333,9 +1335,39 @@ public class nodePairReader implements IReader {
 					protocolDataItems.put(proAndTraffic[0], dataItems);
 				}
 			}
-		}	
-		//System.out.println("size:"+protocolDataItems.get("9").data.size());
-		return protocolDataItems;
+		}
+		/**
+		 * @author LYH
+		 * 以下用来实现时间粒度可扩展性**/
+		HashMap<String, DataItems> newprotocolDataItems=new HashMap<String, DataItems>();		
+		for(Map.Entry<String, DataItems> entry:protocolDataItems.entrySet()){
+			//newprotocolDataItems.setKey(entry.getKey());
+			DataItems dataItems = new DataItems();
+			DataItem dataItem = new DataItem();
+			int data = 0;
+			int flag=0;
+			for(int index=0;index<entry.getValue().getData().size();index++){			
+				data = data+Integer.parseInt(entry.getValue().getData().get(index));
+				if((index+1)%timegran==0){
+					dataItem.setTime(entry.getValue().getTime().get(index));
+					dataItem.setData(Integer.toString(data));
+					dataItems.add1Data(dataItem);
+					dataItem = new DataItem();
+					data = 0;
+					flag = index;
+				}				
+			}
+			if(flag<entry.getValue().getData().size()-1){
+				dataItem.setTime(entry.getValue().getLastTime());
+				dataItem.setData(Integer.toString(data));
+				dataItems.add1Data(dataItem);
+				dataItem = new DataItem();
+				data = 0;
+			}
+			newprotocolDataItems.put(entry.getKey(), dataItems);
+			
+		}		
+		return newprotocolDataItems;
 	}
 	/**@author LYH
 	 * 读取时间段内的数据
@@ -1415,7 +1447,38 @@ public class nodePairReader implements IReader {
 			}
 			
 		}
-		return protocolDataItems;
+		/**
+		 * @author LYH
+		 * 以下用来实现时间粒度可扩展性**/
+		HashMap<String, DataItems> newprotocolDataItems=new HashMap<String, DataItems>();		
+		for(Map.Entry<String, DataItems> entry:protocolDataItems.entrySet()){
+			
+			DataItems dataItems = new DataItems();
+			DataItem dataItem = new DataItem();
+			int data = 0;
+			int flag=0;
+			for(int index=0;index<entry.getValue().getData().size();index++){			
+				data = data+Integer.parseInt(entry.getValue().getData().get(index));
+				if((index+1)%timegran==0){
+					dataItem.setTime(entry.getValue().getTime().get(index));
+					dataItem.setData(Integer.toString(data));
+					dataItems.add1Data(dataItem);
+					dataItem = new DataItem();
+					data = 0;
+					flag = index;
+				}				
+			}
+			if(flag<entry.getValue().getData().size()-1){
+				dataItem.setTime(entry.getValue().getLastTime());
+				dataItem.setData(Integer.toString(data));
+				dataItems.add1Data(dataItem);
+				dataItem = new DataItem();
+				data = 0;
+			}
+			newprotocolDataItems.put(entry.getKey(), dataItems);
+			
+		}		
+		return newprotocolDataItems;
 	}
 	/**@author LYH
 	 * 读取指定IP文件每对接点中所有协议流量的DataItems
@@ -1489,20 +1552,42 @@ public class nodePairReader implements IReader {
 					ipPairProtocolDataItems.put(ipPair, dataItemsMap);
 				}
 			}
-			/*Iterator<Entry<String, Map<String, DataItems>>> iterator=
-					ipPairProtocolDataItems.entrySet().iterator();
-			while (iterator.hasNext()) {
-				Map<String, DataItems> itemMap=iterator.next().getValue();
-				Iterator<Entry<String, DataItems>> mapIterator=itemMap.entrySet().iterator();
-				while(mapIterator.hasNext()){
-					DataItems item=mapIterator.next().getValue();
-					if(item.getLength()<rows){
-						item.add1Data(time,"0");
-					}
-				}
-			}*/
+			
 		}
-		return ipPairProtocolDataItems;
+		/**@author LYH
+		 * 以下用于时间粒度扩展
+		 * **/
+		HashMap<String, Map<String, DataItems>> newipPairProtocolDataItems = new HashMap<String, Map<String,DataItems>>();
+		for(Map.Entry<String, Map<String, DataItems>> entry:ipPairProtocolDataItems.entrySet()){
+			Map<String, DataItems> newprotocolDataItems = new HashMap<String, DataItems>();
+			for(Map.Entry<String, DataItems> subentry:entry.getValue().entrySet()){
+				DataItems dataItems = new DataItems();
+				DataItem dataItem = new DataItem();
+				int data = 0;
+				int flag=0;
+				for(int index=0;index<subentry.getValue().getData().size();index++){			
+					data = data+Integer.parseInt(subentry.getValue().getData().get(index));
+					if((index+1)%timegran==0){
+						dataItem.setTime(subentry.getValue().getTime().get(index));
+						dataItem.setData(Integer.toString(data));
+						dataItems.add1Data(dataItem);
+						dataItem = new DataItem();
+						data = 0;
+						flag = index;
+					}				
+				}
+				if(flag<subentry.getValue().getData().size()-1){
+					dataItem.setTime(subentry.getValue().getLastTime());
+					dataItem.setData(Integer.toString(data));
+					dataItems.add1Data(dataItem);
+					dataItem = new DataItem();
+					data = 0;
+				}
+				newprotocolDataItems.put(subentry.getKey(), dataItems);				
+			}
+			newipPairProtocolDataItems.put(entry.getKey(), newprotocolDataItems);
+		}
+		return newipPairProtocolDataItems;
 	}
 	/**
 	 * 读取指定IP文件每对接点中所有通信次数的DataItems
@@ -1575,20 +1660,42 @@ public class nodePairReader implements IReader {
 					ipPairProtocolDataItems.put(ipPair, dataItemsMap);
 				}
 			}
-			//Iterator<Entry<String, Map<String, DataItems>>> iterator=
-					ipPairProtocolDataItems.entrySet().iterator();
-			/*while (iterator.hasNext()) {
-				Map<String, DataItems> itemMap=iterator.next().getValue();
-				Iterator<Entry<String, DataItems>> mapIterator=itemMap.entrySet().iterator();
-				while(mapIterator.hasNext()){
-					DataItems item=mapIterator.next().getValue();
-					if(item.getLength()<rows){
-						item.add1Data(time,"0");
-					}
-				}
-			}*/
+			
 		}
-		return ipPairProtocolDataItems;
+		/**@author LYH
+		 * 以下用于时间粒度扩展
+		 * **/
+		HashMap<String, Map<String, DataItems>> newipPairProtocolDataItems = new HashMap<String, Map<String,DataItems>>();
+		for(Map.Entry<String, Map<String, DataItems>> entry:ipPairProtocolDataItems.entrySet()){
+			Map<String, DataItems> newprotocolDataItems = new HashMap<String, DataItems>();
+			for(Map.Entry<String, DataItems> subentry:entry.getValue().entrySet()){
+				DataItems dataItems = new DataItems();
+				DataItem dataItem = new DataItem();
+				int data = 0;
+				int flag=0;
+				for(int index=0;index<subentry.getValue().getData().size();index++){			
+					data = data+Integer.parseInt(subentry.getValue().getData().get(index));
+					if((index+1)%timegran==0){
+						dataItem.setTime(subentry.getValue().getTime().get(index));
+						dataItem.setData(Integer.toString(data));
+						dataItems.add1Data(dataItem);
+						dataItem = new DataItem();
+						data = 0;
+						flag = index;
+					}				
+				}
+				if(flag<subentry.getValue().getData().size()-1){
+					dataItem.setTime(subentry.getValue().getLastTime());
+					dataItem.setData(Integer.toString(data));
+					dataItems.add1Data(dataItem);
+					dataItem = new DataItem();
+					data = 0;
+				}
+				newprotocolDataItems.put(subentry.getKey(), dataItems);				
+			}
+			newipPairProtocolDataItems.put(entry.getKey(), newprotocolDataItems);
+		}
+		return newipPairProtocolDataItems;
 	}
 	
 	
