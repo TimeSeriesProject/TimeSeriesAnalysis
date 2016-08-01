@@ -41,7 +41,6 @@ import org.jfree.util.ShapeUtilities;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.DataInputs.parseDateToHour;
 public class ChartPanelShowFI extends JPanel {
     JFreeChart chart;
     Shape itemShape; // = new Ellipse2D.Double(-2,-2, 4, 4);
@@ -109,7 +108,6 @@ public class ChartPanelShowFI extends JPanel {
             return;
 //        TimeSeriesCollection tsc = new TimeSeriesCollection();
 //        TimeSeries ts = new TimeSeries("序列值");
-
         XYSeriesCollection tsc = new XYSeriesCollection();
         XYSeries ts = new XYSeries("序列值");
 
@@ -118,10 +116,8 @@ public class ChartPanelShowFI extends JPanel {
             DataItem item = items.getElementAt(i);
             Date date = item.getTime();
             double val = Double.parseDouble(item.getData());
-            parseDateToHour pHour = new parseDateToHour(date);
-            int hour = pHour.getHour();
             //ts.addOrUpdate(items.getTimePeriodOfElement(i), val);
-            ts.add(hour,val);
+            ts.add(i,val);
         }
         tsc.addSeries(ts);
         chart.getXYPlot().setDataset(tsc);
@@ -140,10 +136,8 @@ public class ChartPanelShowFI extends JPanel {
         for (int i = 0; i < length; i++) {
             DataItem temp = new DataItem();
             temp = normal.getElementAt(i);
-            parseDateToHour pHour = new parseDateToHour(temp.getTime());
-            int hour = pHour.getHour();
-//            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData())); // 对应的横轴
-            xyseries.add(hour, Double.parseDouble(temp.getData())); // 对应的横轴
+            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData())); // 对应的横轴
+            //xyseries.add(i, Double.parseDouble(temp.getData())); // 对应的横轴
         }
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
@@ -163,11 +157,9 @@ public class ChartPanelShowFI extends JPanel {
 
             DataItem temp = new DataItem();
             temp = abnor.getElementAt(i);
-            parseDateToHour pHour = new parseDateToHour(temp.getTime());
-            int hour = pHour.getHour();
-//            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData()));
-//            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData()));
-            xyseries.add(hour, Double.parseDouble(temp.getData())); // 对应的横轴
+            //xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData()));
+            xyseries.add(i, Double.parseDouble(temp.getData()));
+
         }
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
@@ -186,11 +178,8 @@ public class ChartPanelShowFI extends JPanel {
         for (int i = 0; i < length; i++) {
             DataItem temp = new DataItem();
             temp = normal.getElementAt(i);
-            parseDateToHour pHour = new parseDateToHour(temp.getTime());
-            int hour = pHour.getHour();
             //xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData())); // 对应的横轴
-            xyseries.add(hour, Double.parseDouble(temp.getData())); // 对应的横轴
-
+            xyseries.add(i, Double.parseDouble(temp.getData())); // 对应的横轴
         }
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
@@ -198,7 +187,7 @@ public class ChartPanelShowFI extends JPanel {
 
     public static JFreeChart createChart(HashMap<String, ArrayList<DataItems>> nor_model, DataItems nor, HashMap<String, ArrayList<DataItems>> nor_model_mode) {
         XYDataset xydataset = createNormalDataset(nor);
-//        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 频繁项集挖掘结果", "时间", "值", xydataset);
+        //JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 频繁项集挖掘结果", "时间", "值", xydataset);
         JFreeChart jfreechart = ChartFactory.createScatterPlot(" 频繁项集挖掘结果", "时间", "值", xydataset);
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
