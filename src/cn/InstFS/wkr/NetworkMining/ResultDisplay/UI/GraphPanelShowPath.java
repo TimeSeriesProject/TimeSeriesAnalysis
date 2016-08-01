@@ -23,7 +23,7 @@ import edu.uci.ics.jung.visualization.decorators.ParallelEdgeShapeTransformer;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.*;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
-import net.mindview.util.CountingGenerator;
+//import net.mindview.util.CountingGenerator;
 import org.apache.commons.math3.ml.neuralnet.Network;
 import org.apache.poi.hssf.util.HSSFColor;
 

@@ -1274,7 +1274,9 @@ public class nodePairReader implements IReader {
 	 * **/
 	public HashMap<String, DataItems> readEachProtocolTrafficDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
 		int timegran = timeGran/3600;
-		int start=0;
+		parseDateToHour pHour = new parseDateToHour(date1);
+		int start=pHour.getHour();
+		
 		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
@@ -1380,7 +1382,8 @@ public class nodePairReader implements IReader {
 	 */
 	public HashMap<String, DataItems> readEachProtocolTimesDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
 		int timegran = timeGran/3600;
-		int start = 0;
+		parseDateToHour pHour = new parseDateToHour(date1);
+		int start=pHour.getHour();
 		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
@@ -1488,7 +1491,8 @@ public class nodePairReader implements IReader {
 	 */
 	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTrafficDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
 		int timegran = timeGran/3600;
-		int start = 0;
+		parseDateToHour pHour = new parseDateToHour(date1);
+		int start=pHour.getHour();
 		HashMap<String, Map<String, DataItems>>ipPairProtocolDataItems=new HashMap<String, Map<String,DataItems>>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
@@ -1597,7 +1601,8 @@ public class nodePairReader implements IReader {
 	 */
 	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTimesDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
 		int timegran = timeGran/3600;
-		int start = 0;
+		parseDateToHour pHour = new parseDateToHour(date1);
+		int start=pHour.getHour();
 		HashMap<String, Map<String, DataItems>>ipPairProtocolDataItems=new HashMap<String, Map<String,DataItems>>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
