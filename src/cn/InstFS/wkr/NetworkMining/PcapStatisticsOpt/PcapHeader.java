@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.PcapStatisticsDis;
+package cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt;
 
 public class PcapHeader {
     private int magic;//文件识别头,为0xA1B2C3D4

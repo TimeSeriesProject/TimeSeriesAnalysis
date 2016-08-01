@@ -361,10 +361,17 @@ public class TimeSeriesChart1 extends Composite {
 			DataItems dataitems2, Map<String, ArrayList<LinePos>> mapAB,
 			XYPlot xyplot) {
 		// 获取模式的种类个数、
-		int modelcount = mapAB.keySet().size();
+		int modelcount = mapAB.keySet().size();	
 		long off1 = dataitems1.getElementAt(0).getTime().getTime();
 		long off2 = dataitems2.getElementAt(0).getTime().getTime();
-		long unit = dataitems2.getElementAt(0).getTime().getTime()-off1;
+		long unit = 0;
+		if(dataitems1.getLength()>0){
+			unit=dataitems1.getElementAt(1).getTime().getTime()-off1;
+		}else{
+			unit=3600000;
+		}
+				
+				
 		
 
 		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
