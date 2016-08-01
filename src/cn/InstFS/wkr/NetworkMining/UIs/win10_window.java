@@ -90,33 +90,6 @@ public class win10_window extends JFrame {
             }
         }
 
-        /*for (MiningObject ob: miningObjectList) {
-            networkFactory.reset();
-            networkFactory.setMiningObject(ob);
-            networkFactory.detect();
-            HashMap<TaskCombination, MinerNodeResults> objectMap=NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(ob);
-            networkStructureresultMaps.put(ob.toString(), objectMap);
-
-            MiningResultsFile resultsFile = new MiningResultsFile(ob);
-            resultsFile.resultMap2File(networkFactory, objectMap);
-        }*/
-		/*NetworkMinerFactory networkMinerFactory =NetworkMinerFactory.getInstance();
-		NetworkFactory networkFactory = NetworkFactory.getInstance();
-		networkFactory.dataPath="C:\\data\\out\\route";
-		networkFactory.reset();
-		networkFactory.setMiningObject(MiningObject.MiningObject_Cluster);
-		networkFactory.detect();
-		
-		HashMap<TaskCombination, MinerNodeResults> clusterMap = NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(MiningObject.MiningObject_Cluster);
-		
-		networkStructureresultMaps.put(MiningObject.MiningObject_Cluster.toString(),clusterMap);
-		
-		networkFactory.reset();
-		networkFactory.setMiningObject(MiningObject.MiningObject_Diameter);
-		networkFactory.detect();
-		
-		HashMap<TaskCombination, MinerNodeResults> diameter = NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(MiningObject.MiningObject_Diameter);
-		networkStructureresultMaps.put(MiningObject.MiningObject_Diameter.toString(),diameter);*/
 		isNetworkStructureMined=true;
 	}
 	public void mineSingleNode()
@@ -146,27 +119,6 @@ public class win10_window extends JFrame {
             }
         }
 
-        /*for (MiningObject ob: miningObjectList) {
-            singleNodeMinerFactory.reset();
-            singleNodeMinerFactory.setMiningObject(ob);
-            singleNodeMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
-            singleNodeMinerFactory.detect();
-            HashMap<TaskCombination, MinerNodeResults> objectMap=NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
-            singleNoderesultMaps.put(ob.toString(), objectMap);
-        }*/
-		/*NetworkMinerFactory.getInstance();
-		SingleNodeOrNodePairMinerFactory singleNodeMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-		singleNodeMinerFactory.dataPath="C:\\data\\out\\traffic";
-		singleNodeMinerFactory.reset();
-		singleNodeMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
-		singleNodeMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
-		singleNodeMinerFactory.detect();
-		singleNoderesultMaps.put(MiningObject.MiningObject_Times.toString(), NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Times));
-		
-		singleNodeMinerFactory.reset();
-		singleNodeMinerFactory.setMiningObject(MiningObject.MiningObject_Traffic);
-		singleNodeMinerFactory.detect();
-		singleNoderesultMaps.put(MiningObject.MiningObject_Traffic.toString(),NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Traffic));*/
 		isSingleNodeMined=true;
 	}
 	public void mineNodePair()
@@ -195,20 +147,7 @@ public class win10_window extends JFrame {
                 newResultsFile.resultMap2File(nodePairMinerFactory, objectMap);
             }
         }
-        /*NetworkMinerFactory.getInstance();
-		SingleNodeOrNodePairMinerFactory nodePairMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-		nodePairMinerFactory.dataPath="F:\\TimeSeriesAnalysisdata\\parsePcap\\traffic";
-		nodePairMinerFactory.reset();
-		nodePairMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
-		nodePairMinerFactory.setTaskRange(TaskRange.NodePairRange);
-		nodePairMinerFactory.detect();
-		nodePairresultMaps.put(MiningObject.MiningObject_Times.toString(),NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Times));
-		
-		nodePairMinerFactory.reset();
-		nodePairMinerFactory.setMiningObject(MiningObject.MiningObject_Traffic);
-		nodePairMinerFactory.setTaskRange(TaskRange.NodePairRange);
-		nodePairMinerFactory.detect();
-		nodePairresultMaps.put(MiningObject.MiningObject_Traffic.toString(),NetworkMinerFactory.getInstance().startAllNodeMiners(MiningObject.MiningObject_Traffic));*/
+
 		isNodePairMined=true;
 	}
 
@@ -268,22 +207,6 @@ public class win10_window extends JFrame {
             }
         }
 
-
-        /*if (pathMinerFactory.isOnlyObjectModified() && pathResultsMaps.size()!=0) { // 尚未进行过挖掘
-            miningObjectList = pathMinerFactory.getMiningObjectsAdded(); //只挖掘新选的object
-            for (MiningObject m : pathMinerFactory.getMiningObjectsDeleted()) {
-                pathResultsMaps.remove(m.toString());
-            }
-        } else
-            pathResultsMaps.clear();
-
-        for (MiningObject ob: miningObjectList) {
-            pathMinerFactory.reset();
-            pathMinerFactory.setMiningObject(ob);
-            pathMinerFactory.detect();
-            HashMap<TaskCombination, MinerResultsPath> objectMap=NetworkMinerFactory.getInstance().startAllPathMiners(ob);
-            pathResultsMaps.put(ob.toString(), objectMap);
-        }*/
         isPathMined = true;
     }
 

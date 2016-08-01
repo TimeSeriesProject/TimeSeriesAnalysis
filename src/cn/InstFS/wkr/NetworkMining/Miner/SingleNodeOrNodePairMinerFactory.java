@@ -23,8 +23,8 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	private static SingleNodeOrNodePairMinerFactory pairInst;
 	public static boolean isMining=false;
 
-	public String dataPath="F:\\TimeSeriesAnalysisdata\\parsePcap\\traffic\\10.0.13.2.txt";
-	public String rootPath = "E:\\57data\\parsePcap\\out\\rootDisapearEmerge";
+	public String dataPath="D:\\57data\\traffic\\";
+	public String rootPath = "D:\\57data\\node\\";
 
 	private MiningObject miningObject;
 	private TaskRange taskRange = TaskRange.SingleNodeRange;

@@ -17,7 +17,7 @@ import org.apache.commons.math3.analysis.function.Min;
 public class PathMinerFactory extends MinerFactorySettings{
 	private static PathMinerFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="F:\\TimeSeriesAnalysisdata\\parsePcap\\route\\10.0.1.2_10.0.2.2.csv";
+	public String dataPath="D:\\57data\\route";
 	
 	private MiningObject miningObject;
 	private TaskRange taskRange = TaskRange.NodePairRange;

@@ -29,7 +29,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 public class NetworkFactory extends MinerFactorySettings {
 	private static NetworkFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="C:\\data\\out\\route";
+	public String dataPath="D:\\57data\\route";
 
 	private TaskRange taskRange= TaskRange.WholeNetworkRange;
 	private MiningObject miningObject ;
