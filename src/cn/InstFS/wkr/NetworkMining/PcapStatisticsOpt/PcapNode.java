@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.PcapStatisticsDis;
+package cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt;
 
 /**
  * Created by zsc on 2016/7/18.
