@@ -98,7 +98,7 @@ public class AssociationIpListFrame extends JFrame {
 //					ProtocolAssMinerFactory.getInstance();
 					NetworkMinerFactory.getInstance();
 					ProtocolAssMinerFactory protocolAssFactory = ProtocolAssMinerFactory.getInstance();
-					protocolAssFactory.dataPath="F:\\CodeProject\\Java\\TimeSeriesAnalysis\\parse\\traffic4";
+					protocolAssFactory.dataPath="D:\\57data\\traffic";
 					protocolAssFactory.setMiningObject(MiningObject.MiningObject_Traffic);
 //					protocolAssFactory.setTaskRange(TaskRange.SingleNodeRange);
 					protocolAssFactory.detect();

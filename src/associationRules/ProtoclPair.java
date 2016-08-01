@@ -1,11 +1,12 @@
 package associationRules;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
-public class ProtoclPair{
+public class ProtoclPair implements Serializable{
 	
 	String protocol1 = "";
 	String protocol2 = "";

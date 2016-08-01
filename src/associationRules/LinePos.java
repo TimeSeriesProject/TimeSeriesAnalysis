@@ -1,6 +1,8 @@
 package associationRules;
 
-public class LinePos{
+import java.io.Serializable;
+
+public class LinePos implements Serializable{
 	
 	double confidence = 0.0;
 	public int A_start = 0;
