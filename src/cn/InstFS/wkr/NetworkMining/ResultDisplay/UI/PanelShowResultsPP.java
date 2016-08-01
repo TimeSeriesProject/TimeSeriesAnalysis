@@ -427,6 +427,10 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                     double data = Double.parseDouble(oriData.getData().get(i));
                     oriData.getData().set(i, data/1000 + "");
                 }
+                for(int i = 0;i < outliesItems.getData().size();i++){
+                	double data = Double.parseDouble(outliesItems.getData().get(i));
+                	outliesItems.getData().set(i, data/1000 + "");
+                }
 
                 ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", "值", null);
                 chart.displayDataItems(oriData);
