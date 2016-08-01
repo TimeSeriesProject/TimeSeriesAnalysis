@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.JPanel;
@@ -41,6 +42,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 public class ChartPanelShowAb extends JPanel{
     JFreeChart chart;
     Shape itemShape; // = new Ellipse2D.Double(-2,-2, 4, 4);
+    public static int timeGranunity = 3600;
     private ChartPanelShowAb() {
         // 创建主题样式
         StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
@@ -98,10 +100,9 @@ public class ChartPanelShowAb extends JPanel{
     public void displayDataItems(DataItems items){
         if (items == null)
             return;
-        //TimeSeriesCollection tsc = new TimeSeriesCollection();
+//        TimeSeriesCollection tsc = new TimeSeriesCollection();
+//        TimeSeries ts = new TimeSeries("序列值");
         XYSeriesCollection tsc = new XYSeriesCollection();
-
-        //TimeSeries ts = new TimeSeries("序列值");
         XYSeries ts = new XYSeries("序列值");
 
         int len = items.getLength();
@@ -110,7 +111,14 @@ public class ChartPanelShowAb extends JPanel{
             
             double val = Double.parseDouble(item.getData());
             //ts.addOrUpdate(items.getTimePeriodOfElement(i), val);
-            ts.add(i,val);
+            Calendar cal = Calendar.getInstance();
+   		 	cal.set(2014, 9, 1, 0, 0, 0);
+   		 	Date date1 = cal.getTime();
+   		 	Date date2 = item.getTime();
+   		 	long diff = date2.getTime()-date1.getTime();
+   		 	long hour = diff/(1000*60*60);
+
+            ts.add((int)hour,val);
         }
         tsc.addSeries(ts);
         chart.getXYPlot().setDataset(tsc);
@@ -129,7 +137,8 @@ public class ChartPanelShowAb extends JPanel{
         for (int i = 0; i <length; i++) {
             DataItem temp=new DataItem();
             temp=normal.getElementAt(i);
-            //xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData())); // 对应的横轴
+//            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData())); // 对应的横轴
+//            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData())); // 对应的横轴
             xyseries.add(i,Double.parseDouble(temp.getData()));
         }
         xyseriescollection.addSeries(xyseries);
@@ -151,8 +160,16 @@ public class ChartPanelShowAb extends JPanel{
 
             DataItem temp=new DataItem();
             temp=abnor.getElementAt(i);
-            //xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
-            xyseries.add(i,Double.parseDouble(temp.getData()));
+//            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
+//            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
+            Calendar cal = Calendar.getInstance();
+   		 	cal.set(2014, 9, 1, 0, 0, 0);
+   		 	Date date1 = cal.getTime();
+   		 	Date date2 = temp.getTime();
+   		 	long diff = date2.getTime()-date1.getTime();
+   		 	long hour = diff/(1000*60*60);
+   		 	long index = hour*3600/timeGranunity;
+            xyseries.add((int)hour,Double.parseDouble(temp.getData()));
 
         }
         xyseriescollection.addSeries(xyseries);
@@ -166,7 +183,9 @@ public class ChartPanelShowAb extends JPanel{
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
-        //设置异常点提示红点大小
+        //xyplot.setDataset(0, xydataset);
+        
+        //设置异常点提示红点大小        
         java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(-4D, -4D, 6D, 6D);
         XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer)xyplot.getRenderer();
         xylineandshaperenderer.setBaseShapesVisible(false);
@@ -175,9 +194,13 @@ public class ChartPanelShowAb extends JPanel{
         xylineandshaperenderer.setSeriesFillPaint(0, Color.yellow);
         xylineandshaperenderer.setSeriesOutlinePaint(0, Color.gray);
         xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
+        xylineandshaperenderer.setSeriesLinesVisible(0, true);
+        xyplot.setRenderer(0, xylineandshaperenderer);
         XYDataset xydataset1 = createAbnormalDataset(abnor);
         XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
+        
         xyplot.setDataset(1, xydataset1);
+        
         xyplot.setRenderer(1, xylineandshaperenderer1);
         xylineandshaperenderer1.setSeriesLinesVisible(0, false);
         xylineandshaperenderer1.setSeriesShape(0, double1);
@@ -187,6 +210,7 @@ public class ChartPanelShowAb extends JPanel{
         xylineandshaperenderer1.setUseFillPaint(true);
         xylineandshaperenderer1.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
         xylineandshaperenderer1.setBaseItemLabelsVisible(true);
+                
         return jfreechart;
     }
 }
