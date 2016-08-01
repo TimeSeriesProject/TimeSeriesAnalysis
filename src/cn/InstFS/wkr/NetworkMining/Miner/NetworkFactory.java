@@ -71,7 +71,7 @@ public class NetworkFactory extends MinerFactorySettings {
 		task.setGranularity(granularity);
 		task.setMiningObject(miningObject.toString());
 		CWNetworkReader reader = new CWNetworkReader(task);
-		DataItems alldataItems = reader.readInputByText();
+		DataItems dataItems = reader.readInputByText();
 
 		/*用于测试*/
 		/*Calendar cal1 = Calendar.getInstance();
@@ -83,7 +83,7 @@ public class NetworkFactory extends MinerFactorySettings {
 		task.setIsReadBetween(true);
 		task.setDateStart(date1);
 		task.setDateEnd(date2);*/
-		DataItems dataItems = filtDataItems(alldataItems, task.getDateStart(), task.getDateEnd());
+//		DataItems dataItems = filtDataItems(alldataItems, task.getDateStart(), task.getDateEnd());
 		
 		TaskCombination taskCombination=new TaskCombination();
 		taskCombination.setTaskRange(TaskRange.WholeNetworkRange);

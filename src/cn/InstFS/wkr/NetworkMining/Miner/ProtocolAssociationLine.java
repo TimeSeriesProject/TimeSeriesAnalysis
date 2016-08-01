@@ -276,7 +276,8 @@ public class ProtocolAssociationLine {
 					int trafficSum  = 0;
 					for(int k = j;k < size;k++)
 					{
-						trafficSum += Integer.parseInt(pdi.dataItems.data.get(k));
+//						trafficSum += Integer.parseInt(pdi.dataItems.data.get(k));
+						trafficSum += Double.parseDouble(pdi.dataItems.data.get(k));
 					}
 					newData.add1Data(pdi.dataItems.time.get(j), trafficSum+"");
 				}
