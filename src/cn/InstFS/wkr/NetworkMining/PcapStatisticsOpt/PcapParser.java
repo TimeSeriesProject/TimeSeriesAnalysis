@@ -1,14 +1,16 @@
-package cn.InstFS.wkr.NetworkMining.PcapStatisticsDis;
+package cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Created by zsc on 2016/7/28.
- */
-public class PcapByteParser {
+public class PcapParser {
 
     public static int hUnpack(MappedByteBuffer is) throws IOException {
         byte[] buffer_4 = new byte[4];
@@ -20,6 +22,7 @@ public class PcapByteParser {
 //        if (m != 4) {
 //            return;
 //        }
+        int count = 0;
         reverseByteArray(buffer_4);
         header.setMagic(byteArrayToInt(buffer_4, 0));
 //        System.out.println("magic " + header.getMagic());
@@ -50,23 +53,18 @@ public class PcapByteParser {
         return header.getLinktype();
     }
 
-    public static long pUnpack(long position, long part, long i, long pLength, int linkType, MappedByteBuffer is, String fileName, ConcurrentHashMap<String, BufferedOutputStream> bos,  ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap, String path) throws IOException {
-        byte[] temp = fileName.getBytes();
-        int length = temp.length;
+    public static long pUnpack(long position, long part, long i, long pLength, int linkType, MappedByteBuffer is, String fileName, HashMap<String, BufferedWriter> bws,  ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap, String path) throws IOException {
         byte[] buffer_4 = new byte[4];
         byte[] buffer_3 = new byte[3];
         byte[] buffer_2 = new byte[2];
         byte[] buffer_1 = new byte[1];
         byte[] buffer = new byte[5000];
-        byte[] buffer_278 = new byte[27 + length];
         ArrayList<PcapNode> nodeList = new ArrayList<PcapNode>();
         StringBuilder sb = new StringBuilder();
         int datalength;
-        int byteLength;
         //参数is从0开始，capacity显示当前片段的容量，执行到最后一次时进行判断
         while (is.hasRemaining() && (is.position() < pLength / 2 || (i == part))) {
             datalength = 0;
-            byteLength = 0;
             PcapData data = new PcapData();
             PcapNode node = new PcapNode();
             node.setFileName(fileName);//写入文件名
@@ -75,15 +73,11 @@ public class PcapByteParser {
                 break;
             }
             reverseByteArray(buffer_4);
-            System.arraycopy(buffer_4, 0, buffer_278, 0, buffer_4.length);
-            byteLength += 4;
             data.setTime_s(byteArrayToLong(buffer_4, 0));
             node.setTime_s(byteArrayToLong(buffer_4, 0));//写入时间
 //            System.out.println("Time_s" + data.getTime_s());
             is.get(buffer_4);
             reverseByteArray(buffer_4);
-            System.arraycopy(buffer_4, 0, buffer_278, byteLength, buffer_4.length);
-            byteLength += 4;
             data.setTime_ms(byteArrayToLong(buffer_4, 0));
 //            System.out.println("Time_ms" + data.getTime_ms());
             is.get(buffer_4);
@@ -115,8 +109,6 @@ public class PcapByteParser {
             is.get(buffer_2);
             datalength += 2;
             data.setTraffic(byteArrayToShort(buffer_2, 0));
-            System.arraycopy(buffer_2, 0, buffer_278, byteLength, buffer_2.length);
-            byteLength += 2;
             node.setTraffic(byteArrayToShort(buffer_2, 0));//写入流量
             nodeList.add(node);
             is.get(buffer_4);//skip in order to get TTL
@@ -124,54 +116,47 @@ public class PcapByteParser {
             is.get(buffer_1);
             datalength += 1;
             data.setTTL(64 - buffer_1[0]);
-            System.arraycopy(buffer_1, 0, buffer_278, byteLength, buffer_1.length);
-            byteLength += 1;
             is.get(buffer_3);
             datalength += 3;
             is.get(buffer_4);
             datalength += 4;
             data.setSrcIP(byteArrayToIP(buffer_4, sb));
             sb.delete(0, sb.length());
-            System.arraycopy(buffer_4, 0, buffer_278, byteLength, buffer_4.length);
-            byteLength += 4;
             is.get(buffer_4);
             datalength += 4;
             data.setDstIP(byteArrayToIP(buffer_4, sb));
             sb.delete(0, sb.length());
-            System.arraycopy(buffer_4, 0, buffer_278, byteLength, buffer_4.length);
-            byteLength += 4;
             is.get(buffer_2);
             datalength += 2;
             data.setSrcPort(byteArrayToPort(buffer_2, 0));
-            System.arraycopy(buffer_2, 0, buffer_278, byteLength, buffer_2.length);
-            byteLength += 2;
             is.get(buffer_2);
             datalength += 2;
             data.setDstPort(byteArrayToPort(buffer_2, 0));
-            System.arraycopy(buffer_2, 0, buffer_278, byteLength, buffer_2.length);
-            byteLength += 2;
-
-            buffer_4 = intToByte(length);
-            reverseByteArray(buffer_4);
-            System.arraycopy(buffer_4, 0, buffer_278, byteLength, buffer_4.length);//filename长度
-            byteLength += 4;
-
-            System.arraycopy(temp, 0, buffer_278, byteLength, temp.length);
             is.get(buffer, 0, data.getpLength() - datalength);
 
             if (data.getTraffic() > 30) {
-                BufferedOutputStream bo;
-                if (!bos.containsKey(data.getSrcIP() + "_" + data.getDstIP())) {
-                    synchronized (bos) {
-                        if (!bos.containsKey(data.getSrcIP() + "_" + data.getDstIP())) {
-                            bo = new BufferedOutputStream(new FileOutputStream(path + "\\routesrc\\" + data.getSrcIP() + "_" + data.getDstIP() + ".bin"));
-                            bos.put(data.getSrcIP() + "_" + data.getDstIP(), bo);
+                BufferedWriter bw;
+                if (!bws.containsKey(data.getSrcIP() + "_" + data.getDstIP())) {
+                    synchronized (bws) {
+                        if (!bws.containsKey(data.getSrcIP() + "_" + data.getDstIP())) {
+                            OutputStreamWriter o = new OutputStreamWriter(new FileOutputStream(path + "\\routesrc\\" + data.getSrcIP() + "_" + data.getDstIP() + ".txt"), "UTF-8");
+                            bw = new BufferedWriter(o);
+                            bws.put(data.getSrcIP() + "_" + data.getDstIP(), bw);
                         }
                     }
                 }
-                synchronized (bo = bos.get(data.getSrcIP() + "_" + data.getDstIP())) {
-                    bo.write(buffer_278);
+                String curLine = new String();
+                synchronized (bw = bws.get(data.getSrcIP() + "_" + data.getDstIP())) {
+                    curLine = data.getSrcIP() + "," + data.getDstIP() + "," + data.getSrcPort() + "," + data.getDstPort() + "," + data.getTime_s() + "," + data.getTime_ms() + "," + fileName + "," + data.getTraffic() + "," + data.getTTL();
+                    bw.write(curLine);
+//			        	if(data.getSrcIP().equals("10.0.10.2")&&data.getDstIP().equals("10.0.2.2"))
+//			        	{
+//			        		System.out.println(curLine);
+//
+//			        	}
+                    bw.newLine();
                 }
+
             }
         }
         //当切割文件时，防止覆盖
@@ -183,46 +168,70 @@ public class PcapByteParser {
         return (position + is.position());
     }
 
-    public static void unpack(MappedByteBuffer is, String fileName, ConcurrentHashMap<String, BufferedOutputStream> bos, ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap, String path) throws IOException {
-        byte[] temp = fileName.getBytes();
-        int length = temp.length;
+    public static void unpack(FileChannel fc, MappedByteBuffer is, String fileName, ConcurrentHashMap<RecordKey, Integer> records, HashMap<String, BufferedWriter> bws, ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap, String path) throws IOException {
         byte[] buffer_4 = new byte[4];
         byte[] buffer_3 = new byte[3];
         byte[] buffer_2 = new byte[2];
         byte[] buffer_1 = new byte[1];
-        byte[] buffer_20 = new byte[20];
+        byte[] buffer_100 = new byte[100];
+        byte[] buffer_10 = new byte[10];
         byte[] buffer = new byte[5000];
-        byte[] buffer_278 = new byte[27 + length];
         PcapHeader header = new PcapHeader();
         ArrayList<PcapNode> nodeList = new ArrayList<PcapNode>();
-        is.get(buffer_20);
+        is.get(buffer_4);
+//        int m = is.read(buffer_4);
+//        if (m != 4) {
+//            return;
+//        }
+        int count = 0;
+        reverseByteArray(buffer_4);
+        header.setMagic(byteArrayToInt(buffer_4, 0));
+//        System.out.println("magic " + header.getMagic());
+        is.get(buffer_2);
+        reverseByteArray(buffer_2);
+        header.setMajor_version(byteArrayToShort(buffer_2, 0));
+//        System.out.println("major_version" + header.getMajor_version());
+        is.get(buffer_2);
+        reverseByteArray(buffer_2);
+        header.setMinor_version(byteArrayToShort(buffer_2, 0));
+//        System.out.println("minor_version" + header.getMinor_version());
+        is.get(buffer_4);
+        reverseByteArray(buffer_4);
+        header.setTimezone(byteArrayToInt(buffer_4, 0));
+//        System.out.println("timezone" + header.getTimezone());
+        is.get(buffer_4);
+        reverseByteArray(buffer_4);
+        header.setSigflags(byteArrayToInt(buffer_4, 0));
+//        System.out.println("sigflags" + header.getSigflags());
+        is.get(buffer_4);
+        reverseByteArray(buffer_4);
+        header.setSnaplen(byteArrayToInt(buffer_4, 0));
+//        System.out.println("snaplen" + header.getSnaplen());
         is.get(buffer_4);
         reverseByteArray(buffer_4);
         header.setLinktype(byteArrayToInt(buffer_4, 0));
-
+//        System.out.println("Linktype" + header.getLinktype());
         StringBuilder sb = new StringBuilder();
         int datalength;
-        int byteLength;
+        long num = 0;
         while (is.hasRemaining()) {
             datalength = 0;
-            byteLength = 0;
             PcapData data = new PcapData();
             PcapNode node = new PcapNode();
             node.setFileName(fileName);//写入文件名
             is.get(buffer_4);
-//            if (!is.hasRemaining()) {
-//                break;
-//            }
+            if (!is.hasRemaining()) {
+                break;
+            }
+            count++;
+//			    if(count%100000==0)
+//			    	System.out.println(count);
             reverseByteArray(buffer_4);
-            System.arraycopy(buffer_4, 0, buffer_278, 0, buffer_4.length);
-            byteLength += 4;
             data.setTime_s(byteArrayToLong(buffer_4, 0));
             node.setTime_s(byteArrayToLong(buffer_4, 0));//写入时间
 //            System.out.println("Time_s" + data.getTime_s());
             is.get(buffer_4);
             reverseByteArray(buffer_4);
-            System.arraycopy(buffer_4, 0, buffer_278, byteLength, buffer_4.length);
-            byteLength += 4;
             data.setTime_ms(byteArrayToLong(buffer_4, 0));
 //            System.out.println("Time_ms" + data.getTime_ms());
             is.get(buffer_4);
@@ -245,6 +254,7 @@ public class PcapByteParser {
                 datalength += 14;
                 if (buffer[12] != 0x08 || buffer[13] != 0x00) {
                     is.get(buffer, 0, data.getpLength() - datalength);
+//			    		 System.out.println(m);
                     continue;
                 }
             }
@@ -253,8 +263,6 @@ public class PcapByteParser {
             is.get(buffer_2);
             datalength += 2;
             data.setTraffic(byteArrayToShort(buffer_2, 0));
-            System.arraycopy(buffer_2, 0, buffer_278, byteLength, buffer_2.length);
-            byteLength += 2;
             node.setTraffic(byteArrayToShort(buffer_2, 0));//写入流量
             nodeList.add(node);
             is.get(buffer_4);//skip in order to get TTL
@@ -262,58 +270,51 @@ public class PcapByteParser {
             is.get(buffer_1);
             datalength += 1;
             data.setTTL(64 - buffer_1[0]);
-            System.arraycopy(buffer_1, 0, buffer_278, byteLength, buffer_1.length);
-            byteLength += 1;
             is.get(buffer_3);
             datalength += 3;
             is.get(buffer_4);
             datalength += 4;
             data.setSrcIP(byteArrayToIP(buffer_4, sb));
             sb.delete(0, sb.length());
-            System.arraycopy(buffer_4, 0, buffer_278, byteLength, buffer_4.length);
-            byteLength += 4;
             is.get(buffer_4);
             datalength += 4;
             data.setDstIP(byteArrayToIP(buffer_4, sb));
             sb.delete(0, sb.length());
-            System.arraycopy(buffer_4, 0, buffer_278, byteLength, buffer_4.length);
-            byteLength += 4;
             is.get(buffer_2);
             datalength += 2;
             data.setSrcPort(byteArrayToPort(buffer_2, 0));
-            System.arraycopy(buffer_2, 0, buffer_278, byteLength, buffer_2.length);
-            byteLength += 2;
             is.get(buffer_2);
             datalength += 2;
             data.setDstPort(byteArrayToPort(buffer_2, 0));
-            System.arraycopy(buffer_2, 0, buffer_278, byteLength, buffer_2.length);
-            byteLength += 2;
-
-            buffer_4 = intToByte(length);
-            reverseByteArray(buffer_4);
-            System.arraycopy(buffer_4, 0, buffer_278, byteLength, buffer_4.length);//filename长度
-            byteLength += 4;
-
-            System.arraycopy(temp, 0, buffer_278, byteLength, temp.length);
             is.get(buffer, 0, data.getpLength() - datalength);
             if (data.getTraffic() > 30) {
-                BufferedOutputStream bo;
-                if (!bos.containsKey(data.getSrcIP() + "_" + data.getDstIP())) {
-                    synchronized (bos) {
-                        if (!bos.containsKey(data.getSrcIP() + "_" + data.getDstIP())) {
-                            bo = new BufferedOutputStream(new FileOutputStream(path + "\\routesrc\\" + data.getSrcIP() + "_" + data.getDstIP() + ".bin"));
-                            bos.put(data.getSrcIP() + "_" + data.getDstIP(), bo);
+                BufferedWriter bw;
+                if (!bws.containsKey(data.getSrcIP() + "_" + data.getDstIP())) {
+                    synchronized (bws) {
+                        if (!bws.containsKey(data.getSrcIP() + "_" + data.getDstIP())) {
+                            OutputStreamWriter o = new OutputStreamWriter(new FileOutputStream(path + "\\routesrc\\" + data.getSrcIP() + "_" + data.getDstIP() + ".txt"), "UTF-8");
+                            bw = new BufferedWriter(o);
+                            bws.put(data.getSrcIP() + "_" + data.getDstIP(), bw);
                         }
                     }
                 }
-                synchronized (bo = bos.get(data.getSrcIP() + "_" + data.getDstIP())) {
-                    bo.write(buffer_278);
+                String curLine = new String();
+                synchronized (bw = bws.get(data.getSrcIP() + "_" + data.getDstIP())) {
+                    curLine = data.getSrcIP() + "," + data.getDstIP() + "," + data.getSrcPort() + "," + data.getDstPort() + "," + data.getTime_s() + "," + data.getTime_ms() + "," + fileName + "," + data.getTraffic() + "," + data.getTTL();
+                    bw.write(curLine);
+//			        	if(data.getSrcIP().equals("10.0.10.2")&&data.getDstIP().equals("10.0.2.2"))
+//			        	{
+//			        		System.out.println(curLine);
+//			        		
+//			        	}
+                    bw.newLine();
                 }
+
             }
         }
         nodeMap.put(fileName, nodeList);
+        fc.close();
     }
-
 
 
     private static int byteArrayToInt(byte[] b, int offset) {
@@ -362,17 +363,6 @@ public class PcapByteParser {
         }
         sb.append(b[3]);
         return sb.toString();
-    }
-
-    public static byte[] intToByte(int number) {
-        byte[] abyte = new byte[4];
-        // "&" 与（AND），对两个整型操作数中对应位执行布尔代数，两个位都为1时输出1，否则0。
-        abyte[0] = (byte) (0xff & number);
-        // ">>"右移位，若为正数则高位补0，若为负数则高位补1
-        abyte[1] = (byte) ((0xff00 & number) >> 8);
-        abyte[2] = (byte) ((0xff0000 & number) >> 16);
-        abyte[3] = (byte) ((0xff000000 & number) >> 24);
-        return abyte;
     }
 
     /**
