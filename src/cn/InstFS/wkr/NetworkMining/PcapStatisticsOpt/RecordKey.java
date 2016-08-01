@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.PcapStatisticsDis;
+package cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt;
 
 public class RecordKey implements Comparable {
     private String srcIp;

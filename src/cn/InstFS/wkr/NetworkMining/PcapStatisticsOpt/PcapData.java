@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.PcapStatisticsDis;
+package cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt;
 
 public class PcapData implements Comparable {
     private long time_s;//时间戳（秒）

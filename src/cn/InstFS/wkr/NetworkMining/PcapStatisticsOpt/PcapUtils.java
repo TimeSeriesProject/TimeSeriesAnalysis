@@ -1,8 +1,7 @@
-package cn.InstFS.wkr.NetworkMining.PcapStatisticsDis;
+package cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt;
 
 import java.io.*;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.security.AccessController;

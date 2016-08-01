@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.PcapStatisticsDis;
+package cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
