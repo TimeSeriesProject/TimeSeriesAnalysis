@@ -6,7 +6,7 @@ import java.util.List;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
 
-public class MinerResultsFM implements Serializable {
+public class MinerResultsFM implements Serializable{
 	ParamsTSA params;	// 或者 java.util.Properties params;
 	
 	private DataItems predictItems;

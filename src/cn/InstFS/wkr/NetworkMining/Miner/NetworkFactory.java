@@ -29,7 +29,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 public class NetworkFactory extends MinerFactorySettings {
 	private static NetworkFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="F:\\TimeSeriesAnalysisdata\\parsePcap\\route";
+	public String dataPath="C:\\data\\out\\route";
 
 	private TaskRange taskRange= TaskRange.WholeNetworkRange;
 	private MiningObject miningObject ;
@@ -41,7 +41,7 @@ public class NetworkFactory extends MinerFactorySettings {
 		this.miningObject = miningObject;
 	}
 	NetworkFactory(){
-		super();
+		super(MinerType.MiningTypes_WholeNetwork.toString());
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Cluster);
 		miningObjectList.add(MiningObject.MiningObject_Diameter);
@@ -72,7 +72,7 @@ public class NetworkFactory extends MinerFactorySettings {
 		task.setMiningObject(miningObject.toString());
 		CWNetworkReader reader = new CWNetworkReader(task);
 		DataItems alldataItems = reader.readInputByText();
-		
+
 		/*用于测试*/
 		/*Calendar cal1 = Calendar.getInstance();
 		Calendar cal2 = Calendar.getInstance();
@@ -157,7 +157,7 @@ public class NetworkFactory extends MinerFactorySettings {
 	public void setDataPath(String dataPath) {
 		this.dataPath = dataPath;
 	}
-	
+
 	/***
 	 * @author LYH
 	 * 功能：用于读取时间段内的DataItems*/

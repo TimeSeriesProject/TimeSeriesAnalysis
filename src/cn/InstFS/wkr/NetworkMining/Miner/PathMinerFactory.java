@@ -17,21 +17,29 @@ import org.apache.commons.math3.analysis.function.Min;
 public class PathMinerFactory extends MinerFactorySettings{
 	private static PathMinerFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="F:\\TimeSeriesAnalysisdata\\parsePcap\\route";
+	public String dataPath="F:\\TimeSeriesAnalysisdata\\parsePcap\\route\\10.0.1.2_10.0.2.2.csv";
 	
 	private MiningObject miningObject;
 	private TaskRange taskRange = TaskRange.NodePairRange;
 	private MiningMethod method;
 	
 	private PathMinerFactory(){
-		super();
+		super(MinerType.MiningType_Path.toString());
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Times);
 		miningObjectList.add(MiningObject.MiningObject_Traffic);
 
 		List<MiningObject> miningObjectCheck = this.getMiningObjectsChecked();
-		miningObjectCheck.add(MiningObject.MiningObject_Times);
-		miningObjectCheck.add(MiningObject.MiningObject_Traffic);
+
+		miningObjectCheck.addAll(miningObjectList);
+		List<MiningMethod> miningMethodsList = this.getMiningMethodsList();
+		miningMethodsList.add(MiningMethod.MiningMethods_Statistics);
+		miningMethodsList.add(MiningMethod.MiningMethods_PeriodicityMining);
+		miningMethodsList.add(MiningMethod.MiningMethods_OutliesMining);
+
+		List<MiningMethod> miningMethodsCheck = this.getMiningMethodsChecked();
+		miningMethodsCheck.addAll(miningMethodsList);
+
 	}
 	public static PathMinerFactory getInstance(){
 		if(inst==null){
@@ -96,9 +104,9 @@ public class PathMinerFactory extends MinerFactorySettings{
 		}
 		
 		TaskCombination taskCombination = new TaskCombination();
-		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_Statistics));
-		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_PeriodicityMining));
-		taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange,MiningMethod.MiningMethods_OutliesMining));
+		for (MiningMethod methodChecked: this.getMiningMethodsChecked())
+			taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange, methodChecked));
+
 		taskCombination.setDataItems(di);
 		taskCombination.setTaskRange(TaskRange.NodePairRange);
 		taskCombination.setRange(dataFile.getName().substring(0, dataFile.getName().lastIndexOf(".")));

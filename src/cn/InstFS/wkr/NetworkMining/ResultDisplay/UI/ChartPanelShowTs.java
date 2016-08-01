@@ -9,6 +9,7 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.JPanel;
@@ -31,6 +32,8 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.util.ShapeUtilities;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
@@ -57,7 +60,8 @@ public class ChartPanelShowTs extends JPanel{
 	public ChartPanelShowTs(String title, String timeAxisLabel, String valueAxisLabel, 
 			XYDataset dataset/*, boolean legend, boolean tooltips, boolean urls*/){
 		this();
-		chart = ChartFactory.createTimeSeriesChart(title, timeAxisLabel, valueAxisLabel, dataset);
+		//chart = ChartFactory.createTimeSeriesChart(title, timeAxisLabel, valueAxisLabel, dataset);
+		chart = ChartFactory.createScatterPlot(title, timeAxisLabel, valueAxisLabel, dataset);
 		ChartPanel p = new ChartPanel(chart);
 		add(p, BorderLayout.CENTER);
 		
@@ -96,16 +100,27 @@ public class ChartPanelShowTs extends JPanel{
 	public void displayDataItems(DataItems items){
 		if (items == null)
 			return;
-		TimeSeriesCollection tsc = new TimeSeriesCollection();//时间显示
+		//TimeSeriesCollection tsc = new TimeSeriesCollection();//时间显示
+		XYSeriesCollection tsc = new XYSeriesCollection();//时间显示
 		
-		TimeSeries ts = new TimeSeries("序列值");//生成序列图
+		//TimeSeries ts = new TimeSeries("序列值");//生成序列图
+		XYSeries ts = new XYSeries("序列值");//生成序列图
 				
 		int len = items.getLength();
 		for (int i = 0; i < len; i ++){
 			DataItem item = items.getElementAt(i);
 			Date date = item.getTime();
 			double val = Double.parseDouble(item.getData());
-			ts.addOrUpdate(items.getTimePeriodOfElement(i), val);			
+			
+			Calendar cal = Calendar.getInstance();
+   		 	cal.set(2014, 9, 1, 0, 0, 0);
+   		 	Date date1 = cal.getTime();
+   		 	Date date2 = item.getTime();
+   		 	long diff = date2.getTime()-date1.getTime();
+   		 	long hour = diff/(1000*60*60);
+			
+			//ts.addOrUpdate(items.getTimePeriodOfElement(i), val);
+			ts.add(i, val);
 		}
 		tsc.addSeries(ts);
 		chart.getXYPlot().setDataset(tsc);

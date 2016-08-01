@@ -5,7 +5,7 @@ import java.util.List;
 
 import associationRules.ProtocolAssociationResult;
 
-public class MinerResultsFP_Whole implements Serializable {
+public class MinerResultsFP_Whole implements Serializable{
 
 	double confidence = 0.0;
 	String ip = "";

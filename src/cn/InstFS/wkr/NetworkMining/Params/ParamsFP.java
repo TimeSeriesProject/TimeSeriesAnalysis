@@ -3,10 +3,11 @@ package cn.InstFS.wkr.NetworkMining.Params;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-public class ParamsFP extends IParamsNetworkMining {
+public class ParamsFP extends IParamsNetworkMining implements Serializable {
     //高斯滑动窗口模型算法参数
     private double minSupport;	// 最小支持度
     private int sizeWindow;	// 时间窗长	（单位为秒）

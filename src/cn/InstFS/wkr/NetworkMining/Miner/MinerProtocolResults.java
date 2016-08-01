@@ -7,7 +7,7 @@ import java.util.Map;
 
 import associationRules.ProtocolAssociationResult;
 
-public class MinerProtocolResults implements Serializable {
+public class MinerProtocolResults implements Serializable{
 	private MinerResultsFP_Line retFP;
 	private MinerResultsFP_Whole retSim;
 	public MinerProtocolResults() {

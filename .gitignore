@@ -1,0 +1,11 @@
+bin/
+lib/
+lib_src/
+.idea/
+configs/
+result/
+*.arff
+*.model
+*.log
+.classpath
+.project
