@@ -2,7 +2,9 @@ package associationRules;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
-public class ProtocolAssociationResult {
+import java.io.Serializable;
+
+public class ProtocolAssociationResult implements Serializable {
 
 	public int alogrithmType = 1;   // 为0，说明是包含支持度参数的关联规则挖掘方法 ，为1，说明是连段挖掘方法
 	String protocol1 = "";

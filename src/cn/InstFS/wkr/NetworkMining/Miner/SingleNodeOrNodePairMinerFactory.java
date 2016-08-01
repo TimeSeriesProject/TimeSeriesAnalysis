@@ -23,8 +23,8 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	private static SingleNodeOrNodePairMinerFactory pairInst;
 	public static boolean isMining=false;
 
-	public String dataPath="D:\\57data\\traffic\\";
-	public String rootPath = "D:\\57data\\node\\";
+	public String dataPath="D:\\57data\\traffic";
+	public String rootPath = "D:\\57data\\node";
 
 	private MiningObject miningObject;
 	private TaskRange taskRange = TaskRange.SingleNodeRange;
