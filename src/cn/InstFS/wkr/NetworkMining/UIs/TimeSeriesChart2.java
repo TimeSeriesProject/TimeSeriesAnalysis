@@ -58,6 +58,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.NumberAxis;
@@ -90,19 +91,19 @@ import associationRules.ProtoclPair;
  * lines) at each data point.
  */
 public class TimeSeriesChart2 extends Composite {
-/*	ArrayList<DataItems> _nor_model_1 = null;
-	ArrayList<DataItems> _abnor_model_1 = null;
-	ArrayList<DataItems> _nor_model_2 = null;
-	ArrayList<DataItems> _abnor_model_2 = null;*/
 	ArrayList<DataItems> _nor_model_ = null;
 	ArrayList<DataItems> _abnor_model_ = null;
 
 	public TimeSeriesChart2(Composite parent, int style, ProtoclPair pp) {
 		super(parent, style);
-	
-		String chartname="协议"+pp.getProtocol1()+"/"+"协议"+pp.getProtocol2()+"时间序列"+"(置信度："+pp.confidence+")";
-		//传入
-		JFreeChart chart = createChart( pp.getDataItems1(), pp.getDataItems2(),chartname);
+
+		String chartname = "协议" + pp.getProtocol1() + "/" + "协议"
+				+ pp.getProtocol2() + "时间序列" + "(置信度：" + pp.confidence + ")";
+		// 传入
+		String protocol1 = pp.getProtocol1();
+		String protocol2 = pp.getProtocol2();
+		JFreeChart chart = createChart(pp.getDataItems1(), pp.getDataItems2(),
+				chartname, protocol1, protocol2);
 		// JFreeChart chart =
 		// createChart(createDataset(ip1,ip2,ip1data,ip2data));
 
@@ -115,63 +116,27 @@ public class TimeSeriesChart2 extends Composite {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static DataItems getDataItems(DataItems dataitems, int start, int end) {
-		DataItems ret = new DataItems();
-		// ret.setItems(items);
-		
+	
 
-		for (int i = start; i <= end; i++) {
-			
-			ret.add1Data(dataitems.getElementAt(i));
-		}
-
-		return ret;
-
-	}
-
-
-
-	// 从这里开始应用别人代码
-
-	public static XYDataset createNormalDataset(DataItems normal) {
-		// 获取正常数据的长度、
-		int length = normal.getLength();
-		int time[] = new int[length];
-		XYSeries xyseries = new XYSeries("原始值");
-
-		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
-
-		// 为数据集添加数据
-
-		for (int i = 0; i < length; i++) {
-			DataItem temp = new DataItem();
-			temp = normal.getElementAt(i);
-			xyseries.add((double) temp.getTime().getTime(),
-					Double.parseDouble(temp.getData())); // 对应的横轴
-
-		}
-		xyseriescollection.addSeries(xyseries);
-		return xyseriescollection;
-	}
-
-	public static JFreeChart createChart(DataItems nor, DataItems abnor,String title) {
-		//第一条线
-		XYDataset xydataset1 = createNormalDataset(nor);
-		JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(title,
-				"时间", "值", xydataset1);
+	public static JFreeChart createChart(DataItems nor, DataItems abnor,
+			String title, String protocol1, String protocol2) {
+		// 第一条线
+		XYDataset xydataset1 = TimeSeriesChart1.createNormalDataset(nor,
+				protocol1);
+		JFreeChart jfreechart = ChartFactory.createScatterPlot(title, "时间",
+				"值", xydataset1);
 		XYPlot xyplot = (XYPlot) jfreechart.getPlot();
 
 		XYLineAndShapeRenderer xylineandshaperenderer1 = (XYLineAndShapeRenderer) xyplot
 				.getRenderer();
-		//设置数据集线条1，设置线条1的渲染器
-		xyplot.setDataset(0, xydataset1);
-		xyplot.setRenderer(0, xylineandshaperenderer1);
+		// 设置数据集线条1，设置线条1的渲染器
+
 		NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
 		numberaxis.setAutoRangeIncludesZero(false);
 		java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(
 				-4D, -4D, 6D, 6D);
 		// 设置异常点提示红点大小
-		
+
 		// 设置不可看到点。
 		xylineandshaperenderer1.setSeriesLinesVisible(0, true);
 		xylineandshaperenderer1.setBaseShapesVisible(false);
@@ -180,89 +145,51 @@ public class TimeSeriesChart2 extends Composite {
 		xylineandshaperenderer1.setSeriesFillPaint(0, Color.blue);
 		xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.blue);
 		xylineandshaperenderer1.setSeriesStroke(0, new BasicStroke(0.5F));
-		// 设置显示数据点
-		// xylineandshaperenderer.setBaseItemLabelGenerator(new
-		// StandardXYItemLabelGenerator());
-		// xylineandshaperenderer.setBaseItemLabelsVisible(true);
-
-		//创造数据集，
-		XYDataset xydataset2 = createAbnormalDataset(abnor);
+	
+		// 创造数据集，
+		XYDataset xydataset2 = TimeSeriesChart1.createNormalDataset(abnor,
+				protocol2);
+/*		XYTextAnnotation localXYTextAnnotation = new XYTextAnnotation("aa",10,
+				Double.parseDouble(abnor.getElementAt(10).getData()));
+		xyplot.addAnnotation(localXYTextAnnotation);*/
 		XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
-		xyplot.setDataset(1, xydataset2);
-		xyplot.setRenderer(1, xylineandshaperenderer2);
-		// 设置不可见到点。 。
+		int datasetcount=xyplot.getDatasetCount();
+		xyplot.setDataset(datasetcount, xydataset2);
+		xyplot.setRenderer(datasetcount ,xylineandshaperenderer2);
+/*		System.out.println("DatasetCount="+xyplot.getDatasetCount());
+		
+		for(int c=0;c<xyplot.getDatasetCount();c++){
+			System.out.println("DatasetSeriesCount="+xyplot.getDataset(c).getSeriesCount());
+			System.out.println("Dataset["+c+"]="+xyplot.getDataset(c).getSeriesKey(0));
+		}*/
+		
+	/*	// 设置不可见到点。 。
 		xylineandshaperenderer2.setBaseShapesVisible(false);
 		// 设置可以看见线。
 		xylineandshaperenderer2.setSeriesLinesVisible(0, true);
 		xylineandshaperenderer2.setSeriesShape(0, double1);
 		// 设置线和点的颜色。
-		xylineandshaperenderer2.setSeriesPaint(0, Color.orange);
-		xylineandshaperenderer2.setSeriesFillPaint(0, Color.orange);
-		xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.orange);
+		xylineandshaperenderer2.setSeriesPaint(0, Color.green);
+		xylineandshaperenderer2.setSeriesFillPaint(0, Color.green);
+		xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.green);
 
 		xylineandshaperenderer2.setUseFillPaint(true);
 		xylineandshaperenderer2
 				.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
 		xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(0.5F));
-
-		jfreechart.getLegend().setVisible(false);
+		
+*/
+		xylineandshaperenderer2.setSeriesLinesVisible(0, true);
+		xylineandshaperenderer2.setBaseShapesVisible(false);
+		xylineandshaperenderer2.setSeriesShape(0, double1);
+		xylineandshaperenderer2.setSeriesPaint(0, Color.GREEN);
+		xylineandshaperenderer2.setSeriesFillPaint(0, Color.GREEN);
+		xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.green);
+		xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(0.5F));
+		jfreechart.getLegend().setVisible(true);
 		return jfreechart;
 
-
 	}
-	//取出DataItems类型中的y值，返回XYDataset
-	public static XYDataset createmodeDataset(DataItems normal) {
-		// 获取正常数据的长度、
-		int length = normal.getLength();
-		int time[] = new int[length];
-		XYSeries xyseries = new XYSeries(".");
-		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
-		// 为数据集添加数据
-		for (int i = 0; i < length; i++) {
-			DataItem temp = new DataItem();
-			temp = normal.getElementAt(i);
-			xyseries.add((double) temp.getTime().getTime(),
-					Double.parseDouble(temp.getData())); // 对应的横轴
-
-		}
-		xyseriescollection.addSeries(xyseries);
-		return xyseriescollection;
-	}
-
-	// 对异常点进行初始化
-	public static XYDataset createAbnormalDataset(DataItems abnor) { // 统计异常点的长度
-		int length = abnor.getLength();
-		XYSeries xyseries = new XYSeries("频繁模式");
-
-		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
-
-		// 添加数据值
-
-		for (int i = 0; i < length; i++) {
-
-			DataItem temp = new DataItem();
-			temp = abnor.getElementAt(i);
-			xyseries.add((double) temp.getTime().getTime(),
-					Double.parseDouble(temp.getData()));
-			//为什么要添加两遍？
-			xyseries.add((double) temp.getTime().getTime(),
-					Double.parseDouble(temp.getData()));
-
-		}
-		xyseriescollection.addSeries(xyseries);
-		return xyseriescollection;
-	}
-
-	// 到这里结束
-	/**
-	 * Creates a chart.
-	 * 
-	 * @param dataset
-	 *            a dataset.
-	 * 
-	 * @return A chart.
-	 */
-
 
 
 
