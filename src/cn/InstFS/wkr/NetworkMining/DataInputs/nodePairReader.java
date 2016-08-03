@@ -1769,11 +1769,9 @@ public class nodePairReader implements IReader {
 			int currentTraffic = Integer.parseInt(items[2]);
 			
 			if(lastTraffic > 0 || currentTraffic > 0){
-				continue;
-			}
-			else{
-				
 				sumDataItem.data.set(index, "1");
+			} else {
+				System.out.println("ha");
 			}
 			
 		}

@@ -5,7 +5,6 @@ import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSetting;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettingTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettings;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.ProcessBarShow;
