@@ -262,9 +262,9 @@ class PathProbTimerTask extends TimerTask{
 			pmMethod.predictPeriod();
 			if(pmMethod.hasPeriod()){
 				System.out.println("period:"+name+":"+pmMethod.getPredictPeriod()+":"+pmMethod.getFirstPossiblePeriod());
-				retPath.getPeriodPath().put(name, pmMethod.getPredictPeriod());
+				/*retPath.getPeriodPath().put(name, pmMethod.getPredictPeriod());
 				retPath.getFirstPeriodOfPath().put(name, pmMethod.getFirstPossiblePeriod());
-				retPath.getItemsInPeriod().put(name, pmMethod.getItemsInPeriod());
+				retPath.getItemsInPeriod().put(name, pmMethod.getItemsInPeriod());*/
 			}
 		}
 		results.setRetPath(retPath);
