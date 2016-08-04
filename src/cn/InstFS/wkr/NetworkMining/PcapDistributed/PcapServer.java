@@ -20,7 +20,7 @@ public class PcapServer {
     private ArrayList<String> allTasks = new ArrayList<String>();
     private HashMap<String, StringBuilder> tasksMap = new HashMap<String, StringBuilder>();
     private String DELIMITER = "\r\n";
-    private String outPath = "D:";
+    private String outPath = "D:\\57data";
     private String fileName;
     private int BUF_LEN = 5 * 1024 * 1024;
     private int count = 0;//发送次数
@@ -192,7 +192,6 @@ public class PcapServer {
         }
 
         private void receiveFile(String outPath) {
-            System.out.println("进入receiveFile");
             byte[] receiveBuffer = new byte[BUF_LEN];
             int length;
             long passedlen = 0;
@@ -201,7 +200,7 @@ public class PcapServer {
                 fileName = userClient.receiveMsg();
                 String finalFilePath = outPath + File.separator + fileName;
                 System.out.println("finalFilePath: " + finalFilePath);
-                DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(finalFilePath)));
+                DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(finalFilePath, true)));
                 length = userClient.receiveInt();
                 while (length > 0) {
                     userClient.receiveFullByte(receiveBuffer, 0, length);//read到length才返回，若用read，可能不到length就返回

@@ -22,7 +22,7 @@ public class PcapClient {
     private String type = "pcap";
     private int BUF_LEN = 5 * 1024 * 1024;
 
-//    private DataPanel dataPanel;
+    //    private DataPanel dataPanel;
     private String IP;
     private int port;
 
@@ -68,13 +68,13 @@ public class PcapClient {
                 getTaskList(tasks, f.getAbsolutePath(), type);
             }
         }
-        System.out.println("filelist: " + fileList.size());
     }
 
     class ExeFirst2Step implements Runnable {
         String tasks;
         PcapUtils pcapUtils;
         long totalLen = 0L;
+        int count = 0;
 
         @Override
         public void run() {
@@ -83,12 +83,14 @@ public class PcapClient {
                     System.out.println("开始");
                     sendReady();//先发送Ready
                     tasks = clientInit.receiveData();//收到要完成的任务string
+                    fileList.clear();//清空list
                     getTaskList(tasks, filePath, type);//生成filelist
                     pcapUtils = new PcapUtils();
-                    pcapUtils.First2Step(fileList, outPath);//执行前两步
+                    pcapUtils.First2Step(fileList, outPath + count);//执行前两步每次在不同的文件夹下保存结果
                     System.out.println("执行完毕");
                     //返回结果
-                    sendResult(outPath);
+                    sendAllResult(outPath + count);
+                    count++;
 
                 }
             } catch (IOException e) {
@@ -101,6 +103,21 @@ public class PcapClient {
             }
         }
 
+        public void sendAllResult(String outPath) throws IOException {
+            File file = new File(outPath);
+            if (file.isFile()) {
+                return;
+            } else if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                getFolderTotalLen(outPath);
+                clientInit.sendLong(totalLen);
+                for (File f : files) {
+                    sendResult(f.getAbsolutePath());
+                }
+            }
+            clientInit.sendMsg("endTransmit");
+        }
+
         public void preprocess(File folder) {
             folderPath = folder.getAbsolutePath();
             folderName = folder.getName();
@@ -110,21 +127,19 @@ public class PcapClient {
         public void sendResult(String outPath) throws IOException {
             File folder = new File(outPath);
             preprocess(folder);//得到路径，文件位置
-            System.out.println("fPath: " + folderPath + "fName: " + folderName + "index: " + index);
+//            System.out.println("fPath: " + folderPath + "fName: " + folderName + "index: " + index);
             long beginTime = 0L;
             long endTime;
             beginTime = System.currentTimeMillis();
             if (folder.isFile()) {
-                totalLen = folder.length();
-                clientInit.sendLong(totalLen);
+//                totalLen = folder.length();
+//                clientInit.sendLong(totalLen);//sendAllResult中发送，保证发送一次
                 sendFile(folder);
             } else {
-                getFolderTotalLen(outPath);//得到totalLen
-                clientInit.sendLong(totalLen);
+//                getFolderTotalLen(outPath);//得到totalLen
+//                clientInit.sendLong(totalLen);//sendAllResult中发送，保证发送一次
                 sendFolder(folder);
             }
-            clientInit.sendMsg("endTransmit");
-
         }
 
         private void sendFolder(File folder) {
@@ -155,7 +170,6 @@ public class PcapClient {
         }
 
         public void sendFile(File file) {
-            System.out.println("进入sendFile");
             byte[] sendBuffer = new byte[BUF_LEN];
             int length;
             try {
