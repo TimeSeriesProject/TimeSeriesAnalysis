@@ -772,7 +772,50 @@ public class PcapUtils {
         }
     }
 
+    private void parsePcapDis(ArrayList<File> fileList, String outpath) throws IOException, FileNotFoundException {
+        parseSum = fileList.size();
+        status = Status.PARSE;
+        System.out.println(status);
+        System.out.println("parseSum " + parseSum);
+        ExecutorService exec = Executors.newFixedThreadPool(16);
+        ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
+        for (int i = 0; i < fileList.size(); i++) {
+            File file = fileList.get(i);
+            Parser parser = new Parser(this, file, trafficRecords, bws, bos, nodeMap, outpath);
+            results.add(exec.submit(parser));
+//            parser.call();
+        }
+        for (int i = 0; i < results.size(); i++) {
+            try {
+                results.get(i).get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } finally {
+                exec.shutdown();
+            }
+        }
+        for (Map.Entry<String, BufferedWriter> entry : bws.entrySet()) {
+
+            try {
+                entry.getValue().close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        for (Map.Entry<String, BufferedOutputStream> entry : bos.entrySet()) {
+
+            try {
+                entry.getValue().close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void generateNode(String outpath) {
+        System.out.println("genNode");
         //key = 文件名第一个字符
         HashMap<String, ArrayList<PcapNode>> tResult = new HashMap<String, ArrayList<PcapNode>>();
         for (Map.Entry<String, ArrayList<PcapNode>> entry : nodeMap.entrySet()) {
@@ -876,6 +919,17 @@ public class PcapUtils {
             }
 
         }
+    }
+
+    public void First2Step(ArrayList<File> fileList, String outpath) throws IOException{
+        File folder = new File(outpath + "\\routesrc");
+        boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
+
+        folder = new File(outpath + "\\node");
+        suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
+
+        parsePcapDis(fileList, outpath);
+        generateNode(outpath);
     }
 
     public void readInput(String fpath, String outpath) throws IOException, FileNotFoundException {
