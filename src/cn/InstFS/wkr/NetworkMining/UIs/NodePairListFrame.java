@@ -92,7 +92,7 @@ public class NodePairListFrame extends JFrame {
 				try {
 					NetworkMinerFactory.getInstance();
 					SingleNodeOrNodePairMinerFactory freMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-					freMinerFactory.dataPath="C:\\data\\out\\traffic";
+					freMinerFactory.dataPath="D:\\57data\\traffic";
 					freMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
 					freMinerFactory.setTaskRange(TaskRange.NodePairRange);
 					freMinerFactory.detect();

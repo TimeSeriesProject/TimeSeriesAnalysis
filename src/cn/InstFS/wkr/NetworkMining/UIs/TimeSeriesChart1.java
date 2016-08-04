@@ -43,15 +43,7 @@ package cn.InstFS.wkr.NetworkMining.UIs;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Point;
-import java.awt.geom.GeneralPath;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,44 +55,22 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.XYAnnotation;
 import org.jfree.chart.annotations.XYTextAnnotation;
-import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
-import org.jfree.chart.labels.ItemLabelAnchor;
-import org.jfree.chart.labels.ItemLabelPosition;
-import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.labels.StandardXYItemLabelGenerator;
-import org.jfree.chart.labels.XYItemLabelGenerator;
-import org.jfree.chart.plot.Marker;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.category.LineAndShapeRenderer;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.time.Hour;
-import org.jfree.data.time.Month;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.LengthAdjustmentType;
 import org.jfree.ui.RectangleAnchor;
-import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.TextAnchor;
 
-import ca.pfv.spmf.algorithms.frequentpatterns.lcm.Dataset;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.ChartPanelShowFI;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.ChartPanelShowFP;
 import associationRules.LinePos;
 import associationRules.ProtoclPair;
 
@@ -186,13 +156,8 @@ public class TimeSeriesChart1 extends Composite {
 		ret.setProb(data.getProb());
 		ret.setDiscreteNodes(data.getDiscreteNodes());
 		ret.setGranularity(data.getGranularity());
-
 		ret.setDiscreteStrings(data.getDiscreteStrings());
-
-		// ret.s
-
 		List<String> datanormolization = new ArrayList<String>();
-		// List<String> data=d.getData();
 		Iterator it = data.data.iterator();
 		// 找出最大值最小值
 		if (it.hasNext()) {
@@ -216,11 +181,9 @@ public class TimeSeriesChart1 extends Composite {
 
 				if (t != 0) {
 					temp2normalization = (temp2 - min) / t + addanumber;
-					// System.out.println("temp2normalization="+temp2normalization);
 				}
 				datanormolization.add(Double.toString(temp2normalization));
 			}
-
 			// 把归一化后的List<String> datanormolization 加入DataItems
 			ret.setData(datanormolization);
 
@@ -228,9 +191,6 @@ public class TimeSeriesChart1 extends Composite {
 			System.out
 					.println(" TimeSeriesChart1 function DataItemsNormalization  data is null");
 		}
-
-		// int max=data.
-
 		return ret;
 
 	}
@@ -249,12 +209,15 @@ public class TimeSeriesChart1 extends Composite {
 		XYDataset xydataset = createNormalDataset(nor, protocol1);
 		JFreeChart jfreechart = ChartFactory.createXYLineChart(chartname, "时间",
 				"值", xydataset);
+		jfreechart.getLegend().setVisible(false);
 		XYPlot xyplot = (XYPlot) jfreechart.getPlot();
 		NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
 		numberaxis.setAutoRangeIncludesZero(false);
 		java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(
 				-4D, -4D, 6D, 6D);
-		// 设置异常点提示红点大小
+		
+
+
 		XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer) xyplot
 				.getRenderer();
 		// 设置不可看到点。
@@ -262,31 +225,34 @@ public class TimeSeriesChart1 extends Composite {
 		xylineandshaperenderer.setBaseShapesVisible(false);
 		xylineandshaperenderer.setSeriesShape(0, double1);
 		xylineandshaperenderer.setSeriesPaint(0, Color.blue);
-		xylineandshaperenderer.setSeriesFillPaint(0, Color.red);
-		xylineandshaperenderer.setSeriesOutlinePaint(0, Color.gray);
+		xylineandshaperenderer.setSeriesFillPaint(0, Color.blue);
+		xylineandshaperenderer.setSeriesOutlinePaint(0, Color.blue);
 		xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
 		// 设置显示数据点
 		// xylineandshaperenderer.setBaseItemLabelGenerator(new
 		// StandardXYItemLabelGenerator());
 		// xylineandshaperenderer.setBaseItemLabelsVisible(true);
+		int datasetcount0 = xyplot.getDatasetCount();
+
+		
 
 		XYDataset xydataset1 = createNormalDataset(abnor, protocol2);
 		// xydataset1.
 		XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
-		xyplot.setDataset(xyplot.getDatasetCount() + 1, xydataset1);
-		xyplot.setRenderer(xyplot.getDatasetCount() + 1,
-				xylineandshaperenderer1);
+		int datasetcount = xyplot.getDatasetCount();
+		xyplot.setDataset(datasetcount, xydataset1);
+		xyplot.setRenderer(datasetcount, xylineandshaperenderer1);
 		// 设置不可见到点。
 		xylineandshaperenderer1.setBaseShapesVisible(false);
 		// 设置可以看见线。
 		xylineandshaperenderer1.setSeriesLinesVisible(0, true);
 		xylineandshaperenderer1.setSeriesShape(0, double1);
 		// 设置线和点的颜色。
-		xylineandshaperenderer1.setSeriesPaint(0, Color.orange);
-		xylineandshaperenderer1.setSeriesFillPaint(0, Color.orange);
-		xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.orange);
+		xylineandshaperenderer1.setSeriesPaint(0, Color.green);
+		xylineandshaperenderer1.setSeriesFillPaint(0, Color.green);
+		xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.green);
 		xylineandshaperenderer1.setUseFillPaint(true);
-		
+
 		xylineandshaperenderer1
 				.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
 		xylineandshaperenderer1.setSeriesStroke(0, new BasicStroke(0.5F));
@@ -338,7 +304,7 @@ public class TimeSeriesChart1 extends Composite {
 		// 显示两条折线中间的那条分界线，y=1
 		ValueMarker valuemarker = new ValueMarker(1); // 水平线的值
 		valuemarker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
-		valuemarker.setPaint(Color.green); // 线条颜色
+		valuemarker.setPaint(Color.black); // 线条颜色
 		valuemarker.setStroke(new BasicStroke(1.0F)); // 粗细
 		// valuemarker.setLabel("分界线"); //线条上显示的文本
 		valuemarker.setLabelFont(new Font("SansSerif", 0, 11)); // 文本格式
@@ -348,7 +314,7 @@ public class TimeSeriesChart1 extends Composite {
 		xyplot.addRangeMarker(valuemarker);
 		// //
 
-		jfreechart.getLegend().setVisible(false);
+		//jfreechart.getLegend().setVisible(true);
 		return jfreechart;
 	}
 
@@ -361,18 +327,15 @@ public class TimeSeriesChart1 extends Composite {
 			DataItems dataitems2, Map<String, ArrayList<LinePos>> mapAB,
 			XYPlot xyplot) {
 		// 获取模式的种类个数、
-		int modelcount = mapAB.keySet().size();	
+		int modelcount = mapAB.keySet().size();
 		long off1 = dataitems1.getElementAt(0).getTime().getTime();
 		long off2 = dataitems2.getElementAt(0).getTime().getTime();
 		long unit = 0;
-		if(dataitems1.getLength()>0){
-			unit=dataitems1.getElementAt(1).getTime().getTime()-off1;
-		}else{
-			unit=3600000;
+		if (dataitems1.getLength() > 0) {
+			unit = dataitems1.getElementAt(1).getTime().getTime() - off1;
+		} else {
+			unit = 3600000;
 		}
-				
-				
-		
 
 		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 		// 为数据集添加数据
@@ -415,17 +378,7 @@ public class TimeSeriesChart1 extends Composite {
 
 			while (it.hasNext()) {
 				LinePos temp = (LinePos) it.next();
-				/*
-				 * System.out.println("A_start:"+temp.A_start+" "+"A_end:"+temp.
-				 * A_end);
-				 * System.out.println("B_start:"+temp.B_start+" "+"B_end:"
-				 * +temp.B_end); System.out.println(" ");
-				 */
-				/*
-				 * XYSeries xyseries1 = new XYSeries(se+"起点线段"+(i)); XYSeries
-				 * xyseries2 = new XYSeries(se+"终点线段"+i);
-				 */
-				// i++;
+
 				DataItem d1 = new DataItem();
 				d1 = dataitems1.getElementAt(temp.A_start);
 				DataItem d2 = new DataItem();
@@ -435,7 +388,7 @@ public class TimeSeriesChart1 extends Composite {
 				ds1.add1Data(d2);
 				// dslist.add(ds1);
 				XYDataset xydataset1 = createmodeDataset(ds1, off1,
-						se.toString() + 1,unit);
+						se.toString() +":"+ 1, unit);
 
 				DataItem d3 = new DataItem();
 				d3 = dataitems1.getElementAt(temp.A_end);
@@ -446,7 +399,7 @@ public class TimeSeriesChart1 extends Composite {
 				ds2.add1Data(d4);
 				// dslist.add(ds2);
 				XYDataset xydataset2 = createmodeDataset(ds2, off1,
-						se.toString() + 2,unit);
+						se.toString() +":"+ 2, unit);
 
 				int datasetCount = xyplot.getDatasetCount();
 				XYTextAnnotation localXYTextAnnotation = null;
@@ -455,55 +408,25 @@ public class TimeSeriesChart1 extends Composite {
 						temp.A_start).getData()) + Double
 						.parseDouble(dataitems1.getElementAt(temp.B_end)
 								.getData())) / 2;
-				System.out.println("se=" + se + "::" + "x=" + modelx + "y="
-						+ modely);
+				/*System.out.println("se=" + se + "::" + "x=" + modelx + "y="
+						+ modely);*/
 				localXYTextAnnotation = new XYTextAnnotation("" + se + ":"
 						+ oneModelCount, modelx, modely);
 				xyplot.addAnnotation(localXYTextAnnotation);
-				System.out.println("datasetCount=" + datasetCount);
-				xyplot.setDataset(datasetCount + 1, xydataset1);
-				xyplot.setRenderer(datasetCount+1, xylineandshaperenderer);
-				xyplot.setDataset(datasetCount + 2, xydataset2);
-				xyplot.setRenderer(datasetCount+2, xylineandshaperenderer);
+				/*System.out.println("datasetCount=" + datasetCount);*/
+			
+				xyplot.setDataset(datasetCount, xydataset1);
+				xyplot.setRenderer(datasetCount, xylineandshaperenderer);
+				xyplot.setDataset(datasetCount + 1, xydataset2);
+				xyplot.setRenderer(datasetCount + 1, xylineandshaperenderer);
+				
 				
 
 			}
-//			/xyplot.setRenderer(renderercount++, xylineandshaperenderer);
-			//renderercount++;
-
-			// System.out.println(" (点数)dslist.size()="+ dslist.size()*2);
-
-			/*
-			 * for (int i1 = 0; i1 < dslist.size(); i1++) {
-			 * 
-			 * XYDataset xydataset = createmodeDataset(dslist.get(i1),off1,
-			 * se.toString());
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * //return xyseriescollection;
-			 * 
-			 * 
-			 * int datasetCount = xyplot.getDatasetCount(); //
-			 * System.out.println("@@@@@@@@@@@datasetCount="+datasetCount);
-			 * XYTextAnnotation localXYTextAnnotation = null;
-			 * localXYTextAnnotation = new XYTextAnnotation(""+se, 30, 1);
-			 * xyplot.addAnnotation(localXYTextAnnotation);
-			 * xyplot.setDataset(datasetCount+1 , xydataset);
-			 * xyplot.setRenderer(datasetCount+1 , xylineandshaperenderer);
-			 * 
-			 * }
-			 */
 
 		}
 		return xyseriescollection;
 	}
-
-	
 
 	/*
 	 * 将完整的DataItems保存进数据集
@@ -523,12 +446,13 @@ public class TimeSeriesChart1 extends Composite {
 
 			temp = normal.getElementAt(i);
 
-			System.out.println("DataItem.time=" + temp.getTime().getTime());
+			//System.out.println("DataItem.time=" + temp.getTime().getTime());
 
 			xyseries.add(i, Double.parseDouble(temp.getData())); // 对应的横轴
 
 		}
 		xyseriescollection.addSeries(xyseries);
+
 		return xyseriescollection;
 	}
 
@@ -536,7 +460,7 @@ public class TimeSeriesChart1 extends Composite {
 
 	// 取出DataItems类型中的y值，返回XYDataset
 	public static XYDataset createmodeDataset(DataItems normal, long offset1,
-			String protocol2,long unit) {
+			String protocol2, long unit) {
 		// 获取正常数据的长度、
 		int length = normal.getLength();
 		int time[] = new int[length];

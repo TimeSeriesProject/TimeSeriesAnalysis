@@ -8,6 +8,7 @@ import org.apache.commons.math3.analysis.function.Min;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,6 +29,9 @@ public abstract class MinerFactorySettings implements Serializable{
     private boolean isOnlyObjectModified = false;
     private List<MiningObject> miningObjectsAdded = new ArrayList<>();
     private List<MiningObject> miningObjectsDeleted = new ArrayList<>();
+
+    private Date startDate;
+    private Date endDate;
 
     public MinerFactorySettings(String minerType) {
         this.minerType = minerType;
@@ -123,5 +127,21 @@ public abstract class MinerFactorySettings implements Serializable{
 
     public void setMiningMethodsChecked(List<MiningMethod> miningMethodsChecked) {
         this.miningMethodsChecked = miningMethodsChecked;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }

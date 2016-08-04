@@ -5,6 +5,8 @@ import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.PathMinerFactory;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
+import com.toedter.calendar.JDateChooser;
+import com.toedter.calendar.JSpinnerDateEditor;
 import org.apache.commons.math3.analysis.function.Min;
 
 import javax.swing.*;
@@ -12,6 +14,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,7 +31,11 @@ public class DialogSettings extends JDialog {
     private JButton buttonCancel = new JButton("取消");
     private JButton buttonPath = new JButton("选择路径");
     private JTextField dataPath = new JTextField();
-    private JLabel labelGranularity = new JLabel("时间粒度");
+    private JLabel labelGranularity = new JLabel("时间粒度(s)");
+    private JLabel labelTimeScale = new JLabel("时间区间");
+    private DateTimePicker startPicker = new DateTimePicker();
+    private DateTimePicker endPicker = new DateTimePicker();
+
     private JLabel labelTaskRange = new JLabel("任务范围");
     private JTextField fieldGranularity = new JTextField();
     private JTextField fieldTaskRange = new JTextField();
@@ -60,6 +67,11 @@ public class DialogSettings extends JDialog {
         topPane.add(dataPath);
         topPane.add(labelGranularity);
         topPane.add(fieldGranularity);
+
+        topPane.add(labelTimeScale);
+        JPanel dateTimePane = addDateTimePicker();
+        topPane.add(dateTimePane);
+
         topPane.add(labelTaskRange);
         fieldTaskRange.setEditable(false);
         topPane.add(fieldTaskRange);
@@ -101,6 +113,24 @@ public class DialogSettings extends JDialog {
             pane.add(cb);
             methodCheckBoxes.add(cb);
         }
+        return pane;
+    }
+
+    private JPanel addDateTimePicker() {
+        JPanel pane = new JPanel();
+        pane.setLayout(new GridBagLayout());
+        GridBagConstraints gc = new GridBagConstraints();
+        gc.gridy = 0;
+        gc.weightx = 1;
+        pane.add(new JLabel("起始:") ,gc);
+        gc.weightx = 10;
+        pane.add(startPicker, gc);
+        gc.weightx = 1;
+        gc.gridy = 1;
+        pane.add(new JLabel("终止:"), gc);
+        gc.weightx = 10;
+        pane.add(endPicker, gc);
+
         return pane;
     }
 
@@ -195,6 +225,8 @@ public class DialogSettings extends JDialog {
     public void getData(MinerFactorySettings data) {
         data.setDataPath(dataPath.getText());
         data.setGranularity(fieldGranularity.getText());
+        data.setStartDate(startPicker.getDateTime());
+        data.setEndDate(endPicker.getDateTime());
         List<MiningObject> objectList = settings.getMiningObjectsChecked();
         objectList.clear();
         for (JCheckBox cb: objectCheckBoxes){
@@ -213,6 +245,8 @@ public class DialogSettings extends JDialog {
         if (dataPath.getText() != null ? !dataPath.getText().equals(data.getDataPath()) : data.getDataPath() != null)
             return true;
         if (fieldGranularity.getText() != null ? !fieldGranularity.getText().equals(data.getGranularity()) : data.getGranularity() != null)
+            return true;
+        if (!startPicker.getDateTime().equals(data.getStartDate()) || !endPicker.getDateTime().equals(data.getEndDate()))
             return true;
 
         List<MiningObject> objectList = settings.getMiningObjectsChecked(); // 原已选checkBoxList

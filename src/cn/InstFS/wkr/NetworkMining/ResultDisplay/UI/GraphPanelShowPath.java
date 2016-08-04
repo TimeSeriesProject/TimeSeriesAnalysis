@@ -1,41 +1,32 @@
+
 package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
-import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.SparseGraph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.Context;
 import edu.uci.ics.jung.graph.util.EdgeIndexFunction;
 import edu.uci.ics.jung.graph.util.EdgeType;
-import edu.uci.ics.jung.samples.*;
-import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
-import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.*;
+import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
+import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
-import edu.uci.ics.jung.visualization.decorators.InterpolatingVertexSizeTransformer;
-import edu.uci.ics.jung.visualization.decorators.ParallelEdgeShapeTransformer;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import edu.uci.ics.jung.visualization.renderers.*;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
-import net.mindview.util.CountingGenerator;
-import org.apache.commons.math3.ml.neuralnet.Network;
-import org.apache.poi.hssf.util.HSSFColor;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
-import javax.swing.border.Border;
-import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * @author Arbor
@@ -96,6 +87,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
                 put("10.0.1.3", 2);
                 put("10.0.1.4", 3);
                 put("10.0.7.2", 0);
+                put("10.0.10.2", 0);
                 put("10.0.13.2", 0);
                 put("10.0.2.2", 5);
                 put("10.0.2.3", 6);
@@ -412,3 +404,4 @@ class NetworkEdge {
         return super.hashCode();
     }
 }
+

@@ -23,8 +23,8 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	private static SingleNodeOrNodePairMinerFactory pairInst;
 	public static boolean isMining=false;
 
-	public String dataPath="F:\\TimeSeriesAnalysisdata\\parsePcap\\traffic\\10.0.13.2.txt";
-	public String rootPath = "E:\\57data\\parsePcap\\out\\rootDisapearEmerge";
+	public String dataPath="D:\\57data\\traffic";
+	public String rootPath = "D:\\57data\\node";
 
 	private MiningObject miningObject;
 	private TaskRange taskRange = TaskRange.SingleNodeRange;
@@ -35,12 +35,11 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Times);
 		miningObjectList.add(MiningObject.MiningObject_Traffic);
-		miningObjectList.add(MiningObject.MiningObject_NodeDisapearEmerge);
-		
+		if (minertype.equals("节点规律挖掘"))
+			miningObjectList.add(MiningObject.MiningObject_NodeDisapearEmerge);
+
 		List<MiningObject> miningObjectCheck = this.getMiningObjectsChecked();
-		miningObjectCheck.add(MiningObject.MiningObject_Times);
-		miningObjectCheck.add(MiningObject.MiningObject_Traffic);
-		miningObjectCheck.add(MiningObject.MiningObject_NodeDisapearEmerge);
+		miningObjectCheck.addAll(miningObjectList);
 	}
 	
 	public static SingleNodeOrNodePairMinerFactory getInstance(){
@@ -120,6 +119,8 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 		int granularity= Integer.parseInt(this.getGranularity());
 		if(taskRange.toString().equals(TaskRange.SingleNodeRange.toString())){
 			HashMap<String, DataItems> rawDataItems=null;
+			boolean isNodeDisapearEmerge = false;
+
 			switch (miningObject) {
 			case MiningObject_Traffic:
 				//rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath());
@@ -144,23 +145,26 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 				 * @author LYH
 				 * 用于测试读取时间区间数据，单节点挖掘
 				 * **/
-				Calendar cal3 = Calendar.getInstance();
+				/*Calendar cal3 = Calendar.getInstance();
 				Calendar cal4 = Calendar.getInstance();
 				cal3.set(2014, 9, 10, 0, 0, 0);
 				cal4.set(2014,10,1,0,0,0);
 				Date date3 = cal3.getTime();
-				Date date4 = cal4.getTime();
-				rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),false,date3,date4,3600);
+				Date date4 = cal4.getTime();*/
+				Date date3 = getStartDate();
+				Date date4 = getEndDate();
+				rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),true,date3,date4,3600);
 				break;
 			case MiningObject_NodeDisapearEmerge:
-				rawDataItems = reader.readEachNodeDisapearEmergeDataItems(dataFile.getAbsolutePath(),2);
+				rawDataItems = reader.readEachNodeDisapearEmergeDataItems(dataFile.getAbsolutePath(),3600);
+				isNodeDisapearEmerge = true;
 				break;
 			default:
 				break;
 			}
 			for(String protocol:rawDataItems.keySet()){
 				DataItems dataItems=rawDataItems.get(protocol);
-				if(!isDataItemSparse(dataItems)){
+				if(!isDataItemSparse(dataItems) || isNodeDisapearEmerge){
 					TaskCombination taskCombination=new TaskCombination();
 					taskCombination.setTaskRange(taskRange);
 					taskCombination.getTasks().add(generateTask(taskRange, granularity,

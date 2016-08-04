@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import com.sun.jna.platform.unix.X11.XClientMessageEvent.Data;
 
 import associationRules.ProtocolAssociationResult;
@@ -14,22 +15,24 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
-public class ProtocolAssMinerFactory {
+public class ProtocolAssMinerFactory extends MinerFactorySettings {
 	private static ProtocolAssMinerFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="./tasks1/";
+	public String dataPath="D:\\57data\\traffic";
 	private MiningObject miningObject;
+	private TaskRange taskRange = TaskRange.SingleNodeRange;
 	public static HashMap<String, HashMap<String, DataItems>> eachProtocolItems;
 	
 	ProtocolAssMinerFactory(){
+		super(MinerType.MiningType_ProtocolAssociation.toString());
+
+		List<MiningObject> miningObjectList = this.getMiningObjectList();
+		miningObjectList.add(MiningObject.MiningObject_Traffic);
+
+		List<MiningObject> miningObjectCheck = this.getMiningObjectsChecked();
+		miningObjectCheck.addAll(miningObjectList);
+
 		eachProtocolItems= new HashMap<String, HashMap<String,DataItems>>();
 	}
 	
@@ -54,12 +57,24 @@ public class ProtocolAssMinerFactory {
 		this.dataPath = dataPath;
 	}
 
+	public TaskRange getTaskRange() {
+		return taskRange;
+	}
+
+	public void setTaskRange(TaskRange taskRange) {
+		this.taskRange = taskRange;
+	}
+
 	public MiningObject getMiningObject() {
 		return miningObject;
 	}
 
 	public void setMiningObject(MiningObject miningObject) {
 		this.miningObject = miningObject;
+	}
+
+	public void reset(){
+		isMining=false;
 	}
 	
 	public void detect(){
