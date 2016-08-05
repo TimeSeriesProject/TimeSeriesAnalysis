@@ -5,9 +5,7 @@ import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettingTask;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettings;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.ProcessBarShow;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.*;
 import org.apache.commons.math3.analysis.function.Min;
 import org.apache.commons.math3.ml.neuralnet.Network;
 import org.jfree.data.gantt.Task;
@@ -185,14 +183,14 @@ public class win10_window extends JFrame {
 
     private void settingsWholeNetwork() {
         NetworkMinerFactory.getInstance();
-        DialogSettings dialog = new DialogSettings(NetworkFactory.getInstance(), "网络结构规律挖掘配置");
+        DialogSettings dialog = new DialogSettings(this, NetworkFactory.getInstance(), "网络结构规律挖掘配置");
         dialog.pack();
         dialog.setVisible(true);
     }
 
     private void settingsPath() {
         NetworkMinerFactory.getInstance();
-        DialogSettings dialog = new DialogSettings(PathMinerFactory.getInstance(), "承载路径规律挖掘配置");
+        DialogSettings dialog = new DialogSettings(this, PathMinerFactory.getInstance(), "承载路径规律挖掘配置");
         dialog.pack();
         dialog.setVisible(true);
     }
@@ -200,22 +198,30 @@ public class win10_window extends JFrame {
     private void settingsSingleNode() {
         NetworkMinerFactory.getInstance();
         SingleNodeOrNodePairMinerFactory.getInstance().setTaskRange(TaskRange.SingleNodeRange);
-        DialogSettings dialog = new DialogSettings(SingleNodeOrNodePairMinerFactory.getInstance(),"节点规律挖掘配置");
+//        DialogSettings dialog = new DialogSettings(SingleNodeOrNodePairMinerFactory.getInstance(),"节点规律挖掘配置");
+        DialogSettings dialog = new DialogSettings(this, SingleNodeOrNodePairMinerFactory.getInstance(), "结点");
+        /*DialogSettingTest dialog = new DialogSettingTest("节点");*/
         dialog.pack();
         dialog.setVisible(true);
+        /*JFrame jf = new JFrame();
+        DateTimePicker date = new DateTimePicker();
+        JPanel jp = date.getPane();
+        jf.add(jp);
+//        date.getDateTime();
+        jf.setVisible(true);*/
     }
 
     private void settingsNodePair() {
         NetworkMinerFactory.getInstance();
         SingleNodeOrNodePairMinerFactory.getPairInstance().setTaskRange(TaskRange.NodePairRange);
-        DialogSettings dialog = new DialogSettings(SingleNodeOrNodePairMinerFactory.getPairInstance(),"链路规律挖掘配置");
+        DialogSettings dialog = new DialogSettings(this, SingleNodeOrNodePairMinerFactory.getPairInstance(),"链路规律挖掘配置");
         dialog.pack();
         dialog.setVisible(true);
     }
 
     private void settingsProtocolAss() {
         NetworkMinerFactory.getInstance();
-        DialogSettings dialog = new DialogSettings(ProtocolAssMinerFactory.getInstance(), "多业务关联挖掘配置");
+        DialogSettings dialog = new DialogSettings(this, ProtocolAssMinerFactory.getInstance(), "多业务关联挖掘配置");
         dialog.pack();
         dialog.setVisible(true);
     }
