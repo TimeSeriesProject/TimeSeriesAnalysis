@@ -1275,13 +1275,14 @@ public class nodePairReader implements IReader {
 	public HashMap<String, DataItems> readEachProtocolTrafficDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
 		int timegran = timeGran/3600;
 		parseDateToHour pHour = new parseDateToHour(date1);
-		int start=pHour.getHour();
+		int start=0;
 		
 		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
 		String line=null;
 		List<Integer> indexs = new ArrayList<Integer>();
+		
 		while((line=textUtils.readByrow())!=null){
 			String[] items=line.split(",");
 			int timeSpan=Integer.parseInt(items[0]);			 
@@ -1290,9 +1291,17 @@ public class nodePairReader implements IReader {
 			if(isReadBetween==true){
 				if(time.compareTo(date1)<0||time.compareTo(date2)>0){
 					continue;
-				}	
+				}
+				start=pHour.getHour();
 			}
-			
+			/*if(timeSpan-start>0){
+				DataItems dataItems = new DataItems();
+				for(int i=start ;i<timeSpan;i++){
+					//对于读取的第一行行start之间添0
+					indexs.add(i-start);
+					dataItems.add1Data(parseTime((timeSpan-i)*3600), "0");
+				}
+			}*/
 			indexs.add(timeSpan-start);		
 							
 			String protocolItems=items[items.length-1];
@@ -1313,7 +1322,7 @@ public class nodePairReader implements IReader {
 						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
 						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
 						for(int j=preIndex+1;j<nowIndex;j++){
-							dataItems.add1Data(parseTime((j-start)*3600), "0");
+							dataItems.add1Data(parseTime((j+start)*3600), "0");
 						}
 					}
 					DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
@@ -1383,7 +1392,7 @@ public class nodePairReader implements IReader {
 	public HashMap<String, DataItems> readEachProtocolTimesDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
 		int timegran = timeGran/3600;
 		parseDateToHour pHour = new parseDateToHour(date1);
-		int start=pHour.getHour();
+		int start=0;
 		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
@@ -1402,6 +1411,7 @@ public class nodePairReader implements IReader {
 				if(time.compareTo(date1)<0 || time.compareTo(date2)>0){
 					continue;
 				}
+				start=pHour.getHour();
 			}	
 			indexs.add((timeSpan-start)/timegran);
 			String protocolItems=items[items.length-1];
@@ -1416,7 +1426,7 @@ public class nodePairReader implements IReader {
 						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
 						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
 						for(int j=preIndex+1;j<nowIndex;j++){
-							dataItems.add1Data(parseTime((j-start)*3600), "0");
+							dataItems.add1Data(parseTime((j+start)*3600), "0");
 						}
 					}
 					DataItems dataItems=protocolDataItems.get(protocol);
@@ -1492,7 +1502,7 @@ public class nodePairReader implements IReader {
 	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTrafficDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
 		int timegran = timeGran/3600;
 		parseDateToHour pHour = new parseDateToHour(date1);
-		int start=pHour.getHour();
+		int start=0;
 		HashMap<String, Map<String, DataItems>>ipPairProtocolDataItems=new HashMap<String, Map<String,DataItems>>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
@@ -1510,6 +1520,7 @@ public class nodePairReader implements IReader {
 				if(time.compareTo(date1)<0 || time.compareTo(date2)>0){
 					continue;
 				}
+				start=pHour.getHour();
 			}
 			indexs.add(timeSpan-start);
 			for(String protocol:eachProtocol){
@@ -1524,7 +1535,7 @@ public class nodePairReader implements IReader {
 							DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
 							DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
 							for(int j=preIndex+1;j<nowIndex;j++){
-								dataItems.add1Data(parseTime((j-start)*3600), "0");
+								dataItems.add1Data(parseTime((j+start)*3600), "0");
 							}
 						}
 						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
@@ -1602,7 +1613,7 @@ public class nodePairReader implements IReader {
 	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTimesDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
 		int timegran = timeGran/3600;
 		parseDateToHour pHour = new parseDateToHour(date1);
-		int start=pHour.getHour();
+		int start=0;
 		HashMap<String, Map<String, DataItems>>ipPairProtocolDataItems=new HashMap<String, Map<String,DataItems>>();
 		TextUtils textUtils=new TextUtils();
 		textUtils.setTextPath(filePath);
@@ -1621,6 +1632,7 @@ public class nodePairReader implements IReader {
 				if(time.compareTo(date1)<0 || time.compareTo(date2)>0){
 					continue;
 				}
+				start=pHour.getHour();
 			}	
 			indexs.add(timeSpan-start);
 			for(String protocol:eachProtocol){
@@ -1634,7 +1646,7 @@ public class nodePairReader implements IReader {
 							DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
 							DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
 							for(int j=preIndex+1;j<nowIndex;j++){
-								dataItems.add1Data(parseTime((j-start)*3600), "0");
+								dataItems.add1Data(parseTime((j+start)*3600), "0");
 							}
 						}
 						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
