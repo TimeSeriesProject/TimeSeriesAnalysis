@@ -5,16 +5,12 @@ import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.PathMinerFactory;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
-import com.toedter.calendar.JDateChooser;
-import com.toedter.calendar.JSpinnerDateEditor;
-import org.apache.commons.math3.analysis.function.Min;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,17 +43,20 @@ public class DialogSettings extends JDialog {
     private List<JCheckBox> methodCheckBoxes = new ArrayList<>();
 
     public DialogSettings(MinerFactorySettings factorySettings, String title){
+        this(null, factorySettings, title);
+    }
+    public DialogSettings(JFrame parentFrame, MinerFactorySettings factorySettings, String title) {
+        super(parentFrame, title, true);
+
         this.settings = factorySettings;
         this.settings.setModified(false);
         this.settings.setOnlyObjectModified(false);
         this.setTitle(title);
         setContentPane(contentPane);
-        setModal(true);
         getRootPane().setDefaultButton(buttonSave);
         initLayout();
         setData(factorySettings);
         addEventListener();
-
     }
 
     private void initLayout(){
@@ -225,8 +224,8 @@ public class DialogSettings extends JDialog {
     public void getData(MinerFactorySettings data) {
         data.setDataPath(dataPath.getText());
         data.setGranularity(fieldGranularity.getText());
-        data.setStartDate(startPicker.getDateTime());
-        data.setEndDate(endPicker.getDateTime());
+        /*data.setStartDate(startPicker.getDateTime());
+        data.setEndDate(endPicker.getDateTime());*/
         List<MiningObject> objectList = settings.getMiningObjectsChecked();
         objectList.clear();
         for (JCheckBox cb: objectCheckBoxes){
@@ -246,8 +245,8 @@ public class DialogSettings extends JDialog {
             return true;
         if (fieldGranularity.getText() != null ? !fieldGranularity.getText().equals(data.getGranularity()) : data.getGranularity() != null)
             return true;
-        if (!startPicker.getDateTime().equals(data.getStartDate()) || !endPicker.getDateTime().equals(data.getEndDate()))
-            return true;
+        /*if (!startPicker.getDateTime().equals(data.getStartDate()) || !endPicker.getDateTime().equals(data.getEndDate()))
+            return true;*/
 
         List<MiningObject> objectList = settings.getMiningObjectsChecked(); // 原已选checkBoxList
         settings.getMiningObjectsAdded().clear();

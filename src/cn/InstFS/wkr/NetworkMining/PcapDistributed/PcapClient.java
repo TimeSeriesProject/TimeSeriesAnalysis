@@ -14,7 +14,8 @@ public class PcapClient {
 
     private ClientInit clientInit = new ClientInit();
     private ArrayList<File> fileList = new ArrayList<File>();
-    private String filePath = "E:\\pppp";
+    private String DELIMITER = "\r\n";
+    private String filePath = "E:\\pcap";
     private String outPath = "E:\\57data";
     private String folderPath;
     private String folderName;
@@ -58,17 +59,25 @@ public class PcapClient {
         }
     }
 
-    private void getTaskList(String tasks, String filePath, String type) {
-        File ff = new File(filePath);
-        if (ff.isFile() && filePath.endsWith(type) && tasks.contains(ff.getName())) {
-            fileList.add(ff);
-        } else if (ff.isDirectory()) {
-            File[] files = ff.listFiles();
-            for (File f : files) {
-                getTaskList(tasks, f.getAbsolutePath(), type);
-            }
+    private void getTaskList(String tasks) {
+        String[] str = tasks.split(DELIMITER);
+        for (int i = 0; i < str.length; i++) {
+            File file = new File(filePath + "\\" + str[i]);
+            fileList.add(file);
         }
     }
+
+//    private void getTaskList(String tasks, String filePath, String type) {
+//        File ff = new File(filePath);
+//        if (ff.isFile() && filePath.endsWith(type) && tasks.contains(ff.getName())) {
+//            fileList.add(ff);
+//        } else if (ff.isDirectory()) {
+//            File[] files = ff.listFiles();
+//            for (File f : files) {
+//                getTaskList(tasks, f.getAbsolutePath(), type);
+//            }
+//        }
+//    }
 
     class ExeFirst2Step implements Runnable {
         String tasks;
@@ -84,7 +93,8 @@ public class PcapClient {
                     sendReady();//先发送Ready
                     tasks = clientInit.receiveData();//收到要完成的任务string
                     fileList.clear();//清空list
-                    getTaskList(tasks, filePath, type);//生成filelist
+//                    getTaskList(tasks, filePath, type);//生成filelist
+                    getTaskList(tasks);//生成filelist
                     pcapUtils = new PcapUtils();
                     pcapUtils.First2Step(fileList, outPath + count);//执行前两步每次在不同的文件夹下保存结果
                     System.out.println("执行完毕");
