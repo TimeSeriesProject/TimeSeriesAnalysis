@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -19,11 +21,14 @@ public class PcapServer {
     private ArrayList<String> fileNames = new ArrayList<String>();
     private ArrayList<String> allTasks = new ArrayList<String>();
     private HashMap<String, StringBuilder> tasksMap = new HashMap<String, StringBuilder>();
+    private ConcurrentHashMap<String, DataOutputStream> dosMap = new ConcurrentHashMap<String, DataOutputStream>();
     private String DELIMITER = "\r\n";
     private String outPath = "D:\\57data";
     private String fileName;
     private int BUF_LEN = 5 * 1024 * 1024;
     private int count = 0;//发送次数
+    private Lock recLock = new ReentrantLock();
+    private Condition recCon = recLock.newCondition();
 
 
     private Lock countLock = new ReentrantLock();
@@ -31,7 +36,7 @@ public class PcapServer {
 
     public static void main(String[] args) throws FileNotFoundException {
         PcapServer pcapServer = new PcapServer();
-        String filePath = "D:\\pppp";
+        String filePath = "D:\\pcap";
         pcapServer.genTasks(filePath, "pcap");
         for (int i = 0; i < pcapServer.allTasks.size(); i++) {
             System.out.println(pcapServer.allTasks.get(i));
@@ -137,11 +142,10 @@ public class PcapServer {
                         countLock.lock();
                         try {
                             if (count < allTasks.size()) {
-
-                                System.out.println("第" + count + "次发送" + allTasks.size());
                                 userClient.sendTask(allTasks.get(count));
+                                System.out.println("第" + count + "次已发送" + allTasks.size());
                                 count += 1;
-                                System.out.println("第" + count + "次即将开始");
+                                System.out.println("下一次：" + count);
                             }
                         } finally {
                             countLock.unlock();
@@ -152,7 +156,6 @@ public class PcapServer {
                     //接收文件
                     receiveResult(finalFolderPath);
 
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -160,6 +163,13 @@ public class PcapServer {
                 isConnected = false;
                 try {
                     userClient.close();
+                    for (Map.Entry<String, DataOutputStream> entry : dosMap.entrySet()) {
+                        try {
+                            entry.getValue().close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -176,7 +186,12 @@ public class PcapServer {
                 String receiveType = userClient.receiveMsg();
                 if (receiveType.equals("sendFile")) {
                     System.out.println("进入sendFile");
-                    receiveFile(finalFolderPath);//仅文件
+                    recLock.lock();
+                    try {
+                        receiveFile(finalFolderPath);//仅文件
+                    } finally {
+                        recLock.unlock();
+                    }
                 } else if (receiveType.equals("sendFolder")) {
                     System.out.println("进入sendFolder");
                     subFolder = userClient.receiveMsg();//发送方的selectFolderPath子目录
@@ -200,7 +215,14 @@ public class PcapServer {
                 fileName = userClient.receiveMsg();
                 String finalFilePath = outPath + File.separator + fileName;
                 System.out.println("finalFilePath: " + finalFilePath);
-                DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(finalFilePath, true)));
+
+                DataOutputStream dos;
+                if (!dosMap.containsKey(fileName)) {
+                    dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(finalFilePath, true)));
+                    dosMap.put(fileName, dos);
+                }
+                dos = dosMap.get(fileName);
+
                 length = userClient.receiveInt();
                 while (length > 0) {
                     userClient.receiveFullByte(receiveBuffer, 0, length);//read到length才返回，若用read，可能不到length就返回
