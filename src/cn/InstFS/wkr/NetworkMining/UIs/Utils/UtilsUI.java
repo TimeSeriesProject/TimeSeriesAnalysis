@@ -1,13 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.UIs.Utils;
 
-import java.awt.TrayIcon.MessageType;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import javax.swing.JOptionPane;
 
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.UIs.MainFrame;
 
 public class UtilsUI {

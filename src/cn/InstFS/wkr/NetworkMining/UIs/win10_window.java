@@ -1,28 +1,20 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
-import cn.InstFS.wkr.NetworkMining.Miner.*;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.*;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPath;
 import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.*;
-import org.apache.commons.math3.analysis.function.Min;
-import org.apache.commons.math3.ml.neuralnet.Network;
-import org.jfree.data.gantt.Task;
-import org.jvnet.substance.*;
-import org.jvnet.substance.border.StandardBorderPainter;
-import org.jvnet.substance.painter.StandardGradientPainter;
-import org.jvnet.substance.skin.NebulaBrickWallSkin;
-import org.jvnet.substance.skin.SubstanceBusinessBlackSteelLookAndFeel;
-import org.jvnet.substance.theme.SubstanceBottleGreenTheme;
-import org.jvnet.substance.title.MatteHeaderPainter;
 
 import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
 import java.util.List;
 import java.util.HashMap;
 

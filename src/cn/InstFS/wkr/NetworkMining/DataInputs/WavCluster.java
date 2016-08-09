@@ -300,6 +300,7 @@ public class WavCluster {
 	 */
 	public static SimpleKMeans Kmeans(ArrayList<ArrayList<Double>>instances,int clusternum,String fileName,boolean preserveOrder)
 	{
+		fileName = "./result/"+ fileName;
 		changesample2arff(instances,fileName+".arff");
 		//System.out.println(instances.size());
 		SimpleKMeans  kMeans= new SimpleKMeans(); 

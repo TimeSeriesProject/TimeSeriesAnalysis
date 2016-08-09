@@ -1,28 +1,17 @@
 package WaveletUtil;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import oracle.net.aso.i;
-
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import weka.core.pmml.jaxbbindings.Time;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.DataInputs.MergeSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.Pattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
-import cn.InstFS.wkr.NetworkMining.Miner.IMinerOM;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
 
 public class TEOPartern implements IMinerOM{
 	private DataItems dataItems;     //时间序列 

@@ -2,15 +2,13 @@ package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
 import java.awt.CardLayout;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JPanel;
 
 
 
-import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;

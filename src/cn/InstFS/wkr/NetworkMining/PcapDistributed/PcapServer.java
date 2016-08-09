@@ -1,6 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.PcapDistributed;
 
-import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 
 import java.io.*;
 import java.net.BindException;

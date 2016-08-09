@@ -3,16 +3,11 @@ package cn.InstFS.wkr.NetworkMining.TaskConfigure.UI;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Params.IParamsNetworkMining;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsPM;
-import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
-import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 
 import ec.tstoolkit.descriptors.EnhancedPropertyDescriptor;
 import ec.tstoolkit.descriptors.IObjectDescriptor;

@@ -2,17 +2,14 @@ package WaveletUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.DataInputs.MergeSegment;
-import cn.InstFS.wkr.NetworkMining.DataInputs.Pattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
-import cn.InstFS.wkr.NetworkMining.Miner.IMinerOM;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
 
 public class PointPatternDetection implements IMinerOM{
 

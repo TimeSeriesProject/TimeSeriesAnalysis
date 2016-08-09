@@ -1,19 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,21 +9,11 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import associationRules.ProtoclPair;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerProtocolResults;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerResultsFP_Line;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.SingleNodeOrNodePairMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
 //import associationRules.ProtoclPair;
 

@@ -1,26 +1,21 @@
 package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.*;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataInputUtils;
-import cn.InstFS.wkr.NetworkMining.Miner.*;
 //import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerTSA;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.NetworkMinerFM;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
-import java.awt.GridBagLayout;
-
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -30,10 +25,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import ec.nbdemetra.ws.WorkspaceItem.InnerComparator;
-
 import java.awt.GridLayout;
-import java.beans.PropertyVetoException;
 import java.util.Timer;
 
 public class PanelShowResultsFM extends JPanel implements IPanelShowResults {

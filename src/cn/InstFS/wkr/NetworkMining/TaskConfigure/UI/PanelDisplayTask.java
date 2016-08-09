@@ -1,34 +1,22 @@
 package cn.InstFS.wkr.NetworkMining.TaskConfigure.UI;
 
-import java.awt.BorderLayout;
-
 import javax.swing.*;
 
-import cn.InstFS.wkr.NetworkMining.Miner.MinerResults;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
-import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.PropertiesPanelFactory_wkr;
-import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsClass;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PanelCreateTask;
 
-import com.l2fprod.common.beans.editor.JCalendarDatePropertyEditor;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.l2fprod.common.propertysheet.PropertySheetTableModel;
-import com.l2fprod.common.swing.LookAndFeelTweaks;
 
 import ec.nbdemetra.ui.properties.l2fprod.CustomPropertyEditorRegistry;
 
-import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import java.util.Date;
-import java.util.Locale;
 
 public class PanelDisplayTask extends JPanel implements ITaskDisplayer{
 	//配置任务表

@@ -1,15 +1,17 @@
 package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
-import WaveletUtil.PointPatternDetection;
-import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
-import cn.InstFS.wkr.NetworkMining.Miner.*;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsOM;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPM;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsStatistics;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
-import org.eclipse.swt.widgets.Layout;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
@@ -17,7 +19,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
-import java.awt.geom.Arc2D;
 import java.util.*;
 import java.util.List;
 

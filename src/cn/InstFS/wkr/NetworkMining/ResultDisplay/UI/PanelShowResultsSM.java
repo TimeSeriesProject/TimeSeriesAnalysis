@@ -1,44 +1,20 @@
 package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
-import java.awt.BorderLayout;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JTree;
 
-import org.junit.Assert;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.NetworkMinerSM;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.Miner.*;
-import cn.InstFS.wkr.NetworkMining.Params.IParamsNetworkMining;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-import cn.InstFS.wkr.NetworkMining.UIs.MainFrame;
-import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
-import java.awt.GridBagLayout;
-
-import javax.swing.JLabel;
-
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.text.SimpleDateFormat;
 import java.util.*;
-
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.JButton;
 
 import java.awt.GridLayout;
 

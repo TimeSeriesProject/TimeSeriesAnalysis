@@ -1,25 +1,19 @@
 package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
-import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.jfree.data.xy.XYDataset;
 
-import cn.InstFS.wkr.NetworkMining.DataInputs.CWNetworkReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerResults;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 public class PanelShowResultsStatistics extends JPanel implements IPanelShowResults{

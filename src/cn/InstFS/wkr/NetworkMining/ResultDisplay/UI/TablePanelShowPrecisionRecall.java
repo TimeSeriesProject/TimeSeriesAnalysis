@@ -1,35 +1,21 @@
 package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.EventObject;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerResults;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerResultsSM;
+
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 
 import javax.swing.table.TableModel;
 

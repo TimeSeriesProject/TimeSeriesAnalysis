@@ -1,8 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.TaskConfigure.UI;
 
-import cn.InstFS.wkr.NetworkMining.Miner.MinerFactorySettings;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.PathMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.MinerFactorySettings;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.PathMinerFactory;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 

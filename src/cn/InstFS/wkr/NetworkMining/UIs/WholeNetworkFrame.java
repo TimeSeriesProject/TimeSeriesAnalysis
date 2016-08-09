@@ -9,13 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
@@ -30,21 +26,14 @@ import org.jvnet.substance.painter.StandardGradientPainter;
 import org.jvnet.substance.skin.SubstanceBusinessBlackSteelLookAndFeel;
 import org.jvnet.substance.title.MatteHeaderPainter;
 
-import cn.InstFS.wkr.NetworkMining.DataInputs.CWNetworkReader;
-import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerNodeResults;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.SingleNodeOrNodePairMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.ChartPanelShowNodeFrequence;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.ChartPanelShowTs;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
 public class WholeNetworkFrame extends JFrame{
 

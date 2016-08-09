@@ -1,17 +1,11 @@
 package cn.InstFS.wkr.NetworkMining.Results;
 
-import cn.InstFS.wkr.NetworkMining.Miner.MinerFactorySettings;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerNodeResults;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.MinerFactorySettings;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
-import cn.InstFS.wkr.NetworkMining.UIs.WholeNetworkFrame;
 //import com.sun.javafx.tk.Toolkit;
 //import com.sun.jmx.snmp.Timestamp;
 
 import java.io.*;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 

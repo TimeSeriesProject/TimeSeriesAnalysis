@@ -5,24 +5,16 @@ import java.awt.Insets;
 
 import javax.swing.JPanel;
 
-import cn.InstFS.wkr.NetworkMining.DataInputs.DataInputUtils;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
-
-import javax.swing.JCheckBox;
 /**
  * 该面板用于显示多类挖掘结果的通用性信息，如离散化节点、时间粒度、原始序列等
  * @author wangshen

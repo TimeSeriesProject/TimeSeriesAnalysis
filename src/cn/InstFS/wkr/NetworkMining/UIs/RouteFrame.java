@@ -4,8 +4,6 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 
-import java.awt.GridLayout;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSplitPane;
@@ -14,14 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.UIManager;
 
-import java.awt.FlowLayout;
 import java.awt.BorderLayout;
-
-import javax.swing.BoxLayout;
-
-import java.awt.CardLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 
 import javax.swing.JPopupMenu;
 import javax.swing.event.ChangeEvent;
@@ -29,17 +20,13 @@ import javax.swing.event.ChangeListener;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.border.StandardBorderPainter;
-import org.jvnet.substance.button.ClassicButtonShaper;
 import org.jvnet.substance.painter.StandardGradientPainter;
 import org.jvnet.substance.skin.SubstanceBusinessBlackSteelLookAndFeel;
-import org.jvnet.substance.skin.SubstanceSaharaLookAndFeel;
-import org.jvnet.substance.title.FlatTitlePainter;
 import org.jvnet.substance.title.MatteHeaderPainter;
 
 
-import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.SingleNodeOrNodePairMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;

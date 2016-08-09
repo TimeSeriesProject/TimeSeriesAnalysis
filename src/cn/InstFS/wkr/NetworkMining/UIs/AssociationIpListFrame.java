@@ -3,7 +3,6 @@ package cn.InstFS.wkr.NetworkMining.UIs;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -17,50 +16,36 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
-import oracle.net.aso.a;
-
-import org.apache.ibatis.annotations.Update;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.border.StandardBorderPainter;
 import org.jvnet.substance.painter.StandardGradientPainter;
 import org.jvnet.substance.skin.SubstanceBusinessBlackSteelLookAndFeel;
 import org.jvnet.substance.title.MatteHeaderPainter;
 
-import cn.InstFS.wkr.NetworkMining.Miner.MinerNodeResults;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerProtocolResults;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerResultsFP_Line;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.ProtocolAssMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.SingleNodeOrNodePairMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsFP_Line;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.ProtocolAssMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
 public class AssociationIpListFrame extends JFrame {
 

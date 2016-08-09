@@ -2,7 +2,7 @@ package cn.InstFS.wkr.NetworkMining.TaskConfigure;
 
 import java.util.EventListener;
 
-import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 
 public interface ITaskElementEventListener extends EventListener {
 	static int TASK_ADD = 1;

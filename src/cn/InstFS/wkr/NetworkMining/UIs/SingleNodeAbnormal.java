@@ -12,10 +12,10 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
-import cn.InstFS.wkr.NetworkMining.Miner.IResultsDisplayer;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerResults;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 public class SingleNodeAbnormal extends JPanel implements IResultsDisplayer{

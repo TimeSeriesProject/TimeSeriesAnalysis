@@ -1,46 +1,34 @@
 package cn.InstFS.wkr.NetworkMining.TaskConfigure;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.event.EventListenerList;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.OracleUtils;
-import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
-import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Params.IParamsNetworkMining;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsFP;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsPM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsPP;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
-import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsClass;
 
 public class TaskElement extends JDialog implements Serializable, Comparable<TaskElement>{
 	public static String PATH_TO_SAVE_TASKS = "./tasks/";

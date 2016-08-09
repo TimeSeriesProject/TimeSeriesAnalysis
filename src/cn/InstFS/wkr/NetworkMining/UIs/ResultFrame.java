@@ -1,78 +1,35 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.GridLayout;
-import java.awt.PopupMenu;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.awt.Color;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.border.StandardBorderPainter;
-import org.jvnet.substance.button.ClassicButtonShaper;
 import org.jvnet.substance.painter.StandardGradientPainter;
-import org.jvnet.substance.skin.BusinessBlackSteelSkin;
-import org.jvnet.substance.skin.FieldOfWheatSkin;
-import org.jvnet.substance.skin.MistAquaSkin;
-import org.jvnet.substance.skin.NebulaBrickWallSkin;
-import org.jvnet.substance.skin.SaharaSkin;
-import org.jvnet.substance.skin.SubstanceAutumnLookAndFeel;
 import org.jvnet.substance.skin.SubstanceBusinessBlackSteelLookAndFeel;
-import org.jvnet.substance.skin.SubstanceBusinessBlueSteelLookAndFeel;
-import org.jvnet.substance.skin.SubstanceBusinessLookAndFeel;
-import org.jvnet.substance.skin.SubstanceChallengerDeepLookAndFeel;
-import org.jvnet.substance.skin.SubstanceCremeCoffeeLookAndFeel;
-import org.jvnet.substance.skin.SubstanceCremeLookAndFeel;
-import org.jvnet.substance.skin.SubstanceEmeraldDuskLookAndFeel;
-import org.jvnet.substance.skin.SubstanceMagmaLookAndFeel;
-import org.jvnet.substance.skin.SubstanceSaharaLookAndFeel;
-import org.jvnet.substance.skin.SubstanceSkin;
-import org.jvnet.substance.theme.SubstanceBottleGreenTheme;
-import org.jvnet.substance.title.FlatTitlePainter;
 import org.jvnet.substance.title.MatteHeaderPainter;
-import org.jvnet.substance.utils.SubstanceConstants.ImageWatermarkKind;
-import org.jvnet.substance.watermark.SubstanceImageWatermark;
 
-import cn.InstFS.wkr.NetworkMining.Miner.INetworkMiner;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
-import cn.InstFS.wkr.NetworkMining.Miner.SingleNodeOrNodePairMinerFactory;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.IPanelShowResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.SingleNodeOrNodePairMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsFP;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsPM;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsPP;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsSM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
 public abstract class ResultFrame extends JFrame {
 

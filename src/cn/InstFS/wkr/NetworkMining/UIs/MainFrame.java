@@ -2,32 +2,23 @@ package cn.InstFS.wkr.NetworkMining.UIs;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsSM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogConfigTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.DialogSettingTask;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PanelConfigTask;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PanelListAllTasks;
 import cn.InstFS.wkr.NetworkMining.UIs.SimulationUIs.PanelControlSimulationTime;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
-
-import com.l2fprod.common.swing.LookAndFeelTweaks;
-import org.jfree.chart.JFreeChart;
 
 public class MainFrame extends JFrame {
 	public static MainFrame topFrame;

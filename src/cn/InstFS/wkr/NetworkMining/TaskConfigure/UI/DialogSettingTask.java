@@ -1,34 +1,11 @@
 package cn.InstFS.wkr.NetworkMining.TaskConfigure.UI;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.SimpleBeanInfo;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
 
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-
-import cn.InstFS.wkr.NetworkMining.UIs.Utils.PropertiesPanelFactory_wkr;
-import com.l2fprod.common.demo.PropertySheetMain;
-import com.l2fprod.common.demo.PropertySheetPage3;
-import com.l2fprod.common.propertysheet.DefaultProperty;
-import com.l2fprod.common.propertysheet.Property;
-import com.l2fprod.common.propertysheet.PropertySheetPanel;
-import com.l2fprod.common.propertysheet.PropertySheetTable;
-import com.l2fprod.common.propertysheet.PropertySheetTableModel;
-import com.l2fprod.common.swing.LookAndFeelTweaks;
-import com.l2fprod.common.util.ResourceManager;
-
-import ec.tstoolkit.design.IntValue;
 
 public class DialogSettingTask extends JDialog {
 

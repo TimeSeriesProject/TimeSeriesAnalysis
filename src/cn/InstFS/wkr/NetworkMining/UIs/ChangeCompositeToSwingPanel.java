@@ -1,26 +1,17 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
-import javax.swing.*;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import associationRules.ProtoclPair;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerProtocolResults;
-import cn.InstFS.wkr.NetworkMining.Miner.MinerResultsFP_Line;
-import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsFP_Line;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.util.HashMap;
-import java.util.List;
 
 public class ChangeCompositeToSwingPanel extends Panel {
 	DisplayThread displayThread;

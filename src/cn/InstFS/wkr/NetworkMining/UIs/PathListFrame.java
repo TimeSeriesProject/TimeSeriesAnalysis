@@ -1,8 +1,9 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
-import cn.InstFS.wkr.NetworkMining.Miner.*;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.PathMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPath;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import org.jvnet.substance.SubstanceLookAndFeel;
