@@ -23,12 +23,16 @@ public class DateTimePicker extends JPanel{
     private JDateChooser dateChooser;
     private JSpinner timeSpinner;
     public DateTimePicker() {
+        this(new Date());
+    }
+
+    public DateTimePicker(Date date) {
         dateChooser = new JDateChooser();
-        dateChooser.setDate(new Date());
+        dateChooser.setDate(date);
         timeSpinner = new JSpinner(new SpinnerDateModel());
         JSpinner.DateEditor editor = new JSpinner.DateEditor(timeSpinner, "HH:mm");
         timeSpinner.setEditor(editor);
-        timeSpinner.setValue(new Date());
+        timeSpinner.setValue(date);
         add(dateChooser);
         add(timeSpinner);
         dateChooser.addPropertyChangeListener(new PropertyChangeListener() {
