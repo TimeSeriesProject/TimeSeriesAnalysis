@@ -15,7 +15,7 @@ import java.util.List;
  * @author Arbor vlinyq@gmail.com
  * @date 2016/6/30
  */
-public abstract class MinerFactorySettings implements Serializable{
+public abstract class MinerFactorySettings {
     private String dataPath;
     private String minerType;
     private List<MiningObject> miningObjectList = new ArrayList<>();

@@ -1,16 +1,18 @@
 package cn.InstFS.wkr.NetworkMining.TaskConfigure.UI;
 
 import com.toedter.calendar.JDateChooser;
-import com.toedter.calendar.JSpinnerDateEditor;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -38,7 +40,6 @@ public class DateTimePicker extends JPanel{
         timeSpinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                String timeString = new SimpleDateFormat("HH-mm-ss").format(((Date) timeSpinner.getValue()).getTime());
                 System.out.println(getDateTime());
             }
         });
@@ -60,11 +61,42 @@ public class DateTimePicker extends JPanel{
         return dateTime;
     }
 
+    private void writeObject(ObjectOutputStream s){
+        try {
+            s.defaultWriteObject();
+            s.writeObject(timeSpinner);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String args[]) {
         JFrame jf = new JFrame();
         DateTimePicker date = new DateTimePicker();
         jf.add(date);
 //        date.getDateTime();
         jf.setVisible(true);
+
+        try {
+            FileOutputStream fileOut = new FileOutputStream("datepicker");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(date);
+            out.close();
+            fileOut.close();
+            System.out.println("序列化保存");
+        } catch (IOException i) {
+            i.printStackTrace();
+        }
+
+    }
+}
+
+class JChooser extends JDateChooser implements Serializable{
+    public JChooser() {
+        super();
+    }
+
+    private void writeObject(final ObjectOutputStream s){
+
     }
 }
