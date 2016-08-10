@@ -3,15 +3,20 @@ package lineAssociation;
 
 import java.util.TreeMap;
 
+import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleLineParams;
+
 /**
  * Created by xzbang on 2016/1/18.
  */
 public class ClusterWrapper {
     private TreeMap<Integer,Linear> linears;
     private double[][] distancesInput; //DP-Cluster数据输入，半角矩阵
-
-    public ClusterWrapper(TreeMap<Integer,Linear> linears){
+    AssociationRuleLineParams arp = null;
+    public ClusterWrapper(TreeMap<Integer,Linear> linears, AssociationRuleLineParams arp){
         this.linears = linears;
+        if(arp != null){
+        	this.arp = arp;
+        }
     }
 
     /**
@@ -77,7 +82,7 @@ public class ClusterWrapper {
     public DPCluster run(){
         normalize();
         computeDistancesInput();
-        DPCluster dpCluster = new DPCluster(distancesInput);
+        DPCluster dpCluster = new DPCluster(distancesInput,arp);
         dpCluster.run();
         return dpCluster;
     }

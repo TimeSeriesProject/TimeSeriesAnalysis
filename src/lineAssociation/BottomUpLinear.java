@@ -5,6 +5,8 @@ import java.util.TreeMap;
 
 import org.jnetpcap.util.Length;
 
+import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleLineParams;
+
 /**
  * Created by xzbang on 2015/12/29.
  */
@@ -22,9 +24,12 @@ public class BottomUpLinear {
         this.datas = datas;
     }
 
-    public BottomUpLinear(TreeMap<Integer, Double> datas, double mergerPrice){
+    public BottomUpLinear(TreeMap<Integer, Double> datas, AssociationRuleLineParams arp){
         this.datas = datas;
-        this.mergerPrice = mergerPrice;
+        if(arp != null){
+        	mergerPrice = arp.getMergerPrice();
+        	compressionRatio = arp.getCompressionRatio();
+        }
     }
 
     public void run(){

@@ -97,7 +97,7 @@ public class LineProtocolAssociation {
 
 
 		        System.out.println("开始运行DPCluster聚类算法！");
-		        ClusterWrapper clusterWrapper = new ClusterWrapper(linears);
+		        ClusterWrapper clusterWrapper = new ClusterWrapper(linears,null);
 		        DPCluster dpCluster = clusterWrapper.run();
 		        System.out.println("DPCluster聚类算法计算完毕！");
 		        System.out.println("***************************************************");

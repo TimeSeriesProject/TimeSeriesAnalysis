@@ -135,15 +135,15 @@ class ProtocolMinerTask extends TimerTask{
 		for(TaskElement task:tasks){
 			switch (task.getMiningMethod()) {
 			case MiningMethods_FrequenceItemMining:
-				ProtocolAssociationLine pal = new ProtocolAssociationLine(eachProtocolItems);
+				ProtocolAssociationLine pal = new ProtocolAssociationLine(eachProtocolItems,null);
 				protocolAssResult.setRetFP(pal.miningAssociation());
 				break;
 			case MiningMethods_SimilarityMining:
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_SimilarityProtocolASS)){
-					ProtocolAssociation pa=new ProtocolAssociation(eachProtocolItems, 5,1);
+					ProtocolAssociation pa=new ProtocolAssociation(eachProtocolItems, null);
 					protocolAssResult.setRetSim(pa.miningAssociation());
 				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_RtreeProtocolASS)){
-					ProtocolAssRtree rTreePa=new ProtocolAssRtree(eachProtocolItems);
+					ProtocolAssRtree rTreePa=new ProtocolAssRtree(eachProtocolItems); //没有参数
 					protocolAssResult.setRetSim(rTreePa.miningAssociation());
 				}
 				results.setRetProtocol(protocolAssResult);

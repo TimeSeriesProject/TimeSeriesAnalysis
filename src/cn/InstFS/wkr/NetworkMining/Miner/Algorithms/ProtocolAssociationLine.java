@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.ibatis.jdbc.Null;
+
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 //import test.ProtocolAssociationTest;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsFP_Line;
+import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleLineParams;
 import lineAssociation.BottomUpLinear;
 import lineAssociation.ClusterWrapper;
 import lineAssociation.DPCluster;
@@ -22,6 +25,7 @@ import associationRules.ProtoclPair;
 
 public class ProtocolAssociationLine {
 
+	AssociationRuleLineParams arp = null;
 	/**
 	public static void main(String[] args)
 	{
@@ -31,9 +35,10 @@ public class ProtocolAssociationLine {
 	}
 	*/
 	HashMap<String,ArrayList<ProtocolDataItems>> ip_proData ;
-	public ProtocolAssociationLine(HashMap<String,ArrayList<ProtocolDataItems>> pdi){
+	public ProtocolAssociationLine(HashMap<String,ArrayList<ProtocolDataItems>> pdi,AssociationRuleLineParams arp){
 		
 		ip_proData = new HashMap<String,ArrayList<ProtocolDataItems>>();
+		this.arp = arp;
 	}
 	/**
 	 * 传递ip_protocol_dataItems的数据格式。
@@ -41,9 +46,10 @@ public class ProtocolAssociationLine {
 	 * @param thresh
 	 * @param flag
 	 */
-	public ProtocolAssociationLine(Map<String,HashMap<String,DataItems>> data)
+	public ProtocolAssociationLine(Map<String,HashMap<String,DataItems>> data,AssociationRuleLineParams arp)
 	{
 		ip_proData = new HashMap<String,ArrayList<ProtocolDataItems>>();
+		this.arp = arp;
 		convertData(data);
 		
 	}
@@ -78,13 +84,13 @@ public class ProtocolAssociationLine {
 				TreeMap<Integer,Double> sourceData_i = convertDataToTreeMap(proDataList.get(i));
 				System.out.println("开始运行自底向上线段拟合算法！");
 //				System.out.println("***"+sourceData_i);
-		        BottomUpLinear bottomUpLinear_i = new BottomUpLinear(sourceData_i);
+		        BottomUpLinear bottomUpLinear_i = new BottomUpLinear(sourceData_i,arp);
 		        bottomUpLinear_i.run();
 		        TreeMap<Integer, Linear> linears = bottomUpLinear_i.getLinears();  //linears的格式为:key:线段其实位置，Linear：span表示该线段的长度
 		        linesPosList.add(linears);  
 		        System.out.println("**"+linears);
 		        System.out.println("开始运行DPCluster聚类算法！");
-		        ClusterWrapper clusterWrapper_i = new ClusterWrapper(linears);
+		        ClusterWrapper clusterWrapper_i = new ClusterWrapper(linears,arp);
 		        DPCluster dpCluster_i = clusterWrapper_i.run();
 		        Map<Integer,Integer> map_i = dpCluster_i.getBelongClusterCenter();
 		        TreeMap<Integer,SymbolNode> symbols_i = getSymbols(map_i,i); 

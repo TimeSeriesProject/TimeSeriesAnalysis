@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsFP_Whole;
+import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleSimilarityParams;
 //import test.ProtocolAssociationTest;
 import associationRules.ProtocolAssociationResult;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -33,7 +34,8 @@ public class ProtocolAssociation {
 //	}
 	
 	double[] supportThresh = {0.4,10};
-	int bias = 0;
+	int actualBias = 0;
+	int bias = 10;  //指定能错开的数据点的个数
 	int whichAlogrithm = 1;
 	String path = "D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\DiplomaProject\\data\\MyResult";
 	String currentPath = "";
@@ -43,11 +45,17 @@ public class ProtocolAssociation {
 	 * @param pdi
 	 * @param thresh
 	 */
-	public ProtocolAssociation(HashMap<String,ArrayList<ProtocolDataItems>> pdi,double thresh)
+	public ProtocolAssociation(HashMap<String,ArrayList<ProtocolDataItems>> pdi,AssociationRuleSimilarityParams arp)
 	{
 		ip_proData = pdi;
 		ip_proData = new HashMap<String,ArrayList<ProtocolDataItems>>();
-		setThresh(thresh,0.5);   //默认支持度阈值为0.5
+		if(arp != null){
+			
+			supportThresh = arp.getSupportThresh();
+			bias = arp.getBias();
+			whichAlogrithm = arp.getWhichAlogrithm();
+		}
+//		setThresh(thresh,0.5);   //默认支持度阈值为0.5
 	}
 	/**
 	 * 传递ip_protocol_dataItems的数据格式。
@@ -55,13 +63,15 @@ public class ProtocolAssociation {
 	 * @param thresh
 	 * @param flag
 	 */
-	public ProtocolAssociation(Map<String,HashMap<String,DataItems>> data,double thresh,int which)
+	public ProtocolAssociation(Map<String,HashMap<String,DataItems>> data,AssociationRuleSimilarityParams arp)
 	{
 		ip_proData = new HashMap<String,ArrayList<ProtocolDataItems>>();
 		convertData(data);
-		setWhichAlogrithm(which,1);
-		setThresh(-1,0.5);
-		
+		if(arp != null){
+			supportThresh = arp.getSupportThresh();
+			bias = arp.getBias();
+			whichAlogrithm = arp.getWhichAlogrithm();
+		}
 	}
 	
 	
@@ -136,14 +146,14 @@ public class ProtocolAssociation {
 		//自创方法
 		if(whichAlogrithm == 1)
 		{
-			bias = 0;
-			for(int k = 0;k < 10;k += 2)
+			
+			for(int k = 0;k < bias;k += 2)
 			{
 				double thresh = biasAssociation(data1,data2,k);
 				if(thresh > maxThresh)
 				{
 					maxThresh = thresh;
-					bias = k;
+					actualBias = k;
 				}
 			}
 		}
