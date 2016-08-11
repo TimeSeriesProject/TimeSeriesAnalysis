@@ -81,7 +81,7 @@ public class PropertyUI_MiningParamsOM implements IObjectDescriptor<ParamsOM>{
             return str;
     }
 
-    public Double getPeriodThreshold(){
+   /* public Double getPeriodThreshold(){
         return core.getPeriodThreshold();
     }
     public Double getOutlierThreshold() {
@@ -143,5 +143,5 @@ public class PropertyUI_MiningParamsOM implements IObjectDescriptor<ParamsOM>{
     public void setAmplitudeRatio(double amplitudeRatio) {
         core.setAmplitudeRatio(amplitudeRatio);
     }
-
+*/
 }

@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
 
 /**
  * Created by xzbang on 2015/3/24.
@@ -30,7 +31,13 @@ public class AnormalyDetection implements IMinerOM {
     	this.k = k;
     	this.di=di;
     }
-    
+    public AnormalyDetection(OMGuassianParams omGuassianParams,DataItems di){
+    	this.initWindowSize = omGuassianParams.getInitWindowSize();
+    	this.maxWindowSize=omGuassianParams.getMaxWindowSize();
+    	this.expWindowSize = omGuassianParams.getExpWindowSize();
+    	this.k = omGuassianParams.getWindowVarK();
+    	this.di=di;
+    }
     @Override
     public void TimeSeriesAnalysis() {
     	if(di==null){

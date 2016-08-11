@@ -12,6 +12,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.Pattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMTEOParams;
 
 public class TEOPartern implements IMinerOM{
 	private DataItems dataItems;     //时间序列 
@@ -39,6 +40,13 @@ public class TEOPartern implements IMinerOM{
 	}
 	
 	public TEOPartern(){outlies=new DataItems();}
+	
+	public TEOPartern(OMTEOParams omteoParams,DataItems di){
+		this.densityK = omteoParams.getNeighborK();
+		this.mergeThreshold = omteoParams.getMergeThreshold();
+		this.dataItems = di;
+		outlies=new DataItems();
+	}
 	/**
 	 * 通过从底至顶的方法生成线段模型
 	 * @return 线段模型

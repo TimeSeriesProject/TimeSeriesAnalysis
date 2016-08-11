@@ -19,6 +19,11 @@ public class ParamsAPI {
 	 * 陈维
 	 */
 	private PcapParseParams pcapParseParams;
+	/**
+	 * 异常检测参数
+	 * LYH
+	 */
+	ParamsOM pom = null;
 	
 	public String getRootPath() {
 		return rootPath;
@@ -42,6 +47,13 @@ public class ParamsAPI {
 
 	public void setPcapParseParams(PcapParseParams pcapParseParams) {
 		this.pcapParseParams = pcapParseParams;
+	}
+
+	public ParamsOM getPom() {
+		return pom;
+	}
+	public void setPom(ParamsOM pom) {
+		this.pom = pom;
 	}
 	
 	
