@@ -1,5 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.Params;
 
+import cn.InstFS.wkr.NetworkMining.Params.PcapParseParams.PcapParseParams;
+
 
 public class ParamsAPI {
 
@@ -12,7 +14,11 @@ public class ParamsAPI {
 	 * author:艾长青
 	 */
 	ParamsAR par = null; 
-	
+	/**
+	 * pcap包解析参数
+	 * 陈维
+	 */
+	private PcapParseParams pcapParseParams;
 	
 	public String getRootPath() {
 		return rootPath;
@@ -30,6 +36,14 @@ public class ParamsAPI {
 		this.par = par;
 	}
 
+	public PcapParseParams getPcapParseParams() {
+		return pcapParseParams;
+	}
+
+	public void setPcapParseParams(PcapParseParams pcapParseParams) {
+		this.pcapParseParams = pcapParseParams;
+	}
+	
 	
 	
 }
