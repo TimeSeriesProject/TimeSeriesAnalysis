@@ -1,5 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams;
 
+import org.jdom.*;
+
 public class AssociationRuleLineParams {
 
 	/**
@@ -17,6 +19,39 @@ public class AssociationRuleLineParams {
     private double gaosi = 3;//聚类中心线自动确定方法选择高斯分布方法时有效，表示中心线距离均值gaosi倍标准差（一般gaosi = 3）
     private boolean multiOrMin = false;//求gamma时采用相乘或求最小的方式(true表示相乘，false表示求最小)
     
+    public AssociationRuleLineParams(Element paramsConfig){
+    	
+    	String param = "";
+    	param = paramsConfig.getChildText("mergerPrice");
+    	if(param != null){
+    		mergerPrice = Double.parseDouble(param);
+    	}
+    	param = paramsConfig.getChildText("compressionRatio");
+    	if(param != null){
+    		compressionRatio = Double.parseDouble(param);
+    	}
+    	param = paramsConfig.getChildText("t");
+    	if(param != null){
+    		t = Double.parseDouble(param);
+    	}
+    	param = paramsConfig.getChildText("centerLine");
+    	if(param != null){
+    		centerLine = Double.parseDouble(param);
+    	}
+    	param = paramsConfig.getChildText("way");
+    	if(param != null){
+    		way = Integer.parseInt(param);
+    	}
+    	param = paramsConfig.getChildText("gaosi");
+    	if(param != null){
+    		gaosi = Double.parseDouble(param);
+    	}
+    	param = paramsConfig.getChildText("multiOrMin");
+    	if(param != null){
+    		multiOrMin = Boolean.parseBoolean(param);
+    	}
+    	
+    }
     public double getMergerPrice() {
 		return mergerPrice;
 	}
