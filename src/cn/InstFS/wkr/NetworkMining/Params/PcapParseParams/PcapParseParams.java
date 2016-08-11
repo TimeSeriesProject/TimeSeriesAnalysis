@@ -2,14 +2,15 @@ package cn.InstFS.wkr.NetworkMining.Params.PcapParseParams;
 
 public class PcapParseParams {
 	
-	private String pacapPath;
+	private String pcapPath;
 	private String outputPath;
 	
-	public String getPacapPath() {
-		return pacapPath;
+	
+	public String getPcapPath() {
+		return pcapPath;
 	}
-	public void setPacapPath(String pacapPath) {
-		this.pacapPath = pacapPath;
+	public void setPcapPath(String pcapPath) {
+		this.pcapPath = pcapPath;
 	}
 	public String getOutputPath() {
 		return outputPath;
