@@ -1,5 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.Params.OMParams;
 
+import org.jdom.Element;
+
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
 public class OMGuassianParams {
@@ -8,7 +10,28 @@ public class OMGuassianParams {
     private int maxWindowSize = 60;//最大窗口大小
     private int expWindowSize = 3;//扩展窗口大小
     private double windowVarK=3.0;//异常标准差倍数阈值 |Xi - mean|/std < windowVarK
-       
+    public OMGuassianParams(Element paramsConfig){
+    	String param = "";
+    	param = paramsConfig.getChildText("initWindowSize");
+    	if(param != null){
+    		initWindowSize = Integer.parseInt(param);
+    	}
+    	
+    	param = paramsConfig.getChildText("maxWindowSize");
+    	if(param != null){
+    		maxWindowSize = Integer.parseInt(param);
+    	}
+    	
+    	param = paramsConfig.getChildText("expWindowSize");
+    	if(param != null){
+    		expWindowSize = Integer.parseInt(param);
+    	}
+    	
+    	param = paramsConfig.getChildText("windowVarK");
+    	if(param != null){
+    		windowVarK = Integer.parseInt(param);
+    	}
+    }
     public int getInitWindowSize() {
         return initWindowSize;
     }
