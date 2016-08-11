@@ -22,6 +22,7 @@ public class GlobalConfig {
     private String pmParamPath; //周期参数文件路径
     private String omParamPath; //异常参数文件路径
     private String arParamPath; //关联规则参数文件路径
+    private String pcapParseParamPath; //pcap解析参数文件路径
 
     private GlobalConfig() {
         Element config = getRootElement();
@@ -53,6 +54,7 @@ public class GlobalConfig {
         pmParamPath = config.getChildText("pmParamPath");
         omParamPath = config.getChildText("omParamPath");
         arParamPath = config.getChildText("arParamPath");
+        pcapParseParamPath = config.getChildText("pcapParseParamPath");
     }
 
     public String getConfigPath() {
@@ -101,6 +103,14 @@ public class GlobalConfig {
 
     public void setArParamPath(String arParamPath) {
         this.arParamPath = arParamPath;
+    }
+
+    public String getPcapParseParamPath() {
+        return pcapParseParamPath;
+    }
+
+    public void setPcapParseParamPath(String pcapParseParamPath) {
+        this.pcapParseParamPath = pcapParseParamPath;
     }
 
     public static void main (String[] args) {

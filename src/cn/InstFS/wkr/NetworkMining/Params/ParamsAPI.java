@@ -2,8 +2,13 @@ package cn.InstFS.wkr.NetworkMining.Params;
 
 import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleLineParams;
 import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleSimilarityParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMFastFourierParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMPiontPatternParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMTEOParams;
 import cn.InstFS.wkr.NetworkMining.Params.PcapParseParams.PcapParseParams;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.GlobalConfig;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -77,6 +82,11 @@ public class ParamsAPI {
 	}
 
 	public PcapParseParams getPcapParseParams() {
+		if (pcapParseParams == null) {
+			String pcapParseParamsPath = GlobalConfig.getInstance().getPcapParseParamPath();
+			Element pcapParam = getRootElement(pcapParseParamsPath);
+			pcapParseParams = new PcapParseParams(pcapParam);
+		}
 		return pcapParseParams;
 	}
 
@@ -85,6 +95,25 @@ public class ParamsAPI {
 	}
 
 	public ParamsOM getPom() {
+		if (paramsOutlierMiner == null) {
+			String outlierParamsPath = GlobalConfig.getInstance().getOmParamPath();
+			Element outlierParams = getRootElement(outlierParamsPath);
+			paramsOutlierMiner = new ParamsOM();
+
+			Element fastFourierParams = outlierParams.getChild("fastFourierParams");
+			OMFastFourierParams fastFourier = new OMFastFourierParams(fastFourierParams);
+			Element gaussianParams = outlierParams.getChild("gaussianParams");
+			OMGuassianParams gaussian = new OMGuassianParams(gaussianParams);
+			Element pointPatternParams = outlierParams.getChild("pointPatternParams");
+			OMPiontPatternParams pointPattern = new OMPiontPatternParams(pointPatternParams);
+			Element TEOParams = outlierParams.getChild("TEOParams");
+			OMTEOParams teo = new OMTEOParams(TEOParams);
+
+			paramsOutlierMiner.setOmFastFourierParams(fastFourier);
+			paramsOutlierMiner.setOmGuassianParams(gaussian);
+			paramsOutlierMiner.setOmPiontPatternParams(pointPattern);
+			paramsOutlierMiner.setOmteoParams(teo);
+		}
 		return paramsOutlierMiner;
 	}
 	public void setPom(ParamsOM pom) {

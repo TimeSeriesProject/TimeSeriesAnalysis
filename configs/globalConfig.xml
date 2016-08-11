@@ -3,6 +3,7 @@
     <dataPath>D:\57data</dataPath>
     <granularityList>1,2,4,8,16,24</granularityList>
     <pmParamPath>./configs/pmParam.xml</pmParamPath>
-    <omParamPath>./configs/omParam.xml</omParamPath>
-    <arParamPath>./configs/arParam.xml</arParamPath>
+    <omParamPath>./configs/outlierMinerParams.xml</omParamPath>
+    <arParamPath>./configs/associationRuleParam.xml</arParamPath>
+    <pcapParseParamPath>./configs/pcapParseParams.xml</pcapParseParamPath>
 </config>
