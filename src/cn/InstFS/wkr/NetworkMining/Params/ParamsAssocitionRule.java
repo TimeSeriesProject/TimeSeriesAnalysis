@@ -4,7 +4,7 @@ import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleL
 import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleSimilarityParams;
 import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssocitionRuleRTreeParams;
 
-public class ParamsAR {
+public class ParamsAssocitionRule {
 
 	AssociationRuleLineParams arlp = null;
 	AssociationRuleSimilarityParams arsp = null;

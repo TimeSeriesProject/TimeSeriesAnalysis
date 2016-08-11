@@ -13,7 +13,7 @@ public class ParamsAPI {
 	 * 关联规则相关参数
 	 * author:艾长青
 	 */
-	ParamsAR par = null; 
+	ParamsAssocitionRule paramsAssocitionRule = null; 
 	/**
 	 * pcap包解析参数
 	 * 陈维
@@ -23,7 +23,7 @@ public class ParamsAPI {
 	 * 异常检测参数
 	 * LYH
 	 */
-	ParamsOM pom = null;
+	ParamsOM paramsOutlierMiner = null;
 	
 	public String getRootPath() {
 		return rootPath;
@@ -33,12 +33,12 @@ public class ParamsAPI {
 		this.rootPath = rootPath;
 	}
 
-	public ParamsAR getAssociationRuleParams() {
-		return par;
+	public ParamsAssocitionRule getAssociationRuleParams() {
+		return paramsAssocitionRule;
 	}
 
-	public void setAssociationRuleParams(ParamsAR par) {
-		this.par = par;
+	public void setAssociationRuleParams(ParamsAssocitionRule par) {
+		this.paramsAssocitionRule = par;
 	}
 
 	public PcapParseParams getPcapParseParams() {
@@ -50,10 +50,10 @@ public class ParamsAPI {
 	}
 
 	public ParamsOM getPom() {
-		return pom;
+		return paramsOutlierMiner;
 	}
 	public void setPom(ParamsOM pom) {
-		this.pom = pom;
+		this.paramsOutlierMiner = pom;
 	}
 	
 	
