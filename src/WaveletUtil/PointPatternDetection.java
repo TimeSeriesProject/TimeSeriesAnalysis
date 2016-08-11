@@ -10,13 +10,15 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMPiontPatternParams;
 
 public class PointPatternDetection implements IMinerOM{
 
 	private DataItems dataItems;     //时间序列 
 	private List<SegPattern> patterns;   //TEO 线段模式
-	private int densityK;
-	private int neighborK;
+	private int densityK;//序列线段化时，找极值点的参数
+	private double patternThreshold ;
+	private int neighborK;//计算模式P的K-邻域中的k
 	private DataItems outlies;
 	
 	public PointPatternDetection(DataItems dataItems,int densityK,int neghborK){
@@ -28,6 +30,13 @@ public class PointPatternDetection implements IMinerOM{
 	
 	public PointPatternDetection(){outlies=new DataItems();}
 	
+	public  PointPatternDetection(OMPiontPatternParams omPiontPatternParams,DataItems di) {
+		this.dataItems=di;
+		this.densityK=omPiontPatternParams.getDensityK();
+		this.neighborK=omPiontPatternParams.getDensityK();
+		this.patternThreshold = omPiontPatternParams.getPatternThreshold();
+		outlies=new DataItems();
+	}
 	/**
 	 * 检测异常
 	 * @return
@@ -181,7 +190,8 @@ public class PointPatternDetection implements IMinerOM{
 	
 	@Override
 	public void TimeSeriesAnalysis() {
-		PointSegment segment=new PointSegment(dataItems, densityK);
+		//PointSegment segment=new PointSegment(dataItems, densityK);
+		PointSegment segment=new PointSegment(dataItems, densityK,patternThreshold);
 		patterns=segment.getPatterns();
 		outliesDectation();
 		System.out.println("");

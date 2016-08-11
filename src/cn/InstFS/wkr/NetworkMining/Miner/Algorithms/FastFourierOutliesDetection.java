@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMFastFourierParams;
+
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
@@ -20,6 +22,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
     private static double[] denoisedslicezz;
     private static double varK = 3.0;
     private static double amplitudeRatio = 0.8;
+    private static double sizeK = 8; //每段数据的长度len = 2^sizeK
     private DataItems di;
     private DataItems outlies;
     
@@ -31,7 +34,17 @@ public class FastFourierOutliesDetection implements IMinerOM {
     public FastFourierOutliesDetection(){
     	outlies=new DataItems();
     }
-    
+    public FastFourierOutliesDetection(OMFastFourierParams omFastFourierParams){
+    	this.varK = omFastFourierParams.getVarK();
+    	this.amplitudeRatio = omFastFourierParams.getAmplitudeRatio();
+    	this.sizeK = omFastFourierParams.getSizeK();
+    }
+    public FastFourierOutliesDetection(OMFastFourierParams omFastFourierParams,DataItems di){
+    	this.varK = omFastFourierParams.getVarK();
+    	this.amplitudeRatio = omFastFourierParams.getAmplitudeRatio();
+    	this.sizeK = omFastFourierParams.getSizeK();
+    	this.di = di;
+    }
 
     public Complex[] FFT(List<String> data) {
     	int size = data.size();
@@ -181,12 +194,12 @@ public class FastFourierOutliesDetection implements IMinerOM {
 		List<Date> time = di.getTime();
 		List<Date> timeSlice = new ArrayList<Date>();
 		int size = data.size();
-		for(int i=0;i<((int)(size/Math.pow(2, 8)));i++){
+		for(int i=0;i<((int)(size/Math.pow(2, sizeK)));i++){
 			dataSlice.clear();
 			timeSlice.clear();
-			for(int j=0;j<Math.pow(2, 8);j++){
-				dataSlice.add(data.get(i*(int)Math.pow(2, 8)+j));
-				timeSlice.add(time.get(i*(int)Math.pow(2, 8)+j));
+			for(int j=0;j<Math.pow(2, sizeK);j++){
+				dataSlice.add(data.get(i*(int)Math.pow(2, sizeK)+j));
+				timeSlice.add(time.get(i*(int)Math.pow(2, sizeK)+j));
 			}
 			DataItems prediction_curTime = null;
 			curData= FFTfilter(dataSlice,amplitudeRatio);
@@ -199,7 +212,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
 		DataItems prediction_curTime = new DataItems();
 		dataSlice.clear();
 		timeSlice.clear();
-		for(int i=(int)(size-Math.pow(2, 8));i<size;i++){
+		for(int i=(int)(size-Math.pow(2, sizeK));i<size;i++){
 			dataSlice.add(data.get(i));
 			timeSlice.add(time.get(i));
 		}

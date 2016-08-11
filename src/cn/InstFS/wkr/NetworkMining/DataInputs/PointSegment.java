@@ -13,6 +13,7 @@ public class PointSegment {
 
 	private DataItems dataItems;
 	private int ratio;
+	private double patternThreshold;
 	private ArrayList<Integer> pointsIndex;
 	private int length;
 	private List<SegPattern> patterns;
@@ -21,6 +22,15 @@ public class PointSegment {
 	public PointSegment(DataItems dataItems,int ratio){
 		this.dataItems=dataItems;
 		this.ratio=ratio;
+		length=dataItems.getLength();
+		pointsIndex=new ArrayList<Integer>();
+		patterns=new ArrayList<SegPattern>();
+		setItemStd(dataItems);
+	}
+	public PointSegment(DataItems dataItems,int ratio,double patternThreshold){
+		this.dataItems=dataItems;
+		this.ratio=ratio;
+		this.patternThreshold = patternThreshold;
 		length=dataItems.getLength();
 		pointsIndex=new ArrayList<Integer>();
 		patterns=new ArrayList<SegPattern>();
@@ -177,12 +187,12 @@ public class PointSegment {
 			if(getItem(i)<getItem(iMin))
 				iMin=i;
 			if(std>1){
-				if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-0.1*getItem(i))>=getItem(iMin)){
+				if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-patternThreshold*getItem(i))>=getItem(iMin)){
 					pointsIndex.add(iMin);
 					break;
 				}
 			}else{
-				if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-0.1*std)>=getItem(iMin)){
+				if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-patternThreshold*std)>=getItem(iMin)){
 					pointsIndex.add(iMin);
 					break;
 				}
@@ -211,12 +221,12 @@ public class PointSegment {
 			if(getItem(i)>getItem(iMax))
 				iMax=i;
 			if(std>1){
-				if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-0.1*getItem(iMax))){
+				if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-patternThreshold*getItem(iMax))){
 					pointsIndex.add(iMax);
 					break;
 				}
 			}else{
-				if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-0.1*std)){
+				if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-patternThreshold*std)){
 					pointsIndex.add(iMax);
 					break;
 				}
