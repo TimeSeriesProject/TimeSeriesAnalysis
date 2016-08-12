@@ -67,6 +67,10 @@ public class PcapClient {
         }
     }
 
+    private String getPart(String tasks) {
+        return tasks.substring(0, tasks.indexOf("-"));
+    }
+
 //    private void getTaskList(String tasks, String filePath, String type) {
 //        File ff = new File(filePath);
 //        if (ff.isFile() && filePath.endsWith(type) && tasks.contains(ff.getName())) {
@@ -80,10 +84,10 @@ public class PcapClient {
 //    }
 
     class ExeFirst2Step implements Runnable {
-        String tasks;
-        PcapUtils pcapUtils;
-        long totalLen = 0L;
-        int count = 0;
+        private String tasks;
+        private PcapUtils pcapUtils;
+        private long totalLen = 0L;
+        private String part;
 
         @Override
         public void run() {
@@ -91,21 +95,34 @@ public class PcapClient {
                 while (true) {
                     System.out.println("开始");
                     sendReady();//先发送Ready
+                    System.out.println("ready已发送");
                     tasks = clientInit.receiveData();//收到要完成的任务string
+                    if (tasks.equals("Empty")) {
+                        System.out.println("empty");
+                        continue;//所有结果已发送，返回
+                    }
                     fileList.clear();//清空list
 //                    getTaskList(tasks, filePath, type);//生成filelist
                     getTaskList(tasks);//生成filelist
+                    part = getPart(tasks);
                     pcapUtils = new PcapUtils();
-                    pcapUtils.First2Step(fileList, outPath + count);//执行前两步每次在不同的文件夹下保存结果
+                    pcapUtils.First2Step(fileList, outPath + part);//执行前两步每次在不同的文件夹下保存结果
                     System.out.println("执行完毕");
-                    //返回结果
-                    sendAllResult(outPath + count);
-                    count++;
-
+                    clientInit.sendMsg(tasks);
+                    System.out.println("发送的task：" + tasks);
+                    String str = clientInit.receiveData();
+                    System.out.println("jieshou: " + str);
+                    if (str.equals("Absent")) {
+                        System.out.println("absent...");
+                        //返回结果
+                        sendAllResult(outPath + part);
+                    } else {
+                        continue;
+                    }
                 }
             } catch (IOException e) {
                 System.out.println("客户端关闭");
-//                e.printStackTrace();
+                e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } finally {
@@ -223,25 +240,25 @@ public class PcapClient {
 
 class ClientInit {
     private ClientConnectServer clientConnectServerMsg = new ClientConnectServer();
-    private ClientConnectServerObject clientConnectServerObject = new ClientConnectServerObject();
+//    private ClientConnectServerObject clientConnectServerObject = new ClientConnectServerObject();
     private static boolean flag;
     private static boolean isConnected;
 
     public void close() {
         clientConnectServerMsg.close();
-        clientConnectServerObject.close();
+//        clientConnectServerObject.close();
     }
 
     public void connectWithServer() {
         boolean flag = true;
         Socket socket1 = null;
-        Socket socket2 = null;
+//        Socket socket2 = null;
 
         //先启动客户端，不断尝试连接服务端
         while (flag) {
             try {
                 socket1 = new Socket("127.0.0.1", 7777);
-                socket2 = new Socket("127.0.0.1", 7777);
+//                socket2 = new Socket("127.0.0.1", 7777);
                 if (socket1.getPort() == 7777) {
                     flag = false;
                 }
@@ -251,7 +268,7 @@ class ClientInit {
                 try {
                     if (flag) {
                         socket1 = null;
-                        socket2 = null;
+//                        socket2 = null;
                         Thread.sleep(10000);
                     } else {
                         break;
@@ -262,7 +279,7 @@ class ClientInit {
             }
         }
         clientConnectServerMsg.connectServer(socket1);
-        clientConnectServerObject.connectServer2(socket2);
+//        clientConnectServerObject.connectServer2(socket2);
     }
 
     public void setFlag(boolean flag) {
