@@ -12,14 +12,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.CWNetworkReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 
 /**
  * 2015/5/19
@@ -29,7 +22,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 public class NetworkFactory extends MinerFactorySettings {
 	private static NetworkFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="D:\\57data\\route";
+	public String dataPath;
 
 	private TaskRange taskRange= TaskRange.WholeNetworkRange;
 	private MiningObject miningObject ;
@@ -42,6 +35,7 @@ public class NetworkFactory extends MinerFactorySettings {
 	}
 	NetworkFactory(){
 		super(MinerType.MiningTypes_WholeNetwork.toString());
+		dataPath = GlobalConfig.getInstance().getDataPath() + "\\route";
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Cluster);
 		miningObjectList.add(MiningObject.MiningObject_Diameter);

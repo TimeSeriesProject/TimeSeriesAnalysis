@@ -1,38 +1,37 @@
 package cn.InstFS.wkr.NetworkMining.PcapDistributed;
 
-import cn.InstFS.wkr.NetworkMining.Miner.TaskCombination;
-
 import java.io.*;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.channels.FileChannel;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.*;
 
 /**
  * Created by zsc on 2016/7/5.
  */
 public class PcapServer {
-    private ArrayList<String> fileNames = new ArrayList<String>();
     private ArrayList<String> allTasks = new ArrayList<String>();
+    private ConcurrentHashMap<String, String> allTasksTags = new ConcurrentHashMap<String, String>();//带标签，所有不同类型任务
+    private ConcurrentHashMap<String, String> nameMap = new ConcurrentHashMap<String, String>();//文件part
+    private ConcurrentHashMap<String, String> combineFile = new ConcurrentHashMap<String, String>();//合并文件,key=最后合并生成的文件，valude=待合并的小文件的文件夹路径
+    private HashSet<String> delFile = new HashSet<String>();//删除文件
     private HashMap<String, StringBuilder> tasksMap = new HashMap<String, StringBuilder>();
-    private ConcurrentHashMap<String, DataOutputStream> dosMap = new ConcurrentHashMap<String, DataOutputStream>();
+    private HashMap<String, String> swapMap = new HashMap<String, String>();//文件名\r\n,路由号
     private String DELIMITER = "\r\n";
     private String outPath = "D:\\57data";
     private String fileName;
     private int BUF_LEN = 5 * 1024 * 1024;
     private int count = 0;//发送次数
-    private Lock recLock = new ReentrantLock();
+    private int recCount = 0;
+    private int tasksCount = 0;
+//    private boolean isRunning = false;//判断是否正在运行，解除挂起状态
+
+    private Lock recLock = new ReentrantLock();//接收结果
     private Condition recCon = recLock.newCondition();
-
-
     private Lock countLock = new ReentrantLock();
-
 
     public static void main(String[] args) throws FileNotFoundException {
         PcapServer pcapServer = new PcapServer();
@@ -44,9 +43,12 @@ public class PcapServer {
         new Thread(pcapServer.new PcapServerStart()).start();
     }
 
-
     private void genTasks(String filePath, String type) {
-        getFileList(filePath, type);
+        allTasks.clear();
+        allTasksTags.clear();
+        ArrayList<String> fileNames = new ArrayList<String>();
+        getFileList(fileNames, filePath, type);
+
         for (String name : fileNames) {
             String key = name.substring(0, name.indexOf("-"));
             if (tasksMap.containsKey(key)) {
@@ -57,11 +59,14 @@ public class PcapServer {
         }
         for (Map.Entry<String, StringBuilder> entry : tasksMap.entrySet()) {
             allTasks.add(entry.getValue().toString());
+            allTasksTags.put(entry.getValue().toString(), "n");
+            swapMap.put(entry.getValue().toString(), entry.getKey());
         }
+        tasksCount = allTasks.size();
     }
 
 
-    private int getFileList(String filePath, String type) {
+    private int getFileList(ArrayList<String> fileNames, String filePath, String type) {
         int num = 0;
         File ff = new File(filePath);
         if (ff.isFile() && filePath.endsWith(type)) {
@@ -70,7 +75,7 @@ public class PcapServer {
         } else if (ff.isDirectory()) {
             File[] files = ff.listFiles();
             for (File f : files) {
-                getFileList(f.getAbsolutePath(), type);
+                getFileList(fileNames, f.getAbsolutePath(), type);
             }
         }
         return num;
@@ -79,7 +84,7 @@ public class PcapServer {
     class PcapServerStart implements Runnable {
         private ServerSocket serverSocket = null;
         private UserClient dataClient;
-        private UserClientObject resultClient;
+//        private UserClientObject resultClient;
         private boolean start = false;
 
         @Override
@@ -96,9 +101,9 @@ public class PcapServer {
             try {
                 while (start) {
                     Socket dataSocket = serverSocket.accept();//接收dataoutputstream
-                    Socket resultSocket = serverSocket.accept();//接收objectoutputstream
+//                    Socket resultSocket = serverSocket.accept();//接收objectoutputstream
                     dataClient = new UserClient(dataSocket);
-                    resultClient = new UserClientObject(resultSocket);
+//                    resultClient = new UserClientObject(resultSocket);
                     ParsePcap parsePcap = new ParsePcap(dataClient);//连接
 //                    GenRoute genRoute = new GenRoute(resultClient);//连接
                     System.out.println("一个客户端已连接！");
@@ -125,11 +130,13 @@ public class PcapServer {
         private String dataFromClient = "";
         private long totalLen;
         private String finalFolderPath;
+        private String task;
+        private String status;
+        private boolean isEmpty = false;
 
         ParsePcap(UserClient userClient) {
             this.userClient = userClient;
             isConnected = true;
-
         }
 
         @Override
@@ -139,42 +146,235 @@ public class PcapServer {
                     dataFromClient = userClient.receiveMsg();
                     System.out.println("接收到ready");
                     if (dataFromClient.equals("Ready")) {
+                        //count < 或 =两种情况，只发送一次
                         countLock.lock();
                         try {
                             if (count < allTasks.size()) {
                                 userClient.sendTask(allTasks.get(count));
                                 System.out.println("第" + count + "次已发送" + allTasks.size());
                                 count += 1;
-                                System.out.println("下一次：" + count);
+                                System.out.println("下一次发送：" + count);
+                            } else {
+                                int temp = 0;//中途最后一个结果发回来，发送Empty，避免客户端发送ready后接收不到任务造成死锁
+
+                                //找到没有完成的任务
+                                for (Map.Entry<String, String> entry : allTasksTags.entrySet()) {
+                                    temp += 1;
+                                    System.out.println("遍历TaskCombination= " + entry.getKey() +
+                                            " and String = " + entry.getValue());
+                                    if (entry.getValue().equals("n")) {
+                                        userClient.sendTask(entry.getKey());
+                                        System.out.println("第二次发送的task：" + entry.getKey());
+                                        break;
+                                    }
+                                    if (temp == allTasksTags.size()) {
+                                        userClient.sendMsg("Empty");//全部结果已返回，客户端重新待命
+                                        System.out.println("发送Empty");
+                                        isEmpty = true;
+                                    }
+                                }
                             }
                         } finally {
                             countLock.unlock();
                         }
                     }
 
-                    finalFolderPath = outPath;
-                    //接收文件
-                    receiveResult(finalFolderPath);
+                    //接收结果
+                    recLock.lock();
+                    try {
+                        if (!isEmpty) {
+                            //判断是否返回已存在结果
+                            task = userClient.receiveMsg();
+                            if (allTasksTags.get(task).equals("y")) {
+                                userClient.sendMsg(status = "Existent");
+                            } else {
+                                userClient.sendMsg(status = "Absent");
+                            }
+
+                            if (status.equals("Absent")) {
+                                status = null;
+                                if (recCount < tasksCount) {
+                                    finalFolderPath = outPath;
+                                    //接收文件
+                                    receiveResult(finalFolderPath);
+                                    updateMap(task);
+                                    recCount += 1;
+                                    if (recCount == tasksCount) {
+//                                    userClient.close();
+                                        System.out.println("运行结束");
+                                        combineFiles(combineFile);
+                                        System.out.println("文件已合并");
+                                        deleteFile(delFile);
+                                        System.out.println("文件已删除");
+                                        recCon.await();//释放cLock，但recLock无法释放!!!
+                                        System.out.println("服务端被唤醒");
+                                    }
+                                }
+                            } else if (status.equals("Existent")) {
+                                status = null;
+                                if (recCount < tasksCount) {
+                                    continue;
+                                } else if (recCount == tasksCount) {
+                                    System.out.println("运行结束");
+                                    recCon.await();
+                                }
+                            }
+                        } else {
+                            System.out.println("运行结束");
+                            recCon.await();
+                        }
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } finally {
+                        recLock.unlock();
+                    }
 
                 }
             } catch (IOException e) {
+                System.out.println("发送文件报错");
                 e.printStackTrace();
             } finally {
                 isConnected = false;
                 try {
                     userClient.close();
-                    for (Map.Entry<String, DataOutputStream> entry : dosMap.entrySet()) {
-                        try {
-                            entry.getValue().close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
+        }
+
+        private void combineFiles(ConcurrentHashMap<String, String> combineFile) throws IOException {
+            for (Map.Entry<String, String> entry : combineFile.entrySet()) {
+                ArrayList<File> fileList = new ArrayList<File>();
+                getFilePath(fileList, entry.getValue(), "bin");
+
+                File outputFile = new File(entry.getKey());
+                if (!outputFile.exists()) {
+                    outputFile.createNewFile();
+                }
+                FileChannel outChannel = new FileOutputStream(outputFile).getChannel();
+                FileChannel inChannel;
+                for (File file : fileList) {
+                    inChannel = new FileInputStream(file).getChannel();
+                    inChannel.transferTo(0, inChannel.size(), outChannel);
+
+                    inChannel.close();
+                }
+                outChannel.close();
+            }
+        }
+
+        private int getFilePath(ArrayList<File> fileList, String filePath, String type) {
+            int num = 0;
+            File ff = new File(filePath);
+            if (ff.isFile() && filePath.endsWith(type)) {
+                fileList.add(ff);
+                num += 1;
+            } else if (ff.isDirectory()) {
+                File[] files = ff.listFiles();
+                for (File f : files) {
+                    getFilePath(fileList, f.getAbsolutePath(), type);
+                }
+            }
+            return num;
+        }
+
+        private boolean deleteFile(HashSet<String> fileNameList) {
+            boolean flag = false;
+            for (String fileName : fileNameList) {
+                File file = new File(fileName);
+                if (!file.exists()) {
+                    System.out.println("删除文件失败：" + fileName + "文件不存在");
+                    flag = false;
+                } else {
+                    if (file.isFile()) {
+                        flag = deleteFile(fileName);
+                    } else {
+                        flag = deleteDirectory(fileName);
+                    }
+                }
+            }
+            return flag;
+        }
+
+        public boolean deleteFile(String fileName) {
+            File file = new File(fileName);
+            if (file.isFile() && file.exists()) {
+                file.delete();
+//                System.out.println("删除单个文件" + fileName + "成功！");
+                return true;
+            } else {
+//                System.out.println("删除单个文件" + fileName + "失败！");
+                return false;
+            }
+        }
+
+        public boolean deleteDirectory(String dir) {
+//        //如果dir不以文件分隔符结尾，自动添加文件分隔符
+//        if (!dir.endsWith(File.separator)) {
+//            dir = dir + File.separator;
+//        }
+            File dirFile = new File(dir);
+            //如果dir对应的文件不存在，或者不是一个目录，则退出
+            if (!dirFile.exists() || !dirFile.isDirectory()) {
+//                System.out.println("删除目录失败" + dir + "目录不存在！");
+                return false;
+            }
+            boolean flag = true;
+            //删除文件夹下的所有文件(包括子目录)
+            File[] files = dirFile.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                //删除子文件
+                if (files[i].isFile()) {
+                    flag = deleteFile(files[i].getAbsolutePath());
+                    if (!flag) {
+                        break;
+                    }
+                }
+                //删除子目录
+                else {
+                    flag = deleteDirectory(files[i].getAbsolutePath());
+                    if (!flag) {
+                        break;
+                    }
+                }
+            }
+
+            if (!flag) {
+                System.out.println("删除目录失败");
+                return false;
+            }
+
+            //删除当前目录
+            if (dirFile.delete()) {
+//                System.out.println("删除目录" + dir + "成功！");
+                return true;
+            } else {
+//                System.out.println("删除目录" + dir + "失败！");
+                return false;
+            }
+        }
+
+        public String getExtension(String fileName) {
+            return fileName.substring(fileName.lastIndexOf("."));
+        }
+
+        public String getName(String fileName) {
+            return fileName.substring(0, fileName.lastIndexOf("."));
+        }
+
+        public void genPart(String fileName, String type) {
+            if (!type.equals(".bin")) {
+                return;
+            }
+            if (!nameMap.containsKey(fileName)) {
+                nameMap.put(fileName, swapMap.get(task));
+            } else {
+                nameMap.remove(fileName);
+                nameMap.put(fileName, swapMap.get(task));
+            }
         }
 
         public void receiveResult(String finalFolderPath) throws IOException {
@@ -185,22 +385,14 @@ public class PcapServer {
             while (true) {
                 String receiveType = userClient.receiveMsg();
                 if (receiveType.equals("sendFile")) {
-                    System.out.println("进入sendFile");
-                    recLock.lock();
-                    try {
-                        receiveFile(finalFolderPath);//仅文件
-                    } finally {
-                        recLock.unlock();
-                    }
+                    receiveFile(finalFolderPath);//仅文件
                 } else if (receiveType.equals("sendFolder")) {
-                    System.out.println("进入sendFolder");
                     subFolder = userClient.receiveMsg();//发送方的selectFolderPath子目录
                     finalFolderPath = outPath + File.separator + subFolder;
                     //生成子目录
                     File folder = new File(finalFolderPath);
                     boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
                 } else if (receiveType.equals("endTransmit")) {
-                    System.out.println("跳出");
                     break;
                 }
             }
@@ -210,19 +402,36 @@ public class PcapServer {
             byte[] receiveBuffer = new byte[BUF_LEN];
             int length;
             long passedlen = 0;
+            String name;
+            String extension;
+            String finalFilePath;
+            String filePath;
+            String folderPath;
 
             try {
                 fileName = userClient.receiveMsg();
-                String finalFilePath = outPath + File.separator + fileName;
-                System.out.println("finalFilePath: " + finalFilePath);
+                name = getName(fileName);//得到文件名
+                extension = getExtension(fileName);//得到扩展名
+                genPart(fileName, extension);
+                //创建文件夹/routesrc/10.0.1.1_10.0.1.2/...
+                //生成合并文件map、删除文件list
+                if (extension.equals(".bin")) {
+                    File folder = new File(outPath + File.separator + name);
+                    boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
+                    finalFilePath = outPath + File.separator + name + File.separator + name + "_part_" + nameMap.get(fileName) + extension;
+//                    System.out.println("part: " + nameMap.get(fileName));
+                    filePath = outPath + File.separator + fileName;//D:/57data/10..._....bin
+                    folderPath = outPath + File.separator + name;
 
-                DataOutputStream dos;
-                if (!dosMap.containsKey(fileName)) {
-                    dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(finalFilePath, true)));
-                    dosMap.put(fileName, dos);
+                    if (!combineFile.containsKey(filePath)) {
+                        combineFile.put(filePath, folderPath);
+                        delFile.add(folderPath);
+                    }
+                } else {
+                    finalFilePath = outPath + File.separator + fileName;
                 }
-                dos = dosMap.get(fileName);
 
+                DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(finalFilePath)));
                 length = userClient.receiveInt();
                 while (length > 0) {
                     userClient.receiveFullByte(receiveBuffer, 0, length);//read到length才返回，若用read，可能不到length就返回
@@ -231,10 +440,19 @@ public class PcapServer {
                     length = userClient.receiveInt();
                 }
                 System.out.println("接收方结束循环");
+                dos.close();
             } catch (IOException e) {
+                System.out.println("接收文件报错");
                 e.printStackTrace();
             }
 
+        }
+
+        private void updateMap(String task) {
+            if (allTasksTags.get(task).equals("n")) {
+                allTasksTags.remove(task);
+                allTasksTags.put(task, "y");//更新标记，表示完成
+            }
         }
 
     }
@@ -287,10 +505,6 @@ class UserClient {
         return disWithClient.readUTF();
     }
 
-    public int receiveByte(byte[] bytes) throws IOException {
-        return disWithClient.read(bytes);
-    }
-
     public void receiveFullByte(byte[] bytes, int off, int len) throws IOException {
         disWithClient.readFully(bytes, off, len);
     }
@@ -299,68 +513,10 @@ class UserClient {
         dosWithClient.writeUTF(task);
         dosWithClient.flush();
     }
-}
 
-class UserClientObject {
-    private Socket socket = null;
-    private ObjectInputStream disWithClient;
-    private ObjectOutputStream dosWithClient;
-
-    public UserClientObject(Socket socket) {
-        this.socket = socket;
-        try {
-            dosWithClient = new ObjectOutputStream(socket.getOutputStream());
-            disWithClient = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void close() throws IOException {
-        try {
-            if (disWithClient != null) disWithClient.close();
-            if (socket != null) socket.close();
-            if (dosWithClient != null) dosWithClient.close();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-    }
-
-    public void sendObject(TaskCombination task) throws IOException {
-        dosWithClient.writeObject(task);
+    public void sendMsg(String str) throws IOException {
+        dosWithClient.writeUTF(str);
         dosWithClient.flush();
     }
-
-    public Object receiveObject() throws IOException, ClassNotFoundException {
-        return disWithClient.readObject();
-    }
-
 }
-
-class Tasks {
-    private int partition = 0;
-    private int part = 0;
-}
-
-/*
-class TasksThread implements Callable {
-    private InputStream is = null;
-    private HashSet<String> bws;
-
-    TasksThread(InputStream is, HashSet<String> bws) {
-        this.is = is;
-        this.bws = bws;
-    }
-
-    public Boolean call() {
-        try {
-            PcapTasks.unpackTasks(is, bws);
-            is.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-}
-*/
 

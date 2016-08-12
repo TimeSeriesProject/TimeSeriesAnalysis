@@ -44,6 +44,8 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 
 
+import org.eclipse.swt.widgets.MessageBox;
+
 import weka.clusterers.SimpleKMeans;
 import weka.core.DistanceFunction;
 import weka.core.Instance;
@@ -361,7 +363,11 @@ public class DataPretreatment {
 			while(i<times.size()&&times.get(i).before(t2))
 			{
 				if(i>0&&times.get(i).before(times.get(i-1)))
-					JOptionPane.showMessageDialog(MainFrame.topFrame, "序列未排序");
+				{
+					System.out.println("序列未排序，请先排序！");
+//					JOptionPane.showMessageDialog((new MainFrame()).topFrame, "序列未排序");
+				
+				}
 				if (isDiscreteOrNonDouble){	// 离散值或字符串
 					if(valsStr.containsKey(datas.get(i))){
 						int originValue=valsStr.get(datas.get(i));

@@ -27,9 +27,10 @@ public class DialogSettings extends JDialog {
     private JButton buttonCancel = new JButton("取消");
     private JButton buttonPath = new JButton("选择路径");
     private JTextField dataPath = new JTextField();
-    private JLabel labelGranularity = new JLabel("时间粒度(s)");
+    private JLabel labelGranularity = new JLabel("时间粒度(h)");
+    private JComboBox granularityComboBox=new JComboBox();
     private JLabel labelTimeScale = new JLabel("时间区间");
-    private DateTimePicker startPicker = new DateTimePicker();
+    private DateTimePicker startPicker;
     private DateTimePicker endPicker = new DateTimePicker();
 
     private JLabel labelTaskRange = new JLabel("任务范围");
@@ -51,6 +52,8 @@ public class DialogSettings extends JDialog {
         this.settings = factorySettings;
         this.settings.setModified(false);
         this.settings.setOnlyObjectModified(false);
+        this.startPicker = new DateTimePicker(factorySettings.getStartDate());
+        this.endPicker = new DateTimePicker(factorySettings.getEndDate());
         this.setTitle(title);
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonSave);
@@ -65,7 +68,8 @@ public class DialogSettings extends JDialog {
         topPane.add(buttonPath);
         topPane.add(dataPath);
         topPane.add(labelGranularity);
-        topPane.add(fieldGranularity);
+//        topPane.add(fieldGranularity);
+        topPane.add(addGranularityComboBox(settings.getGranularityList()));
 
         topPane.add(labelTimeScale);
         JPanel dateTimePane = addDateTimePicker();
@@ -89,6 +93,17 @@ public class DialogSettings extends JDialog {
 
         bottomPane.add(buttonSave);
         bottomPane.add(buttonCancel);
+    }
+
+    private JPanel addGranularityComboBox(String granularityList) {
+        JPanel pane = new JPanel();
+        String[] list = granularityList.split(",");
+        for (String i: list) {
+            granularityComboBox.addItem(i);
+        }
+        pane.add(granularityComboBox);
+
+        return pane;
     }
 
     private JPanel addMiningObjectCB(List<MiningObject> miningObjectList) {
@@ -223,9 +238,10 @@ public class DialogSettings extends JDialog {
 
     public void getData(MinerFactorySettings data) {
         data.setDataPath(dataPath.getText());
-        data.setGranularity(fieldGranularity.getText());
-        /*data.setStartDate(startPicker.getDateTime());
-        data.setEndDate(endPicker.getDateTime());*/
+//        data.setGranularity(fieldGranularity.getText());
+        data.setGranularity(Integer.parseInt(granularityComboBox.getSelectedItem().toString()) * 3600 +"");
+        data.setStartDate(startPicker.getDateTime());
+        data.setEndDate(endPicker.getDateTime());
         List<MiningObject> objectList = settings.getMiningObjectsChecked();
         objectList.clear();
         for (JCheckBox cb: objectCheckBoxes){
@@ -243,10 +259,13 @@ public class DialogSettings extends JDialog {
     public boolean isModified(MinerFactorySettings data) {
         if (dataPath.getText() != null ? !dataPath.getText().equals(data.getDataPath()) : data.getDataPath() != null)
             return true;
-        if (fieldGranularity.getText() != null ? !fieldGranularity.getText().equals(data.getGranularity()) : data.getGranularity() != null)
-            return true;
-        /*if (!startPicker.getDateTime().equals(data.getStartDate()) || !endPicker.getDateTime().equals(data.getEndDate()))
+        /*if (fieldGranularity.getText() != null ? !fieldGranularity.getText().equals(data.getGranularity()) : data.getGranularity() != null)
             return true;*/
+        String granularity = Integer.parseInt(granularityComboBox.getSelectedItem().toString()) * 3600 + "";
+        if (granularity != null ? !granularity.equals(data.getGranularity()) : data.getGranularity() != null)
+            return true;
+        if (!startPicker.getDateTime().equals(data.getStartDate()) || !endPicker.getDateTime().equals(data.getEndDate()))
+            return true;
 
         List<MiningObject> objectList = settings.getMiningObjectsChecked(); // 原已选checkBoxList
         settings.getMiningObjectsAdded().clear();
