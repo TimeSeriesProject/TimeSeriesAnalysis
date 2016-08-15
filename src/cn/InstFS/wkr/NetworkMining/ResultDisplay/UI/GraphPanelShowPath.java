@@ -286,7 +286,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
         JPanel show_edge_panel = new JPanel(new GridLayout(0,2));
         show_edge_panel.setBorder(BorderFactory.createTitledBorder("Show path"));
         for (int i = 0; i < pathList.size(); i++) {
-            JCheckBox e_show_path = new JCheckBox(pathList.get(i));
+            JCheckBox e_show_path = new JCheckBox(i+1+"");
             e_show_path.addActionListener(this);
             e_show_path.setSelected(true);
             e_paths.add(e_show_path);
@@ -310,7 +310,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         AbstractButton source = (AbstractButton)e.getSource();
         if (e_paths.contains(source)) {
-            int pathId = pathList.indexOf(source.getText());
+            int pathId = Integer.parseInt(source.getText()) - 1;
             show_path.showPath(pathId, source.isSelected());
         }
 

@@ -21,7 +21,7 @@
 		<neighborK>10</neighborK>
 	</pointPatternParams>
 	<TEOParams>
-		<mergeThreshold></mergeThreshold>
-		<neighborK></neighborK>
+		<mergeThreshold>0.025</mergeThreshold>
+		<neighborK>7</neighborK>
 	</TEOParams>
 </outlierMinerParam>
