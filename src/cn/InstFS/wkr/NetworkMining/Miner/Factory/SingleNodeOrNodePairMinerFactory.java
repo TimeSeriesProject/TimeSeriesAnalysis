@@ -10,22 +10,15 @@ import java.util.Map;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 
 public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	private static SingleNodeOrNodePairMinerFactory inst;
 	private static SingleNodeOrNodePairMinerFactory pairInst;
 	public static boolean isMining=false;
 
-	public String dataPath="D:\\57data\\traffic";
-	public String rootPath = "D:\\57data\\node";
+	public String dataPath;
+	public String rootPath;
 
 	private MiningObject miningObject;
 	private TaskRange taskRange = TaskRange.SingleNodeRange;
@@ -33,6 +26,8 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	
 	private SingleNodeOrNodePairMinerFactory(String minertype){
 		super(minertype);
+		dataPath = GlobalConfig.getInstance().getDataPath() + "\\traffic";
+		rootPath = GlobalConfig.getInstance().getDataPath() + "\\node";
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Times);
 		miningObjectList.add(MiningObject.MiningObject_Traffic);
