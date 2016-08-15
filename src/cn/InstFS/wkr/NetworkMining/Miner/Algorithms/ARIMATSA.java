@@ -1,28 +1,29 @@
-package cn.InstFS.wkr.NetworkMining.Miner.Algorithms;
+package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerFM;
+import org.rosuda.REngine.Rserve.RConnection;
 
 import RUtil.ARIMA;
 import RUtil.R;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.Params.ParamsFA;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
-public class ARIMATSA implements IMinerFM {
+public class ARIMATSA implements IMinerFM{
 	private TaskElement task;
 	private DataItems di;
 	private int predictPeriod;           //预测的长度
 	private DataItems predictItems;
 	private Date endDate;                //序列中最后值的日期
 	
-	public ARIMATSA(TaskElement task,DataItems dataItems,int predictPeriod){
+	public ARIMATSA(TaskElement task,DataItems dataItems,ParamsFA p){
 		this.task=task;
 		this.di=dataItems;
-		this.predictPeriod=predictPeriod;
+		this.predictPeriod=p.getPredictPeriod();
 		predictItems=new DataItems();
 		endDate=di.getLastTime();
 		

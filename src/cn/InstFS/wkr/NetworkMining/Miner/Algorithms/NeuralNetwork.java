@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.Miner.Algorithms;
+package cn.InstFS.wkr.NetworkMining.Miner;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import WaveletUtil.generateFeatures;
-import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerFM;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -16,28 +15,43 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.Params.ParamsFA;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 @SuppressWarnings("deprecation")
-public class NeuralNetwork implements IMinerFM {
+public class NeuralNetwork implements IMinerFM{
 	private String inputFilePath;
 	private DataItems predictItems;
-	private int predictPeriod;
+
 	private Date originDataEndTime;
 	private TaskElement task;
+	//参数列表
+	private int predictPeriod;	//预测周期
+	double momentum; //当更新weights时设置的动量 
+	double learnRate; //学习速率
+	int seed;	//Seed用于初始化随机数的生成。随机数被用于设定节点之间连接的初始weights，并且用于shuffling训练集 
+	int trianTime;	//训练的迭代次数。
+
 	
-	public NeuralNetwork(String inputFilePath,int predictPeriod,Date originDataEndTime,TaskElement task){
+	
+/*	public NeuralNetwork(String inputFilePath,int predictPeriod,Date originDataEndTime,TaskElement task){
 		this.predictPeriod=predictPeriod;
 		this.inputFilePath=inputFilePath;
 		this.task=task;
 		this.originDataEndTime=originDataEndTime;
-	}
+	}*/
 	
-	public NeuralNetwork(String inputFilePath,Date originDataEndTime,TaskElement task){
+	public NeuralNetwork(String inputFilePath,Date originDataEndTime,TaskElement task,ParamsFA p){
 		this.inputFilePath=inputFilePath;
 		this.task=task;
 		this.originDataEndTime=originDataEndTime;
-		this.predictPeriod=20;
+		//初始化参数
+		 this.predictPeriod=p.getPredictPeriod();	//预测周期
+		 this.momentum=p.getMomentum(); //当更新weights时设置的动量 
+		 this.learnRate=p.getLearnRate(); //学习速率
+		 this.seed=p.getSeed();	//Seed用于初始化随机数的生成。随机数被用于设定节点之间连接的初始weights，并且用于shuffling训练集 
+		 this.trianTime=p.getTrianTime();	//训练的迭代次数。
+
 	}
 	
 	public NeuralNetwork(){}
@@ -62,11 +76,11 @@ public class NeuralNetwork implements IMinerFM {
 			Instances testInstances=loader.getDataSet();
 			testInstances.setClassIndex(testInstances.numAttributes()-1);
 			int testInstanceNum=testInstances.numInstances();
-			double momentum=0.1;
+/*			double momentum=0.1;
 			double learnRate=0.2;
 			int seed=0;
 			int trianTime=500;
-			
+			*/
 			double minDistance=Double.MAX_VALUE;
 			double distance=0.0;
 			for(double learnRateIndex=learnRate;learnRateIndex<=0.4;learnRateIndex+=0.1){
