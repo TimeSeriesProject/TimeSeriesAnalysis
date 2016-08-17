@@ -729,6 +729,31 @@ public class PcapUtils {
 //        }
     }
 
+    private void generateRouteDis(ArrayList<File> fileList, String outPath) {
+        genRouteSum = fileList.size();
+        status = Status.GENROUTE;
+        System.out.println(status);
+        System.out.println("genSum " + genRouteSum);
+        ExecutorService exec = Executors.newFixedThreadPool(1);
+        ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
+        for (int i = 0; i < fileList.size(); i++) {
+            RouteGen routeGen = new RouteGen(this, fileList.get(i).getAbsolutePath(), outPath, fileList.get(i).getName(), trafficRecords, comRecords);
+//            results.add(exec.submit(routeGen));
+            routeGen.call();
+        }
+//        for (int i = 0; i < results.size(); i++) {
+//            try {
+//                results.get(i).get();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            } finally {
+//                exec.shutdown();
+//            }
+//        }
+    }
+
     private void parsePcap(String fpath, String outpath) throws IOException, FileNotFoundException {
         getFileList(fpath, "pcap");
         parseSum = fileList.size();
@@ -930,6 +955,17 @@ public class PcapUtils {
 
         parsePcapDis(fileList, outpath);
         generateNode(outpath);
+    }
+
+    public void Last2Step(ArrayList<File> fileList, String outpath) throws IOException{
+        File folder = new File(outpath + "\\route");
+        boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
+
+        folder = new File(outpath + "\\traffic");
+        suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
+
+        generateRouteDis(fileList, outpath);
+        generateTraffic(outpath);
     }
 
     public void readInput(String fpath, String outpath) throws IOException, FileNotFoundException {
