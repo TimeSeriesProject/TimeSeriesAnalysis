@@ -3,7 +3,7 @@ package cn.InstFS.wkr.NetworkMining.Params.OMParams;
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.jdom.Element;
 
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FastFourierOutliesDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
 
 public class OMFastFourierParams {
 	//傅里叶变换算法参数

@@ -14,11 +14,12 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.TextUtils;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ARIMATSA;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.NeuralNetwork;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.ARIMATSA;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.NeuralNetwork;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
+import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
@@ -164,9 +165,9 @@ class FMTimerTask extends TimerTask{
 			TextUtils textUtils=new TextUtils();
 			textUtils.setTextPath(task.getSourcePath()+task.getMiningObject());
 			textUtils.writeOutput(dataItems);
-			tsaMethod=new NeuralNetwork(task.getSourcePath()+task.getMiningObject(), dataItems.getLastTime(), task);
+			tsaMethod=new NeuralNetwork(task.getSourcePath()+task.getMiningObject(), dataItems.getLastTime(), task,null);
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ARIMATSA)){
-			tsaMethod=new ARIMATSA(task, dataItems, 10);
+			tsaMethod=new ARIMATSA(task, dataItems, null);
 		}else{
 			throw new RuntimeException("方法不存在！");
 		}

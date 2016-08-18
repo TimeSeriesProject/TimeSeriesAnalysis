@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.Miner.Algorithms;
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm;
 
 //import java.io.File;
 //import java.io.FileWriter;

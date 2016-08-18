@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.Miner.Algorithms;
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.NormalDistributionTest;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
 

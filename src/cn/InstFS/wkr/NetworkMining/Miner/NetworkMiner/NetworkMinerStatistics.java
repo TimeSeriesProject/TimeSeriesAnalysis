@@ -4,11 +4,10 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatistics;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
-
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;

@@ -9,9 +9,9 @@ import java.util.TimerTask;
 
 import associationRules.ProtocolAssociationResult;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ProtocolAssRtree;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ProtocolAssociation;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ProtocolAssociationLine;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AssociationAlgorithm.ProtocolAssRtree;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AssociationAlgorithm.ProtocolAssociation;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AssociationAlgorithm.ProtocolAssociationLine;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;

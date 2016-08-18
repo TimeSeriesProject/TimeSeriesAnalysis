@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.Miner.Algorithms;
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.Miner.Algorithms;
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
