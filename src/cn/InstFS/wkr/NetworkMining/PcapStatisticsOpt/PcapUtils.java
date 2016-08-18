@@ -112,8 +112,9 @@ class Parser implements Callable {
 //
 //    }
     public Boolean call() {
+        FileChannel fc = null;
         try {
-            FileChannel fc = new FileInputStream(file).getChannel();
+            fc = new FileInputStream(file).getChannel();
             length = fc.size();
             String fileName = file.getName();
             int index = fileName.lastIndexOf(".");
@@ -153,6 +154,14 @@ class Parser implements Callable {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (fc != null) {
+                    fc.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return true;
     }
@@ -345,10 +354,11 @@ class RouteGen implements Callable {
 //    }
 
     public Boolean call() {
+        FileChannel fc = null;
         try {
             String srcIP = fileName.split("_")[0];
             String dstIP = fileName.substring(srcIP.length() + 1, fileName.lastIndexOf("."));
-            FileChannel fc = new FileInputStream(path).getChannel();
+            fc = new FileInputStream(path).getChannel();
             length = fc.size();
             if (length <= Integer.MAX_VALUE) {
                 MappedByteBuffer is = fc.map(FileChannel.MapMode.READ_ONLY, 0, length);
@@ -382,6 +392,14 @@ class RouteGen implements Callable {
             System.out.println("getGenedRouteNum()" + pcapUtils.getGenedRouteNum());
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (fc != null) {
+                    fc.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return true;
     }
