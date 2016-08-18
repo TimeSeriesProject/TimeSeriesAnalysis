@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.Miner;
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,6 +15,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerFM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsFA;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 

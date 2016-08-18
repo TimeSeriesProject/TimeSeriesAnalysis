@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.Miner.Algorithms;
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm;
 
 import java.util.ArrayList;
 import java.util.List;

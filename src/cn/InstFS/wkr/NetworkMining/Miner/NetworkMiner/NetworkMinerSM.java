@@ -13,7 +13,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SequencePatternsDontSplit;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm.SequencePatternsDontSplit;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;

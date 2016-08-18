@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.Miner.Algorithms;
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

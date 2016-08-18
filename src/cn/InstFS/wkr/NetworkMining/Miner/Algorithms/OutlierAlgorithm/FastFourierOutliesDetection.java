@@ -1,10 +1,11 @@
-package cn.InstFS.wkr.NetworkMining.Miner.Algorithms;
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.NormalDistributionTest;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMFastFourierParams;
 

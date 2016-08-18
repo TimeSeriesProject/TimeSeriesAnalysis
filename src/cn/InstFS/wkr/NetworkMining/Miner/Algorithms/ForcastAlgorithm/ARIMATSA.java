@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.Miner;
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,6 +10,7 @@ import org.rosuda.REngine.Rserve.RConnection;
 import RUtil.ARIMA;
 import RUtil.R;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerFM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsFA;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 

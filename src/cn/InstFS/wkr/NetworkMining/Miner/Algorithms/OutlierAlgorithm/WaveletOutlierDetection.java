@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.Miner.Algorithms;
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm;
 
 import java.util.ArrayList;
 import java.util.List;
