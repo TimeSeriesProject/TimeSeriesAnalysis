@@ -35,6 +35,7 @@ public class PcapServer {
     private int count = 0;//发送次数
     private int count2 = 0;//发送次数
     private int recCount = 0;
+    private int recCount2 = 0;
     private int tasksCount = 0;
 
     private Lock recLock = new ReentrantLock();//接收结果
@@ -141,6 +142,7 @@ public class PcapServer {
         private boolean isEmpty = false;
         private boolean isEmpty2 = false;
 
+
         ParsePcap(UserClient userClient) {
             this.userClient = userClient;
             firstConnected = true;
@@ -241,7 +243,7 @@ public class PcapServer {
                     }
                 }
 
-                recCount = 0;
+//                recCount = 0;
                 tasksCount = allTasks2.size();
                 //执行后2步
                 while (lastConnected) {
@@ -298,13 +300,13 @@ public class PcapServer {
 
                             if (status.equals("Absent")) {
                                 status = null;
-                                if (recCount < tasksCount) {
+                                if (recCount2 < tasksCount) {
                                     finalFolderPath = outPath;
                                     //接收文件
                                     receiveResult2(finalFolderPath);
                                     updateMap2(task2);
-                                    recCount += 1;
-                                    if (recCount == tasksCount) {
+                                    recCount2 += 1;
+                                    if (recCount2 == tasksCount) {
                                         System.out.println("运行结束2.1");
                                         combineFiles2(combineFile2);
                                         System.out.println("文件已合并");
@@ -315,9 +317,9 @@ public class PcapServer {
                                 }
                             } else if (status.equals("Existent")) {
                                 status = null;
-                                if (recCount < tasksCount) {
+                                if (recCount2 < tasksCount) {
                                     continue;
-                                } else if (recCount == tasksCount) {
+                                } else if (recCount2 == tasksCount) {
                                     System.out.println("运行结束2.2");
                                     lastConnected = false;
                                 }
@@ -387,16 +389,55 @@ public class PcapServer {
             }
         }
 
+        //traffic排序
+        private void sortTraffic(String path, String outPath) {
+            try {
+                InputStreamReader in = new InputStreamReader(new FileInputStream(path), "UTF-8");
+                BufferedReader bin = new BufferedReader(in);
+                String curLine;
+                ArrayList<TrafficKey> keys = new ArrayList<TrafficKey>();
+
+                while ((curLine = bin.readLine()) != null) {
+                    String str[] = curLine.split(",");
+                    TrafficKey key = new TrafficKey();
+                    key.setTime(Long.valueOf(str[0]));
+                    key.setSrcIp(str[1]);
+                    key.setDstIp(str[2]);
+                    key.setProtocol(str[3]);
+                    keys.add(key);
+                }
+                bin.close();
+                Collections.sort(keys);
+
+                OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(outPath), "UTF-8");
+                BufferedWriter bout = new BufferedWriter(out);
+
+                for (TrafficKey key : keys) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(key.getTime()).append(",").append(key.getSrcIp()).append(",").
+                            append(key.getDstIp()).append(",").append(key.getProtocol());
+                    bout.write(sb.toString());
+                    bout.newLine();
+                }
+                bout.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         private void combineFiles2(ConcurrentHashMap<String, String> combineFile) throws IOException {
             for (Map.Entry<String, String> entry : combineFile.entrySet()) {
                 ArrayList<File> fileList = new ArrayList<File>();
                 getFilePath(fileList, entry.getValue(), "txt");//得到待删除文件
 
-                File outputFile = new File(entry.getKey());
-                if (!outputFile.exists()) {
-                    outputFile.createNewFile();
+                File key = new File(entry.getKey());//D:/57data/traffic/10.0.0.1.txt
+                String name = key.getName();//10.0.0.1.txt
+                File comFile = new File(entry.getValue() + File.separator + name);//合并后暂存为D:/57data/traffic/10.0.0.1/10.0.0.1.txt
+                if (!comFile.exists()) {
+                    comFile.createNewFile();
                 }
-                FileChannel outChannel = new FileOutputStream(outputFile).getChannel();
+                FileChannel outChannel = new FileOutputStream(comFile).getChannel();
                 FileChannel inChannel;
                 for (File file : fileList) {
                     inChannel = new FileInputStream(file).getChannel();
@@ -404,6 +445,7 @@ public class PcapServer {
                     inChannel.close();
                 }
                 outChannel.close();
+                sortTraffic(comFile.getAbsolutePath(), entry.getKey());//最后生成排序后的txt
             }
         }
 
@@ -676,9 +718,8 @@ public class PcapServer {
                     boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
                     finalFilePath = outPath + File.separator + name + File.separator + name + "_part_" + nameMap2.get(fileName) + extension;
 //                    System.out.println("part: " + nameMap.get(fileName));
-                    filePath = outPath + File.separator + fileName;//D:/57data/routesrc/10.0.0.1_10.0.0.2.bin
-                    folderPath = outPath + File.separator + name;//D:/57data/routesrc/10.0.0.1_10.0.0.2/
-                    System.out.println("ffff1: " + filePath + "     " + "ffff2: " + folderPath);
+                    filePath = outPath + File.separator + fileName;//D:/57data/traffic/10.0.0.1.txt
+                    folderPath = outPath + File.separator + name;//D:/57data/traffic/10.0.0.1/
                     if (!combineFile2.containsKey(filePath)) {
                         combineFile2.put(filePath, folderPath);
                         delFile2.add(folderPath);//待删除的10.0.0.1-10.0.0.2文件夹们

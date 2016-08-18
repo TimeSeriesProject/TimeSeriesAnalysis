@@ -240,16 +240,19 @@ public class PcapClient {
 
         private void sendResult(String folderPath) throws IOException {
             File folder = new File(folderPath);
-            preprocess(folder);//得到绝对路径、文件名、index
+            //暂时写死routesrc
+            if (!(folder.getName().equals("routesrc") && taskFlag.equals("Last"))) {
+                preprocess(folder);//得到绝对路径、文件名、index
 //            System.out.println("fPath: " + folderPath + "fName: " + folderName + "index: " + index);
-            if (folder.isFile()) {
+                if (folder.isFile()) {
 //                totalLen = folder.length();
 //                clientInit.sendLong(totalLen);//sendAllResult中发送，保证发送一次
-                sendFile(folder);
-            } else {
+                    sendFile(folder);
+                } else {
 //                getFolderTotalLen(outPath);//得到totalLen
 //                clientInit.sendLong(totalLen);//sendAllResult中发送，保证发送一次
-                sendFolder(folder);
+                    sendFolder(folder);
+                }
             }
         }
 
