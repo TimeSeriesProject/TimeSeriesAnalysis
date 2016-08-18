@@ -30,6 +30,7 @@ public class ERPDistencePM implements IMinerPM {
 	private DataItems minItemsInPeriod;
 	private DataItems maxItemsInPeriod;
 	private double confidence;
+	private int longestPeriod;
 	
 	
 	private Map<String, List<Integer>> existPeriodOfNonNumDataItems;
@@ -72,7 +73,7 @@ public class ERPDistencePM implements IMinerPM {
 		if(numItems==0){
 			return;
 		}
-		int maxPeriod = (numItems/2>300)?300:(numItems/2);
+		int maxPeriod = (numItems/2>longestPeriod)?longestPeriod:(numItems/2);
 		if(di.isAllDataIsDouble()){
 			List<String> seq=new ArrayList<String>();
 			for(int i=0;i<numItems;i++){
@@ -120,7 +121,7 @@ public class ERPDistencePM implements IMinerPM {
 	 */
 	private void generateEntroy(List<String> seq,int numItems){
 		double[][] ErpDistMatrix;
-		int maxPeriod = (numItems/2>300)?300:(numItems/2);
+		int maxPeriod = (numItems/2>longestPeriod)?longestPeriod:(numItems/2);
 		int period=1;
 		entropies=new Double[maxPeriod];
 		List<String> standardList=new ArrayList<String>();
@@ -157,7 +158,7 @@ public class ERPDistencePM implements IMinerPM {
 	 * @param numItems
 	 */
 	private void generateManHatonEntroy(List<String> seq,int numItems){
-		int maxPeriod = (numItems/2>300)?300:(numItems/2);
+		int maxPeriod = (numItems/2>longestPeriod)?longestPeriod:(numItems/2);
 		int period=1;
 		entropies=new Double[maxPeriod];
 		List<String> standardList=new ArrayList<String>();
@@ -301,27 +302,7 @@ public class ERPDistencePM implements IMinerPM {
 				maxPredictValuesMap.put((i+1),maxPredictValues);
 			}
 		}
-//		int shortestPeriod=maxPeriod;
-//		Set<Integer> keyset=predictValuesMap.keySet();
-//		for(Integer key:keyset){
-//			if(key<shortestPeriod)
-//				shortestPeriod=key;
-//		}
-//		
-//		int multiple=1;
-//		boolean isSuccess=true;
-//		while((multiple+1)*Period<maxPeriod){
-//			if(entropies[multiple*Period-1]-entropies[(multiple+1)*Period-1]>=(-entropies[multiple*Period-1]*0.2)){
-//				multiple++;
-//			}else{
-//				isSuccess=false;
-//				break;
-//			}
-//		}
-//		if(!isSuccess){
-//			Period=multiple*Period;
-//		}
-//		predictPeriod=Period;
+
 		double ratios=0;
 		int possiPeriod=0;
 		for(Integer key:ratio.keySet()){
@@ -399,24 +380,24 @@ public class ERPDistencePM implements IMinerPM {
 		
 		
 		if(index==2){
-			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.13){
+			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*threshold){
 				isMaxThanNeighbor=true;
 			}
 		}else if(index==Entropies.length){
-			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.13){
+			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*threshold){
 				isMaxThanNeighbor=true;
 			}
 		}else{
 			if(isnext){
 				if(origin-index==1){
-					if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.13)
+					if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*threshold)
 						isMaxThanNeighbor=true;
 				}else if(origin-index==-1){
-					if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.13)
+					if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*threshold)
 						isMaxThanNeighbor=true;
 				}
-			}else if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.13&&
-            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.13){
+			}else if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*threshold&&
+            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*threshold){
             	isMaxThanNeighbor=true;
 			}
 		}
@@ -609,5 +590,14 @@ public class ERPDistencePM implements IMinerPM {
 	public void setConfidence(double confidence) {
 		this.confidence = confidence;
 	}
+
+	public int getLongestPeriod() {
+		return longestPeriod;
+	}
+
+	public void setLongestPeriod(int longestPeriod) {
+		this.longestPeriod = longestPeriod;
+	}
+	
 	
 }
