@@ -1,9 +1,11 @@
-package cn.InstFS.wkr.NetworkMining.Params;
+package cn.InstFS.wkr.NetworkMining.Params.PredictionAlgorithmParams;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
-public class ParamsFA extends IParamsNetworkMining implements Serializable{
+import cn.InstFS.wkr.NetworkMining.Params.IParamsNetworkMining;
+
+public class NeuralNetworkParams extends IParamsNetworkMining implements Serializable{
 	//神经网络参数列表
 	//参数列表
 	private int predictPeriod;	//预测周期
@@ -12,7 +14,7 @@ public class ParamsFA extends IParamsNetworkMining implements Serializable{
 	private int seed;	//Seed用于初始化随机数的生成。随机数被用于设定节点之间连接的初始weights，并且用于shuffling训练集 
 	private int trianTime;	//训练的迭代次数。
 	
-	public ParamsFA(){
+	public NeuralNetworkParams(){
 		//参数列表
 		 predictPeriod=20;	//预测周期
 		 momentum=0.1; //当更新weights时设置的动量 
@@ -21,8 +23,8 @@ public class ParamsFA extends IParamsNetworkMining implements Serializable{
 		 trianTime=500;	//训练的迭代次数。
 	}
 
-	public static ParamsFA newInstance(ParamsFA p){
-		ParamsFA param=new ParamsFA();
+	public static NeuralNetworkParams newInstance(NeuralNetworkParams p){
+		NeuralNetworkParams param=new NeuralNetworkParams();
 		param.setLearnRate(p.getLearnRate());
 		param.setMomentum(p.getMomentum());
 		param.setPredictPeriod(p.getPredictPeriod());
