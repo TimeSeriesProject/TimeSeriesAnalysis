@@ -1,9 +1,7 @@
-package PMParams;
+package cn.InstFS.wkr.NetworkMining.Params.PMParams;
 
 import org.jdom.Element;
-
 public class PMparam {
-	
 	private int longestPeriod;       //可判定的最长周期
 	private double threshold;        //判定是否具有周期的阈值
 	
@@ -43,6 +41,4 @@ public class PMparam {
 	public void setThreshold(double threshold) {
 		this.threshold = threshold;
 	}
-	
-	
 }
