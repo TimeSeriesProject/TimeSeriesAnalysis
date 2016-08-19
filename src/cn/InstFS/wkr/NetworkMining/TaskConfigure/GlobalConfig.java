@@ -23,6 +23,7 @@ public class GlobalConfig {
     private String omParamPath; //异常参数文件路径
     private String arParamPath; //关联规则参数文件路径
     private String pcapParseParamPath; //pcap解析参数文件路径
+    private String forecastParamPath; //预测参数文件路径
 
     private GlobalConfig() {
         Element config = getRootElement();
@@ -111,6 +112,14 @@ public class GlobalConfig {
 
     public void setPcapParseParamPath(String pcapParseParamPath) {
         this.pcapParseParamPath = pcapParseParamPath;
+    }
+
+    public String getForecastParamPath() {
+        return forecastParamPath;
+    }
+
+    public void setForecastParamPath(String forecastParamPath) {
+        this.forecastParamPath = forecastParamPath;
     }
 
     public static void main (String[] args) {

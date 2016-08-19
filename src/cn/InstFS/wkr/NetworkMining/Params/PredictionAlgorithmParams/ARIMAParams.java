@@ -4,8 +4,9 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 
 import cn.InstFS.wkr.NetworkMining.Params.IParamsNetworkMining;
+import org.jdom.Element;
 
-public class ARIMAParams extends IParamsNetworkMining implements Serializable {
+public class ARIMAParams {
 	// 神经网络参数列表
 	// 参数列表
 	private int predictPeriod; // 预测周期
@@ -13,35 +14,15 @@ public class ARIMAParams extends IParamsNetworkMining implements Serializable {
 	public ARIMAParams() {
 		// 参数列表
 		predictPeriod = 20; // 预测周期
-
 	}
 
-	public static NeuralNetworkParams newInstance(NeuralNetworkParams p) {
-		NeuralNetworkParams param = new NeuralNetworkParams();
+	public ARIMAParams(Element paramsConfig) {
+		String param = "";
 
-		param.setPredictPeriod(p.getPredictPeriod());
-
-		return param;
-	}
-
-	@Override
-	public boolean equals(IParamsNetworkMining params) {
-		Field[] fields = this.getClass().getFields();
-		boolean isSame = true;
-		for (Field field : fields)
-			try {
-				if (!field.get(this).equals(field.get(params))) {
-					isSame = false;
-					break;
-				}
-			} catch (IllegalArgumentException e) {
-				isSame = false;
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				isSame = false;
-				e.printStackTrace();
-			}
-		return isSame;
+		param = paramsConfig.getChildText("predictPeriod");
+		if(param != null){
+			predictPeriod = Integer.parseInt(param);
+		}
 	}
 
 	public int getPredictPeriod() {

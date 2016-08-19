@@ -5,13 +5,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import cn.InstFS.wkr.NetworkMining.Params.PredictionAlgorithmParams.ARIMAParams;
 import org.rosuda.REngine.Rserve.RConnection;
 
 import RUtil.ARIMA;
 import RUtil.R;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerFM;
-import cn.InstFS.wkr.NetworkMining.Params.ParamsFA;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 public class ARIMATSA implements IMinerFM{
@@ -21,7 +21,7 @@ public class ARIMATSA implements IMinerFM{
 	private DataItems predictItems;
 	private Date endDate;                //序列中最后值的日期
 	
-	public ARIMATSA(TaskElement task,DataItems dataItems,ParamsFA p){
+	public ARIMATSA(TaskElement task,DataItems dataItems,ARIMAParams p){
 		this.task=task;
 		this.di=dataItems;
 		this.predictPeriod=p.getPredictPeriod();

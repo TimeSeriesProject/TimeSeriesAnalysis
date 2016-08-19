@@ -4,8 +4,9 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 
 import cn.InstFS.wkr.NetworkMining.Params.IParamsNetworkMining;
+import org.jdom.Element;
 
-public class NeuralNetworkParams extends IParamsNetworkMining implements Serializable{
+public class NeuralNetworkParams {
 	//神经网络参数列表
 	//参数列表
 	private int predictPeriod;	//预测周期
@@ -23,39 +24,30 @@ public class NeuralNetworkParams extends IParamsNetworkMining implements Seriali
 		 trianTime=500;	//训练的迭代次数。
 	}
 
-	public static NeuralNetworkParams newInstance(NeuralNetworkParams p){
-		NeuralNetworkParams param=new NeuralNetworkParams();
-		param.setLearnRate(p.getLearnRate());
-		param.setMomentum(p.getMomentum());
-		param.setPredictPeriod(p.getPredictPeriod());
-		param.setSeed(p.getSeed());
-		param.setTrianTime(p.getTrianTime());
-		return param;
+	public NeuralNetworkParams(Element paramsConfig) {
+		String param = "";
+		param = paramsConfig.getChildText("predictPeriod");
+		if(param != null){
+			predictPeriod = Integer.parseInt(param);
+		}
+		param = paramsConfig.getChildText("momentum");
+		if(param != null){
+			momentum = Double.parseDouble(param);
+		}
+		param = paramsConfig.getChildText("learnRate");
+		if(param != null){
+			learnRate = Double.parseDouble(param);
+		}
+		param = paramsConfig.getChildText("seed");
+		if(param != null){
+			seed = Integer.parseInt(param);
+		}
+		param = paramsConfig.getChildText("trianTime");
+		if(param != null){
+			trianTime = Integer.parseInt(param);
+		}
 	}
-	
-	
-	@Override
-	public boolean equals(IParamsNetworkMining params) {
-		Field [] fields = this.getClass().getFields();
-		boolean isSame = true;
-		for (Field field : fields)
-			try {
-				if (!field.get(this).equals(field.get(params))){
-					isSame = false;
-					break;
-				}
-			} catch (IllegalArgumentException e) {
-				isSame = false;
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				isSame = false;
-				e.printStackTrace();
-			}
-		return isSame;
-	}	
-	
-	
-	
+
 	public int getPredictPeriod() {
 		return predictPeriod;
 	}
