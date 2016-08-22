@@ -19,7 +19,7 @@ public abstract class IParamsNetworkMining {
 	
 	public static IParamsNetworkMining fromString(String str){
 		
-		IParamsNetworkMining params = new ParamsPM();//默认
+		IParamsNetworkMining params = null;//默认
 
 		String []strs = str.split(spliter);
 		for (int i = 0; i < strs.length; i++){
@@ -32,7 +32,7 @@ public abstract class IParamsNetworkMining {
 					params = new ParamsTSA();
 					break;
 				}else if (strs1[1].endsWith("ParamsSM")){
-					params = new ParamsSM();
+					params =new ParamsSM(); 
 					break;
 				}
 			}			

@@ -74,14 +74,14 @@ public class PropertyUI_MiningParamsPM implements IObjectDescriptor<ParamsPM>{
 	
 	
 	public Double getPeriodThreshold(){
-		return core.getPeriodThreshold();
+		return core.getPmparam().getThreshold();
 	}
 //	public int getDimension() {
 //		return core.getDimension();
 //	}
 	
 	public void setPeriodThreshold(Double periodThreshold){
-		core.setPeriodThreshold(periodThreshold);
+		core.getPmparam().setThreshold(periodThreshold);
 	}
 //	public void setDimension(int dimension) {
 //		core.setDimension(dimension);
