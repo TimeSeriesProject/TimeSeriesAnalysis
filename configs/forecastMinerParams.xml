@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- 预测相关算法参数 -->
+<forecastParams>
+    <!-- 神经网络 -->
+    <neuralNetworkParams>
+        <predictPeriod>20</predictPeriod>
+        <momentum>0.1</momentum>
+        <learnRate>0.2</learnRate>
+        <seed>0</seed>
+        <trianTime>500</trianTime>
+    </neuralNetworkParams>
+    <!-- ARIMA -->
+    <ARIMAParams>
+        <predictPeriod>20</predictPeriod>
+    </ARIMAParams>
+</forecastParams>

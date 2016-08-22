@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 
-public class ParamsPM extends IParamsNetworkMining implements Serializable {
+public class ParamsPM extends IParamsNetworkMining implements Serializable{
 	private PMparam pmparam=null;
 	public ParamsPM(){}
 	public PMparam getPmparam() {
@@ -41,7 +41,7 @@ public class ParamsPM extends IParamsNetworkMining implements Serializable {
     	ParamsPM param = new ParamsPM();
         BeanInfo info;
         try {
-            info = Introspector.getBeanInfo(ParamsOM.class);
+            info = Introspector.getBeanInfo(ParamsPM.class);
             PropertyDescriptor []descs = info.getPropertyDescriptors();
             for (PropertyDescriptor desc : descs){
                 Object val = desc.getReadMethod().invoke(p, new Object[0]);

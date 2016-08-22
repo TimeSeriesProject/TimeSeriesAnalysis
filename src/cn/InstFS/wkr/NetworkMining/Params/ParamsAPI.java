@@ -6,13 +6,17 @@ import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMFastFourierParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMPiontPatternParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMTEOParams;
+import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.Params.PcapParseParams.PcapParseParams;
+import cn.InstFS.wkr.NetworkMining.Params.PredictionAlgorithmParams.ARIMAParams;
+import cn.InstFS.wkr.NetworkMining.Params.PredictionAlgorithmParams.NeuralNetworkParams;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.GlobalConfig;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import weka.core.pmml.jaxbbindings.PMML;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +42,10 @@ public class ParamsAPI {
 	 * LYH
 	 */
 	ParamsOM paramsOutlierMiner = null;
+
+	private ParamsPM paramsPeriodMiner = null;
+
+	private ParamsPA paramsPrediction;
 
 	private ParamsAPI(){}
 
@@ -119,7 +127,46 @@ public class ParamsAPI {
 	public void setPom(ParamsOM pom) {
 		this.paramsOutlierMiner = pom;
 	}
-	
+
+	public ParamsPM getParamsPeriodMiner() {
+		if (paramsPeriodMiner == null) {
+			String pmParamPath = GlobalConfig.getInstance().getPmParamPath();
+			Element pmParams = getRootElement(pmParamPath);
+			paramsPeriodMiner = new ParamsPM();
+
+			Element pmParamElement = pmParams.getChild("ERPandEntropyParams");
+			PMparam pmParam = new PMparam(pmParamElement);
+
+			paramsPeriodMiner.setPmparam(pmParam);
+		}
+		return paramsPeriodMiner;
+	}
+
+	public void setParamsPeriodMiner(ParamsPM paramsPeriodMiner) {
+		this.paramsPeriodMiner = paramsPeriodMiner;
+	}
+
+	public ParamsPA getParamsPrediction() {
+		if (paramsPrediction == null){
+			String forecastParamPath = GlobalConfig.getInstance().getForecastParamPath();
+			Element forecastParam = getRootElement(forecastParamPath);
+			paramsPrediction = new ParamsPA();
+
+			Element neuralNetworkParam = forecastParam.getChild("neuralNetworkParams");
+			NeuralNetworkParams nnp = new NeuralNetworkParams(neuralNetworkParam);
+			Element arimaParams = forecastParam.getChild("ARIMAParams");
+			ARIMAParams ap = new ARIMAParams(arimaParams);
+
+			paramsPrediction.setNnp(nnp);
+			paramsPrediction.setAp(ap);
+		}
+		return paramsPrediction;
+	}
+
+	public void setParamsPrediction(ParamsPA paramsPrediction) {
+		this.paramsPrediction = paramsPrediction;
+	}
+
 	public static void main(String[] args) {
 		ParamsAssocitionRule ar = ParamsAPI.getInstance().getAssociationRuleParams();
 		System.out.println(ar.toString());

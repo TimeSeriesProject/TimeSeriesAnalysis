@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import WaveletUtil.generateFeatures;
+import cn.InstFS.wkr.NetworkMining.Params.PredictionAlgorithmParams.NeuralNetworkParams;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -16,7 +17,6 @@ import weka.core.Instances;
 import weka.core.converters.CSVLoader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerFM;
-import cn.InstFS.wkr.NetworkMining.Params.ParamsFA;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 @SuppressWarnings("deprecation")
@@ -42,7 +42,7 @@ public class NeuralNetwork implements IMinerFM{
 		this.originDataEndTime=originDataEndTime;
 	}*/
 	
-	public NeuralNetwork(String inputFilePath,Date originDataEndTime,TaskElement task,ParamsFA p){
+	public NeuralNetwork(String inputFilePath,Date originDataEndTime,TaskElement task,NeuralNetworkParams p){
 		this.inputFilePath=inputFilePath;
 		this.task=task;
 		this.originDataEndTime=originDataEndTime;
