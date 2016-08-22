@@ -18,6 +18,13 @@ public class parseDateToHour {
 		this.hour =(int) hours;
 		this.startDate = date2;
 	}
+
+	public parseDateToHour(Date date, Date startDate) {
+		long diff = date.getTime()-startDate.getTime();
+		long hours = diff/(1000*3600);
+		this.hour =(int) hours;
+		this.startDate = startDate;
+	}
 	public int getHour(){
 		return hour;
 	}

@@ -2,9 +2,10 @@ package cn.InstFS.wkr.NetworkMining.Params;
 
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 
-public class ParamsPM extends IParamsNetworkMining {
+public class ParamsPM extends IParamsNetworkMining implements Serializable{
 	private PMparam pmparam=null;
 	public ParamsPM(){}
 	public PMparam getPmparam() {

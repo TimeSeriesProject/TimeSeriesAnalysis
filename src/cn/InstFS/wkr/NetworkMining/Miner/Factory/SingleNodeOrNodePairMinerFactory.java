@@ -141,14 +141,14 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 				 * @author LYH
 				 * 用于测试读取时间区间数据，单节点挖掘
 				 * **/
-				Calendar cal3 = Calendar.getInstance();
+				/*Calendar cal3 = Calendar.getInstance();
 				Calendar cal4 = Calendar.getInstance();
-				cal3.set(2014, 9, 10, 0, 0, 0);
-				cal4.set(2014,10,1,0,0,0);
+				cal3.set(2014, 9, 1, 2, 0, 0);
+				cal4.set(2014,9,3,2,0,0);
 				Date date3 = cal3.getTime();
-				Date date4 = cal4.getTime();
-				/*Date date3 = getStartDate();
-				Date date4 = getEndDate();*/
+				Date date4 = cal4.getTime();*/
+				Date date3 = getStartDate();
+				Date date4 = getEndDate();
 				rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),true,date3,date4,3600);
 				break;
 			case MiningObject_NodeDisapearEmerge:
