@@ -2,6 +2,11 @@ package cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams;
 
 import org.jdom.*;
 
+/**
+ * 
+ * @author 艾长青
+ *
+ */
 public class AssociationRuleLineParams {
 
 	/**

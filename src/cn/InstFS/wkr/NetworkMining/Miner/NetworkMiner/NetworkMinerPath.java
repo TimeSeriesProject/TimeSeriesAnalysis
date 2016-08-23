@@ -4,9 +4,9 @@ import java.util.*;
 
 import WaveletUtil.PointPatternDetection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.*;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ERPDistencePM;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FastFourierOutliesDetection;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatistics;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;

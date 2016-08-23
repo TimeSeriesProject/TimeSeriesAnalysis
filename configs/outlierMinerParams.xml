@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- 异常检测算法参数 -->
+<outlierMinerParam>
+	<!-- 傅立叶变换 -->
+	<fastFourierParams>
+		<sizeK>8</sizeK>
+		<amplitudeRatio>0.9</amplitudeRatio>
+		<varK>3.0</varK>
+	</fastFourierParams>
+	<!-- 高斯滑动窗口 -->
+	<gaussianParams>
+		<initWindowSize>30</initWindowSize>
+		<maxWindowSize>60</maxWindowSize>
+		<expWindowSize>3</expWindowSize>
+		<windowVarK>3.0</windowVarK>
+	</gaussianParams>
+	<!-- 线段模式异常检测 -->
+	<pointPatternParams>
+		<densityK>2</densityK>
+		<patternThreshold>0.1</patternThreshold>
+		<neighborK>10</neighborK>
+	</pointPatternParams>
+	<TEOParams>
+		<mergeThreshold>0.025</mergeThreshold>
+		<neighborK>7</neighborK>
+	</TEOParams>
+</outlierMinerParam>

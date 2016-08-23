@@ -1,13 +1,10 @@
 package cn.InstFS.wkr.NetworkMining.Miner.Factory;
 
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
-import org.apache.commons.math3.analysis.function.Min;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +22,7 @@ public abstract class MinerFactorySettings {
     private List<MiningMethod> miningMethodsChecked = new ArrayList<>();
     private TaskRange taskRange;
     private String granularity = "3600";
+    private String granularityList;
     private boolean isModified = false;
     private boolean isOnlyObjectModified = false;
     private List<MiningObject> miningObjectsAdded = new ArrayList<>();
@@ -35,6 +33,13 @@ public abstract class MinerFactorySettings {
 
     public MinerFactorySettings(String minerType) {
         this.minerType = minerType;
+        granularityList = GlobalConfig.getInstance().getGranularityList();
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        cal1.set(2014, 9, 1, 2, 0, 0);
+        cal2.set(2014,9,3,3,0,0);
+        startDate = new Date(cal1.getTimeInMillis()/1000 * 1000);
+        endDate = new Date(cal2.getTimeInMillis()/1000 * 1000);
     }
 
     public String getDataPath() {
@@ -68,6 +73,15 @@ public abstract class MinerFactorySettings {
     public void setGranularity(String granularity) {
         this.granularity = granularity;
     }
+
+    public String getGranularityList() {
+        return granularityList;
+    }
+
+    public void setGranularityList(String granularityList) {
+        this.granularityList = granularityList;
+    }
+
     public List<MiningObject> getMiningObjectList() {
         return miningObjectList;
     }

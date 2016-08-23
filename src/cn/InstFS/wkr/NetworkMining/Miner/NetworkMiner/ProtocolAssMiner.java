@@ -9,14 +9,15 @@ import java.util.TimerTask;
 
 import associationRules.ProtocolAssociationResult;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ProtocolAssRtree;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ProtocolAssociation;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ProtocolAssociationLine;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AssociationAlgorithm.ProtocolAssRtree;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AssociationAlgorithm.ProtocolAssociation;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AssociationAlgorithm.ProtocolAssociationLine;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
@@ -135,15 +136,19 @@ class ProtocolMinerTask extends TimerTask{
 		for(TaskElement task:tasks){
 			switch (task.getMiningMethod()) {
 			case MiningMethods_FrequenceItemMining:
-				ProtocolAssociationLine pal = new ProtocolAssociationLine(eachProtocolItems,null);
+				
+				ProtocolAssociationLine pal = new ProtocolAssociationLine(eachProtocolItems,
+						ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams());
 				protocolAssResult.setRetFP(pal.miningAssociation());
 				break;
 			case MiningMethods_SimilarityMining:
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_SimilarityProtocolASS)){
-					ProtocolAssociation pa=new ProtocolAssociation(eachProtocolItems, null);
+					ProtocolAssociation pa=new ProtocolAssociation(eachProtocolItems, 
+							ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleSimilarityParams()
+							);
 					protocolAssResult.setRetSim(pa.miningAssociation());
 				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_RtreeProtocolASS)){
-					ProtocolAssRtree rTreePa=new ProtocolAssRtree(eachProtocolItems); //没有参数
+					ProtocolAssRtree rTreePa=new ProtocolAssRtree(eachProtocolItems); //没有参数,不需要调用带参的构造函数
 					protocolAssResult.setRetSim(rTreePa.miningAssociation());
 				}
 				results.setRetProtocol(protocolAssResult);

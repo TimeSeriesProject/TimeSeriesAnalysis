@@ -16,13 +16,14 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 public class ProtocolAssMinerFactory extends MinerFactorySettings {
 	private static ProtocolAssMinerFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="D:\\57data\\traffic";
+	public String dataPath;
 	private MiningObject miningObject;
 	private TaskRange taskRange = TaskRange.SingleNodeRange;
 	public static HashMap<String, HashMap<String, DataItems>> eachProtocolItems;
 	
 	ProtocolAssMinerFactory(){
 		super(MinerType.MiningType_ProtocolAssociation.toString());
+		dataPath = GlobalConfig.getInstance().getDataPath() + "\\traffic";
 
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Traffic);

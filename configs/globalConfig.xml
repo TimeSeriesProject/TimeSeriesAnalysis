@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<config>
+    <dataPath>D:\57data</dataPath>
+    <granularityList>1,2,4,8,16,24</granularityList>
+    <pmParamPath>./configs/periodMinerParams.xml</pmParamPath>
+    <omParamPath>./configs/outlierMinerParams.xml</omParamPath>
+    <arParamPath>./configs/associationRuleParam.xml</arParamPath>
+    <pcapParseParamPath>./configs/pcapParseParams.xml</pcapParseParamPath>
+    <forecastParamsPath>./configs/forecastMinerParams.xml</forecastParamsPath>
+</config>

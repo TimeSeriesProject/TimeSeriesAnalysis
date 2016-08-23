@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.Miner.Algorithms;
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
+import cn.InstFS.wkr.NetworkMining.Params.statistics.SeriesStatisticsParam;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 
 public class SeriesStatistics {
@@ -28,7 +29,20 @@ public class SeriesStatistics {
 		this.splitM=2;
 		this.ratio=0.2;
 	}
-	
+	/**
+	 * @param dataItems
+	 * @param param
+	 * @author 艾长青
+	 */
+	public SeriesStatistics(DataItems dataItems,SeriesStatisticsParam param){
+		this.dataItems=dataItems;
+		this.splitM=2;
+		this.ratio=0.2;
+		if(param != null){
+			splitM = param.getSplitM();
+			ratio = param.getRatio();
+		}
+	}
 	
 	public void statistics(){
 		getMeanAndStd(dataItems);

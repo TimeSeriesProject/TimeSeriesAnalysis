@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.Miner.Algorithms;
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AssociationAlgorithm;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsFP_Whole;
+import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssocitionRuleRTreeParams;
+
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import associationRules.ProtocolAssociationResult;
@@ -22,12 +24,19 @@ public class ProtocolAssRtree {
 	private HashMap<String, HashMap<String, DataItems>> eachProtocolItems;
 	private RTreeIndex tree;
 	private Map<String,List<ProtocolAssociationResult>> protocolResult;
+	
+	AssocitionRuleRTreeParams arrp = null; //由于该方法没有需要设置的参数，故该参数不适用
 	public ProtocolAssRtree(HashMap<String, HashMap<String, DataItems>> eachProtocolItems){
 		this.eachProtocolItems=eachProtocolItems;
 		protocolResult=new HashMap<String, List<ProtocolAssociationResult>>();
 		tree=new RTreeIndex();
 	}
-	
+	public ProtocolAssRtree(HashMap<String, HashMap<String, DataItems>> eachProtocolItems,AssocitionRuleRTreeParams arrp){
+		this.eachProtocolItems=eachProtocolItems;
+		protocolResult=new HashMap<String, List<ProtocolAssociationResult>>();
+		tree=new RTreeIndex();
+		this.arrp = arrp;
+	}
 	private void deleteTree(NonLeafNode node){
 		if(node.nextTOLeaf){
 			List<LeafNode> leaive=node.leafChilds;

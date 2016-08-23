@@ -10,22 +10,15 @@ import java.util.Map;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 
 public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	private static SingleNodeOrNodePairMinerFactory inst;
 	private static SingleNodeOrNodePairMinerFactory pairInst;
 	public static boolean isMining=false;
 
-	public String dataPath="D:\\57data\\traffic";
-	public String rootPath = "D:\\57data\\node";
+	public String dataPath;
+	public String rootPath;
 
 	private MiningObject miningObject;
 	private TaskRange taskRange = TaskRange.SingleNodeRange;
@@ -33,6 +26,8 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	
 	private SingleNodeOrNodePairMinerFactory(String minertype){
 		super(minertype);
+		dataPath = GlobalConfig.getInstance().getDataPath() + "\\traffic";
+		rootPath = GlobalConfig.getInstance().getDataPath() + "\\node";
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Times);
 		miningObjectList.add(MiningObject.MiningObject_Traffic);
@@ -146,14 +141,14 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 				 * @author LYH
 				 * 用于测试读取时间区间数据，单节点挖掘
 				 * **/
-				Calendar cal3 = Calendar.getInstance();
+				/*Calendar cal3 = Calendar.getInstance();
 				Calendar cal4 = Calendar.getInstance();
-				cal3.set(2014, 9, 10, 0, 0, 0);
-				cal4.set(2014,10,1,0,0,0);
+				cal3.set(2014, 9, 1, 2, 0, 0);
+				cal4.set(2014,9,3,2,0,0);
 				Date date3 = cal3.getTime();
-				Date date4 = cal4.getTime();
-				/*Date date3 = getStartDate();
-				Date date4 = getEndDate();*/
+				Date date4 = cal4.getTime();*/
+				Date date3 = getStartDate();
+				Date date4 = getEndDate();
 				rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),true,date3,date4,3600);
 				break;
 			case MiningObject_NodeDisapearEmerge:

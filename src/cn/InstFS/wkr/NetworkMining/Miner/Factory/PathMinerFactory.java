@@ -15,7 +15,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 public class PathMinerFactory extends MinerFactorySettings{
 	private static PathMinerFactory inst;
 	public static boolean isMining=false;
-	public String dataPath="D:\\57data\\route";
+	public String dataPath;
 	
 	private MiningObject miningObject;
 	private TaskRange taskRange = TaskRange.NodePairRange;
@@ -23,6 +23,7 @@ public class PathMinerFactory extends MinerFactorySettings{
 	
 	private PathMinerFactory(){
 		super(MinerType.MiningType_Path.toString());
+		dataPath = GlobalConfig.getInstance().getDataPath() + "\\route";
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Times);
 		miningObjectList.add(MiningObject.MiningObject_Traffic);

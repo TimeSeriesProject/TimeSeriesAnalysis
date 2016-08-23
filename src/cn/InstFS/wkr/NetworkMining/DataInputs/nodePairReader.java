@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -362,6 +363,38 @@ public class nodePairReader implements IReader {
 		cal.set(Calendar.MILLISECOND, 0);
 		cal.add(Calendar.SECOND,Integer.parseInt(timeStr));
 		return cal.getTime();
+	}
+
+	/**
+	 * 转换日期
+	 * @param timeSecond 距离startDate的秒数
+	 * @param startDate 起始日期的0点时间戳
+     * @return
+     */
+	private Date parseTime(int timeSecond, long startDate) {
+		return new Date(timeSecond*1000 + startDate);
+	}
+
+	/**
+	 * 将起止日期取整到当天0时
+	 * @param startDate 起始日期
+	 * @param endDate 截止日期
+     * @return 向下取整后long型的起止日期
+     */
+	private long[] floorDate(Date startDate, Date endDate) {
+		long[] timestamp = new long[2];
+		String dateStr;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd 00:00:00");
+
+		try {
+			dateStr = sdf.format(startDate);
+			timestamp[0] = sdf.parse(dateStr).getTime();
+			dateStr = sdf.format(endDate);
+			timestamp[1] = sdf.parse(dateStr).getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return timestamp;
 	}
 	
 	/**
@@ -1391,74 +1424,84 @@ public class nodePairReader implements IReader {
 	 */
 	public HashMap<String, DataItems> readEachProtocolTimesDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
 		int timegran = timeGran/3600;
-		parseDateToHour pHour = new parseDateToHour(date1);
 		int start=0;
 		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
-		TextUtils textUtils=new TextUtils();
-		textUtils.setTextPath(filePath);
-		//textUtils.readByrow();
-		String line=null;
-		//int rows=0;//记录总共读取的行数
+
+		long[] fileDays = floorDate(date1, date2);
+		long fileDay = fileDays[0];
+		long endDay = fileDays[1];
+		long startDay = fileDay; // 数据起始日0点
+		parseDateToHour pHour = new parseDateToHour(date1, new Date(startDay));
+//		parseDateToHour pHour = new parseDateToHour(date1);
 		List<Integer> indexs = new ArrayList<Integer>();
-		while((line=textUtils.readByrow())!=null){
-			System.out.println(line);
-			String[] items=line.split(",");
-			int timeSpan=Integer.parseInt(items[0]);			
-			Date time=parseTime(timeSpan*3600);
-			
+		for (int k = 0; fileDay <= endDay; k++) {
+			String fileName = fileDay+".txt";
+			TextUtils textUtils=new TextUtils();
+			textUtils.setTextPath(filePath+"\\"+ fileName);
+			String line=null;
+
+			while((line=textUtils.readByrow())!=null){
+				System.out.println(line);
+				String[] items=line.split(",");
+				int timeSpan=Integer.parseInt(items[0]) + 24*k;
+				Date time=parseTime(timeSpan*3600, startDay);
+
 			/*读取时间区间数据*/
-			if(isReadBetween){
-				if(time.compareTo(date1)<0 || time.compareTo(date2)>0){
-					continue;
+				if(isReadBetween){
+					if(time.compareTo(date1)<0 || time.compareTo(date2)>0){
+						continue;
+					}
+					start=pHour.getHour();
 				}
-				start=pHour.getHour();
-			}	
-			indexs.add((timeSpan-start)/timegran);
-			String protocolItems=items[items.length-1];
-			String[] eachProtocol=protocolItems.split(";");			
-			for(String protocolTraffic:eachProtocol){
-				String[] proAndTraffic=protocolTraffic.split(":");
-				String protocol=proAndTraffic[0];
-				if(protocolDataItems.containsKey(protocol)){
-					int nowIndex = indexs.get(indexs.size()-1);
-					int preIndex = indexs.get(indexs.size()-2);
-					if(nowIndex-preIndex>1){
-						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
-						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
-						for(int j=preIndex+1;j<nowIndex;j++){
-							dataItems.add1Data(parseTime((j+start)*3600), "0");
+				indexs.add((timeSpan-start)/timegran);
+				String protocolItems=items[items.length-1];
+				String[] eachProtocol=protocolItems.split(";");
+				for(String protocolTraffic:eachProtocol){
+					String[] proAndTraffic=protocolTraffic.split(":");
+					String protocol=proAndTraffic[0];
+					if(protocolDataItems.containsKey(protocol)){
+						int nowIndex = indexs.get(indexs.size()-1);
+						int preIndex = indexs.get(indexs.size()-2);
+						if(nowIndex-preIndex>1){
+							DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
+							DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
+							for(int j=preIndex+1;j<nowIndex;j++){
+								dataItems.add1Data(parseTime((j+start)*3600, startDay), "0");
+							}
 						}
+						DataItems dataItems=protocolDataItems.get(protocol);
+						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
+						//合并同一个IP，同一个协议的通信的流量要合并
+						if(preIndex==nowIndex){
+							int times=Integer.parseInt(dataItem.getData());
+							//int addTimes=Integer.parseInt(proAndTraffic[2]);
+							int addTimes=Integer.parseInt(proAndTraffic[2]);
+							dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
+						}
+						else if(dataItem.getTime().before(time)){
+							Date addtime=DataPretreatment.getDateAfter(dataItem.getTime(),3600*1000);
+							while(!addtime.toString().equals(time.toString())&&addtime.before(time)){
+								dataItems.add1Data(addtime,"0");
+								addtime=DataPretreatment.getDateAfter(addtime, 3600*1000);
+							}
+							dataItems.add1Data(addtime, proAndTraffic[2]);
+						}
+						else{
+							throw new RuntimeException("读入文件"+filePath+"第"+indexs.get(indexs.size()-1)+"行发生时间错位");
+						}
+					}else{
+						DataItems dataItems=new DataItems();
+						for(int i=indexs.get(0);i>start;i--){
+							dataItems.add1Data(parseTime(timeSpan-i, startDay), "0");
+						}
+						dataItems.add1Data(time, proAndTraffic[2]);
+						protocolDataItems.put(protocol, dataItems);
 					}
-					DataItems dataItems=protocolDataItems.get(protocol);
-					DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
-					//合并同一个IP，同一个协议的通信的流量要合并
-					if(preIndex==nowIndex){
-						int times=Integer.parseInt(dataItem.getData());
-						//int addTimes=Integer.parseInt(proAndTraffic[2]);
-						int addTimes=Integer.parseInt(proAndTraffic[2]);
-						dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
-					}
-					else if(dataItem.getTime().before(time)){
-						Date addtime=DataPretreatment.getDateAfter(dataItem.getTime(),3600*1000);
-						while(!addtime.toString().equals(time.toString())&&addtime.before(time)){
-							dataItems.add1Data(addtime,"0");
-							addtime=DataPretreatment.getDateAfter(addtime, 3600*1000);
-						}					
-						dataItems.add1Data(addtime, proAndTraffic[2]);
-					}
-					else{
-						throw new RuntimeException("读入文件"+filePath+"第"+indexs.get(indexs.size()-1)+"行发生时间错位");
-					}	
-				}else{
-					DataItems dataItems=new DataItems();
-					for(int i=indexs.get(0);i>start;i--){
-						dataItems.add1Data(parseTime(timeSpan-i), "0");
-					}
-					dataItems.add1Data(time, proAndTraffic[2]);
-					protocolDataItems.put(protocol, dataItems);
 				}
+
 			}
-			
+
+			fileDay += 86400000; // 下一天的文件名时间戳
 		}
 		/**
 		 * @author LYH
@@ -1743,6 +1786,7 @@ public class nodePairReader implements IReader {
 	 * 将一个节点(这里只考虑路由)的所有协议的通信量合并在同一时刻合并。当节点在该时候都没有通讯时，则认为该节点消失了
 	 * @param filePath
 	 * @return
+	 * @author 艾长青
 	 */
 	public HashMap<String, DataItems> readEachNodeDisapearEmergeDataItems(
 			String filePath,int timeSpan) {
@@ -1766,7 +1810,7 @@ public class nodePairReader implements IReader {
 				maxTime = timePoint;
 			}
 		}
-		for(int i = 0;i <= maxTime/timeSpan;i++)
+		for(int i = 0;i <= maxTime;i++)
 		{
 			sumDataItem.add1Data(parseTime(i*timeSpan), "0");
 		}
@@ -1775,17 +1819,16 @@ public class nodePairReader implements IReader {
 			
 			String[] items = line.split(",");
 			int timePoint = Integer.parseInt(items[0]);
-			index = timePoint/timeSpan;
-			Date time = parseTime(timePoint/timeSpan*timeSpan);
+			Date time = parseTime(timePoint*timeSpan);
+			
+			index = sumDataItem.getTime().indexOf(time);
+			
 			int lastTraffic = Integer.parseInt(sumDataItem.getData().get(index));
 			int currentTraffic = Integer.parseInt(items[2]);
 			
 			if(lastTraffic > 0 || currentTraffic > 0){
 				sumDataItem.data.set(index, "1");
-			} else {
-				System.out.println("ha");
-			}
-			
+			} 
 		}
 		
 		protocolDataItems.put("AllTraffic", sumDataItem);
