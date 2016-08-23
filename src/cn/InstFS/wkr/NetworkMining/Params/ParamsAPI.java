@@ -47,6 +47,16 @@ public class ParamsAPI {
 
 	private ParamsPA paramsPrediction;
 
+	private ParamsStatistic paramsStatistic = null;
+	
+	public ParamsStatistic getParamsStatistic() {
+		return paramsStatistic;
+	}
+
+	public void setParamsStatistic(ParamsStatistic paramsStatistic) {
+		this.paramsStatistic = paramsStatistic;
+	}
+
 	private ParamsAPI(){}
 
 	public static final ParamsAPI getInstance() {

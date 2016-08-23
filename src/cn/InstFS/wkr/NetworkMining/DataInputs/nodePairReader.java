@@ -1786,6 +1786,7 @@ public class nodePairReader implements IReader {
 	 * 将一个节点(这里只考虑路由)的所有协议的通信量合并在同一时刻合并。当节点在该时候都没有通讯时，则认为该节点消失了
 	 * @param filePath
 	 * @return
+	 * @author 艾长青
 	 */
 	public HashMap<String, DataItems> readEachNodeDisapearEmergeDataItems(
 			String filePath,int timeSpan) {
