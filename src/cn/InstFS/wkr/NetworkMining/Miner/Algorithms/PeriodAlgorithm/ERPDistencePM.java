@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerPM;
+import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
@@ -22,6 +23,7 @@ public class ERPDistencePM implements IMinerPM {
     private HashMap<Integer, Integer[]> minPredictValuesMap;
     private HashMap<Integer, Integer[]> maxPredictValuesMap;
    	private double threshold;  //是否具有周期的阈值
+   	private int longestPeriod;
    	private int lastNumIndexInPeriod;//最后一个数在周期中的位置
    	private Boolean hasPeriod; //是否有周期
 	private int predictPeriod;   //周期长度
@@ -67,26 +69,34 @@ public class ERPDistencePM implements IMinerPM {
 		existPeriod=new ArrayList<Integer>();
 	}
 	
+	public ERPDistencePM(PMparam pmParam){
+		hasPeriod = false;
+		predictPeriod=1;
+		minEntropy = Double.MAX_VALUE;
+		predictValuesMap=new HashMap<Integer, Integer[]>();
+		minPredictValuesMap=new HashMap<Integer, Integer[]>();
+		maxPredictValuesMap=new HashMap<Integer, Integer[]>();
+		existPeriod=new ArrayList<Integer>();
+		this.threshold=pmParam.getThreshold();
+		this.longestPeriod=pmParam.getLongestPeriod();
+	}
+	
 	public void predictPeriod(){
 		int numItems=di.getLength();
 		if(numItems==0){
 			return;
 		}
-		int maxPeriod = (numItems/2>300)?300:(numItems/2);
+		int maxPeriod = (numItems/2>longestPeriod)?longestPeriod:(numItems/2);
 		if(di.isAllDataIsDouble()){
 			List<String> seq=new ArrayList<String>();
 			for(int i=0;i<numItems;i++){
 				seq.add((Double.parseDouble(di.getData().get(i)))+"");
 			}
-//			for(String i:seq){
-//				System.out.println(i);
-//			}
-			//System.out.println();
+
 			generateManHatonEntroy(seq,numItems);
 			seq.clear();
 			for(int i=0;i<numItems;i++){
 				seq.add((int)(Double.parseDouble(oriDi.getData().get(i)))+"");
-//				seq.add(Double.parseDouble(oriDi.getData().get(i))+"");
 			}
 			isPeriodExist(maxPeriod,null,seq);
 		}else{
@@ -120,7 +130,7 @@ public class ERPDistencePM implements IMinerPM {
 	 */
 	private void generateEntroy(List<String> seq,int numItems){
 		double[][] ErpDistMatrix;
-		int maxPeriod = (numItems/2>300)?300:(numItems/2);
+		int maxPeriod = (numItems/2>longestPeriod)?longestPeriod:(numItems/2);
 		int period=1;
 		entropies=new Double[maxPeriod];
 		List<String> standardList=new ArrayList<String>();
@@ -157,7 +167,7 @@ public class ERPDistencePM implements IMinerPM {
 	 * @param numItems
 	 */
 	private void generateManHatonEntroy(List<String> seq,int numItems){
-		int maxPeriod = (numItems/2>300)?300:(numItems/2);
+		int maxPeriod = (numItems/2>longestPeriod)?longestPeriod:(numItems/2);
 		int period=1;
 		entropies=new Double[maxPeriod];
 		List<String> standardList=new ArrayList<String>();
@@ -301,27 +311,6 @@ public class ERPDistencePM implements IMinerPM {
 				maxPredictValuesMap.put((i+1),maxPredictValues);
 			}
 		}
-//		int shortestPeriod=maxPeriod;
-//		Set<Integer> keyset=predictValuesMap.keySet();
-//		for(Integer key:keyset){
-//			if(key<shortestPeriod)
-//				shortestPeriod=key;
-//		}
-//		
-//		int multiple=1;
-//		boolean isSuccess=true;
-//		while((multiple+1)*Period<maxPeriod){
-//			if(entropies[multiple*Period-1]-entropies[(multiple+1)*Period-1]>=(-entropies[multiple*Period-1]*0.2)){
-//				multiple++;
-//			}else{
-//				isSuccess=false;
-//				break;
-//			}
-//		}
-//		if(!isSuccess){
-//			Period=multiple*Period;
-//		}
-//		predictPeriod=Period;
 		double ratios=0;
 		int possiPeriod=0;
 		for(Integer key:ratio.keySet()){
@@ -399,24 +388,24 @@ public class ERPDistencePM implements IMinerPM {
 		
 		
 		if(index==2){
-			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.13){
+			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*threshold){
 				isMaxThanNeighbor=true;
 			}
 		}else if(index==Entropies.length){
-			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.13){
+			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*threshold){
 				isMaxThanNeighbor=true;
 			}
 		}else{
 			if(isnext){
 				if(origin-index==1){
-					if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.13)
+					if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*threshold)
 						isMaxThanNeighbor=true;
 				}else if(origin-index==-1){
-					if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.13)
+					if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*threshold)
 						isMaxThanNeighbor=true;
 				}
-			}else if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.13&&
-            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.13){
+			}else if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*threshold&&
+            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*threshold){
             	isMaxThanNeighbor=true;
 			}
 		}

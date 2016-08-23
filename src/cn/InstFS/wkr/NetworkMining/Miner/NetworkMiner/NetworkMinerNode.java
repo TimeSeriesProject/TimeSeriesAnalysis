@@ -25,6 +25,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
+import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
@@ -162,11 +163,11 @@ class NodeTimerTask extends TimerTask{
 			IMinerOM tsaMethod=null;
 			switch (task.getMiningMethod()) {
 			case MiningMethods_PeriodicityMining:
-				
+				PMparam pMparam=null;
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_averageEntropyPM)){
-					pmMethod=new averageEntropyPM(task, dimension);
+					pmMethod=new averageEntropyPM(task, dimension,pMparam);//添加参数
 				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
-					pmMethod=new ERPDistencePM();
+					pmMethod=new ERPDistencePM(pMparam);
 				}else{
 					throw new RuntimeException("方法不存在！");
 				}

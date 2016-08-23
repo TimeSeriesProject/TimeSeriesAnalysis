@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerPM;
+import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Exception.NotFoundDicreseValueException;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
@@ -30,6 +31,7 @@ public class averageEntropyPM implements IMinerPM {
     private HashMap<Integer, Integer[]> minPredictValuesMap;
     private HashMap<Integer, Integer[]> maxPredictValuesMap;
 	private double threshold;  //是否具有周期的阈值
+	private int longestPeriod;
 	private int lastNumIndexInPeriod;//最后一个数在周期中的位置
 	private double confidence;
 	
@@ -62,6 +64,20 @@ public class averageEntropyPM implements IMinerPM {
 		minPredictValuesMap=new HashMap<Integer, Integer[]>();
 		maxPredictValuesMap=new HashMap<Integer, Integer[]>();
 		existPeriod=new ArrayList<Integer>();
+	}
+	
+	public averageEntropyPM(TaskElement taskElement,int dimension,PMparam pmParam){
+		this.dimension=dimension;
+		this.task=taskElement;
+		hasPeriod = false;	
+		predictPeriod=1;
+		minEntropy = Double.MAX_VALUE;
+		predictValuesMap=new HashMap<Integer, Integer[]>();
+		minPredictValuesMap=new HashMap<Integer, Integer[]>();
+		maxPredictValuesMap=new HashMap<Integer, Integer[]>();
+		existPeriod=new ArrayList<Integer>();
+		this.threshold=pmParam.getThreshold();
+		this.longestPeriod=pmParam.getLongestPeriod();
 	}
 	
 	/**
@@ -101,7 +117,7 @@ public class averageEntropyPM implements IMinerPM {
 			throw new RuntimeException("平均熵算法要求数据离散化");
 		}
 		int numItems=di.getLength();
-		int maxPeriod = (numItems/2>300)?300:numItems/2;
+		int maxPeriod = (numItems/2>longestPeriod)?longestPeriod:numItems/2;
 		if (numItems == 0)
 			return;
 		if(di.isAllDataIsDouble()){
@@ -132,7 +148,7 @@ public class averageEntropyPM implements IMinerPM {
 		
         startTime = times.get(0);
 		int period=1;
-		int maxPeriod = Math.min(numItems/2, 300);
+		int maxPeriod = Math.min(numItems/2, longestPeriod);
 		entropies = new Double[maxPeriod];
 		while((period+1)<= maxPeriod){
 			period++;	//周期递加
@@ -220,19 +236,6 @@ public class averageEntropyPM implements IMinerPM {
 				maxPredictValuesMap.put((i+1),maxPredictValues);
 			}
 		}
-//		int Period=maxPeriod;
-//		Set<Integer> keyset=predictValuesMap.keySet();
-//		for(Integer key:keyset){
-//			if(key<=Period){
-//				Period=key;
-//			}
-//		}
-//		predictPeriod=Period;
-//		for(int i=1;i<maxPeriod;i++){
-//			if(entropies[i]<minEntropy){
-//				minEntropy=entropies[i];
-//			}
-//		}
 		
 		double ratios=0;
 		int possiPeriod=0;
@@ -308,24 +311,24 @@ public class averageEntropyPM implements IMinerPM {
 		boolean isMaxThanNeighbor=false;
 		
 		if(index==2){
-			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2){
+			if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*threshold){
 				isMaxThanNeighbor=true;
 			}
 		}else if(index==Entropies.length){
-			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2){
+			if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*threshold){
 				isMaxThanNeighbor=true;
 			}
 		}else{
 			if(isnext){
 				if(origin-index==1){
-					if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2)
+					if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*threshold)
 						isMaxThanNeighbor=true;
 				}else if(origin-index==-1){
-					if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2)
+					if(Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*threshold)
 						isMaxThanNeighbor=true;
 				}
-			}else if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*0.2&&
-            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*0.2){
+			}else if(Entropies[index-1]-Entropies[index-2]<=-Entropies[index-1]*threshold&&
+            		Entropies[index-1]-Entropies[index]<=-Entropies[index-1]*threshold){
             	isMaxThanNeighbor=true;
 			}
 		}
