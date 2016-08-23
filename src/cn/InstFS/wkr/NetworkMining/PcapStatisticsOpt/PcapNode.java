@@ -34,6 +34,17 @@ public class PcapNode implements Comparable {
     }
 
     @Override
+    public boolean equals(Object arg0) {
+        PcapNode node = (PcapNode) arg0;
+        return time_s == node.getTime_s();
+    }
+
+    @Override
+    public int hashCode() {
+        return (int)this.getTime_s();
+    }
+
+    @Override
     public int compareTo(Object arg0) {
         PcapNode node = (PcapNode) arg0;
         if (time_s == node.getTime_s()) {

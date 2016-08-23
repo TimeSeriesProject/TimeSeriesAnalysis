@@ -219,7 +219,7 @@ class RouteGen implements Callable {
         PcapData pre = null;
         HashSet<String> set = null;
         String curLine;
-        curLine = "Time(S),srcIP,dstIP,traffic,hops";
+        curLine = "Time(S),srcIP,dstIP,traffic,hops,path";
         bw.write(curLine);
         bw.newLine();
         int num = 0;
