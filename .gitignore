@@ -9,3 +9,5 @@ result/
 *.log
 .classpath
 .project
+/bin/
+/bin/
