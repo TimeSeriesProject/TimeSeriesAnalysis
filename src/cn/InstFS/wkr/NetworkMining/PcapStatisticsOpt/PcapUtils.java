@@ -97,7 +97,7 @@ class Parser implements Callable {
         });
     }
 
-//    public void clean(final Object buffer) throws Exception {
+    //    public void clean(final Object buffer) throws Exception {
 //        AccessController.doPrivileged(new PrivilegedAction() {
 //            public Object run() {
 //                try {
@@ -112,8 +112,9 @@ class Parser implements Callable {
 //
 //    }
     public Boolean call() {
+        FileChannel fc = null;
         try {
-            FileChannel fc = new FileInputStream(file).getChannel();
+            fc = new FileInputStream(file).getChannel();
             length = fc.size();
             String fileName = file.getName();
             int index = fileName.lastIndexOf(".");
@@ -153,6 +154,14 @@ class Parser implements Callable {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (fc != null) {
+                    fc.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return true;
     }
@@ -210,7 +219,7 @@ class RouteGen implements Callable {
         PcapData pre = null;
         HashSet<String> set = null;
         String curLine;
-        curLine = "Time(S),srcIP,dstIP,traffic,hops";
+        curLine = "Time(S),srcIP,dstIP,traffic,hops,path";
         bw.write(curLine);
         bw.newLine();
         int num = 0;
@@ -345,10 +354,11 @@ class RouteGen implements Callable {
 //    }
 
     public Boolean call() {
+        FileChannel fc = null;
         try {
             String srcIP = fileName.split("_")[0];
             String dstIP = fileName.substring(srcIP.length() + 1, fileName.lastIndexOf("."));
-            FileChannel fc = new FileInputStream(path).getChannel();
+            fc = new FileInputStream(path).getChannel();
             length = fc.size();
             if (length <= Integer.MAX_VALUE) {
                 MappedByteBuffer is = fc.map(FileChannel.MapMode.READ_ONLY, 0, length);
@@ -382,6 +392,14 @@ class RouteGen implements Callable {
             System.out.println("getGenedRouteNum()" + pcapUtils.getGenedRouteNum());
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (fc != null) {
+                    fc.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return true;
     }
@@ -729,6 +747,31 @@ public class PcapUtils {
 //        }
     }
 
+    private void generateRouteDis(ArrayList<File> fileList, String outPath) {
+        genRouteSum = fileList.size();
+        status = Status.GENROUTE;
+        System.out.println(status);
+        System.out.println("genSum " + genRouteSum);
+        ExecutorService exec = Executors.newFixedThreadPool(1);
+        ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
+        for (int i = 0; i < fileList.size(); i++) {
+            RouteGen routeGen = new RouteGen(this, fileList.get(i).getAbsolutePath(), outPath, fileList.get(i).getName(), trafficRecords, comRecords);
+//            results.add(exec.submit(routeGen));
+            routeGen.call();
+        }
+//        for (int i = 0; i < results.size(); i++) {
+//            try {
+//                results.get(i).get();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            } finally {
+//                exec.shutdown();
+//            }
+//        }
+    }
+
     private void parsePcap(String fpath, String outpath) throws IOException, FileNotFoundException {
         getFileList(fpath, "pcap");
         parseSum = fileList.size();
@@ -930,6 +973,17 @@ public class PcapUtils {
 
         parsePcapDis(fileList, outpath);
         generateNode(outpath);
+    }
+
+    public void Last2Step(ArrayList<File> fileList, String outpath) throws IOException{
+        File folder = new File(outpath + "\\route");
+        boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
+
+        folder = new File(outpath + "\\traffic");
+        suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
+
+        generateRouteDis(fileList, outpath);
+        generateTraffic(outpath);
     }
 
     public void readInput(String fpath, String outpath) throws IOException, FileNotFoundException {
