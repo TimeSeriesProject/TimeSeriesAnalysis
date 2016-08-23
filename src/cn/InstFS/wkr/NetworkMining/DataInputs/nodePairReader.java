@@ -1809,7 +1809,7 @@ public class nodePairReader implements IReader {
 				maxTime = timePoint;
 			}
 		}
-		for(int i = 0;i <= maxTime/timeSpan;i++)
+		for(int i = 0;i <= maxTime;i++)
 		{
 			sumDataItem.add1Data(parseTime(i*timeSpan), "0");
 		}
@@ -1818,17 +1818,16 @@ public class nodePairReader implements IReader {
 			
 			String[] items = line.split(",");
 			int timePoint = Integer.parseInt(items[0]);
-			index = timePoint/timeSpan;
-			Date time = parseTime(timePoint/timeSpan*timeSpan);
+			Date time = parseTime(timePoint*timeSpan);
+			
+			index = sumDataItem.getTime().indexOf(time);
+			
 			int lastTraffic = Integer.parseInt(sumDataItem.getData().get(index));
 			int currentTraffic = Integer.parseInt(items[2]);
 			
 			if(lastTraffic > 0 || currentTraffic > 0){
 				sumDataItem.data.set(index, "1");
-			} else {
-				System.out.println("ha");
-			}
-			
+			} 
 		}
 		
 		protocolDataItems.put("AllTraffic", sumDataItem);
