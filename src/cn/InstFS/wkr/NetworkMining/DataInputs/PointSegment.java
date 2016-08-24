@@ -101,6 +101,10 @@ public class PointSegment {
 			}
 			pattern.setMean(statistics.getMean());
 			pattern.setStd(statistics.getStandardDeviation());
+			double endData = Double.parseDouble(dataItems.getElementAt(end).getData());
+			double startData = Double.parseDouble(dataItems.getElementAt(start).getData());
+			double angle = (endData-startData)/(end - start);
+			pattern.setAngle(angle);
 			patterns.add(pattern);
 		}
 	}

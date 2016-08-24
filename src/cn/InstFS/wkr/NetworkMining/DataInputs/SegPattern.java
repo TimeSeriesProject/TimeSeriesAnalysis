@@ -3,15 +3,17 @@ package cn.InstFS.wkr.NetworkMining.DataInputs;
 public class SegPattern {
 	private double height;
 	private double length;
+	private double angle; //计算角度
 	private double mean;
 	private double std;
 	private int start;
 	private int end;
 	
 	public SegPattern(){}
-	public SegPattern(double height,double length,double mean,double std,int start,int end){
+	public SegPattern(double height,double length,double angle,double mean,double std,int start,int end){
 		this.height=height;
 		this.length=length;
+		this.angle = angle;
 		this.mean=mean;
 		this.std=std;
 		this.start=start;
@@ -52,6 +54,12 @@ public class SegPattern {
 	}
 	public void setEnd(int end) {
 		this.end = end;
+	}
+	public double getAngle() {
+		return angle;
+	}
+	public void setAngle(double angle) {
+		this.angle = angle;
 	}
 	
 	

@@ -4,6 +4,9 @@ public class Pattern {
 	private int start;
 	private int end;
 	private double span;
+	private double slope;
+	private double average;
+	
 	public double getSpan() {
 		return span;
 	}
@@ -22,9 +25,7 @@ public class Pattern {
 	public void setEnd(int end) {
 		this.end = end;
 	}
-	private double slope;
-	//private double length;
-	private double average;
+	
 	public double getAverage() {
 		return average;
 	}
