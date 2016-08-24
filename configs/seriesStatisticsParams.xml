@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- 统计参数 -->
+<ssParams>
+    <seriesStatisticsParam>
+        <splitM>2</splitM>
+        <ratio>0.2</ratio>
+    </seriesStatisticsParam>
+</ssParams>

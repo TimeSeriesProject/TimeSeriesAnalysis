@@ -7,4 +7,5 @@
     <arParamPath>./configs/associationRuleParam.xml</arParamPath>
     <pcapParseParamPath>./configs/pcapParseParams.xml</pcapParseParamPath>
     <forecastParamsPath>./configs/forecastMinerParams.xml</forecastParamsPath>
+    <statisticsParamPath>./configs/seriesStatisticsParams.xml</statisticsParamPath>
 </config>
