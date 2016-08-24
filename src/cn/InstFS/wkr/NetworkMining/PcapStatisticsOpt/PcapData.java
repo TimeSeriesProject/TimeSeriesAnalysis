@@ -110,19 +110,19 @@ public class PcapData implements Comparable {
 //        String str = srcIP + "_" + dstIP + "_" + srcPort + "_" + dstPort;
 //        String str2 = data.srcIP + "_" + data.dstIP + "_" + data.srcPort + "_" + data.dstPort;
 //        if (str.equals(str2)) {
-            if (time_s == data.getTime_s()) {
-                if (time_ms == data.getTime_ms()) {
-                    if (TTL == data.getTTL()) {
-                        if (pcapFile == data.getPcapFile())
-                            return 0;
-                        else
-                            return pcapFile.compareTo(data.getPcapFile());
-                    } else
-                        return TTL < data.getTTL() ? -1 : 1;
-                }
-                return time_ms < data.getTime_ms() ? -1 : 1;
-            } else
-                return time_s < data.getTime_s() ? -1 : 1;
+        if (time_s == data.getTime_s()) {
+            if (time_ms == data.getTime_ms()) {
+                if (TTL == data.getTTL()) {
+                    if (pcapFile == data.getPcapFile())
+                        return 0;
+                    else
+                        return pcapFile.compareTo(data.getPcapFile());
+                } else
+                    return TTL < data.getTTL() ? -1 : 1;
+            }
+            return time_ms < data.getTime_ms() ? -1 : 1;
+        } else
+            return time_s < data.getTime_s() ? -1 : 1;
 //        } else {
 //            return str.compareTo(str2);
 //        }
