@@ -95,9 +95,8 @@ public class win10_window extends JFrame {
 
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
-            MiningResultsFile resultsFile = new MiningResultsFile(ob);
             HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
-            if (resultsFile.hasFile(singleNodeMinerFactory)) {  // 已有，直接读取
+            /*if (resultsFile.hasFile(singleNodeMinerFactory)) {  // 已有，直接读取
                 objectMap = (HashMap<TaskCombination, MinerNodeResults>) resultsFile.file2ResultMap();
                 singleNoderesultMaps.put(ob.toString(), objectMap);
                 NetworkMinerFactory.getInstance().taskCombinationAdd2allMiner(objectMap); //由读取的结果objectMap添加相应的miner，以供显示
@@ -109,7 +108,13 @@ public class win10_window extends JFrame {
                 singleNoderesultMaps.put(ob.toString(), objectMap);
                 MiningResultsFile newResultsFile = new MiningResultsFile(ob);
                 newResultsFile.resultMap2File(singleNodeMinerFactory, objectMap);
-            }
+            }*/
+            singleNodeMinerFactory.reset();
+            singleNodeMinerFactory.setMiningObject(ob);
+            singleNodeMinerFactory.detect();
+            objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
+            singleNoderesultMaps.put(ob.toString(), objectMap);
+
         }
 
 		isSingleNodeMined=true;

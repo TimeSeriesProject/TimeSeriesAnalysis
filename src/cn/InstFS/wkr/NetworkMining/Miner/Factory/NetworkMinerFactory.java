@@ -313,6 +313,19 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 					switch (type) {
 					case MiningType_SinglenodeOrNodePair:
 						retNode.put(task, miner.getResults().getRetNode());
+						/*MinerFactorySettings settings = null;
+						if (task.getTaskRange().equals(TaskRange.SingleNodeRange)){
+							settings = SingleNodeOrNodePairMinerFactory.getInstance();
+						} else if (task.getTaskRange().equals(TaskRange.NodePairRange))
+							settings = SingleNodeOrNodePairMinerFactory.getPairInstance();
+						if (!miner.hasMined()) {	// 首次挖掘完成，存储结果
+							retNode.put(task, miner.getResults().getRetNode());
+							MiningResultsFile newResultsFile = new MiningResultsFile(miningObject);
+
+							newResultsFile.result2File(settings, task, miner.getResults().getRetNode());
+						} else { // 已由原有结果文件恢复挖掘结果
+							retNode.put(task, miner.getResults().getRetNode());
+						}*/
 						break;
 					case MiningType_ProtocolAssociation:
 						retPro.put(task, miner.getResults().getRetProtocol());
