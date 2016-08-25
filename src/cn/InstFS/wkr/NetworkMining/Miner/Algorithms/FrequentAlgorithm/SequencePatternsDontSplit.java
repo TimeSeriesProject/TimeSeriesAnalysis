@@ -41,9 +41,9 @@ public class SequencePatternsDontSplit {
 
 	public SequencePatternsDontSplit(ParamsSM paramsSM) {
 		
-		this.winSize=paramsSM.getPmparam().getSizeWindow();
-		this.stepSize=paramsSM.getPmparam().getStepWindow();
-		this.threshold=paramsSM.getPmparam().getMinSupport();
+		this.winSize=paramsSM.getSMparam().getSizeWindow();
+		this.stepSize=paramsSM.getSMparam().getStepWindow();
+		this.threshold=paramsSM.getSMparam().getMinSupport();
 		
 	}
 	public SequencePatternsDontSplit(DataItems dataItems, TaskElement task,
@@ -52,9 +52,9 @@ public class SequencePatternsDontSplit {
 		this.task = task;
 		this.patterns = patterns;
 		
-		this.winSize=paramsSM.getPmparam().getSizeWindow();
-		this.stepSize=paramsSM.getPmparam().getStepWindow();
-		this.threshold=paramsSM.getPmparam().getMinSupport();
+		this.winSize=paramsSM.getSMparam().getSizeWindow();
+		this.stepSize=paramsSM.getSMparam().getStepWindow();
+		this.threshold=paramsSM.getSMparam().getMinSupport();
 	}
 	
 	/**
@@ -121,12 +121,12 @@ public class SequencePatternsDontSplit {
 	}
 	/**
 	 * 产生新的序列，并判断是否为频繁项，返回的结果为满足条件的频繁项
-	 * @param basicSequence
-	 * @param newestSequence
-	 * @param sliceSequence
-	 * @param position
-	 * @param thresh
-	 * @return
+	 * @param basicSequence  所有频繁单项集
+	 * @param newestSequence 新增的频繁项集
+	 * @param sliceSequence  原始时间序列
+	 * @param position   频繁项集在原始时间序列位置
+	 * @param thresh     频繁项集的阈值
+	 * @return  所有新增的频繁项集
 	 */
 	private ArrayList<String> getNewFrequentItemsAndJudge(
 			ArrayList<String> basicSequence,
@@ -152,12 +152,12 @@ public class SequencePatternsDontSplit {
 	}
 	/**
 	 * 判断某个具体的序列是否为频繁项，是返回true，否则返回false
-	 * @param first_item
-	 * @param last_item
-	 * @param sliceSequence
-	 * @param position
-	 * @param thresh
-	 * @return
+	 * @param first_item 已检测的频繁项
+	 * @param last_item  first_item+last_item为储备频繁项
+	 * @param sliceSequence   原始时间序列
+	 * @param position 频繁项在原始时间序列中的存储位置
+	 * @param thresh  频繁项阈值
+	 * @return  所有满足阈值的储备频繁项
 	 */
 	private boolean isSatisfied(String first_item, String last_item,
 			String sliceSequence,HashMap<String, ArrayList<Integer>> position, double thresh) {

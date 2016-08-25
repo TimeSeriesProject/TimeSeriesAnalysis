@@ -143,9 +143,11 @@ class SMTimerTask extends TimerTask {
 //			return;
 		lastTimeStoped = false;
 		results.setDateProcess(UtilsSimulation.instance.getCurTime());
-		ParamsSM paramsSM=(ParamsSM)task.getMiningParams();
+		
+		ParamsSM paramsSM=null;  //获取参数
 		isRunning=true;
 		DataItems dataItems=null;
+		
 		//当Miner Reuslts中存在数据时，则不再读取
 		if(results.getInputData()==null||results.getInputData().getLength()==0){
 			dataItems=reader.readInputByText();
@@ -163,26 +165,23 @@ class SMTimerTask extends TimerTask {
 		}
 		//符号化后的序列
 		DataItems clusterItems=null;
-		PointSegment segment=new PointSegment(dataItems, 5);
+		PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
 		List<SegPattern> segPatterns=segment.getPatterns();
 		
 		if(task.getPatternNum()==0){
-			clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,8,task.getTaskName());
+			clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,paramsSM.getSMparam().getClusterNum(),
+					task.getTaskName());
 		}else{
-			clusterItems=WavCluster.SelfCluster(segPatterns,dataItems, task.getPatternNum(),task.getTaskName());
+			clusterItems=WavCluster.SelfCluster(segPatterns,dataItems, task.getPatternNum()
+					,task.getTaskName());
 		}
 		
-		//SequencePatterns sequencePattern=new SequencePatterns();
-		SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit();
+		SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit(paramsSM);
 		sequencePattern.setDataItems(clusterItems);
 		sequencePattern.setTask(task);
-		sequencePattern.setWinSize(paramsSM.getSizeWindow());
-		sequencePattern.setThreshold(paramsSM.getMinSupport());
-		sequencePattern.setStepSize(paramsSM.getStepWindow());
 		Map<Integer, List<String>>frequentItem=sequencePattern.printClusterLabelTOLines(clusterItems, dataItems);
 		results.getRetSM().setFrequentItem(frequentItem);
 		sequencePattern.patternMining();
-		//sequencePattern.displayResult();
 		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
 		if(sequencePattern.isHasFreItems()){
 			results.getRetSM().setPatters(patterns);
@@ -193,11 +192,9 @@ class SMTimerTask extends TimerTask {
 		
 		lastTimeStoped = true;
 		isRunning=false;
-		//displayer.displayMinerResults(results);
 		if (MainFrame.topFrame == null || UtilsUI.autoChangeResultsPanel
 				|| MainFrame.topFrame.getSelectedTask() == task
 				|| MainFrame.topFrame.getSelectedTask() == null)
-			//TaskElement.display1Task(task, ITaskDisplayer.DISPLAY_RESULTS);
 		isOver.setIsover(true);
 		timer.cancel();
 	}

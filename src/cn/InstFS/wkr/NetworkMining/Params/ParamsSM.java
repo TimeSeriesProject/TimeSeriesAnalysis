@@ -11,10 +11,10 @@ public class ParamsSM extends IParamsNetworkMining implements Serializable{
 	
 	private SMParam smparam;
 	public ParamsSM(){}
-	public SMParam getPmparam() {
+	public SMParam getSMparam() {
 		return smparam;
 	}
-	public void setSmparam(SMParam smparam) {
+	public void setSMparam(SMParam smparam) {
 		this.smparam = smparam;
 	}
 	

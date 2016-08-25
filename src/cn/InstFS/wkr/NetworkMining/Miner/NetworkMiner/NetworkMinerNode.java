@@ -216,12 +216,12 @@ class NodeTimerTask extends TimerTask{
 			case MiningMethods_SequenceMining:
 				
 				ParamsSM paramsSM=null;     //获取参数
-				PointSegment segment=new PointSegment(dataItems, paramsSM.getPmparam().getSplitLeastLen());
+				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
 				DataItems clusterItems=null;
 				List<SegPattern> segPatterns=segment.getPatterns();
 				if(task.getPatternNum()==0){
 					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
-							paramsSM.getPmparam().getClusterNum(),task.getTaskName());
+							paramsSM.getSMparam().getClusterNum(),task.getTaskName());
 				}else{
 					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems, 
 							task.getPatternNum(),task.getTaskName());

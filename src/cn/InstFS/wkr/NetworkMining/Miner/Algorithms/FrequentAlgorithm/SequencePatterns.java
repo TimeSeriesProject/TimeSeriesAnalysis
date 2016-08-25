@@ -68,9 +68,6 @@ public class SequencePatterns {
 				patternsResult);
 		
 		sp.patternMining();
-		//sp.displayResult();
-
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 		Date date = new Date();
 		System.out.println(date);
@@ -82,7 +79,7 @@ public class SequencePatterns {
 		this.task = task;
 		this.patterns = patterns;
 		ParamsSM psm = (ParamsSM)task.getMiningParams();
-		winSize = (int)psm.getSizeWindow();
+		winSize = psm.getSMparam().getSizeWindow();
 	}
 	public SequencePatterns() {
 	}

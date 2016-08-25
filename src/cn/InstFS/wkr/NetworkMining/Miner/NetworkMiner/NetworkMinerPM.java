@@ -17,7 +17,6 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.PartialPM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.averageEntropyPM;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
@@ -215,11 +214,6 @@ class PMTimerTask extends TimerTask{
 				System.out.println("周期值 "+pmMethod.getPredictPeriod());
 			}
 			retPmMap.put(MiningItem, retPM);
-			//检测是否存在局部周期
-			if(!retPM.getHasPeriod()){
-				PartialPM partialPM=new PartialPM(results,oriDataItems,task.getTaskName());
-				partialPM.miningPartialPM();
-			}
 		}else{
 			Set<String>itemSet=dataItems.getVarSet();
 			for(String item:itemSet){
