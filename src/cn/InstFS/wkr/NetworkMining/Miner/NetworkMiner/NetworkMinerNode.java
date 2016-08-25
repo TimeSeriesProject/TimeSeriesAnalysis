@@ -214,21 +214,22 @@ class NodeTimerTask extends TimerTask{
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_SequenceMining:
-				PointSegment segment=new PointSegment(dataItems, 20);
+				
+				ParamsSM paramsSM=null;     //获取参数
+				PointSegment segment=new PointSegment(dataItems, paramsSM.getPmparam().getSplitLeastLen());
 				DataItems clusterItems=null;
 				List<SegPattern> segPatterns=segment.getPatterns();
 				if(task.getPatternNum()==0){
-					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,8,task.getTaskName());
+					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
+							paramsSM.getPmparam().getClusterNum(),task.getTaskName());
 				}else{
-					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems, task.getPatternNum(),task.getTaskName());
+					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems, 
+							task.getPatternNum(),task.getTaskName());
 				}
-				ParamsSM paramsSM=(ParamsSM)task.getMiningParams();
-				SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit();
+				SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit(paramsSM);
 				sequencePattern.setDataItems(clusterItems);
 				sequencePattern.setTask(task);
-				sequencePattern.setWinSize(paramsSM.getSizeWindow());
-				sequencePattern.setThreshold(paramsSM.getMinSupport());
-				sequencePattern.setStepSize(paramsSM.getStepWindow());
+
 				Map<Integer, List<String>>frequentItem=sequencePattern.
 						printClusterLabelTOLines(clusterItems, dataItems);
 				sequencePattern.patternMining();

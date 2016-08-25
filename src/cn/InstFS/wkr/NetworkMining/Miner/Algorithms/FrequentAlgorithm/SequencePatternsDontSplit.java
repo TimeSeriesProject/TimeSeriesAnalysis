@@ -36,18 +36,25 @@ public class SequencePatternsDontSplit {
 	private int winSize = 100; // 单位为秒
 	private int stepSize = 10;
 	private Date minDate = null;
-	private double threshold = 0.4;
+	private double threshold;
 	private boolean hasFreItems=false;
 
-	public SequencePatternsDontSplit() {
+	public SequencePatternsDontSplit(ParamsSM paramsSM) {
+		
+		this.winSize=paramsSM.getPmparam().getSizeWindow();
+		this.stepSize=paramsSM.getPmparam().getStepWindow();
+		this.threshold=paramsSM.getPmparam().getMinSupport();
+		
 	}
 	public SequencePatternsDontSplit(DataItems dataItems, TaskElement task,
-			List<ArrayList<String>> patterns) {
+			List<ArrayList<String>> patterns,ParamsSM paramsSM) {
 		this.dataItems = dataItems;
 		this.task = task;
 		this.patterns = patterns;
-		ParamsSM psm = (ParamsSM)task.getMiningParams();
-		winSize = (int)psm.getSizeWindow();
+		
+		this.winSize=paramsSM.getPmparam().getSizeWindow();
+		this.stepSize=paramsSM.getPmparam().getStepWindow();
+		this.threshold=paramsSM.getPmparam().getMinSupport();
 	}
 	
 	/**
@@ -65,23 +72,23 @@ public class SequencePatternsDontSplit {
 	}
 	/**
 	 * 该函数功能是找频繁项
-	 * @param sliceSequence
-	 * @param BasicSequence
-	 * @param thresh
-	 * @return
+	 * @param sliceSequence  原始的时间序列
+	 * @param BasicSequence  时间序列的基本元素
+	 * @param thresh         频繁项的阈值
+	 * @return 频繁项 LIst<List<String>>类型
 	 */
-	private ArrayList<ArrayList<String>> getFrequentItemSet(
-			String sliceSequence,
+	private ArrayList<ArrayList<String>> getFrequentItemSet(String sliceSequence,
 			ArrayList<String> BasicSequence, double thresh) {
 		
 		//计算各个频繁序列可能出现的位置
 		HashMap<String, ArrayList<Integer>> position = getItemSamplePosition(
-				sliceSequence, BasicSequence,thresh);                              //在读取位置时，直接把不满足条件的删掉
+				sliceSequence, BasicSequence,thresh);
+		
 		//得到满足条件的频繁项
 		ArrayList<String> sequenceResult = new ArrayList<String>();
+		//储备项集
 		ArrayList<String> NewestSequence = (ArrayList<String>)BasicSequence.clone();
 		while (true) {
-			
 			NewestSequence = getNewFrequentItemsAndJudge(BasicSequence,NewestSequence,
 					sliceSequence,position,thresh);
 			if(NewestSequence.size() == 0)
@@ -188,11 +195,11 @@ public class SequencePatternsDontSplit {
 		return false;
 	}
 	/**
-	 * 得到起始频繁项（单个类）在样本中出现的位置，并返回
-	 * @param sliceSequence
-	 * @param basicSequence
-	 * @param thresh
-	 * @return
+	 * 统计单一频繁项在样本中出现的位置
+	 * @param sliceSequence 原始时间序列
+	 * @param basicSequence 单一项集
+	 * @param thresh        频繁阈值
+	 * @return              单一频繁项集在原始时间序列中出现的位置
 	 */
 	private HashMap<String, ArrayList<Integer>> getItemSamplePosition(String sliceSequence,
 			ArrayList<String> basicSequence,double thresh) {
@@ -211,14 +218,10 @@ public class SequencePatternsDontSplit {
 			while(true)
 			{
 				int index = sliceSequence.indexOf(item, len);
-//					System.out.println(index);
 				if(index == -1)
 					break;
-
 				len = index + item.length();
-//				System.out.println("index:"+index+"  len:"+len);
 				labelPosition.add(index);
-				
 			}
 			if(labelPosition.size()>= thresh)
 				position.put(item, labelPosition);
@@ -229,7 +232,6 @@ public class SequencePatternsDontSplit {
 				if(i < 0)
 					i = 0;
 			}
-
 		}
 		return position;
 	}
@@ -397,10 +399,6 @@ public class SequencePatternsDontSplit {
 				}
 			}
 		}
-//		for(int index:indexOfClusterItem){
-//			System.out.print(index+",");
-//		}
-//		System.out.println();
 		HashMap<Integer, List<String>> map=new HashMap<Integer, List<String>>();
 		for(int label=0;label<99;label++){
 			for(int itemIndex=0;itemIndex<clusterItems.getLength();itemIndex++){
@@ -425,17 +423,6 @@ public class SequencePatternsDontSplit {
 				}
 			}
 		}
-		
-		
-//		Iterator<Entry<Integer, List<String>>> iterator=map.entrySet().iterator();
-//		while(iterator.hasNext()){
-//			Entry<Integer, List<String>>entry=iterator.next();
-//			System.out.print(entry.getKey());
-//			for(String item:entry.getValue()){
-//				System.out.print(":"+item);
-//			}
-//			System.out.println();
-//		}
 		return map;
 	}
 	public boolean isHasFreItems() {
@@ -444,13 +431,4 @@ public class SequencePatternsDontSplit {
 	public void setHasFreItems(boolean hasFreItems) {
 		this.hasFreItems = hasFreItems;
 	}
-	
-	
-	
 }
-//class SampleIndex{
-//	
-//	int index = -1;
-//	ArrayList<Integer> sample_position = new ArrayList<Integer>();
-//	
-//}
