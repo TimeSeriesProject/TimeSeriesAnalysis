@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import WaveletUtil.SAXPartternDetection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -37,7 +41,7 @@ import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
 public class NetworkMinerNode implements INetworkMiner{
-	private Timer timer;
+	private ScheduledExecutorService timer;
 	private NodeTimerTask timerTask;
 	private MinerResults results;
 	private IResultsDisplayer displayer;
@@ -72,18 +76,22 @@ public class NetworkMinerNode implements INetworkMiner{
 			UtilsUI.appendOutput(taskCombination.getName()+" -- Still running");
 			return false;
 		}
-		timer = new Timer();
-		
-		timerTask = new NodeTimerTask(taskCombination,results, displayer,timer,Over);
-		timer.scheduleAtFixedRate(timerTask, new Date(), UtilsSimulation.instance.getForcastWindowSizeInSeconds() * 1000);
+		timer=Executors.newScheduledThreadPool(1);
 		isRunning = true;
-		return true;
+		timerTask = new NodeTimerTask(taskCombination,results, displayer,Over);
+		ScheduledFuture<?> future=timer.schedule(timerTask, 10,TimeUnit.MILLISECONDS);
+		try{
+			future.get();
+		}catch(Exception e){
+			isRunning = false;
+			Over.setIsover(false);
+			timer.shutdownNow();
+		}
+		return isRunning;
 	}
 
 	@Override
 	public boolean stop() {
-		if (timer != null)
-			timer.cancel();
 		timer = null;
 		if (timerTask != null && !timerTask.isRunning()){
 			timerTask.cancel();
@@ -139,17 +147,15 @@ public class NetworkMinerNode implements INetworkMiner{
 
 class NodeTimerTask extends TimerTask{
 	MinerResults results;
-	Timer timer;
 	IResultsDisplayer displayer;
 	private boolean isRunning = false;
 	private IsOver isOver;
 	private TaskCombination taskCombination;
-	public NodeTimerTask(TaskCombination taskCombination, MinerResults results, IResultsDisplayer displayer,
-			Timer timer,IsOver isOver) {
+	public NodeTimerTask(TaskCombination taskCombination, MinerResults results, IResultsDisplayer displayer
+			,IsOver isOver) {
 		this.taskCombination = taskCombination;
 		this.results = results;
 		this.displayer = displayer;
-		this.timer=timer;
 		this.isOver=isOver;
 	}
 	
@@ -242,22 +248,22 @@ class NodeTimerTask extends TimerTask{
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_SequenceMining:
-
-				PointSegment segment=new PointSegment(dataItems, 20);
+				
+				ParamsSM paramsSM=null;     //获取参数
+				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
 				DataItems clusterItems=null;
 				List<SegPattern> segPatterns=segment.getPatterns();
 				if(task.getPatternNum()==0){
-					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,8,task.getTaskName());
+					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
+							paramsSM.getSMparam().getClusterNum(),task.getTaskName());
 				}else{
-					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems, task.getPatternNum(),task.getTaskName());
+					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
+							task.getPatternNum(),task.getTaskName());
 				}
-				ParamsSM paramsSM=(ParamsSM)task.getMiningParams();
-				SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit();
+				SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit(paramsSM);
 				sequencePattern.setDataItems(clusterItems);
 				sequencePattern.setTask(task);
-				sequencePattern.setWinSize(paramsSM.getSizeWindow());
-				sequencePattern.setThreshold(paramsSM.getMinSupport());
-				sequencePattern.setStepSize(paramsSM.getStepWindow());
+
 				Map<Integer, List<String>>frequentItem=sequencePattern.
 						printClusterLabelTOLines(clusterItems, dataItems);
 				sequencePattern.patternMining();
@@ -276,7 +282,6 @@ class NodeTimerTask extends TimerTask{
 		MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(taskCombination);
 		MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(taskCombination.getMiningObject()));
 		newResultsFile.result2File(settings, taskCombination, results.getRetNode());
-		timer.cancel();
 	}
 	
 	private void setPMResults(MinerResults results,IMinerPM pmMethod){

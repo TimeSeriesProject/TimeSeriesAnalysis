@@ -97,14 +97,17 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 		}
 		
 		nodePairReader reader=new nodePairReader();
-		if(dataDirectory.isFile()){
-			parseFile(dataDirectory,reader);
-		}else{
-			File[] dataDirs=dataDirectory.listFiles();
-			for(int i=0;i<dataDirs.length;i++){
+//		if(dataDirectory.isFile()){
+//			parseFile(dataDirectory,reader);
+//		}else{
+		
+		File[] dataDirs=dataDirectory.listFiles();
+		for(int i=0;i<dataDirs.length;i++){
+			//按天必须是文件夹
+			if(dataDirs[i].isDirectory())
 				parseFile(dataDirs[i],reader);
-			}
 		}
+
 	}
 	
 	private void parseFile(File dataFile,nodePairReader reader){
@@ -116,7 +119,7 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 		if(taskRange.toString().equals(TaskRange.SingleNodeRange.toString())){
 			HashMap<String, DataItems> rawDataItems=null;
 			boolean isNodeDisapearEmerge = false;
-
+			
 			switch (miningObject) {
 			case MiningObject_Traffic:
 				//rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath());
@@ -149,10 +152,12 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 				Date date4 = cal4.getTime();*/
 				Date date3 = getStartDate();
 				Date date4 = getEndDate();
-				rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),true,date3,date4,3600);
+				rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),false,date3,date4,3600);
 				break;
 			case MiningObject_NodeDisapearEmerge:
-				rawDataItems = reader.readEachNodeDisapearEmergeDataItems(dataFile.getAbsolutePath(),3600);
+				Date date5 = getStartDate();
+				Date date6 = getEndDate();
+				rawDataItems = reader.readEachNodeDisapearEmergeDataItems(dataFile.getAbsolutePath(),false,date5,date6,3600);
 				isNodeDisapearEmerge = true;
 				break;
 			default:

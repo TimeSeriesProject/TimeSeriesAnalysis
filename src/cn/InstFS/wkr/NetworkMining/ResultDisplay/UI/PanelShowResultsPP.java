@@ -2,6 +2,7 @@ package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
+import cn.InstFS.wkr.NetworkMining.DataInputs.MovingAverage;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
@@ -14,7 +15,6 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -202,12 +202,16 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 	pathNor.add(pathOriDataItems.get(tempName));
                     DataItems nor=new DataItems();
                     DataItems abnor=new DataItems();
-                    
-                    JFreeChart jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod);
-                    ChartPanel chartpanel = new ChartPanel(jf);
-                    jp.add(chartpanel);
-                    pathNor = new ArrayList<>();
-                    pathname = new ArrayList<>();
+                    if(numPeriod>0){
+                    	JFreeChart jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod);
+                        ChartPanel chartpanel = new ChartPanel(jf);
+                        jp.add(chartpanel);
+                        pathNor = new ArrayList<>();
+                        pathname = new ArrayList<>();
+                    }
+                    else{
+                    	System.out.println("没有周期");
+                    }
                 }
             }
             repaint();
@@ -237,15 +241,19 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 }
 
                 ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", "值", null);
+//                MovingAverage ma = new MovingAverage(oriData);
+//                DataItems newItems = ma.getNewItems();
                 chart.displayDataItems(oriData);
+                //chart.displayDataItems(newItems);
                 jp.add(chart);
                 JFreeChart jf;
                 if (!result.isHasOutlies()) {
                     jf = ChartPanelShowAb.createChart(new DataItems(),new DataItems());
                 } else if (result.isIslinkDegree()) {
                     jf = ChartPanelShowAbd.createChart(outliesItems);
+                    
                 } else {
-                    jf = ChartPanelShowAb.createChart(oriData, outliesItems);
+                    jf = ChartPanelShowAb.createChart(oriData, outliesItems);                    
                 }
                 ChartPanel chartpanel = new ChartPanel(jf);
                 jp.add(chartpanel);
