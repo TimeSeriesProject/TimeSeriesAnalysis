@@ -78,7 +78,7 @@ public class NetworkFactory extends MinerFactorySettings {
 		taskCombination.setTaskRange(TaskRange.WholeNetworkRange);
 		taskCombination.setMiningObject(miningObject.toString());
 		taskCombination.setMinerType(MinerType.MiningTypes_WholeNetwork);
-		taskCombination.setRange(dataPath + miningObject.toString());
+		taskCombination.setRange(miningObject.toString());
 		taskCombination.setName();
 		taskCombination.setDataItems(dataItems);
 		taskCombination.getTasks().add(generateTask(granularity,

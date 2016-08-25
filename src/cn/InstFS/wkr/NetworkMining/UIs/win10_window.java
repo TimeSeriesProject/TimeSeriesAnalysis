@@ -66,21 +66,13 @@ public class win10_window extends JFrame {
 
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
-            MiningResultsFile resultsFile = new MiningResultsFile(ob);
             HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
-            if (resultsFile.hasFile(networkFactory)) {  // 已有，直接读取
-                objectMap = (HashMap<TaskCombination, MinerNodeResults>) resultsFile.file2ResultMap();
-                networkStructureresultMaps.put(ob.toString(), objectMap);
-                NetworkMinerFactory.getInstance().taskCombinationAdd2allMiner(objectMap); //由读取的结果objectMap添加相应的miner，以供显示
-            } else {    // 没有，则重新挖掘并保存
-                networkFactory.reset();
-                networkFactory.setMiningObject(ob);
-                networkFactory.detect();
-                objectMap = NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(ob);
-                networkStructureresultMaps.put(ob.toString(), objectMap);
-                MiningResultsFile newResultsFile = new MiningResultsFile(ob);
-                newResultsFile.resultMap2File(networkFactory, objectMap);
-            }
+
+            networkFactory.reset();
+            networkFactory.setMiningObject(ob);
+            networkFactory.detect();
+            objectMap = NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(ob);
+            networkStructureresultMaps.put(ob.toString(), objectMap);
         }
 
 		isNetworkStructureMined=true;
@@ -125,25 +117,18 @@ public class win10_window extends JFrame {
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
         SingleNodeOrNodePairMinerFactory nodePairMinerFactory = SingleNodeOrNodePairMinerFactory.getPairInstance();
+        nodePairMinerFactory.setTaskRange(TaskRange.NodePairRange);
         List<MiningObject> miningObjectList = nodePairMinerFactory.getMiningObjectsChecked();
 
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
-            MiningResultsFile resultsFile = new MiningResultsFile(ob);
             HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
-            if (resultsFile.hasFile(nodePairMinerFactory)) {  // 已有，直接读取
-                objectMap = (HashMap<TaskCombination, MinerNodeResults>) resultsFile.file2ResultMap();
-                nodePairresultMaps.put(ob.toString(), objectMap);
-                NetworkMinerFactory.getInstance().taskCombinationAdd2allMiner(objectMap); //由读取的结果objectMap添加相应的miner，以供显示
-            } else {    // 没有，则重新挖掘并保存
-                nodePairMinerFactory.reset();
-                nodePairMinerFactory.setMiningObject(ob);
-                nodePairMinerFactory.detect();
-                objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
-                nodePairresultMaps.put(ob.toString(), objectMap);
-                MiningResultsFile newResultsFile = new MiningResultsFile(ob);
-                newResultsFile.resultMap2File(nodePairMinerFactory, objectMap);
-            }
+
+            nodePairMinerFactory.reset();
+            nodePairMinerFactory.setMiningObject(ob);
+            nodePairMinerFactory.detect();
+            objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
+            nodePairresultMaps.put(ob.toString(), objectMap);
         }
 
 		isNodePairMined=true;
@@ -210,7 +195,6 @@ public class win10_window extends JFrame {
 
     private void settingsNodePair() {
         NetworkMinerFactory.getInstance();
-        SingleNodeOrNodePairMinerFactory.getPairInstance().setTaskRange(TaskRange.NodePairRange);
         DialogSettings dialog = new DialogSettings(this, SingleNodeOrNodePairMinerFactory.getPairInstance(),"链路规律挖掘配置");
         dialog.pack();
         dialog.setVisible(true);
