@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import associationRules.ProtocolAssociationResult;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -24,7 +28,7 @@ import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
 public class ProtocolAssMiner implements INetworkMiner {
-	Timer timer;
+	private ScheduledExecutorService timer;
 	ProtocolMinerTask timerTask;
 	MinerResults results;
 	IResultsDisplayer displayer;
@@ -49,19 +53,23 @@ public class ProtocolAssMiner implements INetworkMiner {
 			UtilsUI.appendOutput(taskCombination.getName() + " -- Still running");
 			return false;
 		}
-		
-		timer = new Timer();
-		timerTask = new ProtocolMinerTask(taskCombination, results, displayer,timer,isOver);
-		timer.scheduleAtFixedRate(timerTask, new Date(), UtilsSimulation.instance.getForcastWindowSizeInSeconds() * 1000);
 		isRunning = true;
+		timer = Executors.newScheduledThreadPool(1);
+		timerTask = new ProtocolMinerTask(taskCombination, results, displayer,isOver);
+		ScheduledFuture<?> future=timer.schedule(timerTask, 10, TimeUnit.MILLISECONDS);
+		try {
+			future.get();
+		} catch (Exception e) {
+			isRunning = false;
+			isOver.setIsover(false);
+			timer.shutdownNow();
+		}
 		UtilsUI.appendOutput(taskCombination.getName() + " -- started");
 		return true;
 	}
 
 	@Override
 	public boolean stop() {
-		if (timer != null)
-			timer.cancel();
 		timer = null;
 		if (timerTask != null && !timerTask.isRunning()){
 			timerTask.cancel();
@@ -100,17 +108,15 @@ public class ProtocolAssMiner implements INetworkMiner {
 class ProtocolMinerTask extends TimerTask{
 	TaskCombination taskCombination;
 	MinerResults results;
-	Timer timer;
 	IResultsDisplayer displayer;
 	private boolean isRunning = false;
 	private IsOver isOver;
 	HashMap<String, HashMap<String, DataItems>>eachProtocolItems;
 	public ProtocolMinerTask(TaskCombination taskCombination, MinerResults results, IResultsDisplayer displayer
-			,Timer timer,IsOver isOver) {
+			,IsOver isOver) {
 		this.taskCombination = taskCombination;
 		this.results = results;
 		this.displayer = displayer;
-		this.timer=timer;
 		this.isOver=isOver;
 		this.eachProtocolItems=taskCombination.getEachIpProtocolItems();
 		
@@ -163,6 +169,5 @@ class ProtocolMinerTask extends TimerTask{
 		
 		if (displayer != null)
 			displayer.displayMinerResults(results);
-		timer.cancel();
 	}
 }

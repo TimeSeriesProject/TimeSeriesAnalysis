@@ -301,31 +301,40 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 				if(!task.getMinerType().equals(type)||!task.getMiningObject().equals(miningObject.toString()))
 					continue;
 				INetworkMiner miner=entry.getValue();
-				if(!miner.isOver()){
-					isAllOver=false;
-					try {
-						Thread.sleep(10000); 
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+				
+				//判断任务是否已完成
+				if(!miner.isOver()){ 
+					//判断任务是否发生异常
+					if(miner.isAlive()){
+						isAllOver=false;
+						try {
+							Thread.sleep(10000); 
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						System.out.println(task.getName()+" not over");
 					}
-					System.out.println(task.getName()+" not over");
+					
 				}else{
-					switch (type) {
-					case MiningType_SinglenodeOrNodePair:
-						retNode.put(task, miner.getResults().getRetNode());
-						break;
-					case MiningType_ProtocolAssociation:
-						retPro.put(task, miner.getResults().getRetProtocol());
-						//System.out.println(task.getName()+" has over");
-						break;
-					case MiningType_Path:
-						retPath.put(task, miner.getResults().getRetPath());
-						break;
-					case MiningTypes_WholeNetwork:
-						retNode.put(task, miner.getResults().getRetNode());
-						break;
-					default:
-						break;
+					//正常结束时，保存结果
+					if(miner.isOver()){
+						switch (type) {
+						case MiningType_SinglenodeOrNodePair:
+							retNode.put(task, miner.getResults().getRetNode());
+							break;
+						case MiningType_ProtocolAssociation:
+							retPro.put(task, miner.getResults().getRetProtocol());
+							//System.out.println(task.getName()+" has over");
+							break;
+						case MiningType_Path:
+							retPath.put(task, miner.getResults().getRetPath());
+							break;
+						case MiningTypes_WholeNetwork:
+							retNode.put(task, miner.getResults().getRetNode());
+							break;
+						default:
+							break;
+						}
 					}
 				}
 			}

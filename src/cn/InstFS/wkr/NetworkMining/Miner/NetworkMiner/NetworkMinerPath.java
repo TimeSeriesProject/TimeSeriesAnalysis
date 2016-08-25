@@ -1,6 +1,10 @@
 package cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import WaveletUtil.PointPatternDetection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.*;
@@ -20,7 +24,7 @@ import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
 public class NetworkMinerPath implements INetworkMiner{
-	private Timer timer;
+	private ScheduledExecutorService timer;
 	private PathTimerTask timerTask;
 	private MinerResults results;
 	private IResultsDisplayer displayer;
@@ -45,18 +49,22 @@ public class NetworkMinerPath implements INetworkMiner{
 			UtilsUI.appendOutput(taskCombination.getName()+" -- Still running");
 			return false;
 		}
-		timer = new Timer();
-		
-		timerTask = new PathTimerTask(taskCombination,results, displayer,timer,Over);
-		timer.scheduleAtFixedRate(timerTask, new Date(), UtilsSimulation.instance.getForcastWindowSizeInSeconds() * 1000);
+		timer = Executors.newScheduledThreadPool(1);
 		isRunning = true;
+		timerTask = new PathTimerTask(taskCombination,results, displayer,Over);
+		ScheduledFuture<?> future=timer.schedule(timerTask,10, TimeUnit.MILLISECONDS);
+		try {
+			future.get();
+		} catch (Exception e) {
+			isRunning=false;
+			Over.setIsover(false);
+			timer.shutdownNow();
+		}
 		return true;
 	}
 
 	@Override
 	public boolean stop() {
-		if (timer != null)
-			timer.cancel();
 		timer = null;
 		if (timerTask != null && !timerTask.isRunning()){
 			timerTask.cancel();
@@ -94,17 +102,15 @@ public class NetworkMinerPath implements INetworkMiner{
 
 class PathTimerTask extends TimerTask{
 	MinerResults results;
-	Timer timer;
 	IResultsDisplayer displayer;
 	private boolean isRunning = false;
 	private IsOver isOver;
 	private TaskCombination taskCombination;
 	public PathTimerTask(TaskCombination taskCombination, MinerResults results, IResultsDisplayer displayer,
-			Timer timer,IsOver isOver) {
+			IsOver isOver) {
 		this.taskCombination = taskCombination;
 		this.results = results;
 		this.displayer = displayer;
-		this.timer=timer;
 		this.isOver=isOver;
 	}
 	
@@ -287,7 +293,6 @@ class PathTimerTask extends TimerTask{
 		System.out.println(taskCombination.getName()+" over");
 		if (displayer != null)
 			displayer.displayMinerResults(results);
-		timer.cancel();
 	}
 
 	private void setStatisticResults(MinerResultsStatistics retStatistic,SeriesStatistics statistics){
