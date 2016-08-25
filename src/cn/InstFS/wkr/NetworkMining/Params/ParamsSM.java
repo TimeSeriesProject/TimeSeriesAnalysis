@@ -3,20 +3,19 @@ package cn.InstFS.wkr.NetworkMining.Params;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
+import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
+import cn.InstFS.wkr.NetworkMining.Params.SMParams.SMParam;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 
 public class ParamsSM extends IParamsNetworkMining implements Serializable{
 	
-	private double minSupport;	// 最小支持度
-	private int sizeWindow;	// 时间窗长	（单位为秒）
-	private int stepWindow;	// 步长
-	private int minSeqLen;	// 最短序列模式长度
-	
-	public ParamsSM() {
-		minSupport = 5;
-		sizeWindow = 10;
-		stepWindow = 1;
-		minSeqLen = 4;
+	private SMParam smparam;
+	public ParamsSM(){}
+	public SMParam getSMparam() {
+		return smparam;
+	}
+	public void setSMparam(SMParam smparam) {
+		this.smparam = smparam;
 	}
 	
 	@Override
@@ -38,38 +37,4 @@ public class ParamsSM extends IParamsNetworkMining implements Serializable{
 			}
 		return isSame;
 	}	
-	
-	public static ParamsSM newInstance(ParamsSM p){
-		ParamsSM param = new ParamsSM();
-		param.setMinSeqLen(p.getMinSeqLen());
-		param.setMinSupport(p.getMinSupport());
-		param.setSizeWindow(p.getSizeWindow());
-		param.setStepWindow(p.getStepWindow());
-		return param;
-	}
-	
-	public double getMinSupport() {
-		return minSupport;
-	}
-	public void setMinSupport(double minSupport) {
-		this.minSupport = minSupport;
-	}
-	public int getSizeWindow() {
-		return sizeWindow;
-	}
-	public void setSizeWindow(int sizeWindow) {
-		this.sizeWindow = sizeWindow;
-	}
-	public int getStepWindow() {
-		return stepWindow;
-	}
-	public void setStepWindow(int stepWindow) {
-		this.stepWindow = stepWindow;
-	}
-	public int getMinSeqLen() {
-		return minSeqLen;
-	}
-	public void setMinSeqLen(int minSeqLen) {
-		this.minSeqLen = minSeqLen;
-	}
 }

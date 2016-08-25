@@ -280,8 +280,8 @@ public class DataInputUtils {
 	
 	//按照时间，sizeWindow和stepWindow将数据分成项集，再调用Itemset2File写入文件
 	public static String[] movingdivide(DataItems datainput, TaskElement task , boolean FP ) throws IOException{
-		int sizeWindow = (int)((ParamsSM)task.getMiningParams()).getSizeWindow() * 1000;//seconds
-		int stepWindow = (int)((ParamsSM)task.getMiningParams()).getStepWindow() * 1000;//seconds
+		int sizeWindow = (int)((ParamsSM)task.getMiningParams()).getSMparam().getSizeWindow() * 1000;//seconds
+		int stepWindow = (int)((ParamsSM)task.getMiningParams()).getSMparam().getStepWindow() * 1000;//seconds
 
 		int len = datainput.getLength();
 		List<Date> time = datainput.getTime();

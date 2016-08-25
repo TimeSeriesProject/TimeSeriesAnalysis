@@ -1,8 +1,11 @@
 package cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner;
 
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
@@ -24,8 +27,8 @@ import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
  *
  */
 public class NetworkMinerStatistics implements INetworkMiner {
-	Timer timer;
-	StatisticsTimerTask timerTask;
+	private ScheduledExecutorService timer;
+	private StatisticsTimerTask timerTask;
 	MinerResults results;
 	IResultsDisplayer displayer;
 	
@@ -50,26 +53,29 @@ public class NetworkMinerStatistics implements INetworkMiner {
 			UtilsUI.appendOutput(task.getTaskName() + " -- 上次挖掘尚未结束！");
 			return false;
 		}
-		timer = new Timer();
-		timerTask = new StatisticsTimerTask(task, results, displayer,reader,timer,isOver);
-		timer.scheduleAtFixedRate(timerTask, new Date(), 2000);
 		isRunning = true;
-		task.setRunning(isRunning);
-//		TaskElement.modify1Task(task);		
-		UtilsUI.appendOutput(task.getTaskName() + " -- 开始挖掘！");
+		timer =Executors.newScheduledThreadPool(1);
+		timerTask = new StatisticsTimerTask(task, results, displayer,reader,isOver);
+		
+		ScheduledFuture<?> future=timer.schedule(timerTask, 10, TimeUnit.MILLISECONDS);
+		try{
+			future.get();
+		}catch(Exception e){
+			isRunning=false;
+			isOver.setIsover(false);
+			timer.shutdownNow();
+		}
+		task.setRunning(isRunning);	
 		return true;
 	}
 
 	@Override
 	public boolean stop() {
-		if (timer != null)
-			timer.cancel();
 		timer = null;
 		if (timerTask != null && !timerTask.isRunning()){
 			timerTask.cancel();
 			timerTask = null;
 		}
-//		SMTimerTask.setLastTimeStoped(true);
 		
 		isRunning = false;
 		task.setRunning(isRunning);
@@ -103,27 +109,20 @@ public class NetworkMinerStatistics implements INetworkMiner {
 
 }
 class StatisticsTimerTask extends TimerTask  {
-	private int splitM;
-	private double ratio;
-	private double std;
 	
 	TaskElement task;
 	MinerResults results;
 	IResultsDisplayer displayer;
-	private Timer timer;
 	private boolean isRunning = false;
 	private IsOver isOver;
 	IReader reader;
 	public StatisticsTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,
-			IReader reader,Timer timer,IsOver isOver) {
+			IReader reader,IsOver isOver) {
 		this.task = task;
 		this.results = results;
 		this.displayer = displayer;
 		this.reader=reader;
-		this.timer=timer;
 		this.isOver=isOver;
-		this.splitM=2;
-		this.ratio=0.2;
 	}
 	public StatisticsTimerTask(TaskElement task, MinerResults results, IResultsDisplayer displayer,
 			IReader reader,Timer timer,IsOver isOver,int splitM,double ratio){
@@ -131,10 +130,7 @@ class StatisticsTimerTask extends TimerTask  {
 		this.results = results;
 		this.displayer = displayer;
 		this.reader=reader;
-		this.timer=timer;
 		this.isOver=isOver;
-		this.splitM=splitM;
-		this.ratio=ratio;
 	}
 	
 	public boolean isRunning(){
@@ -147,12 +143,9 @@ class StatisticsTimerTask extends TimerTask  {
 			System.out.println(task.getTaskName() + " --> Still Running");
 			return;
 		}
-//		if (UtilsSimulation.instance.isPaused())
-//			return;
+
 		results.setDateProcess(UtilsSimulation.instance.getCurTime());
-		//results.getRetOM().setParamsTSA((ParamsTSA) task.getMiningParams());
 		isRunning = true;
-		//ParamsTSA params = (ParamsTSA) task.getMiningParams();
 		
 		// 读取数据 当Miner Reuslts中存在数据时，则不再读取
 		DataItems dataItems = null;
@@ -184,7 +177,6 @@ class StatisticsTimerTask extends TimerTask  {
 		
 		if (displayer != null)
 			displayer.displayMinerResults(results);
-		timer.cancel();
 	}
 	
 	

@@ -112,18 +112,6 @@ public class PointSegment {
 	private void splitByPointsInDistnce(){
 		pointsIndex.add(0);
 		int index=1;
-//		int index=findFirstPoint(5);
-//		if(getItem(pointsIndex.get(1))>getItem(pointsIndex.get(0))){
-//			while(index<length-1){
-//				index=findMininum(index, 5);
-//				index=findMaxinum(index, 5);
-//			}
-//		}else{
-//			while(index<length-1){
-//				index=findMaxinum(index, 5);
-//				index=findMininum(index, 5);
-//			}
-//		}
 		while(index<length-1){
 			index=findMaxinum(index, ratio);
 			index=findMininum(index, ratio);
