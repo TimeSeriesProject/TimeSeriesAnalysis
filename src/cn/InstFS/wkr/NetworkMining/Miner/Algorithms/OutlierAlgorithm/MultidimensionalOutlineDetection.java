@@ -15,6 +15,7 @@ import WaveletUtil.VectorDistance;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.GMMParameter;
+import cn.InstFS.wkr.NetworkMining.DataInputs.MovingAverage;
 import cn.InstFS.wkr.NetworkMining.DataInputs.Pattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.ResultItem;
@@ -35,12 +36,13 @@ import weka.core.SerializationHelper;
 public class MultidimensionalOutlineDetection implements IMinerOM{
 	private DataItems dataItems = new DataItems();
 	private DataItems outlines = new DataItems();
+	private DataItems newItems = new DataItems(); //滑动平均后的数据
 	private List<Pattern> patterns = new ArrayList<Pattern>();   //线段模式
-	private int densityK = 2; //序列线段化时，找极值点的参数
-	private double patternThreshold = 0.1; //线段化参数
-	private int k = 4; //混合高斯中高斯个数
-	private int dataDimen = 3;
-	private int outK = 20; //异常度矩阵聚类簇数
+	private static int densityK = 2; //序列线段化时，找极值点的参数
+	private static double patternThreshold = 0.1; //线段化参数
+	private static int k = 4; //混合高斯中高斯个数
+	private static int dataDimen = 3;
+	private static int outK = 20; //异常度矩阵聚类簇数
 	ArrayList<ArrayList<Double>> dataSet = new ArrayList<ArrayList<Double>>();
 	ArrayList<ArrayList<Double>> outlinSet = new ArrayList<ArrayList<Double>>(); //异常度矩阵
 	GMMParameter gmmParameter = new GMMParameter(); //高斯混合模型参数:pMiu,pPi,pSigma
@@ -50,7 +52,9 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	}
 	@Override
 	public void TimeSeriesAnalysis(){
-		PointSegment segment=new PointSegment(dataItems, densityK,patternThreshold); //线段化模式
+		MovingAverage movingAverage = new MovingAverage(dataItems);
+		newItems = movingAverage.getNewItems();
+		PointSegment segment=new PointSegment(newItems, densityK,patternThreshold); //线段化模式
 		patterns=segment.getTEOPattern(); 
 		OutlineDetection();
 	}
@@ -76,9 +80,9 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		ArrayList<Double> distance = computeDistance(dataSet, gmmParameter); //最小高斯距离(1范数距离)
 		ArrayList<Double> distance1 = computeDistance1(dataSet, gmmParameter); //带权重的最小高斯距离(1范数距离)
 		ArrayList<Double> distance2 = computeDistance2(dataSet, gmmParameter); //最小高斯距离(2范数距离)
-		distance = normalization(distance);
+		/*distance = normalization(distance);
 		distance1 = normalization(distance1);
-		distance2 = normalization(distance2);
+		distance2 = normalization(distance2);*/
 		//获得异常度矩阵
 		for(int i=0;i<distance.size();i++){
 			ArrayList<Double> data = new ArrayList<Double>();
@@ -87,8 +91,8 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 			data.add(distance2.get(i));
 			outlinSet.add(data);
 		}
-		outlines = genOutline(outlinSet); //使用异常度矩阵进行异常检测
-		//outlines = genOutline1(distance); //不使用异常度矩阵，仅使用gmm模型进行异常检测
+		//outlines = genOutline(outlinSet); //使用异常度矩阵进行异常检测
+		outlines = genOutline1(distance2); //不使用异常度矩阵，仅使用gmm模型进行异常检测
 		return outlines;
 	}
 
@@ -100,7 +104,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	 * @return GMMParameter
 	 */
 	public GMMParameter EMGMM(ArrayList<ArrayList<Double>>instances,int clusternum,int dataDimen,String fileName){
-		fileName = "./result/"+fileName;		
+		fileName = "./result/"+dataItems.toString()+fileName;		
 		changesample2arff(instances,fileName+".arff");
 		double[][][] res = new double[clusternum][dataDimen][3];
 		
@@ -115,7 +119,8 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 			em.setMinStdDev(1e-3);
 			em.setDisplayModelInOldFormat(false);
 			em.buildClusterer(dataset);
-			System.out.println("混合高斯建模结果显示:"+em.toString());
+			String s = em.toString();
+			System.out.println("混合高斯建模结果显示:"+s);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -202,7 +207,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		DataItems outline = new DataItems();
 		ArrayList<Integer> indexList = new ArrayList<Integer>();
 		for(int i=0;i<dis.size();i++){
-			if(dis.get(i)>0.8){
+			if(dis.get(i)>3){
 				indexList.add(i);
 			}
 		}
@@ -356,7 +361,8 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 			e.printStackTrace();
 			System.exit(0);
 		}
-//		changesample2arff(instances,fileName+".arff");
+		System.out.println("kmeans聚类结果：");
+		System.out.println(kMeans.toString());
 		return kMeans;
 	}
 	/**
