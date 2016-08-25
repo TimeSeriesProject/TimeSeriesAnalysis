@@ -208,21 +208,12 @@ public class win10_window extends JFrame {
 
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
-            MiningResultsFile resultsFile = new MiningResultsFile(ob);
             HashMap<TaskCombination, MinerResultsPath> objectMap = new HashMap<>();
-            if (resultsFile.hasFile(pathMinerFactory)) {  // 已有，直接读取
-                objectMap = (HashMap<TaskCombination, MinerResultsPath>) resultsFile.file2ResultMap();
-                pathResultsMaps.put(ob.toString(), objectMap);
-                NetworkMinerFactory.getInstance().taskCombinationAdd2allMiner(objectMap); //由读取的结果objectMap添加相应的miner，以供显示
-            } else {    // 没有，则重新挖掘并保存
-                pathMinerFactory.reset();
-                pathMinerFactory.setMiningObject(ob);
-                pathMinerFactory.detect();
-                objectMap = NetworkMinerFactory.getInstance().startAllPathMiners(ob);
-                pathResultsMaps.put(ob.toString(), objectMap);
-                MiningResultsFile newResultsFile = new MiningResultsFile(ob);
-                newResultsFile.resultMap2File(pathMinerFactory, objectMap);
-            }
+            pathMinerFactory.reset();
+            pathMinerFactory.setMiningObject(ob);
+            pathMinerFactory.detect();
+            objectMap = NetworkMinerFactory.getInstance().startAllPathMiners(ob);
+            pathResultsMaps.put(ob.toString(), objectMap);
         }
 
         isPathMined = true;
