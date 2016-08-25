@@ -25,7 +25,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
     private static double amplitudeRatio = 0.8;
     private static double sizeK = 8; //每段数据的长度len = 2^sizeK
     private DataItems di;
-    private DataItems outlies;
+    private DataItems outlies = new DataItems();
     
     public FastFourierOutliesDetection(DataItems di){
     	this.di=di;

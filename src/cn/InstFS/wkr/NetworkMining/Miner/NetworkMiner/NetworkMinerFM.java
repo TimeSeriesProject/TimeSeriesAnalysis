@@ -165,9 +165,12 @@ class FMTimerTask extends TimerTask{
 			TextUtils textUtils=new TextUtils();
 			textUtils.setTextPath(task.getSourcePath()+task.getMiningObject());
 			textUtils.writeOutput(dataItems);
-			tsaMethod=new NeuralNetwork(task.getSourcePath()+task.getMiningObject(), dataItems.getLastTime(), task,null);
+			
+			tsaMethod=new NeuralNetwork(task.getSourcePath()+task.getMiningObject(), dataItems.getLastTime(), 
+					task,ParamsAPI.getInstance().getParamsPrediction().getNnp());
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ARIMATSA)){
-			tsaMethod=new ARIMATSA(task, dataItems, null);
+			
+			tsaMethod=new ARIMATSA(task, dataItems, ParamsAPI.getInstance().getParamsPrediction().getAp());
 		}else{
 			throw new RuntimeException("方法不存在！");
 		}

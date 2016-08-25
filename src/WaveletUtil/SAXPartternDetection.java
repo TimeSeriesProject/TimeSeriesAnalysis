@@ -8,6 +8,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMSAXPartternParams;
 
 public class SAXPartternDetection implements IMinerOM{
 	private DataItems dataItems;     //时间序列 
@@ -31,9 +32,18 @@ public class SAXPartternDetection implements IMinerOM{
 		numList=new ArrayList<Integer>();
 		root=new Node(patternAlphaNum);
 	}
-	
+	public SAXPartternDetection(DataItems dataItems,OMSAXPartternParams omSaxPartternParams){
+		this.dataItems=dataItems;
+		this.patternLen=omSaxPartternParams.getPatternLen();
+		patternAlphaNum=omSaxPartternParams.getPatternAlphaNum();
+		setpatternAlphaNum();
+		outlies=new DataItems();
+		vectorList=new ArrayList<Vector>();
+		numList=new ArrayList<Integer>();
+		root=new Node(patternAlphaNum);
+	}
 	private void setpatternAlphaNum(){
-		patternAlphaNum=5;
+		//patternAlphaNum=5;
 		if(patternLen<=patternAlphaNum){
 			patternAlphaNum=patternLen;
 			return;

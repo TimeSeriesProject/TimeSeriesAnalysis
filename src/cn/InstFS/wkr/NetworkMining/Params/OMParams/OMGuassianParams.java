@@ -29,7 +29,7 @@ public class OMGuassianParams {
     	
     	param = paramsConfig.getChildText("windowVarK");
     	if(param != null){
-    		windowVarK = Integer.parseInt(param);
+    		windowVarK = Double.parseDouble(param);
     	}
     }
     public int getInitWindowSize() {

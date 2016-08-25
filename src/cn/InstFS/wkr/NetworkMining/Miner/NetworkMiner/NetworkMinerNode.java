@@ -24,6 +24,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
@@ -141,8 +142,7 @@ class NodeTimerTask extends TimerTask{
 	}
 	
 	private void PMDetect(DataItems dataItems,List<TaskElement>tasks){
-		if(taskCombination.getRange().equals("10.0.13.2"))
-			System.out.println();
+
 		DataItems oriDataItems=dataItems;
 		results.setInputData(oriDataItems);
 		for(TaskElement task:tasks){
@@ -163,7 +163,7 @@ class NodeTimerTask extends TimerTask{
 			IMinerOM tsaMethod=null;
 			switch (task.getMiningMethod()) {
 			case MiningMethods_PeriodicityMining:
-				PMparam pMparam=null;
+				PMparam pMparam = ParamsAPI.getInstance().getParamsPeriodMiner().getPmparam();
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_averageEntropyPM)){
 					pmMethod=new averageEntropyPM(task, dimension,pMparam);//添加参数
 				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
@@ -184,12 +184,12 @@ class NodeTimerTask extends TimerTask{
 				}
 				
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
-					tsaMethod=new FastFourierOutliesDetection(dataItems);
-					((FastFourierOutliesDetection)tsaMethod).setAmplitudeRatio(0.7);
-					((FastFourierOutliesDetection)tsaMethod).setVarK(3.0);
+					tsaMethod=new FastFourierOutliesDetection(
+							ParamsAPI.getInstance().getPom().getOmFastFourierParams(),dataItems);
+					
 					results.getRetNode().getRetOM().setIslinkDegree(false);
 				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_GaussDetection)){
-					tsaMethod=new AnormalyDetection(dataItems);
+					tsaMethod=new AnormalyDetection(ParamsAPI.getInstance().getPom().getOmGuassianParams(),dataItems);
 					results.getRetNode().getRetOM().setIslinkDegree(false);
 				}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
 					//tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
@@ -206,10 +206,9 @@ class NodeTimerTask extends TimerTask{
 				setOMResults(results, tsaMethod);
 				break;
 			case MiningMethods_Statistics:
-				if(taskCombination.getName().equals("10.0.7.2_9")){
-					System.out.println("");
-				}
-				SeriesStatistics seriesStatistics=new SeriesStatistics(dataItems);
+
+				SeriesStatistics seriesStatistics=new SeriesStatistics(dataItems,
+						ParamsAPI.getInstance().getParamsStatistic().getSsp());
 				seriesStatistics.statistics();
 				setStatisticResults(results,seriesStatistics);
 				break;

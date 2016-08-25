@@ -78,7 +78,7 @@ public class PcapByteParser {
             System.arraycopy(buffer_4, 0, buffer_278, 0, buffer_4.length);
             byteLength += 4;
             data.setTime_s(byteArrayToLong(buffer_4, 0));
-            node.setTime_s(byteArrayToLong(buffer_4, 0));//写入时间
+            node.setTime_s(byteArrayToLong(buffer_4, 0) / 3600);//写入时间,按小时
 //            System.out.println("Time_s" + data.getTime_s());
             is.get(buffer_4);
             reverseByteArray(buffer_4);
@@ -217,7 +217,7 @@ public class PcapByteParser {
             System.arraycopy(buffer_4, 0, buffer_278, 0, buffer_4.length);
             byteLength += 4;
             data.setTime_s(byteArrayToLong(buffer_4, 0));
-            node.setTime_s(byteArrayToLong(buffer_4, 0));//写入时间
+            node.setTime_s(byteArrayToLong(buffer_4, 0) / 3600);//写入时间,按小时
 //            System.out.println("Time_s" + data.getTime_s());
             is.get(buffer_4);
             reverseByteArray(buffer_4);
@@ -256,7 +256,12 @@ public class PcapByteParser {
             System.arraycopy(buffer_2, 0, buffer_278, byteLength, buffer_2.length);
             byteLength += 2;
             node.setTraffic(byteArrayToShort(buffer_2, 0));//写入流量
-            nodeList.add(node);
+            //每读入一行，判断是否存在，将流量加起来
+            if (nodeList.contains(node)) {
+                nodeList.get(nodeList.indexOf(node)).setTraffic(nodeList.get(nodeList.indexOf(node)).getTraffic() + node.getTraffic());
+            } else {
+                nodeList.add(node);
+            }
             is.get(buffer_4);//skip in order to get TTL
             datalength += 4;
             is.get(buffer_1);
