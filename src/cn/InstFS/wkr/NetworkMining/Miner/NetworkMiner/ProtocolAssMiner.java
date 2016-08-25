@@ -13,13 +13,21 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AssociationAlgorithm.Protoco
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AssociationAlgorithm.ProtocolAssociation;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AssociationAlgorithm.ProtocolAssociationLine;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.MinerFactorySettings;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.ProtocolAssMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.SingleNodeOrNodePairMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
+import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
@@ -41,6 +49,16 @@ public class ProtocolAssMiner implements INetworkMiner {
 	
 	@Override
 	public boolean start() {
+		MinerFactorySettings settings = ProtocolAssMinerFactory.getInstance();
+		MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(taskCombination.getMiningObject()));
+		if(resultsFile.hasFile(settings, taskCombination)) { // 已有挖掘结果存储，则不重新启动miner
+			isOver.setIsover(true);
+			MinerProtocolResults resultNode = (MinerProtocolResults) resultsFile.file2Result();
+			results.setRetProtocol(resultNode);
+
+			return false;
+		}
+
 		if (timer != null){
 			UtilsUI.appendOutput(taskCombination.getName() + " -- already started");
 			return false;
@@ -163,6 +181,11 @@ class ProtocolMinerTask extends TimerTask{
 		
 		if (displayer != null)
 			displayer.displayMinerResults(results);
+		/* 挖掘完成，保存结果文件 */
+		MinerFactorySettings settings = ProtocolAssMinerFactory.getInstance();
+		MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(taskCombination.getMiningObject()));
+		newResultsFile.result2File(settings, taskCombination, results.getRetProtocol());
+
 		timer.cancel();
 	}
 }

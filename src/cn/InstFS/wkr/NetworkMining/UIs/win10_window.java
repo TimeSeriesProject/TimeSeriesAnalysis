@@ -143,21 +143,13 @@ public class win10_window extends JFrame {
 
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
-            MiningResultsFile resultsFile = new MiningResultsFile(ob);
             HashMap<TaskCombination, MinerProtocolResults> objectMap = new HashMap<>();
-            if (resultsFile.hasFile(protocolAssMinerFactory)) {  // 已有，直接读取
-                objectMap = (HashMap<TaskCombination,MinerProtocolResults>) resultsFile.file2ResultMap();
-                protocolResultsMaps = objectMap;
-                NetworkMinerFactory.getInstance().taskCombinationAdd2allMiner(objectMap); //由读取的结果objectMap添加相应的miner，以供显示
-            } else {    // 没有，则重新挖掘并保存
-                protocolAssMinerFactory.reset();
-                protocolAssMinerFactory.setMiningObject(ob);
-                protocolAssMinerFactory.detect();
-                objectMap = NetworkMinerFactory.getInstance().startAllProtocolMiners(ob);
-                protocolResultsMaps =objectMap;
-                MiningResultsFile newResultsFile = new MiningResultsFile(ob);
-                newResultsFile.resultMap2File(protocolAssMinerFactory, objectMap);
-            }
+
+            protocolAssMinerFactory.reset();
+            protocolAssMinerFactory.setMiningObject(ob);
+            protocolAssMinerFactory.detect();
+            objectMap = NetworkMinerFactory.getInstance().startAllProtocolMiners(ob);
+            protocolResultsMaps = objectMap;
         }
 
         isProtocolAssMined=true;
