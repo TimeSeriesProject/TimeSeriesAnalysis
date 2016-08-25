@@ -1484,10 +1484,11 @@ public class nodePairReader implements IReader {
 				System.out.println("No file!");
 				return protocolDataItems;
 			}
-			String str[]=fileList.get(0).split(".");
+			String str[]=fileList.get(0).split("\\.");
+			System.out.println("node 1488 "+str[0]);
 			date1 = new Date(Long.valueOf(str[0]));
 			
-			str = fileList.get(fileList.size()-1).split(".");
+			str = fileList.get(fileList.size()-1).split("\\.");
 			date2 = new Date(Long.valueOf(str[0]));
 		}
 		
@@ -1623,10 +1624,10 @@ public class nodePairReader implements IReader {
 				System.out.println("No file!");
 				return ipPairProtocolDataItems;
 			}
-			String str[]=fileList.get(0).split(".");
+			String str[]=fileList.get(0).split("\\.");
 			date1 = new Date(Long.valueOf(str[0]));
 			
-			str = fileList.get(fileList.size()-1).split(".");
+			str = fileList.get(fileList.size()-1).split("\\.");
 			date2 = new Date(Long.valueOf(str[0]));
 		}
 		
@@ -1766,10 +1767,10 @@ public class nodePairReader implements IReader {
 				System.out.println("No file!");
 				return ipPairProtocolDataItems;
 			}
-			String str[]=fileList.get(0).split(".");
+			String str[]=fileList.get(0).split("\\.");
 			date1 = new Date(Long.valueOf(str[0]));
 			
-			str = fileList.get(fileList.size()-1).split(".");
+			str = fileList.get(fileList.size()-1).split("\\.");
 			date2 = new Date(Long.valueOf(str[0]));
 		}
 		
@@ -1937,10 +1938,10 @@ public class nodePairReader implements IReader {
 				System.out.println("No file!");
 				return protocolDataItems;
 			}
-			String str[]=fileList.get(0).split(".");
+			String str[]=fileList.get(0).split("\\.");
 			date1 = new Date(Long.valueOf(str[0]));
 			
-			str = fileList.get(fileList.size()-1).split(".");
+			str = fileList.get(fileList.size()-1).split("\\.");
 			date2 = new Date(Long.valueOf(str[0]));
 		}
 		int start=0;
