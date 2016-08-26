@@ -186,7 +186,7 @@ class NodeGen implements Callable {
     }
 
     private long genFileName(long count) {
-        return initTime + 86400 * count;
+        return initTime + 86400000 * count;
     }
 }
 
@@ -245,7 +245,7 @@ class RouteGenerate implements Callable {
     }
 
     private long genFileName(long count) {
-        return initTime + 86400 * count;
+        return initTime + 86400000 * count;
     }
 }
 
@@ -301,6 +301,6 @@ class TrafficGen implements Callable {
     }
 
     private long genFileName(long count) {
-        return initTime + 86400 * count;
+        return initTime + 86400000 * count;
     }
 }

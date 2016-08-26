@@ -118,7 +118,12 @@ public class PcapByteParser {
             System.arraycopy(buffer_2, 0, buffer_278, byteLength, buffer_2.length);
             byteLength += 2;
             node.setTraffic(byteArrayToShort(buffer_2, 0));//写入流量
-            nodeList.add(node);
+            //每读入一行，判断是否存在，将流量加起来
+            if (nodeList.contains(node)) {
+                nodeList.get(nodeList.indexOf(node)).setTraffic(nodeList.get(nodeList.indexOf(node)).getTraffic() + node.getTraffic());
+            } else {
+                nodeList.add(node);
+            }
             is.get(buffer_4);//skip in order to get TTL
             datalength += 4;
             is.get(buffer_1);
