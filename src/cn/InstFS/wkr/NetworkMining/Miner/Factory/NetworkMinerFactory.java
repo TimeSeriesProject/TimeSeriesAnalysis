@@ -240,6 +240,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 					allMiners.put(task, minerSim);
 					break;
 				case MiningMethods_FrequenceItemMining:
+					
 					NetworkMinerProtoclAssLine minerFPLine=new NetworkMinerProtoclAssLine(task, null);
 					minerFPLine.getResults().setRetFPLine(resultsMap.get(taskCombination).getRetFP());
 					minerFPLine.isOver.setIsover(true);
