@@ -30,34 +30,34 @@ public class win10_window extends JFrame {
     HashMap<String,HashMap<TaskCombination, MinerNodeResults>> singleNoderesultMaps = new HashMap<String,HashMap<TaskCombination, MinerNodeResults>>();
     HashMap<String,HashMap<TaskCombination, MinerNodeResults>> nodePairresultMaps = new HashMap<String,HashMap<TaskCombination, MinerNodeResults>>();
     HashMap<String, HashMap<TaskCombination, MinerResultsPath>> pathResultsMaps= new HashMap<String, HashMap<TaskCombination,MinerResultsPath>>();
-//    HashMap<String, HashMap<TaskCombination, MinerProtocolResults>> protocolResultsMaps = new HashMap<>();
+    //    HashMap<String, HashMap<TaskCombination, MinerProtocolResults>> protocolResultsMaps = new HashMap<>();
     HashMap<TaskCombination, MinerProtocolResults> protocolResultsMaps = new HashMap<>();
     boolean isNetworkStructureMined=false;
     boolean isSingleNodeMined=false;
     boolean isNodePairMined = false;
     boolean isPathMined = false;
     boolean isProtocolAssMined = false;
-    
+
     public boolean isNetworkStructureMined() {
-		return isNetworkStructureMined;
-	}
-	public void setNetworkStructureMined(boolean isNetworkStructureMined) {
-		this.isNetworkStructureMined = isNetworkStructureMined;
-	}
-	public boolean isSingleNodeMined() {
-		return isSingleNodeMined;
-	}
-	public void setSingleNodeMined(boolean isSingleNodeMined) {
-		this.isSingleNodeMined = isSingleNodeMined;
-	}
-	public boolean isNodePairMined() {
-		return isNodePairMined;
-	}
-	public void setNodePairMined(boolean isNodePairMined) {
-		this.isNodePairMined = isNodePairMined;
-	}
-	public void mineNetworkStructor()
-	{
+        return isNetworkStructureMined;
+    }
+    public void setNetworkStructureMined(boolean isNetworkStructureMined) {
+        this.isNetworkStructureMined = isNetworkStructureMined;
+    }
+    public boolean isSingleNodeMined() {
+        return isSingleNodeMined;
+    }
+    public void setSingleNodeMined(boolean isSingleNodeMined) {
+        this.isSingleNodeMined = isSingleNodeMined;
+    }
+    public boolean isNodePairMined() {
+        return isNodePairMined;
+    }
+    public void setNodePairMined(boolean isNodePairMined) {
+        this.isNodePairMined = isNodePairMined;
+    }
+    public void mineNetworkStructor()
+    {
         networkStructureresultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
@@ -75,10 +75,10 @@ public class win10_window extends JFrame {
             networkStructureresultMaps.put(ob.toString(), objectMap);
         }
 
-		isNetworkStructureMined=true;
-	}
-	public void mineSingleNode()
-	{
+        isNetworkStructureMined=true;
+    }
+    public void mineSingleNode()
+    {
         singleNoderesultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
@@ -109,10 +109,10 @@ public class win10_window extends JFrame {
 
         }
 
-		isSingleNodeMined=true;
-	}
-	public void mineNodePair()
-	{
+        isSingleNodeMined=true;
+    }
+    public void mineNodePair()
+    {
         nodePairresultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
@@ -131,8 +131,8 @@ public class win10_window extends JFrame {
             nodePairresultMaps.put(ob.toString(), objectMap);
         }
 
-		isNodePairMined=true;
-	}
+        isNodePairMined=true;
+    }
 
     public void mineProtocolAss() {
         protocolResultsMaps.clear();
@@ -219,7 +219,7 @@ public class win10_window extends JFrame {
         isPathMined = true;
     }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -282,33 +282,33 @@ public class win10_window extends JFrame {
         final JButton bNetwork=new JButton("网络结构");
         bNetwork.setBackground( new Color(102,205,170));
         bNetwork.setBounds(100,120,200,200);
-        setIcon("img\\network.png",bNetwork);
+        setIcon("img\\deploy_network_Icon.png",bNetwork);
         bNetwork.setMargin(new Insets(0, 0, 0, 0));
 //        bNetwork.setEnabled(false);
-        
+
         final JButton bNetLoad=new JButton("承载路径");
         bNetLoad.setBackground( new Color(102,205,170));
         bNetLoad.setBounds(100,330,200,200);
-        setIcon("img\\netLoad.png",bNetLoad);
+        setIcon("img\\deploy_netRoad_Icon.png",bNetLoad);
 //        bNetLoad.setEnabled(false);
-        
+
         final JButton bNode=new JButton("节点");
         bNode.setBackground(new Color(102, 205, 170));
         bNode.setBounds(100,540,200,200);
-        setIcon("img\\node.png",bNode);
+        setIcon("img\\deploy_node_Icon.png",bNode);
 //        bNode.setEnabled(false);
 
         final JButton blinkRoad=new JButton("链路");
         blinkRoad.setBounds(100,750,200,200);
-        setIcon("img\\road.png",blinkRoad);
+        setIcon("img\\deploy_linkRoad_Icon.png",blinkRoad);
 //        blinkRoad.setEnabled(false);
-        
+
         final JButton bMultiServer=new JButton("多业务");
 //        bMultiServer.setBackground( new Color(102,205,170));
         bMultiServer.setBounds(310,750,200,200);
-        setIcon("img\\multi.png",bMultiServer);
+        setIcon("img\\deploy_mul_server_Icon.png",bMultiServer);
 //        bMultiServer.setEnabled(false);
-        
+
         //中间一列
         final JButton bPcap=new JButton("PCAP 解析");
         bPcap.setBackground( new Color(178,234,34));
@@ -325,28 +325,28 @@ public class win10_window extends JFrame {
         //最后一列
         final JButton bMinNet=new JButton("挖掘网络结构");
         bMinNet.setBounds(730,120,200,200);
-        setIcon("img\\min_network.png",bMinNet);
+        setIcon("img\\dig_network_Icon.png",bMinNet);
         final JButton bMinNetLoad=new JButton("挖掘承载路径");
         bMinNetLoad.setBackground( new Color(102,205,170));
         bMinNetLoad.setBounds(730,330,200,200);
-        setIcon("img\\min_netLoad.png",bMinNetLoad);
+        setIcon("img\\dig_netRoad_Icon.png",bMinNetLoad);
 
         final JButton bMinNode=new JButton("挖掘节点");
         bMinNode.setBackground(new Color(102, 205, 170));
         bMinNode.setBounds(730,540,200,200);
-        setIcon("img\\min_node.png",bMinNode);
+        setIcon("img\\dig_node_Icon.png",bMinNode);
 
         final JButton bMinlinkRoad=new JButton("挖掘链路");
         bMinlinkRoad.setBounds(730,750,200,200);
-        setIcon("img\\min_road.png",bMinlinkRoad);
+        setIcon("img\\dig_linkRoad_Icon.png",bMinlinkRoad);
 
         final JButton bMinMultiServer=new JButton("挖掘多业务");
         bMinMultiServer.setBackground( new Color(102,205,170));
         bMinMultiServer.setBounds(520,750,200,200);
-        setIcon("img\\min_multi.png",bMinMultiServer);
+        setIcon("img\\dig_mul_server_Icon.png",bMinMultiServer);
 
-        bgp=new BackgroundPanel((new ImageIcon("img\\background.png")).getImage());
-        bgp.setBounds(0,0,1920,1080);
+//        bgp=new BackgroundPanel((new ImageIcon("img\\background.png")).getImage());
+//        bgp.setBounds(0,0,1920,1080);
         ct.add(bNetwork);
         ct.add(bAll);
         ct.add(blinkRoad);
@@ -359,7 +359,8 @@ public class win10_window extends JFrame {
         ct.add(bNetLoad);
         ct.add(bNode);
         ct.add(bPcap);
-        ct.add(bgp);
+//        ct.add(bgp);
+        ct.setBackground(new Color(0,90,171));
 
         //设置边框
         bNetwork.setMargin(new Insets(0, 0, 0, 0));
@@ -398,7 +399,7 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO Auto-generated method stub
-            	
+
 
             }
         });
@@ -408,7 +409,7 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO Auto-generated method stub
-            	settingsPath();
+                settingsPath();
                 if (PathMinerFactory.getInstance().isModified())
                     isPathMined = false;
 
@@ -429,7 +430,7 @@ public class win10_window extends JFrame {
 //
 //            }
 //        });
-    //显示节点规律设置响应
+        //显示节点规律设置响应
         bNode.addActionListener(new ActionListener() {
 
             @Override
@@ -469,14 +470,14 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO Auto-generated method stub
-            	if(isSingleNodeMined==false)
-            		mineSingleNode();
-            	if(isNodePairMined==false)
-            		mineNodePair();
-            	if(isNetworkStructureMined==false)
-            		mineNetworkStructor();
-            
-            	
+                if(isSingleNodeMined==false)
+                    mineSingleNode();
+                if(isNodePairMined==false)
+                    mineNodePair();
+                if(isNetworkStructureMined==false)
+                    mineNetworkStructor();
+
+
             }
         });
         //显示链路规律按钮设置
@@ -493,67 +494,67 @@ public class win10_window extends JFrame {
         //挖掘网络结构按钮设置
         bMinNet.addActionListener(new ActionListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // TODO Auto-generated method stub
-        	if(!isNetworkStructureMined)
-        		mineNetworkStructor();
-            WholeNetworkFrame wholeNetworkFrame = new WholeNetworkFrame(networkStructureresultMaps);
-            wholeNetworkFrame.setVisible(true);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO Auto-generated method stub
+                if(!isNetworkStructureMined)
+                    mineNetworkStructor();
+                WholeNetworkFrame wholeNetworkFrame = new WholeNetworkFrame(networkStructureresultMaps);
+                wholeNetworkFrame.setVisible(true);
 
-        }
-    });
+            }
+        });
         //挖掘节点规律按钮设置
         bMinNode.addActionListener(new ActionListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // TODO Auto-generated method stub
-        	if(!isSingleNodeMined)
-        		mineSingleNode();
-            SingleNodeListFrame singleNodeListFrame = new SingleNodeListFrame(singleNoderesultMaps);
-            singleNodeListFrame.setVisible(true);
-			
-        }
-    });
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO Auto-generated method stub
+                if(!isSingleNodeMined)
+                    mineSingleNode();
+                SingleNodeListFrame singleNodeListFrame = new SingleNodeListFrame(singleNoderesultMaps);
+                singleNodeListFrame.setVisible(true);
+
+            }
+        });
         //挖掘链路规律按钮设置
         bMinlinkRoad.addActionListener(new ActionListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // TODO Auto-generated method stub
-        	if(!isNodePairMined)
-        		mineNodePair();
-            NodePairListFrame nodePairListFrame = new NodePairListFrame(nodePairresultMaps);
-            nodePairListFrame.setVisible(true);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO Auto-generated method stub
+                if(!isNodePairMined)
+                    mineNodePair();
+                NodePairListFrame nodePairListFrame = new NodePairListFrame(nodePairresultMaps);
+                nodePairListFrame.setVisible(true);
 
-        }
-    });
+            }
+        });
         //挖掘承载路径规律按钮设置
         bMinNetLoad.addActionListener(new ActionListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // TODO Auto-generated method stub
-            if (!isPathMined)
-                minePath();
-            PathListFrame pathListFrame = new PathListFrame(pathResultsMaps);
-            pathListFrame.setVisible(true);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO Auto-generated method stub
+                if (!isPathMined)
+                    minePath();
+                PathListFrame pathListFrame = new PathListFrame(pathResultsMaps);
+                pathListFrame.setVisible(true);
 
-        }
-    });
+            }
+        });
         //挖掘多业务规律按钮设置
         bMinMultiServer.addActionListener(new ActionListener() {
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // TODO Auto-generated method stub
-            if (!isProtocolAssMined)
-                mineProtocolAss();
-            AssociationIpListFrame frame = new AssociationIpListFrame(protocolResultsMaps);
-            frame.setVisible(true);
-        }
-    });
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO Auto-generated method stub
+                if (!isProtocolAssMined)
+                    mineProtocolAss();
+                AssociationIpListFrame frame = new AssociationIpListFrame(protocolResultsMaps);
+                frame.setVisible(true);
+            }
+        });
     }
     class BackgroundPanel extends JPanel
     {

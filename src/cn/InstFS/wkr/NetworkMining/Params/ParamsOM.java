@@ -9,6 +9,7 @@ import java.util.Date;
 
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMFastFourierParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMMultidimensionalParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMPiontPatternParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMSAXPartternParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMTEOParams;
@@ -20,6 +21,7 @@ public class ParamsOM extends IParamsNetworkMining implements Serializable {
     OMPiontPatternParams omPiontPatternParams = null;
     OMTEOParams omteoParams = null;
     OMSAXPartternParams omSaxPartternParams = null;
+    OMMultidimensionalParams omMultidimensionalParams = null;
     public ParamsOM() {}
     public OMGuassianParams getOmGuassianParams() {
 		return omGuassianParams;
@@ -57,6 +59,14 @@ public class ParamsOM extends IParamsNetworkMining implements Serializable {
 	}
 	public void setOmSaxPartternParams(OMSAXPartternParams omSaxPartternParams) {
 		this.omSaxPartternParams = omSaxPartternParams;
+	}
+	
+	public OMMultidimensionalParams getOmMultidimensionalParams() {
+		return omMultidimensionalParams;
+	}
+	public void setOmMultidimensionalParams(
+			OMMultidimensionalParams omMultidimensionalParams) {
+		this.omMultidimensionalParams = omMultidimensionalParams;
 	}
 	@Override
     public boolean equals(IParamsNetworkMining params) {

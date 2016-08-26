@@ -44,11 +44,9 @@ public class CTabFolderChart extends CTabFolder {
 		map = new HashMap<CTabItem, Integer>();
 		this.compositeMainProtocolConfidence = compositeMainProtocolConfidence;
 
-		// �����Զ���ѡ�����
-		// final CTabFolder folder = new CTabFolder(form, SWT.BORDER);
-		// ����ѡ��Ĳ��֣�ͨ��ֵ����ó��ֳ���󻯺���С�������
+
 		this.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		// ���ø��ӵ�ѡ���Ҳ���Ǵ���Բ�ǵ�ѡ���ǩ
+
 		this.setSimple(false);
 		// ����δѡ�б�ǩ��ͼ��͹رհ�ť��״̬
 		this.setUnselectedImageVisible(true);
@@ -58,8 +56,8 @@ public class CTabFolderChart extends CTabFolder {
 		this.setSelectionBackground(display
 				.getSystemColor(SWT.COLOR_DARK_GREEN));
 		// ��ʾ��󻯺���С����ť
-		this.setMinimizeVisible(true);
-		this.setMaximizeVisible(true);
+/*		this.setMinimizeVisible(true);
+		this.setMaximizeVisible(true);*/
 
 	}
 
@@ -97,7 +95,6 @@ public class CTabFolderChart extends CTabFolder {
 		sc.setExpandHorizontal(true);
 		sc.setExpandVertical(true);
 		int itemcount = pp.getDataItems1().getLength();
-		System.out.println("changdu:" + itemcount);
 		sc.setMinWidth(800 + itemcount * 2);
 		sc.setMinWidth(800);
 		sc.setMinHeight(400);
@@ -105,7 +102,6 @@ public class CTabFolderChart extends CTabFolder {
 		// 将普通面板设置为受控的滚动面板
 		sc.setContent(tab1item);
 		mainTabItem.setControl(com);
-		// �������
 		return mainTabItem;
 	}
 
