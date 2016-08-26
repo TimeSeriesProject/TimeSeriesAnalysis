@@ -187,7 +187,7 @@ public class BottomUpLinear {
     	Node minLengthNode = findMinLength(head);
         while(minLengthNode!=null){
         	mergeMinLengthNode(minLengthNode);
-        	minLengthNode = findMinNode(head);
+        	minLengthNode = findMinLength(head);
         }
 	}
 	/**

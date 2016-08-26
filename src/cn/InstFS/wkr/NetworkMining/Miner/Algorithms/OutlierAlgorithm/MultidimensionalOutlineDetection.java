@@ -15,6 +15,7 @@ import WaveletUtil.VectorDistance;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.GMMParameter;
+import cn.InstFS.wkr.NetworkMining.DataInputs.LinePattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.MovingAverage;
 import cn.InstFS.wkr.NetworkMining.DataInputs.Pattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
@@ -28,6 +29,7 @@ import weka.core.EuclideanDistance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import weka.core.SerializationHelper;
+import weka.gui.beans.Startable;
 
 /**
    *@author LYH
@@ -37,6 +39,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	private DataItems dataItems = new DataItems();
 	private DataItems outlines = new DataItems();
 	private DataItems newItems = new DataItems(); //滑动平均后的数据
+	
 	private List<Pattern> patterns = new ArrayList<Pattern>();   //线段模式
 	private static int densityK = 2; //序列线段化时，找极值点的参数
 	private static double patternThreshold = 0.1; //线段化参数
@@ -54,8 +57,13 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	public void TimeSeriesAnalysis(){
 		MovingAverage movingAverage = new MovingAverage(dataItems);
 		newItems = movingAverage.getNewItems();
-		PointSegment segment=new PointSegment(newItems, densityK,patternThreshold); //线段化模式
-		patterns=segment.getTEOPattern(); 
+		/*PointSegment segment=new PointSegment(newItems, densityK,patternThreshold); //线段化模式
+		patterns = segment.getTEOPattern();*/
+		LinePattern linePattern = new LinePattern(newItems);
+		patterns=linePattern.getPatterns();
+		for(int i=0;i<patterns.size();i++){
+			System.out.print(" " + patterns.get(i).getSpan());
+		}
 		OutlineDetection();
 	}
 	@Override
@@ -68,7 +76,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		//获得观测值dataSet	
 		for(int i=0;i<patterns.size();i++){
 			ArrayList<Double> data = new ArrayList<Double>();
-			data.add(patterns.get(i).getSpan());
+			data.add((double)(patterns.get(i).getSpan()));
 			data.add(patterns.get(i).getAverage());
 			data.add(patterns.get(i).getSlope());
 			dataSet.add(data);
@@ -194,7 +202,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 			for(int j=start;j<=end;j++){				
 				outline.add1Data(time.get(j),data.get(j));
 			}
-			System.out.println("线段"+indexList.get(i)+"的时间跨度为:"+patterns.get(indexList.get(i)).getSpan());
+			System.out.println("异常为线段"+indexList.get(i)+"的时间跨度为:"+patterns.get(indexList.get(i)).getSpan());
 		}
 		return outline;
 	}
@@ -222,7 +230,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 			for(int j=start;j<=end;j++){				
 				outline.add1Data(time.get(j),data.get(j));
 			}
-			System.out.println("线段"+indexList.get(i)+"的时间跨度为:"+patterns.get(indexList.get(i)).getSpan());
+			System.out.println("异常为线段"+indexList.get(i)+"的时间跨度为:"+patterns.get(indexList.get(i)).getSpan());
 		}
 		return outline;
 	}
@@ -445,7 +453,20 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		}
 		return maxindex;
 	}
+		
 	
+	public DataItems getOutlines() {
+		return outlines;
+	}
+	public void setOutlines(DataItems outlines) {
+		this.outlines = outlines;
+	}
+	public DataItems getNewItems() {
+		return newItems;
+	}
+	public void setNewItems(DataItems newItems) {
+		this.newItems = newItems;
+	}
 	
 	/*****************************************以下为计算工具***********************************************/
 	/**
