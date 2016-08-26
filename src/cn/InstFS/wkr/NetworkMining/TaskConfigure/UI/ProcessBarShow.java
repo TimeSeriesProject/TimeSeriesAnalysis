@@ -37,7 +37,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
-import cn.InstFS.wkr.NetworkMining.PcapStatistics.PcapUtils;
+import cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt.PcapUtils;
 
 public class ProcessBarShow extends JDialog implements Callable {
 
@@ -323,6 +323,7 @@ public class ProcessBarShow extends JDialog implements Callable {
 				else if(pp.pu.getStatus().name().compareTo("END") == 0) {
 				
 					haseBegin = false;
+					bar.setValue(pp.pu.getGenRouteSum());
 					currentPhrase = "解析结束";
 					jlable.setText(currentPhrase);
 //					timer.stop();
