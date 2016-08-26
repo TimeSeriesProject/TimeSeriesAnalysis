@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import oracle.net.aso.p;
+
 
 public class LinePattern {
 	private DataItems dataItems = new DataItems();     //时间序列 
@@ -29,6 +31,8 @@ public class LinePattern {
         for(Map.Entry<Integer, Pattern> entry : linesMap.entrySet()){
         	patterns.add(entry.getValue());
         }
+        comAngle(patterns);
+        
     }
 	/**
 	 * 转换dataItems中data的数据格式为：
@@ -79,8 +83,10 @@ public class LinePattern {
             	continue;
             double firstValue = datas.get(firstTime);
             double lastValue = datas.get(time);
-            double slope = (lastValue - firstValue)/(time - firstTime);//计算斜率，斜率大小随变量单位变化
-            Pattern pattern = new Pattern(firstTime,firstTime+1,time - firstTime,Math.atan(slope),firstValue);
+            //double slope = (lastValue - firstValue)/(time - firstTime);//计算斜率，斜率大小随变量单位变化
+            double height = lastValue - firstValue;
+            double length = time - firstTime;
+            Pattern pattern = new Pattern(firstTime,firstTime+1,time - firstTime,Math.atan2(height,length),firstValue);
             pattern.setHspan(lastValue-firstValue); 
             linesMap.put(firstTime,pattern);
             firstTime = time;
@@ -94,7 +100,7 @@ public class LinePattern {
      */
     private double computeCost(Pattern first, Pattern last) {
         int start = first.getStart();
-        int end = last.getStart()+(int)last.getSpan();
+        int end = last.getStart()+last.getLen();
         double startValue = datas.get(start);
         double endValue = datas.get(end);
         double slope = (endValue-startValue)/(end-start);
@@ -202,7 +208,7 @@ public class LinePattern {
         Node now = head;
         while(now.after!=null){
             now=now.after;
-            int len = (int)now.first.getSpan()+(int)now.second.getSpan();
+            int len = now.first.getLen()+now.second.getLen();
             if(len < 4)
             	return now;
         }
@@ -216,9 +222,11 @@ public class LinePattern {
 		
     	Node before = minNode.before,after = minNode.after;
         Pattern first = minNode.first,second = minNode.second;
-        double newSlope = (datas.get(second.getSpan()+second.getStart())-first.getStartValue())/(second.getSpan()+second.getStart()-first.getStart());
-        Pattern newLinear = new Pattern(first.getStart(),first.getStart()+(int)first.getSpan(),(int)second.getSpan()+second.getStart()-first.getStart(),Math.atan(newSlope),first.getStartValue());
-        newLinear.setHspan(datas.get(second.getSpan()+second.getStart())-first.getStartValue());
+        //double newSlope = (datas.get(second.getSpan()+second.getStart())-first.getStartValue())/(second.getSpan()+second.getStart()-first.getStart());
+        double height = datas.get(second.getLen()+second.getStart())-first.getStartValue();
+        double length = second.getLen()+second.getStart()-first.getStart();
+        Pattern newLinear = new Pattern(first.getStart(),first.getStart()+first.getLen(),second.getLen()+second.getStart()-first.getStart(),Math.atan2(height,length),first.getStartValue());
+        newLinear.setHspan(datas.get(second.getLen()+second.getStart())-first.getStartValue());
         before.second=newLinear;
         before.after=after;
         if (after != null) {
@@ -234,9 +242,11 @@ public class LinePattern {
     private void mergeNode(Node minNode) {
         Node before = minNode.before,after = minNode.after;
         Pattern first = minNode.first,second = minNode.second;
-        double newSlope = (datas.get(second.getSpan()+second.getStart())-first.getStartValue())/(second.getSpan()+second.getStart()-first.getStart());
-        Pattern newLinear = new Pattern(first.getStart(),first.getStart()+(int)first.getSpan(),(int)second.getSpan()+second.getStart()-first.getStart(),Math.atan(newSlope),first.getStartValue());
-        newLinear.setHspan(datas.get(second.getSpan()+second.getStart())-first.getStartValue());
+        //double newSlope = (datas.get(second.getSpan()+second.getStart())-first.getStartValue())/(second.getSpan()+second.getStart()-first.getStart());
+        double height = datas.get(second.getLen()+second.getStart())-first.getStartValue();
+        double length = second.getLen()+second.getStart()-first.getStart();
+        Pattern newLinear = new Pattern(first.getStart(),first.getStart()+(first.getLen()),second.getLen()+second.getStart()-first.getStart(),Math.atan2(height,length),first.getStartValue());
+        newLinear.setHspan(datas.get(second.getLen()+second.getStart())-first.getStartValue());
         before.second=newLinear;
         before.after=after;
         if (after != null) {
@@ -246,6 +256,16 @@ public class LinePattern {
     }
 
 
+    /**
+     * 计算Pattern中的angle,与前一条线段的夹角
+     * */
+    public void comAngle(List<Pattern> pList){
+    	pList.get(0).setAngle(pList.get(0).getSlope());
+    	for(int i=1;i<pList.size();i++){
+    		double angle = Math.PI - pList.get(i).getSlope() + pList.get(i-1).getSlope();
+    		pList.get(i).setAngle(angle);
+    	}
+    }
     public void setDatas(TreeMap<Integer, Double> datas) {
         this.datas = datas;
     }

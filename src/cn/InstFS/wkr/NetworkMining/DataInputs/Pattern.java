@@ -3,15 +3,19 @@ package cn.InstFS.wkr.NetworkMining.DataInputs;
 public class Pattern {
 	private int start;
 	private int end;
+	private int len;
 	private double span;
-	private double slope;
 	private double hspan;
+	private double slope; //倾斜角度
+	private double angle; //与前一条线段的夹角
 	private double average;
 	private double startValue;
+	
 	public Pattern(){}
 	public Pattern(int start,int end,int span,double slope,double startValue){
 		this.start = start;
 		this.end = end;
+		this.len = (int)span;
 		this.span = span;
 		this.slope = slope;
 		this.startValue = startValue;
@@ -57,6 +61,18 @@ public class Pattern {
 	}
 	public void setStartValue(double startValue) {
 		this.startValue = startValue;
+	}
+	public double getAngle() {
+		return angle;
+	}
+	public void setAngle(double angle) {
+		this.angle = angle;
+	}
+	public int getLen() {
+		return len;
+	}
+	public void setLen(int len) {
+		this.len = len;
 	}
 	
 	
