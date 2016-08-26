@@ -10,6 +10,8 @@ import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.Params.PcapParseParams.PcapParseParams;
 import cn.InstFS.wkr.NetworkMining.Params.PredictionAlgorithmParams.ARIMAParams;
 import cn.InstFS.wkr.NetworkMining.Params.PredictionAlgorithmParams.NeuralNetworkParams;
+import cn.InstFS.wkr.NetworkMining.Params.SMParams.SMParam;
+import cn.InstFS.wkr.NetworkMining.Params.statistics.SeriesStatisticsParam;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.GlobalConfig;
 
 import org.jdom.Document;
@@ -43,19 +45,13 @@ public class ParamsAPI {
 	 */
 	ParamsOM paramsOutlierMiner = null;
 
-	private ParamsPM paramsPeriodMiner = null;
+	private ParamsPM paramsPeriodMiner = null; // 周期检测参数
 
-	private ParamsPA paramsPrediction;
+	private ParamsPA paramsPrediction;	// 预测参数
 
-	private ParamsStatistic paramsStatistic = null;
-	
-	public ParamsStatistic getParamsStatistic() {
-		return paramsStatistic;
-	}
+	private ParamsStatistic paramsStatistic = null; // 统计参数
 
-	public void setParamsStatistic(ParamsStatistic paramsStatistic) {
-		this.paramsStatistic = paramsStatistic;
-	}
+	private ParamsSM paramsSequencePattern = null; // 频繁项参数
 
 	private ParamsAPI(){}
 
@@ -175,6 +171,42 @@ public class ParamsAPI {
 
 	public void setParamsPrediction(ParamsPA paramsPrediction) {
 		this.paramsPrediction = paramsPrediction;
+	}
+
+	public ParamsStatistic getParamsStatistic() {
+		if (paramsStatistic == null) {
+			String statisticsParamPath = GlobalConfig.getInstance().getSeriesStatisticParamPath();
+			Element statisticsParam = getRootElement(statisticsParamPath);
+			paramsStatistic = new ParamsStatistic();
+
+			Element seriesStatisticsParam = statisticsParam.getChild("seriesStatisticsParam");
+			SeriesStatisticsParam ssp = new SeriesStatisticsParam(seriesStatisticsParam);
+
+			paramsStatistic.setSsp(ssp);
+		}
+		return paramsStatistic;
+	}
+
+	public void setParamsStatistic(ParamsStatistic paramsStatistic) {
+		this.paramsStatistic = paramsStatistic;
+	}
+
+	public ParamsSM getParamsSequencePattern() {
+		if (paramsSequencePattern == null) {
+			String sequencePatternPath = GlobalConfig.getInstance().getSequencePatternParamPath();
+			Element sequencePatternParams = getRootElement(sequencePatternPath);
+			paramsSequencePattern = new ParamsSM();
+
+			Element sequencePP = sequencePatternParams.getChild("smParam");
+			SMParam smp = new SMParam(sequencePP);
+
+			paramsSequencePattern.setSMparam(smp);
+		}
+		return paramsSequencePattern;
+	}
+
+	public void setParamsSequencePattern(ParamsSM paramsSequencePattern) {
+		this.paramsSequencePattern = paramsSequencePattern;
 	}
 
 	public static void main(String[] args) {

@@ -4,6 +4,6 @@
     <!-- ERP距离与平均熵周期检测 -->
     <ERPandEntropyParams>
         <longestPeriod>300</longestPeriod>
-        <threshold>0.1</threshold>
+        <threshold>0.2</threshold>
     </ERPandEntropyParams>
 </pmParams>

@@ -65,8 +65,8 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
         chart1 = new ChartPanelShowTs("原始值", "时间", "值", null);
         chart2 = new ChartPanelShowAb("异常值", "时间", "", null);
 //        chart3= new ChartPanelShowTs("预测值", "时间", "", null);
-        add(chart1);
-        add(chart2);
+//        add(chart1);
+//        add(chart2);
 
     }
 
@@ -177,12 +177,13 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
                 }
                 if (outliesItems != null) {
                     if (islinkPic) {
-                        JFreeChart jf = ChartPanelShowAbd.createChart(outliesItems);
+                        JFreeChart jf = ChartPanelShowAbd.createChart(oriItems,outliesItems);
                         ChartPanel chartpanel = new ChartPanel(jf);
                         chart1.displayDataItems(oriItems);
+                        chartpanel.setMouseWheelEnabled(true);
                         remove(chart1);
-                        remove(chart2);
-                        add(chart1);
+//                        remove(chart2);
+//                        add(chart1);
                         add(chartpanel);
                         count++;
 

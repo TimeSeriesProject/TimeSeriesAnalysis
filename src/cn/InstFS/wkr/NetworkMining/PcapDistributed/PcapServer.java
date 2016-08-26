@@ -1,5 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.PcapDistributed;
 
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PcapPanel;
+
 import java.io.*;
 import java.net.BindException;
 import java.net.ServerSocket;
@@ -13,6 +15,7 @@ import java.util.concurrent.locks.*;
  * Created by zsc on 2016/7/5.
  */
 public class PcapServer {
+    private PcapPanel pcapPanel;
     private ArrayList<String> allTasks = new ArrayList<String>();
     private ConcurrentHashMap<String, String> allTasksTags = new ConcurrentHashMap<String, String>();//带标签，所有不同类型任务
     private ConcurrentHashMap<String, String> nameMap = new ConcurrentHashMap<String, String>();//文件part
@@ -28,6 +31,7 @@ public class PcapServer {
     private ConcurrentHashMap<String, String> allTasksTags2 = new ConcurrentHashMap<String, String>();//带标签，所有不同类型任务2
 
     private String DELIMITER = "\r\n";
+    private String inPath;
     private String outPath = "D:\\57data";
     //    private String fileName;
     private int index = outPath.length() + 1;
@@ -43,6 +47,16 @@ public class PcapServer {
     private Lock recLock2 = new ReentrantLock();//接收结果和第一步要分开，否则出bug
     private Lock sendLock2 = new ReentrantLock();
 
+    public PcapServer() {
+
+    }
+
+    public PcapServer(PcapPanel pcapPanel, String inPath, String outPath) {
+        this.pcapPanel = pcapPanel;
+        this.inPath = inPath;
+        this.outPath = outPath;
+    }
+
     public static void main(String[] args) throws FileNotFoundException {
         PcapServer pcapServer = new PcapServer();
         String filePath = "D:\\pcap";
@@ -53,7 +67,7 @@ public class PcapServer {
         new Thread(pcapServer.new PcapServerStart()).start();
     }
 
-    private void genTasks(String filePath, String type) {
+    public void genTasks(String filePath, String type) {
         allTasks.clear();
         allTasksTags.clear();
         ArrayList<String> fileNames = new ArrayList<String>();
@@ -91,7 +105,7 @@ public class PcapServer {
         return num;
     }
 
-    class PcapServerStart implements Runnable {
+    public class PcapServerStart implements Runnable {
         private ServerSocket serverSocket = null;
         private UserClient dataClient;
         private boolean start = false;
@@ -151,6 +165,9 @@ public class PcapServer {
         @Override
         public void run() {
             try {
+                pcapPanel.getBar().setMaximum(allTasks.size());//进度条最大
+                pcapPanel.getBar().setValue(recCount);
+                pcapPanel.getjLabel().setText("阶段 1/2");
                 while (firstConnected) {
                     dataFromClient = userClient.receiveMsg();
                     System.out.println("First接收到ready");
@@ -209,6 +226,8 @@ public class PcapServer {
                                     receiveResult(finalFolderPath);
                                     updateMap(task);
                                     recCount += 1;
+                                    pcapPanel.getBar().setValue(recCount);
+                                    pcapPanel.getjLabel().setText("阶段 1/2");
                                     if (recCount == tasksCount) {
 //                                    userClient.close();
                                         System.out.println("运行结束");
@@ -245,6 +264,9 @@ public class PcapServer {
 
 //                recCount = 0;
                 tasksCount = allTasks2.size();
+                pcapPanel.getBar().setMaximum(allTasks2.size());//进度条最大
+                pcapPanel.getBar().setValue(recCount2);
+                pcapPanel.getjLabel().setText("阶段 2/2");
                 //执行后2步
                 while (lastConnected) {
                     dataFromClient = userClient.receiveMsg();
@@ -306,12 +328,15 @@ public class PcapServer {
                                     receiveResult2(finalFolderPath);
                                     updateMap2(task2);
                                     recCount2 += 1;
+                                    pcapPanel.getBar().setValue(recCount2);
+                                    pcapPanel.getjLabel().setText("阶段 2/2");
                                     if (recCount2 == tasksCount) {
                                         System.out.println("运行结束2.1");
                                         combineFiles2(combineFile2);
                                         System.out.println("文件已合并");
                                         deleteFile(delFile2);
                                         System.out.println("文件已删除");
+                                        pcapPanel.getjLabel().setText("已完成");
                                         lastConnected = false;
                                     }
                                 }

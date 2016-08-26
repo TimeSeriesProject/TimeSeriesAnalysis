@@ -16,6 +16,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.AbstractXYItemLabelGenerator;
@@ -27,6 +28,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.time.Minute;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -58,7 +60,7 @@ public class ChartPanelShowAbd extends JPanel{
 
     }
     ChartPanelShowAbd(String title, String timeAxisLabel, String valueAxisLabel,
-                     XYDataset dataset/*, boolean legend, boolean tooltips, boolean urls*/){
+                      XYDataset dataset/*, boolean legend, boolean tooltips, boolean urls*/){
         this();
 //        chart = ChartFactory.createTimeSeriesChart(title, timeAxisLabel, valueAxisLabel, dataset);
 //        ChartPanel p = new ChartPanel(chart);
@@ -160,10 +162,10 @@ public class ChartPanelShowAbd extends JPanel{
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
-    public static JFreeChart createChart(DataItems abnor)
+    public static JFreeChart createChart(DataItems nor,DataItems abnor)
     {
 //        XYDataset xydataset = createNormalDataset(nor);
-        
+
         //设置异常点提示红点大小
         java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(-4D, -4D, 6D, 6D);
 //        XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer)xyplot.getRenderer();
@@ -174,23 +176,54 @@ public class ChartPanelShowAbd extends JPanel{
 //        xylineandshaperenderer.setSeriesFillPaint(0, Color.yellow);
 //        xylineandshaperenderer.setSeriesOutlinePaint(0, Color.gray);
 //        xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
+        XYDataset xydataset = createNormalDataset(nor);
         XYDataset xydataset1 = createAbnormalDataset(abnor);
         //JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("异常度检测", "时间", "值", xydataset1);
-        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "时间", "值", xydataset1);
+        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "时间", "值", xydataset);
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
+        xyplot.setDomainPannable(true);
+        xyplot.setOrientation(PlotOrientation.VERTICAL);
+//        NumberAxis numberaxis = new NumberAxis("Domain Axis 2");
+//        numberaxis.setAutoRangeIncludesZero(false);
+//        xyplot.setDomainAxis(1, numberaxis);
+        NumberAxis numberaxis1 = new NumberAxis("异常度");
+        xyplot.setRangeAxis(1, numberaxis1);
+
+        xyplot.setRangeAxisLocation(1, AxisLocation.BOTTOM_OR_RIGHT);
+//        XYDataset xydataset1 = createDataset("abnormal value", 1D, new Minute(), 170);
+        xyplot.setDataset(1, xydataset1);
+//        xyplot.mapDatasetToDomainAxis(1, 1);
+        //设置同一个横轴显示两组数据。
+        xyplot.mapDatasetToRangeAxis(1, 1);
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
         XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
-        xyplot.setDataset(0, xydataset1);
+        xyplot.setDataset(0, xydataset);
         xyplot.setRenderer(0, xylineandshaperenderer1);
         xylineandshaperenderer1.setSeriesShapesVisible(0,false);
         xylineandshaperenderer1.setSeriesLinesVisible(0, true);
         xylineandshaperenderer1.setSeriesShape(0, double1);
-        xylineandshaperenderer1.setSeriesPaint(0, Color.red);
-        xylineandshaperenderer1.setSeriesFillPaint(0, Color.red);
+        xylineandshaperenderer1.setSeriesPaint(0, Color.black);
+
+        xylineandshaperenderer1.setSeriesFillPaint(0, Color.black);
+        xylineandshaperenderer1.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0}:({1} , {2})", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), new DecimalFormat("#.00")));
+
 //        xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.gray);
 //        xylineandshaperenderer1.setUseFillPaint(true);
         xylineandshaperenderer1.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+        //设置异常度显示方法
+        XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
+        //设置自动显示值。
+        xylineandshaperenderer1.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+
+        xyplot.setRenderer(1, xylineandshaperenderer2);
+        xylineandshaperenderer2.setSeriesShapesVisible(0,false);
+        xylineandshaperenderer2.setSeriesLinesVisible(0, true);
+        xylineandshaperenderer2.setSeriesShape(0, double1);
+        xylineandshaperenderer2.setSeriesPaint(0, Color.red);
+        xylineandshaperenderer2.setSeriesFillPaint(0, Color.red);
+        xylineandshaperenderer2.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0}:({1} , {2})", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), new DecimalFormat("#.00")));
+
 //        xylineandshaperenderer1.setBaseItemLabelsVisible(true);
         return jfreechart;
     }

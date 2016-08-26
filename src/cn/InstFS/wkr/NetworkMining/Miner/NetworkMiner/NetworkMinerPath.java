@@ -11,14 +11,19 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
-import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.MinerFactorySettings;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.PathMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.ProtocolAssMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
-import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
-import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsOM;
-import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPM;
-import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsStatistics;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
+import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
+import cn.InstFS.wkr.NetworkMining.Params.ParamsOM;
+import cn.InstFS.wkr.NetworkMining.Params.statistics.SeriesStatisticsParam;
+import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
@@ -41,6 +46,16 @@ public class NetworkMinerPath implements INetworkMiner{
 	
 	@Override
 	public boolean start() {
+		MinerFactorySettings settings = PathMinerFactory.getInstance();
+		MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(taskCombination.getMiningObject()));
+		if(resultsFile.hasFile(settings, taskCombination)) { // 已有挖掘结果存储，则不重新启动miner
+			Over.setIsover(true);
+			MinerResultsPath resultPath = (MinerResultsPath) resultsFile.file2Result();
+			results.setRetPath(resultPath);
+
+			return false;
+		}
+
 		if (timer != null){
 			UtilsUI.appendOutput(taskCombination.getName()+" -- already started");
 			return false;
@@ -193,16 +208,18 @@ class PathTimerTask extends TimerTask{
 
 				switch (task.getMiningMethod()){
 					case MiningMethods_Statistics:
+						SeriesStatisticsParam ssp = ParamsAPI.getInstance().getParamsStatistic().getSsp();
 						MinerResultsStatistics retStatistics = new MinerResultsStatistics();
-						SeriesStatistics seriesStatistics=new SeriesStatistics(newItem);
+						SeriesStatistics seriesStatistics=new SeriesStatistics(newItem, ssp);
 						seriesStatistics.statistics();
 						setStatisticResults(retStatistics,seriesStatistics);
 						retPathStatistic.put(name, retStatistics);
 						break;
 					case MiningMethods_PeriodicityMining:
 						IMinerPM pmMethod = null;
+						PMparam pMparam = ParamsAPI.getInstance().getParamsPeriodMiner().getPmparam();
 						if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
-							pmMethod=new ERPDistencePM();
+							pmMethod=new ERPDistencePM(pMparam);
 						}else{
 							throw new RuntimeException("方法不存在！");
 						}
@@ -227,13 +244,12 @@ class PathTimerTask extends TimerTask{
 							task.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
 						}
 
+						ParamsOM paramsOM = ParamsAPI.getInstance().getPom();
 						if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)){
-							omMethod = new PointPatternDetection(newItem,2,10);
+							omMethod = new PointPatternDetection(paramsOM.getOmPiontPatternParams(), newItem);
 							retOM.setIslinkDegree(true);
 						}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
-							omMethod=new FastFourierOutliesDetection(newItem);
-							FastFourierOutliesDetection.setAmplitudeRatio(0.7);
-							FastFourierOutliesDetection.setVarK(3.0);
+							omMethod=new FastFourierOutliesDetection(paramsOM.getOmFastFourierParams(), newItem);
 							retOM.setIslinkDegree(false);
 						}
 						omMethod.TimeSeriesAnalysis();
@@ -293,6 +309,10 @@ class PathTimerTask extends TimerTask{
 		System.out.println(taskCombination.getName()+" over");
 		if (displayer != null)
 			displayer.displayMinerResults(results);
+		/* 挖掘完成，保存结果文件 */
+		MinerFactorySettings settings = PathMinerFactory.getInstance();
+		MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(taskCombination.getMiningObject()));
+		newResultsFile.result2File(settings, taskCombination, results.getRetPath());
 	}
 
 	private void setStatisticResults(MinerResultsStatistics retStatistic,SeriesStatistics statistics){

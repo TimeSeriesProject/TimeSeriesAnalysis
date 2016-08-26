@@ -1,9 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.Results;
 
+import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.MinerFactorySettings;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
-//import com.sun.javafx.tk.Toolkit;
-//import com.sun.jmx.snmp.Timestamp;
 
 import java.io.*;
 import java.util.HashMap;
@@ -51,11 +50,59 @@ public class MiningResultsFile {
         return resultMap;
     }
 
+    public Object file2Result() {
+        Object result = null;
+        try {
+            FileInputStream fileIn = new FileInputStream(dataPath+fileName);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            result = in.readObject();
+        }catch (IOException | ClassNotFoundException i) {
+            i.printStackTrace();
+        }
+        return result;
+    }
+
+    public void result2File(MinerFactorySettings settings, TaskCombination taskCom, Object MinerResults) {
+        this.fileName = genFileName(settings, taskCom);
+
+        try {
+            FileOutputStream fileOut = new FileOutputStream(dataPath+fileName);
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(MinerResults);
+            out.close();
+            fileOut.close();
+            System.out.println("序列化保存");
+        } catch (IOException i) {
+            i.printStackTrace();
+        }
+    }
+
     public boolean hasFile(MinerFactorySettings settings) {
         File path = new File(dataPath);
         String[] list;
         final String fileName = genFileName(settings);
 //        final String reg = ".*"+fileName.substring(fileName.indexOf("_")+1)+"{1}";
+        list = path.list(new FilenameFilter() {
+            private Pattern pattern = Pattern.compile(fileName);
+            @Override
+            public boolean accept(File dir, String name) {
+                return pattern.matcher(name).matches();
+            }
+        });
+
+
+        if (list.length != 0) {
+            this.fileName = list[0];
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public boolean hasFile(MinerFactorySettings settings, TaskCombination taskCom) {
+        File path = new File(dataPath);
+        String[] list;
+        final String fileName = genFileName(settings, taskCom);
         list = path.list(new FilenameFilter() {
             private Pattern pattern = Pattern.compile(fileName);
             @Override
@@ -91,6 +138,27 @@ public class MiningResultsFile {
             fileName.append(methodChecked).append(";");
         }
         fileName.deleteCharAt(fileName.length()-1);*/
+
+        fileName.append(".ser");
+
+        return fileName.toString();
+    }
+
+    private String genFileName(MinerFactorySettings settings, TaskCombination taskCom) {
+        StringBuilder fileName = new StringBuilder();
+        String sourceDataFilePath = settings.getDataPath();
+        String sourceDataName = sourceDataFilePath.substring(sourceDataFilePath.trim().lastIndexOf("\\")+1);
+        File dataFile = new File(sourceDataFilePath);
+        if (dataFile.isFile())
+            sourceDataName = sourceDataName.substring(0, sourceDataName.lastIndexOf("."));
+
+        fileName.append(settings.getStartDate().getTime()).append("_"); // 起始时间
+        fileName.append(settings.getEndDate().getTime()).append("_");    // 终止时间
+        fileName.append(settings.getMinerType()).append("_");
+        fileName.append(taskCom.getName()).append("_");
+        fileName.append(miningObject.toString()).append("_");   // 挖掘对象
+        fileName.append(settings.getGranularity()); // 时间粒度
+
 
         fileName.append(".ser");
 

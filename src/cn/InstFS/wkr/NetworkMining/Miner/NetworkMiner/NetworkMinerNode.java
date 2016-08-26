@@ -24,17 +24,19 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourier
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.averageEntropyPM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.MinerFactorySettings;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.SingleNodeOrNodePairMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
+import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
@@ -45,7 +47,6 @@ public class NetworkMinerNode implements INetworkMiner{
 	private IResultsDisplayer displayer;
 	boolean isRunning;
 	IsOver Over;
-	
 	private TaskCombination taskCombination;
 	
 	public NetworkMinerNode(TaskCombination taskCombination) {
@@ -57,6 +58,16 @@ public class NetworkMinerNode implements INetworkMiner{
 	@Override
 	public boolean start() {
 		//System.out.println("PanelShowResultsPM   timer starting");
+		MinerFactorySettings settings = getMinerFactorySettings(taskCombination);
+		MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(taskCombination.getMiningObject()));
+		if(resultsFile.hasFile(settings, taskCombination)) { // 已有挖掘结果存储，则不重新启动miner
+			Over.setIsover(true);
+			MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+			results.setRetNode(resultNode);
+
+			return false;
+		}
+
 		if (timer != null){
 			UtilsUI.appendOutput(taskCombination.getName()+" -- already started");
 			return false;
@@ -72,6 +83,7 @@ public class NetworkMinerNode implements INetworkMiner{
 		try{
 			future.get();
 		}catch(Exception e){
+			e.printStackTrace();
 			isRunning = false;
 			Over.setIsover(false);
 			timer.shutdownNow();
@@ -113,6 +125,24 @@ public class NetworkMinerNode implements INetworkMiner{
 	@Override
 	public void setResultsDisplayer(IResultsDisplayer displayer) {
 		this.displayer = displayer;		
+	}
+
+	protected static MinerFactorySettings getMinerFactorySettings(TaskCombination taskCombination) {
+		MinerFactorySettings settings = null;
+		switch (taskCombination.getMinerType()) {
+			case MiningType_SinglenodeOrNodePair:
+				if (taskCombination.getTaskRange().equals(TaskRange.SingleNodeRange)){
+					settings = SingleNodeOrNodePairMinerFactory.getInstance();
+				} else if (taskCombination.getTaskRange().equals(TaskRange.NodePairRange))
+					settings = SingleNodeOrNodePairMinerFactory.getPairInstance();
+				break;
+			case MiningTypes_WholeNetwork:
+				settings = NetworkFactory.getInstance();
+				break;
+			default:
+				break;
+		}
+		return settings;
 	}
 }
 
@@ -192,7 +222,7 @@ class NodeTimerTask extends TimerTask{
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
 					tsaMethod=new FastFourierOutliesDetection(
 							ParamsAPI.getInstance().getPom().getOmFastFourierParams(),dataItems);
-					
+
 					results.getRetNode().getRetOM().setIslinkDegree(false);
 				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_GaussDetection)){
 					tsaMethod=new AnormalyDetection(ParamsAPI.getInstance().getPom().getOmGuassianParams(),dataItems);
@@ -220,7 +250,7 @@ class NodeTimerTask extends TimerTask{
 				break;
 			case MiningMethods_SequenceMining:
 				
-				ParamsSM paramsSM=null;     //获取参数
+				ParamsSM paramsSM = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
 				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
 				DataItems clusterItems=null;
 				List<SegPattern> segPatterns=segment.getPatterns();
@@ -228,7 +258,7 @@ class NodeTimerTask extends TimerTask{
 					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
 							paramsSM.getSMparam().getClusterNum(),task.getTaskName());
 				}else{
-					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems, 
+					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
 							task.getPatternNum(),task.getTaskName());
 				}
 				SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit(paramsSM);
@@ -249,6 +279,10 @@ class NodeTimerTask extends TimerTask{
 		System.out.println(taskCombination.getName()+" over");
 		if (displayer != null)
 			displayer.displayMinerResults(results);
+		/* 挖掘完成，保存结果文件 */
+		MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(taskCombination);
+		MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(taskCombination.getMiningObject()));
+		newResultsFile.result2File(settings, taskCombination, results.getRetNode());
 	}
 	
 	private void setPMResults(MinerResults results,IMinerPM pmMethod){
