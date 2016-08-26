@@ -8,4 +8,5 @@
     <pcapParseParamPath>./configs/pcapParseParams.xml</pcapParseParamPath>
     <forecastParamsPath>./configs/forecastMinerParams.xml</forecastParamsPath>
     <statisticsParamPath>./configs/seriesStatisticsParams.xml</statisticsParamPath>
+    <sequencePatternParamPath>./configs/sequencePatternParam.xml</sequencePatternParamPath>
 </config>

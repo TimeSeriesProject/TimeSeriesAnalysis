@@ -83,6 +83,7 @@ public class NetworkMinerNode implements INetworkMiner{
 		try{
 			future.get();
 		}catch(Exception e){
+			e.printStackTrace();
 			isRunning = false;
 			Over.setIsover(false);
 			timer.shutdownNow();
@@ -249,7 +250,7 @@ class NodeTimerTask extends TimerTask{
 				break;
 			case MiningMethods_SequenceMining:
 				
-				ParamsSM paramsSM=null;     //获取参数
+				ParamsSM paramsSM = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
 				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
 				DataItems clusterItems=null;
 				List<SegPattern> segPatterns=segment.getPatterns();

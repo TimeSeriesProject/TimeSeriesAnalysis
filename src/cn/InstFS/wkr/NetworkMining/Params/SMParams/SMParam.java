@@ -17,7 +17,7 @@ public class SMParam {
 	   	
     	param = element.getChildText("minSupport");
     	if(param != null){
-    		minSupport = Integer.parseInt(param);
+    		minSupport = Double.parseDouble(param);
     	}
     	
     	param = element.getChildText("sizeWindow");

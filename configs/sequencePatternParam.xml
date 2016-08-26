@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- 频繁项参数 -->
+<sParams>
+    <smParam>
+        <minSupport>5</minSupport>
+        <sizeWindow>10</sizeWindow>
+        <stepWindow>1</stepWindow>
+        <splitLeastLen>20</splitLeastLen>
+        <clusterNum>8</clusterNum>
+    </smParam>
+</sParams>
