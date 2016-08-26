@@ -15,8 +15,9 @@ public class LinePattern {
 	private List<Pattern> patterns = new ArrayList<Pattern>();       // 线段模式	
 	private double mergerPrice = 0.05;      //合并代价阈值
 	private double compressionRatio = 0.65;//压缩率
-	public LinePattern(DataItems di){
+	public LinePattern(DataItems di,double mergerPrice){
 		dataItems = di;
+		this.mergerPrice = mergerPrice;
 		run();
 	}
 	

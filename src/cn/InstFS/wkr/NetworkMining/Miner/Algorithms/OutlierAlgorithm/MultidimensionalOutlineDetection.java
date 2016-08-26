@@ -22,6 +22,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.ResultItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMMultidimensionalParams;
 import weka.clusterers.EM;
 import weka.clusterers.SimpleKMeans;
 import weka.core.DistanceFunction;
@@ -41,11 +42,13 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	private DataItems newItems = new DataItems(); //滑动平均后的数据
 	
 	private List<Pattern> patterns = new ArrayList<Pattern>();   //线段模式
-	private static int densityK = 2; //序列线段化时，找极值点的参数
-	private static double patternThreshold = 0.1; //线段化参数
-	private static int k = 4; //混合高斯中高斯个数
-	private static int dataDimen = 3;
-	private static int outK = 20; //异常度矩阵聚类簇数
+	private static int dataDimen = 4; //线段属性个数
+	private static int GuassK = 4; //混合高斯中高斯个数
+	private int piontK = 5; //滑动平均参数，滑动窗口大小	
+	private static int densityK = 2; //PointSegment线段化参数，找极值点的参数
+	private static double patternThreshold = 0.1; //PointSegment线段化参数
+	private double mergerPrice = 0.05; //LinePattern线段化参数
+	
 	ArrayList<ArrayList<Double>> dataSet = new ArrayList<ArrayList<Double>>();
 	ArrayList<ArrayList<Double>> outlinSet = new ArrayList<ArrayList<Double>>(); //异常度矩阵
 	GMMParameter gmmParameter = new GMMParameter(); //高斯混合模型参数:pMiu,pPi,pSigma
@@ -53,13 +56,21 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	public MultidimensionalOutlineDetection(DataItems di){
 		this.dataItems = di;
 	}
+	public MultidimensionalOutlineDetection(DataItems di,OMMultidimensionalParams omMultidimensionalParams){
+		this.dataItems = di;
+		this.GuassK = omMultidimensionalParams.getGuassK();
+		this.piontK = omMultidimensionalParams.getPiontK();
+		this.densityK = omMultidimensionalParams.getDensityK();
+		this.patternThreshold = omMultidimensionalParams.getPatternThreshold();
+		this.mergerPrice = omMultidimensionalParams.getMergerPrice();
+	}
 	@Override
 	public void TimeSeriesAnalysis(){
-		MovingAverage movingAverage = new MovingAverage(dataItems);
+		MovingAverage movingAverage = new MovingAverage(dataItems,piontK);
 		newItems = movingAverage.getNewItems();
 		/*PointSegment segment=new PointSegment(newItems, densityK,patternThreshold); //线段化模式
 		patterns = segment.getTEOPattern();*/
-		LinePattern linePattern = new LinePattern(newItems);
+		LinePattern linePattern = new LinePattern(newItems,mergerPrice);
 		patterns=linePattern.getPatterns();
 		for(int i=0;i<patterns.size();i++){
 			System.out.print(" " + patterns.get(i).getSpan());
@@ -84,7 +95,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		}
 		//混合高斯建模
 		//gmmParameter = GMMmode();
-		gmmParameter = EMGMM(dataSet, k, dataDimen, "EMGMMCluster");
+		gmmParameter = EMGMM(dataSet, GuassK, dataDimen, "EMGMMCluster");
 		//计算没点的高斯距离并归一化
 		ArrayList<Double> distance = computeDistance(dataSet, gmmParameter); //最小高斯距离(1范数距离)
 		ArrayList<Double> distance1 = computeDistance1(dataSet, gmmParameter); //带权重的最小高斯距离(1范数距离)
@@ -164,6 +175,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	 *@return DataItems
 	 */
 	public DataItems genOutline(ArrayList<ArrayList<Double>> outlinSet){
+		int outK = 20;
 		DataItems outline = new DataItems();
 		//对异常度矩阵聚类 kmeans
 		SimpleKMeans kMeans = Kmeans(outlinSet, outK, "kmeansCluster", true);
@@ -244,7 +256,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		ArrayList<Double> distance = new ArrayList<Double>();
 		for(int i=0;i<dataSet.size();i++){
 			ArrayList<Double> eveDis = new ArrayList<Double>();
-			for(int j=0;j<k;j++){				
+			for(int j=0;j<GuassK;j++){				
 				double d = comVectorDis(dataSet.get(i),  parameter.getpMiu().get(j));
 				double sigma = comVectorLen(parameter.getpSigma().get(j));
 				d = d/sigma;
@@ -265,7 +277,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		ArrayList<Double> distance = new ArrayList<Double>();
 		for(int i=0;i<dataSet.size();i++){
 			double d = 0;
-			for(int j=0;j<k;j++){				
+			for(int j=0;j<GuassK;j++){				
 				double dis = comVectorDis(dataSet.get(i),  parameter.getpMiu().get(j));
 				double sigma = comVectorLen(parameter.getpSigma().get(j));
 				d = d+(parameter.getpPi().get(j))*dis/sigma; 				
@@ -284,7 +296,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		ArrayList<Double> distance = new ArrayList<Double>();
 		for(int i=0;i<dataSet.size();i++){
 			ArrayList<Double> eveDis = new ArrayList<Double>();
-			for(int j=0;j<k;j++){				
+			for(int j=0;j<GuassK;j++){				
 				double d = comVectorDis1(dataSet.get(i),  parameter.getpMiu().get(j));
 				double sigma = comVectorLen1(parameter.getpSigma().get(j));
 				d = d/sigma;
@@ -304,7 +316,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		ArrayList<Double> distance = new ArrayList<Double>();
 		for(int i=0;i<dataSet.size();i++){
 			double d = 0;
-			for(int j=0;j<k;j++){				
+			for(int j=0;j<GuassK;j++){				
 				double dis = comVectorDis1(dataSet.get(i),  parameter.getpMiu().get(j));
 				double sigma = comVectorLen1(parameter.getpSigma().get(j));
 				d = d+(parameter.getpPi().get(j))*dis/sigma; 				
