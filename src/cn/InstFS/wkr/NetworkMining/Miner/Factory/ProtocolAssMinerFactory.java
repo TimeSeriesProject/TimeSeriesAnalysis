@@ -1,14 +1,15 @@
 package cn.InstFS.wkr.NetworkMining.Miner.Factory;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import weka.gui.beans.Startable;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
-
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
@@ -80,18 +81,22 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 		nodePairReader reader=new nodePairReader();
 		int granularity=3600;
 		if(dataDirectory.isFile()){
-			addTask(dataDirectory,granularity,reader);
+//			addTask(dataDirectory,granularity,reader);
 		}else{
 			File[] dataDirs=dataDirectory.listFiles();
 			for(int i=0;i<dataDirs.length;i++){
-				addTask(dataDirs[i],granularity,reader);
+				//由于数据都存在ip文件夹下，所以应以文件夹目录作为参数进行传递
+				//按天读取文件，所以只接受目录
+				if(dataDirs[i].isDirectory())
+					addTask(dataDirs[i].getAbsoluteFile(),granularity,reader);
 			}
 		}
 	}
 	
 	private void addTask(File file,int granularity,nodePairReader reader){
-		String ip=file.getName().substring(0, file.getName().lastIndexOf("."));
-		parseFile(file,reader);
+		String ip=file.getName();//.substring(0, file.getName().lastIndexOf("."));
+		System.out.println("ip:"+ip);
+		parseFile(file.getAbsoluteFile(),reader);
 		TaskCombination taskCombination=new TaskCombination();
 		taskCombination.getTasks().add(
 				generateTask(file,granularity,MiningMethod.MiningMethods_SimilarityMining));
@@ -109,9 +114,14 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 	}
 
 	private void parseFile(File dataFile,nodePairReader reader){
-		String ip=dataFile.getName().substring(0, dataFile.getName().lastIndexOf("."));
-		HashMap<String, DataItems> rawDataItems=
-						reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath());
+		//文件按天存取，dataFile对应的是ip
+		String ip=dataFile.getName();//.substring(0, dataFile.getName().lastIndexOf("."));
+//		HashMap<String, DataItems> rawDataItems=
+//						reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath());
+		Date date1 = getStartDate();
+		Date date2 = getEndDate();
+		HashMap<String, DataItems> rawDataItems = 
+				reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(), false, date1, date2, 3600);
 		eachProtocolItems.put(ip, rawDataItems);
 	}
 	
