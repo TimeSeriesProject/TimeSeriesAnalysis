@@ -66,6 +66,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -128,7 +129,7 @@ public class TimeSeriesChart1 extends Composite {
 	Map<String, ArrayList<double[]>> modelDataset;
 	Map<String, Color> modelColor;
 
-	XYDataset initialDataset;
+	XYDataset normalizationDataset;
 
 	JFreeChart chart;
 
@@ -146,7 +147,9 @@ public class TimeSeriesChart1 extends Composite {
 				0);
 
 		// 初始化原始序列数据集合
-		initialDataset = createNormalDataset(dataitems1, dataitems2, protocol1,
+		normalizationDataset = createNormalDataset(dataitems1, dataitems2, protocol1,
+				protocol2);
+		XYDataset initialDataset = createNormalDataset(pp.getDataItems1(), pp.getDataItems2(), protocol1,
 				protocol2);
 
 		createLineDataset(dataitems1, dataitems2, pp.getMapAB());
@@ -155,7 +158,7 @@ public class TimeSeriesChart1 extends Composite {
 		String chartname =" TimeSeriesChart" ;
 		String subtitle ="Confidence("+protocol1+","+protocol2+"):"
 				+ pp.confidence  ;
-		chart = createChart(initialDataset, pp.getMapAB(), chartname,subtitle,
+		chart = createChart(normalizationDataset, pp.getMapAB(), chartname,subtitle,
 				protocol1, protocol2);
 		JFreeChart initialChart = createChart(initialDataset, pp.getMapAB(),
 				chartname, null,protocol1, protocol2);
@@ -210,7 +213,7 @@ public class TimeSeriesChart1 extends Composite {
 		controller = new Group(this, SWT.None);
 		GridLayout ControlLayout = new GridLayout();
 		// ControlLayout.
-		ControlLayout.numColumns = 10;
+		ControlLayout.numColumns = 16;
 		controller.setLayout(ControlLayout);
 
 		GridData griddata0 = new GridData();
@@ -243,9 +246,14 @@ public class TimeSeriesChart1 extends Composite {
 			modelColor.put(""+model[j], aColor);
 			button[j] = new Button(controller, SWT.CHECK);
 			Label colorLabel=new Label(controller,SWT.NULL);
-			colorLabel.setText("———");
-			//colorLabel.setForeground(modelColor.get(model[j]));
 			button[j].setText("模式:" + model[j]);
+			colorLabel.setText("——	");
+			RGB rgb=new RGB(aColor.getRed(),aColor.getGreen(),aColor.getBlue());
+			
+			org.eclipse.swt.graphics.Color swtcolor=new org.eclipse.swt.graphics.Color(this.getDisplay(),rgb);
+			colorLabel.setForeground(swtcolor);
+			swtcolor.dispose();
+			
 			final int temp = j;
 			button[j].addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
@@ -432,9 +440,10 @@ public class TimeSeriesChart1 extends Composite {
 		barrenderer.setSeriesLinesVisible(0, true);
 		barrenderer.setBaseShapesVisible(false);
 		barrenderer.setSeriesShape(0, double1);
-		barrenderer.setSeriesPaint(0, Color.blue);
-		barrenderer.setSeriesFillPaint(0, Color.blue);
-		barrenderer.setSeriesOutlinePaint(0, Color.blue);
+		Color color=new Color(0,0,255,150);
+		barrenderer.setSeriesPaint(0, color);
+		barrenderer.setSeriesFillPaint(0,color);
+		barrenderer.setSeriesOutlinePaint(0,color);
 		barrenderer.setSeriesStroke(0, new BasicStroke(0.5F));
 
 		// 显示两条折线中间的那条分界线，y=1
@@ -478,9 +487,6 @@ public class TimeSeriesChart1 extends Composite {
 		modelDataset = new HashMap<String, ArrayList<double[]>>();
 		System.out.println("Set：" + mapAB.keySet());
 		for (Object se : mapAB.keySet()) {
-			// System.out.println("选中了：" + modelname + ", se:" + se + ".");
-
-			// System.out.println("进入：" + " se:" + se);
 			int modeltime = 0;
 			ArrayList<double[]> aModelIndex = new ArrayList<double[]>();
 			ArrayList<LinePos> s = mapAB.get(se);
@@ -488,7 +494,7 @@ public class TimeSeriesChart1 extends Composite {
 
 			Iterator it = s.iterator();
 
-			System.out.println("**************");
+
 
 			while (it.hasNext()) {
 				LinePos temp = (LinePos) it.next();
@@ -517,10 +523,6 @@ public class TimeSeriesChart1 extends Composite {
 				area[6] = (d4.getTime().getTime() - off1) / unit;
 				area[7] = Double.parseDouble(d4.getData());
 
-				System.out.println("**********");
-				for (int i = 0; i < area.length; i = i + 2) {
-					System.out.println("(X,Y):" + area[i] + " " + area[i + 1]);
-				}
 
 				aModelIndex.add(area);
 
@@ -595,52 +597,8 @@ public class TimeSeriesChart1 extends Composite {
 		return xyseriescollection;
 	}
 
-	// 主调用
 
-	// 取出DataItems类型中的y值，返回XYDataset
-	/*
-	 * public static DefaultCategoryDataset createmodeDataset(DataItems normal,
-	 * long offset1, String seriesName, long unit) { // 获取正常数据的长度、 int length =
-	 * normal.getLength(); int time[] = new int[length]; DefaultCategoryDataset
-	 * defaultcategorydataset = new DefaultCategoryDataset(); // 为数据集添加数据 long
-	 * offset2 = normal.getElementAt(0).getTime().getTime(); int off = (int)
-	 * ((offset2 - offset1) / unit); for (int i = 0; i < length; i++) { DataItem
-	 * temp = new DataItem();
-	 * 
-	 * temp = normal.getElementAt(i);
-	 * 
-	 * if(i==0){ System.out.println("第一个DataItem.time="+temp.getTime()); }
-	 * 
-	 * 
-	 * defaultcategorydataset.addValue(Double.parseDouble(temp.getData()),
-	 * seriesName, "" + i + off); // 对应的横轴
-	 * 
-	 * }
-	 * 
-	 * return defaultcategorydataset; }
-	 */
-
-	// 对异常点进行初始化
-	/*
-	 * public static XYDataset createAbnormalDataset(DataItems abnor) { //
-	 * 统计异常点的长度 int length = abnor.getLength(); XYSeries xyseries = new
-	 * XYSeries("频繁模式");
-	 * 
-	 * XYSeriesCollection xyseriescollection = new XYSeriesCollection();
-	 * 
-	 * // 添加数据值
-	 * 
-	 * for (int i = 0; i < length; i++) {
-	 * 
-	 * DataItem temp = new DataItem(); temp = abnor.getElementAt(i);
-	 * xyseries.add((double) temp.getTime().getTime(),
-	 * Double.parseDouble(temp.getData())); // 为什么要添加两遍？ xyseries.add((double)
-	 * temp.getTime().getTime(), Double.parseDouble(temp.getData()));
-	 * 
-	 * } xyseriescollection.addSeries(xyseries); return xyseriescollection; }
-	 */
-	// 到这里结束
-
+	
 	/*
 	 * 获取颜色，下标从0开始
 	 */
@@ -649,27 +607,27 @@ public class TimeSeriesChart1 extends Composite {
 		System.out.println("color" + j);
 		switch (j) {
 		case 1:
-			return Color.red;
-		case 2:
-			return Color.blue;
-		case 3:
-			return Color.cyan;
-		case 4:
-			return Color.gray;
-		case 5:
-			return Color.green;
-		case 6:
-			return Color.magenta;
-		case 7:
-			return Color.orange;
-		case 8:
-			return Color.yellow;
-		case 9:
-			return Color.white;
+			return (new Color(173,137,118,200));
 		case 0:
-			return Color.pink;
+			return (new Color(230,155,3,200));
+		case 3:
+			return (new Color(209,73,78,200));
+		case 4:
+			return (new Color(18,53,85,200));
+		case 5:
+			return (new Color(225,238,210,200));
+		case 6:
+			return (new Color(180,141,1,200));
+		case 7:
+			return (new Color(1,165,175,200));
+		case 9:
+			return (new Color(53,44,10,200));
+		case 8:
+			return (new Color(255,255,255,200));
+		case 2:
+			return (new Color(36,169,225,200));
 		default:
-			return Color.black;
+			return (new Color(0,0,0,200));
 		}
 	}
 

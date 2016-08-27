@@ -23,9 +23,10 @@ public class CompositeMainProtocolConfidence extends Composite {
 
 		SashForm form = new SashForm(this, SWT.HORIZONTAL | SWT.BORDER);
 		form.setLayout(new FillLayout());
+		//win1用于存放左边的表格
 		Composite win1 = new Composite(form, SWT.NONE);
 		win1.setLayout(new FillLayout());
-
+		//tab用于存放右边的标签页
 		CTabFolderChart tab = new CTabFolderChart(form, SWT.NONE,this);
 		form.setWeights(new int[] { 250, 800 });
 

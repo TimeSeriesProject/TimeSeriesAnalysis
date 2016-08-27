@@ -85,13 +85,11 @@ public class CompositeTable extends Composite {
 				// TODO Auto-generated method stub
 				// TableItem[] itemList=table.getItems();
 				int itemIndex = table.getSelectionIndex();
-				if (compositeMainProtocolConfidence.tableIndex[itemIndex] == 0) {
+				System.out.println("选中 itemIndex:"+itemIndex);
+				if(itemIndex>-1){
+								if (compositeMainProtocolConfidence.tableIndex[itemIndex] == 0) {
 					// 问题出在这
 					Iterator it = protocolPairList.iterator();
-					/*
-					 * TableColumn columnpro1=table.getColumn(1); TableColumn
-					 * columnpro2=table.getColumn(2);
-					 */
 					TableItem tableItem = table.getItem(itemIndex);
 					while (it.hasNext()) {
 						ProtoclPair pp = (ProtoclPair) it.next();
@@ -115,6 +113,8 @@ public class CompositeTable extends Composite {
 					// tab.setSelection(tab.getItem(itemIndex));
 
 				}
+				}
+	
 
 			}
 

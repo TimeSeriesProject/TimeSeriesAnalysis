@@ -23,7 +23,6 @@ public class ChangeCompositeToSwingPanel extends Panel {
 			HashMap<TaskCombination, MinerProtocolResults> resultMaps2) {
 		minerresults = resultMaps2.get(taskCombination2).getRetFP();
 		displayThread = new DisplayThread();
-		// CompositeCreateSymbol = 0;
 		displayThread.start();
 		canvas = new Canvas();
 

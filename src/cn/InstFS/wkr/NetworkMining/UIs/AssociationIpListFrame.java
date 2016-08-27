@@ -164,6 +164,10 @@ public class AssociationIpListFrame extends JFrame {
 			TaskCombination taskCom = resultList.get(i).getKey();
 			MinerResultsFP_Line results = resultList.get(i).getValue().getRetFP();
 			
+			if(results.getIp().compareTo("") == 0)
+				continue;
+			if(i == 9)
+				System.out.println("i:"+i);
 			data[i][0]= results.getIp();
 			data[i][1]= String.format("%5.3f",results.getConfidence());
 			data[i][2]=String.format("%5d",results.protocolPairList.size());
