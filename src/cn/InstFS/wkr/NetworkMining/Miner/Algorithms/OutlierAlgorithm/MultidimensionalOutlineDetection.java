@@ -40,6 +40,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	private DataItems dataItems = new DataItems();
 	private DataItems outlines = new DataItems();
 	private DataItems newItems = new DataItems(); //滑动平均后的数据
+	private List<DataItems> outlinesSet = new ArrayList<DataItems>();
 	
 	private List<Pattern> patterns = new ArrayList<Pattern>();   //线段模式
 	private static int dataDimen = 4; //线段属性个数
@@ -68,8 +69,8 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	public void TimeSeriesAnalysis(){
 		MovingAverage movingAverage = new MovingAverage(dataItems,piontK);
 		newItems = movingAverage.getNewItems();
-		/*PointSegment segment=new PointSegment(newItems, densityK,patternThreshold); //线段化模式
-		patterns = segment.getTEOPattern();*/
+//		PointSegment segment=new PointSegment(newItems, densityK,patternThreshold); //线段化模式
+//		patterns = segment.getTEOPattern();
 		LinePattern linePattern = new LinePattern(newItems,mergerPrice);
 		patterns=linePattern.getPatterns();
 		for(int i=0;i<patterns.size();i++){
@@ -98,21 +99,9 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		gmmParameter = EMGMM(dataSet, GuassK, dataDimen, "EMGMMCluster");
 		//计算没点的高斯距离并归一化
 		ArrayList<Double> distance = computeDistance(dataSet, gmmParameter); //最小高斯距离(1范数距离)
-		ArrayList<Double> distance1 = computeDistance1(dataSet, gmmParameter); //带权重的最小高斯距离(1范数距离)
-		ArrayList<Double> distance2 = computeDistance2(dataSet, gmmParameter); //最小高斯距离(2范数距离)
-		/*distance = normalization(distance);
-		distance1 = normalization(distance1);
-		distance2 = normalization(distance2);*/
-		//获得异常度矩阵
-		for(int i=0;i<distance.size();i++){
-			ArrayList<Double> data = new ArrayList<Double>();
-			data.add(distance.get(i));
-			data.add(distance1.get(i));
-			data.add(distance2.get(i));
-			outlinSet.add(data);
-		}
 		//outlines = genOutline(outlinSet); //使用异常度矩阵进行异常检测
-		outlines = genOutline1(distance2); //不使用异常度矩阵，仅使用gmm模型进行异常检测
+		outlines = genOutline1(distance); //不使用异常度矩阵，仅使用gmm模型进行异常检测
+		outlinesSet = genOutlinesSet(distance);
 		return outlines;
 	}
 
@@ -168,6 +157,15 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		gmm.setpSigma(sigma);
 		gmm.setpPi(pie);
 		return gmm;
+	}
+	public ArrayList<Integer> genOutIndex(List<Double> dis){
+		ArrayList<Integer> indexList = new ArrayList<Integer>();
+		for(int i=0;i<dis.size();i++){
+			if(dis.get(i)>3){
+				indexList.add(i);
+			}
+		}
+		return indexList;
 	}
 	/**
 	 *@Title genOutline
@@ -228,7 +226,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		DataItems outline = new DataItems();
 		ArrayList<Integer> indexList = new ArrayList<Integer>();
 		for(int i=0;i<dis.size();i++){
-			if(dis.get(i)>3){
+			if(dis.get(i)>2){
 				indexList.add(i);
 			}
 		}
@@ -248,6 +246,34 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		return outline;
 	}
 	/**
+	 *@Title genOutlinesSet
+	 *@Description 根据gmm聚类结果获取异常线段,每条线段存为一个DataItems
+	 *@return List<DataItems>
+	 */
+	public List<DataItems> genOutlinesSet(List<Double> dis){
+		List<DataItems> outSet = new ArrayList<DataItems>();
+		ArrayList<Integer> indexList = new ArrayList<Integer>();
+		for(int i=0;i<dis.size();i++){
+			if(dis.get(i)>3){
+				indexList.add(i);
+			}
+		}
+		//找出异常模式(异常点)
+		for(int i=0;i<indexList.size();i++){
+			DataItems di = new DataItems();
+			List<Date> time = dataItems.getTime();
+			List<String> data = dataItems.getData();
+			int start = patterns.get(indexList.get(i)).getStart();
+			int end = patterns.get(indexList.get(i)).getEnd();
+			for(int j=start;j<=end;j++){				
+				di.add1Data(time.get(j),data.get(j));
+			}
+			outSet.add(di);
+			System.out.println("异常为线段"+indexList.get(i)+"的时间跨度为:"+patterns.get(indexList.get(i)).getLen());
+		}
+		return outSet;
+	}
+	/**
 	 *@Title computeDistance
 	 *@Description 计算每个数据点到混合高斯模型的最小距离  |x-pMiu|/pSigma
 	 *@return ArrayList<Double>
@@ -257,10 +283,14 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		for(int i=0;i<dataSet.size();i++){
 			ArrayList<Double> eveDis = new ArrayList<Double>();
 			for(int j=0;j<GuassK;j++){				
-				double d = comVectorDis(dataSet.get(i),  parameter.getpMiu().get(j));
-				double sigma = comVectorLen(parameter.getpSigma().get(j));
-				d = d/sigma;
- 				eveDis.add(d);
+				double d1 = 0;
+				for(int k=0;k<dataDimen;k++){
+ 					double diff = dataSet.get(i).get(k) - parameter.getpMiu().get(j).get(k);
+ 					double sigma = parameter.getpSigma().get(j).get(k);
+ 					double d = diff/sigma;
+ 					d1 += d;
+ 				}
+				eveDis.add(d1/dataDimen);
 			}
 			double dmin = getMinDis(eveDis);			
 			distance.add(dmin);
@@ -268,63 +298,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		return distance;
 	}
 
-	/**
-	 *@Title computeDistance1
-	 *@Description 计算每个数据点到混合高斯模型的最小距离  带权重的pPi*|x-pMiu|/pSigma
-	 *@return ArrayList<Double>
-	 *@throws **/
-	public ArrayList<Double> computeDistance1(ArrayList<ArrayList<Double>> dataSet,GMMParameter parameter){		
-		ArrayList<Double> distance = new ArrayList<Double>();
-		for(int i=0;i<dataSet.size();i++){
-			double d = 0;
-			for(int j=0;j<GuassK;j++){				
-				double dis = comVectorDis(dataSet.get(i),  parameter.getpMiu().get(j));
-				double sigma = comVectorLen(parameter.getpSigma().get(j));
-				d = d+(parameter.getpPi().get(j))*dis/sigma; 				
-			}			
-			distance.add(d);
-		}
-		return distance;
-	}
 	
-	/**
-	 *@Title computeDistance2
-	 *@Description 计算每个数据点到混合高斯模型的最小距离  |x-pMiu|/pSigma
-	 *@return ArrayList<Double>
-	 *@throws **/
-	public ArrayList<Double> computeDistance2(ArrayList<ArrayList<Double>> dataSet,GMMParameter parameter){		
-		ArrayList<Double> distance = new ArrayList<Double>();
-		for(int i=0;i<dataSet.size();i++){
-			ArrayList<Double> eveDis = new ArrayList<Double>();
-			for(int j=0;j<GuassK;j++){				
-				double d = comVectorDis1(dataSet.get(i),  parameter.getpMiu().get(j));
-				double sigma = comVectorLen1(parameter.getpSigma().get(j));
-				d = d/sigma;
- 				eveDis.add(d);
-			}
-			double dmin = getMinDis(eveDis);			
-			distance.add(dmin);
-		}
-		return distance;
-	}
-	/**
-	 *@Title computeDistance3
-	 *@Description 计算每个数据点到混合高斯模型的最小距离  带权重的pPi*|x-pMiu|/pSigma
-	 *@return ArrayList<Double>
-	 *@throws **/
-	public ArrayList<Double> computeDistance3(ArrayList<ArrayList<Double>> dataSet,GMMParameter parameter){		
-		ArrayList<Double> distance = new ArrayList<Double>();
-		for(int i=0;i<dataSet.size();i++){
-			double d = 0;
-			for(int j=0;j<GuassK;j++){				
-				double dis = comVectorDis1(dataSet.get(i),  parameter.getpMiu().get(j));
-				double sigma = comVectorLen1(parameter.getpSigma().get(j));
-				d = d+(parameter.getpPi().get(j))*dis/sigma; 				
-			}			
-			distance.add(d);
-		}
-		return distance;
-	}
 	
 	/**
 	 *@Title 

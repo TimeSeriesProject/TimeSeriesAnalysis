@@ -86,7 +86,7 @@ public class LinePattern {
             double lastValue = datas.get(time);
             //double slope = (lastValue - firstValue)/(time - firstTime);//计算斜率，斜率大小随变量单位变化
             double height = lastValue - firstValue;
-            double length = time - firstTime;
+            double length = time - firstTime;           
             Pattern pattern = new Pattern(firstTime,firstTime+1,time - firstTime,Math.atan2(height,length),firstValue);
             pattern.setHspan(lastValue-firstValue); 
             linesMap.put(firstTime,pattern);
@@ -264,7 +264,14 @@ public class LinePattern {
     	pList.get(0).setAngle(pList.get(0).getSlope());
     	for(int i=1;i<pList.size();i++){
     		double angle = Math.PI - pList.get(i).getSlope() + pList.get(i-1).getSlope();
-    		pList.get(i).setAngle(angle);
+    		pList.get(i).setAngle(angle);    		
+    	}
+    	for(int i=0;i<pList.size();i++){
+    		double average = 0;
+    		for(int j=pList.get(i).getStart();j<=pList.get(i).getEnd();j++){
+    			average =+ Double.parseDouble(dataItems.getData().get(j));
+    		}
+    		pList.get(i).setAverage(average/pList.get(i).getSpan());
     	}
     }
     public void setDatas(TreeMap<Integer, Double> datas) {
