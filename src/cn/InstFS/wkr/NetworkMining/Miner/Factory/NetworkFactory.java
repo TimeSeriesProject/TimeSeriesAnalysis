@@ -21,7 +21,22 @@ public class NetworkFactory extends MinerFactorySettings {
 
 	private TaskRange taskRange= TaskRange.WholeNetworkRange;
 	private MiningObject miningObject ;
+	private Date startDate;
+	private Date endDate;
 	
+	
+	public Date getStartDate() {
+		return startDate;
+	}
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+	public Date getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
 	public MiningObject getMiningObject() {
 		return miningObject;
 	}
@@ -60,7 +75,7 @@ public class NetworkFactory extends MinerFactorySettings {
 		task.setGranularity(granularity);
 		task.setMiningObject(miningObject.toString());
 		CWNetworkReader reader = new CWNetworkReader(task);
-		DataItems dataItems = reader.readInputByText();
+		DataItems dataItems = reader.readInputByText(false,startDate,endDate);
 
 		/*用于测试*/
 		/*Calendar cal1 = Calendar.getInstance();

@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -175,15 +176,29 @@ public class CWNetworkReader  implements IReader{
 		this.task=task;
 		this.timeseg=task.getGranularity();
 	}
-	
-	private Date second2Date(int second)
-	{
-		 Calendar cal = Calendar.getInstance();
-		 cal.set(2015, 9, 1, 0, 0, 0);
-		 cal.add(Calendar.SECOND,second);
-		 Date date = cal.getTime();
-		 return date;
+	private long[] floorDate(Date startDate, Date endDate) {
+		long[] timestamp = new long[2];
+		String dateStr;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd 00:00:00");
+
+		try {
+			dateStr = sdf.format(startDate);
+			timestamp[0] = sdf.parse(dateStr).getTime();
+			dateStr = sdf.format(endDate);
+			timestamp[1] = sdf.parse(dateStr).getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return timestamp;
 	}
+//	private Date second2Date(int second)
+//	{
+//		 Calendar cal = Calendar.getInstance();
+//		 cal.set(2015, 9, 1, 0, 0, 0);
+//		 cal.add(Calendar.SECOND,second);
+//		 Date date = cal.getTime();
+//		 return date;
+//	}
 	private void getlinkList()
 	{
 		String path=task.getSourcePath();
@@ -302,7 +317,92 @@ public class CWNetworkReader  implements IReader{
 			System.exit(0);
 		}
 	}
-
+	private void getMatrixList(boolean isReadBetween,Date startDate,Date endDate)
+	{
+	
+		String path=task.getSourcePath();
+		File srcFiles=new File(path);
+		
+		//时间毫秒数
+		long startTime = startDate.getTime();
+		long endTime =endDate.getTime();
+		
+		
+		try
+		{
+			for(int i=0;i<srcFiles.listFiles().length;i++)
+			{
+				if(srcFiles.listFiles()[i].isFile())
+					continue;
+				File subFiles[] =srcFiles.listFiles()[i].listFiles();
+				for(int j=0;j<subFiles.length;j++)
+				{
+					
+					TextReader textReader = new TextReader(subFiles[j].getAbsolutePath());
+					String fileName =subFiles[j].getName();
+					String str[]=fileName.split("\\.");
+					long fileTime = Long.valueOf(str[0]);
+					//只读取时间段内的文件
+					if(fileTime<startTime||fileTime>endTime)
+						continue;
+					String curLine="";
+					String header =textReader.readLine(); //读取文件
+					System.out.println("读取文件"+srcFiles.list()[i]);
+					while((curLine=textReader.readLine())!=null)
+					{
+						//if(textReader.readLine())
+						//List<Map.Entry<Integer,Double>> mappingList = new ArrayList<Map.Entry<Integer,Double>>(map.entrySet());
+						
+						String seg[]=curLine.split(",");
+						Long time = Long.valueOf(seg[0])*1000+fileTime;
+						
+						if(time<startTime||time>endTime)
+							continue;
+						
+						int index =(int)((time-startTime)/1000/task.getGranularity());
+						/**
+						 * 解析路径
+						 */
+						String preNode =null;
+						int preHops =-1;
+						for(int k=5;k<seg.length;k++)
+						{
+							String str1[] = seg[k].split(":");
+							String node = str1[0].split("-")[0]; //获取路由器号
+							
+							int hops = Integer.valueOf(str1[1]);               //获取跳数
+							
+							if(preNode!=null&&preHops==hops)
+							{
+								while(index>=matrixList.size())
+								{
+									matrixList.add(new HashSet<Pair>());
+								}
+								matrixList.get(index).add(new Pair(preNode,node));
+								matrixList.get(index).add(new Pair(node,preNode));
+							}
+							preNode=node;
+							preHops=hops;
+	
+						}								
+					}
+				}
+			}
+		}
+//			Collections.sort(linkList);
+			
+//			for(int i=0;i<linkList.size();i++)
+//			{
+//				System.out.println(linkList.get(i).start+" "+linkList.get(i).end+" "+linkList.get(i).time);
+//			}
+		//}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			System.exit(0);
+		}
+	
+	}
 	/**
 	 * 计算簇系数
 	 * @return
@@ -414,148 +514,235 @@ public class CWNetworkReader  implements IReader{
 		return result-1;
 	}
 	
-	private DataItems readNodeFrequenceByText(){
-		DataItems dataItems=new DataItems();
-		dataItems.setIsAllDataDouble(-1);
+//	private DataItems readNodeFrequenceByText(){
+//		DataItems dataItems=new DataItems();
+//		dataItems.setIsAllDataDouble(-1);
+//		String path=task.getSourcePath();
+//		File srcFiles=new File(path);
+//		Map<Integer,Map<String,Integer>> timeMaps = new TreeMap<Integer,Map<String,Integer>>();
+//		int min=Integer.MAX_VALUE;
+//		int max =Integer.MIN_VALUE;
+//		try
+//		{
+//			for(int i=0;i<srcFiles.list().length;i++)
+//			{
+//				System.out.println("read file "+srcFiles.list()[i]);
+//				TextReader textReader = new TextReader(path+"/"+srcFiles.list()[i]);
+//				String curLine="";
+//				textReader.readLine();
+//				while((curLine=textReader.readLine())!=null)
+//				{
+//					Map<String,Integer>	map = new HashMap<String,Integer>();  
+//					String seg[]=curLine.split(",");
+//					int timeSegNum =(Integer.parseInt(seg[0])-start)/task.getGranularity();
+//					/**
+//					 * 解析文件
+//					 */
+//				
+//					if(!timeMaps.containsKey(timeSegNum))
+//					{
+//						timeMaps.put(timeSegNum,new HashMap<String,Integer>());
+//					}
+//					min=Math.min(min,timeSegNum);
+//					max=Math.max(max, timeSegNum);
+//					timeMaps.get(timeSegNum).put(seg[1], 1);
+//					timeMaps.get(timeSegNum).put(seg[2], 1);
+//				}
+//			}
+////			System.out.println(min+"wwwww"+max);
+//		}
+//		catch(Exception e)
+//		{
+//			e.printStackTrace();
+//			System.exit(0);
+//		}
+//		//对于没有通信的时间段补一个空map;
+//		int pre=-1;
+//		for(Map.Entry<Integer, Map<String,Integer>>entry:timeMaps.entrySet())
+//		{
+//			for(int i=pre+1;i<entry.getKey();i++)
+//			{
+//				dataItems.add1Data(second2Date(task.getGranularity()*i),new HashMap<String,Integer>());
+//			}
+//			
+//			dataItems.add1Data(second2Date(task.getGranularity()*entry.getKey()),entry.getValue());
+//			pre=entry.getKey();
+//		}
+//		return dataItems;
+//	}
+	
+//	private DataItems readClusterByText()
+//	{
+//		
+////		int presegnum=0;
+////		int cursegnum;
+////		Set<Pair> matrix =new HashSet<Pair>();
+//
+////		getlinkList();
+//		
+//		/**
+//		 * 计算簇系数
+//		 */
+////		for(int i=0;i<linkList.size();i++)
+////		{
+////			 cursegnum = (linkList.get(i).time-start)/timeseg;
+////			// System.out.println("cursegnum "+cursegnum);
+////			 if(cursegnum>presegnum)
+////			 {
+////				// System.out.println("matrix "+matrix.size());
+////				 Date date = second2Date(timeseg*presegnum);
+////				 dataItems.add1Data(date, String.valueOf(calCluster(matrix)));
+////				 for(int j=presegnum+1;j<cursegnum;j++)
+////				 {
+////					 date = second2Date(timeseg*j);
+////					 dataItems.add1Data(date, "0");
+////				 }
+////				 matrix.clear();
+////				 presegnum=cursegnum;
+////			 }
+////			 matrix.add(new Pair(linkList.get(i).start,linkList.get(i).end));
+////			 matrix.add(new Pair(linkList.get(i).end,linkList.get(i).start));
+////		}
+//		
+//		getMatrixList();
+//		for(int i=0;i<matrixList.size();i++)
+//		{
+//			Date date = second2Date(task.getGranularity()*i);
+//			dataItems.add1Data(date, String.valueOf(calCluster(matrixList.get(i))));
+//		}
+//		return dataItems;
+//	}
+	private DataItems readClusterByText(boolean isReadBetween,Date startDate,Date endDate)
+	{
 		String path=task.getSourcePath();
 		File srcFiles=new File(path);
-		Map<Integer,Map<String,Integer>> timeMaps = new TreeMap<Integer,Map<String,Integer>>();
-		int min=Integer.MAX_VALUE;
-		int max =Integer.MIN_VALUE;
-		try
+		//找全局最小时间
+		
+		if(isReadBetween==false)
 		{
-			for(int i=0;i<srcFiles.list().length;i++)
+			ArrayList<String> fileList= new ArrayList<String>();
+			for(int i=0;i<srcFiles.listFiles().length;i++)
 			{
-				System.out.println("read file "+srcFiles.list()[i]);
-				TextReader textReader = new TextReader(path+"/"+srcFiles.list()[i]);
-				String curLine="";
-				textReader.readLine();
-				while((curLine=textReader.readLine())!=null)
+				if(srcFiles.listFiles()[i].isFile())
+					continue;
+				String fileNames[] =srcFiles.listFiles()[i].list();
+				for(int j=0;j<fileNames.length;j++)
 				{
-					Map<String,Integer>	map = new HashMap<String,Integer>();  
-					String seg[]=curLine.split(",");
-					int timeSegNum =(Integer.parseInt(seg[0])-start)/task.getGranularity();
-					/**
-					 * 解析文件
-					 */
-				
-					if(!timeMaps.containsKey(timeSegNum))
-					{
-						timeMaps.put(timeSegNum,new HashMap<String,Integer>());
-					}
-					min=Math.min(min,timeSegNum);
-					max=Math.max(max, timeSegNum);
-					timeMaps.get(timeSegNum).put(seg[1], 1);
-					timeMaps.get(timeSegNum).put(seg[2], 1);
+					fileList.add(fileNames[j]);
 				}
 			}
-//			System.out.println(min+"wwwww"+max);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
-		//对于没有通信的时间段补一个空map;
-		int pre=-1;
-		for(Map.Entry<Integer, Map<String,Integer>>entry:timeMaps.entrySet())
-		{
-			for(int i=pre+1;i<entry.getKey();i++)
+			Collections.sort(fileList);
+			for(int i=0;i<fileList.size();i++)
+				System.out.println("sortedfileList"+fileList.get(i));
+			if(fileList.size()==0)
 			{
-				dataItems.add1Data(second2Date(task.getGranularity()*i),new HashMap<String,Integer>());
+				System.out.println("No file!");
+				return dataItems;
 			}
+			String str[]=fileList.get(0).split("\\.");
+		//	System.out.println("node 1488 "+str[0]);
+			startDate = new Date(Long.valueOf(str[0]));
 			
-			dataItems.add1Data(second2Date(task.getGranularity()*entry.getKey()),entry.getValue());
-			pre=entry.getKey();
-		}
-		return dataItems;
-	}
-	
-	private DataItems readClusterByText()
-	{
-		
-//		int presegnum=0;
-//		int cursegnum;
-//		Set<Pair> matrix =new HashSet<Pair>();
-
-//		getlinkList();
-		
-		/**
-		 * 计算簇系数
-		 */
-//		for(int i=0;i<linkList.size();i++)
-//		{
-//			 cursegnum = (linkList.get(i).time-start)/timeseg;
-//			// System.out.println("cursegnum "+cursegnum);
-//			 if(cursegnum>presegnum)
-//			 {
-//				// System.out.println("matrix "+matrix.size());
-//				 Date date = second2Date(timeseg*presegnum);
-//				 dataItems.add1Data(date, String.valueOf(calCluster(matrix)));
-//				 for(int j=presegnum+1;j<cursegnum;j++)
-//				 {
-//					 date = second2Date(timeseg*j);
-//					 dataItems.add1Data(date, "0");
-//				 }
-//				 matrix.clear();
-//				 presegnum=cursegnum;
-//			 }
-//			 matrix.add(new Pair(linkList.get(i).start,linkList.get(i).end));
-//			 matrix.add(new Pair(linkList.get(i).end,linkList.get(i).start));
-//		}
-				
-		getMatrixList();
+			str = fileList.get(fileList.size()-1).split("\\.");
+			endDate = new Date(Long.valueOf(str[0])+86400000);
+		}	
+		getMatrixList(isReadBetween,startDate,endDate);
 		for(int i=0;i<matrixList.size();i++)
 		{
-			Date date = second2Date(task.getGranularity()*i);
+			long startTime =startDate.getTime();
+			Date date =new Date(startTime+i*1000*task.getGranularity());
 			dataItems.add1Data(date, String.valueOf(calCluster(matrixList.get(i))));
 		}
 		return dataItems;
 	}
-	private DataItems readDiameterByText()
-	{
-//		int presegnum=0;
-//		int cursegnum;
-//		Set<Pair> matrix =new HashSet<Pair>();
-//		getlinkList();
-		
-		/**
-		 * 计算直径
-		 */
-//		for(int i=0;i<linkList.size();i++)
+//	private DataItems readDiameterByText()
+//	{
+////		int presegnum=0;
+////		int cursegnum;
+////		Set<Pair> matrix =new HashSet<Pair>();
+////		getlinkList();
+//		
+//		/**
+//		 * 计算直径
+//		 */
+////		for(int i=0;i<linkList.size();i++)
+////		{
+////			 cursegnum = (linkList.get(i).time-start)/timeseg;
+////			 if(cursegnum>presegnum)
+////			 {
+////				 Date date = second2Date(timeseg*presegnum);
+////				 dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));
+//////				 System.out.println("matrix "+matrix.size()); 
+////				 for(int j=presegnum+1;j<cursegnum;j++)
+////				 {
+////					 date = second2Date(timeseg*j);
+////					 dataItems.add1Data(date, "0");
+////				 }
+////				 presegnum=cursegnum;
+////				 matrix.clear();
+////			 }
+////			 matrix.add(new Pair(linkList.get(i).start,linkList.get(i).end));
+////			 matrix.add(new Pair(linkList.get(i).end,linkList.get(i).start));
+////			
+////		}
+////		 
+////		Date date = second2Date(timeseg*presegnum);
+////		dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));\
+//		getMatrixList();
+//		
+//		for(int i=0;i<matrixList.size();i++)
 //		{
-//			 cursegnum = (linkList.get(i).time-start)/timeseg;
-//			 if(cursegnum>presegnum)
-//			 {
-//				 Date date = second2Date(timeseg*presegnum);
-//				 dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));
-////				 System.out.println("matrix "+matrix.size()); 
-//				 for(int j=presegnum+1;j<cursegnum;j++)
-//				 {
-//					 date = second2Date(timeseg*j);
-//					 dataItems.add1Data(date, "0");
-//				 }
-//				 presegnum=cursegnum;
-//				 matrix.clear();
-//			 }
-//			 matrix.add(new Pair(linkList.get(i).start,linkList.get(i).end));
-//			 matrix.add(new Pair(linkList.get(i).end,linkList.get(i).start));
-//			
+//			Date date = second2Date(task.getGranularity()*i);
+//			System.out.println(matrixList.get(i).size());
+//			dataItems.add1Data(date, String.valueOf(calDiameter(matrixList.get(i))));
 //		}
-//		 
-//		Date date = second2Date(timeseg*presegnum);
-//		dataItems.add1Data(date, String.valueOf(calDiameter(matrix)));\
-		getMatrixList();
+//		return dataItems;
+//	}
+	private DataItems readDiameterByText(boolean isReadBetween,Date startDate,Date endDate)
+	{
+
+		String path=task.getSourcePath();
+		File srcFiles=new File(path);
+		//找全局最小时间
+		
+		if(isReadBetween==false)
+		{
+			ArrayList<String> fileList= new ArrayList<String>();
+			for(int i=0;i<srcFiles.listFiles().length;i++)
+			{
+				if(srcFiles.listFiles()[i].isFile())
+					continue;
+				String fileNames[] =srcFiles.listFiles()[i].list();
+				for(int j=0;j<fileNames.length;j++)
+				{
+					fileList.add(fileNames[j]);
+				}
+			}
+			Collections.sort(fileList);
+			for(int i=0;i<fileList.size();i++)
+				System.out.println("sortedfileList"+fileList.get(i));
+			if(fileList.size()==0)
+			{
+				System.out.println("No file!");
+				return dataItems;
+			}
+			String str[]=fileList.get(0).split("\\.");
+		//	System.out.println("node 1488 "+str[0]);
+			startDate = new Date(Long.valueOf(str[0]));
+			
+			str = fileList.get(fileList.size()-1).split("\\.");
+			endDate = new Date(Long.valueOf(str[0])+86400000);
+		}	
+		getMatrixList(isReadBetween,startDate,endDate);
 		
 		for(int i=0;i<matrixList.size();i++)
 		{
-			Date date = second2Date(task.getGranularity()*i);
-			System.out.println(matrixList.get(i).size());
+			long startTime =startDate.getTime();
+			Date date =new Date(startTime+i*1000*task.getGranularity());
 			dataItems.add1Data(date, String.valueOf(calDiameter(matrixList.get(i))));
 		}
 		return dataItems;
 	}
-	
 	@Override
 	public DataItems readInputBySql() {
 		// TODO Auto-generated method stub
@@ -571,8 +758,17 @@ public class CWNetworkReader  implements IReader{
 	{
 		switch(task.getMiningObject())
 		{
-		case "网络簇系数": return readClusterByText();
-		case "网络直径":return readDiameterByText();
+		case "网络簇系数": return readClusterByText(false,null,null);
+		case "网络直径":return readDiameterByText(false,null,null);
+		default: return null;
+		}
+	}
+	public DataItems readInputByText(boolean isReadBetween ,Date startDate,Date endDate)
+	{
+		switch(task.getMiningObject())
+		{
+		case "网络簇系数": return readClusterByText(isReadBetween,startDate,endDate);
+		case "网络直径":return readDiameterByText(isReadBetween,startDate,endDate);
 		default: return null;
 		}
 	}
@@ -582,8 +778,8 @@ public class CWNetworkReader  implements IReader{
 		
 		switch(task.getMiningObject())
 		{
-		case "网络簇系数": return readClusterByText();
-		case "网络直径":return readDiameterByText();
+		case "网络簇系数": return readClusterByText(false,null,null);
+		case "网络直径":return readDiameterByText(false,null,null);
 		default: return null;
 		}
 		

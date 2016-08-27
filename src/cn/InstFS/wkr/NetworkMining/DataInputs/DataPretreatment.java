@@ -340,6 +340,8 @@ public class DataPretreatment {
 	public static DataItems aggregateData(DataItems di,int granularity,
 			AggregateMethod method,boolean isDiscreteOrNonDouble){	
 		
+		if(granularity ==3600)
+			return di;
 		DataItems dataOut = new DataItems();
 		dataOut.setIsAllDataDouble(di.getIsAllDataDouble());
 		int len = di.getLength();

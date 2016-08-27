@@ -1337,7 +1337,7 @@ public class nodePairReader implements IReader {
 			
 			str = fileList.get(fileList.size()-1).split("\\.");
 			System.out.println("date1:"+str[0]);
-			date2 = new Date(Long.valueOf(str[0]));
+			date2 = new Date(Long.valueOf(str[0])+86400000);
 		}
 		
 		int start=0;
@@ -1497,7 +1497,7 @@ public class nodePairReader implements IReader {
 			date1 = new Date(Long.valueOf(str[0]));
 			
 			str = fileList.get(fileList.size()-1).split("\\.");
-			date2 = new Date(Long.valueOf(str[0]));
+			date2 = new Date(Long.valueOf(str[0])+86400000);
 		}
 		
 		int start=0;
@@ -1643,7 +1643,7 @@ public class nodePairReader implements IReader {
 			date1 = new Date(Long.valueOf(str[0]));
 			
 			str = fileList.get(fileList.size()-1).split("\\.");
-			date2 = new Date(Long.valueOf(str[0]));
+			date2 = new Date(Long.valueOf(str[0])+86400000);
 		}
 		
 		int start=0;
@@ -1789,7 +1789,7 @@ public class nodePairReader implements IReader {
 			date1 = new Date(Long.valueOf(str[0]));
 			
 			str = fileList.get(fileList.size()-1).split("\\.");
-			date2 = new Date(Long.valueOf(str[0]));
+			date2 = new Date(Long.valueOf(str[0])+86400000);
 		}
 		
 		int start=0;
@@ -1962,7 +1962,7 @@ public class nodePairReader implements IReader {
 			date1 = new Date(Long.valueOf(str[0]));
 			
 			str = fileList.get(fileList.size()-1).split("\\.");
-			date2 = new Date(Long.valueOf(str[0]));
+			date2 = new Date(Long.valueOf(str[0])+86400000);
 		}
 		int start=0;
 		
