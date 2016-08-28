@@ -1330,11 +1330,11 @@ public class nodePairReader implements IReader {
 			}
 			System.out.println("date1:"+fileList.get(0));
 			String[] str=fileList.get(0).split("\\.");
-			
+
 			System.out.println("date2:"+str[0]);
 			date1 = new Date(Long.valueOf(str[0]));
 			
-			
+
 			str = fileList.get(fileList.size()-1).split("\\.");
 			System.out.println("date1:"+str[0]);
 			date2 = new Date(Long.valueOf(str[0])+86400000);
@@ -1470,7 +1470,7 @@ public class nodePairReader implements IReader {
 	 * 
 	 */
 	public HashMap<String, DataItems> readEachProtocolTimesDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
-		
+
 		System.out.println("readEachProtocolTimesDataItems.....");
 		HashMap<String, DataItems>protocolDataItems=new HashMap<String, DataItems>();
 		/**
@@ -1720,7 +1720,7 @@ public class nodePairReader implements IReader {
 					}
 				}
 			}
-			
+			fileDay += 86400000; // 下一天的文件名时间戳
 		}
 		System.out.println("readEachIpPairProtocolTrafficDataItems 调用结束");
 		return ipPairProtocolDataItems;
@@ -1766,7 +1766,7 @@ public class nodePairReader implements IReader {
 	 * 其中key为协议  DataItems为通信次数时间序列
 	 */
 	public HashMap<String,Map<String, DataItems>> readEachIpPairProtocolTimesDataItems(String filePath,boolean isReadBetween,Date date1,Date date2,int timeGran){
-		
+
 		System.out.println("readEachIpPairProtocolTimesDataItems.....");
 		HashMap<String,Map<String, DataItems>> ipPairProtocolDataItems=new HashMap<String,Map<String, DataItems>>();
 		if(isReadBetween==false)
@@ -1805,7 +1805,9 @@ public class nodePairReader implements IReader {
 			TextUtils textUtils=new TextUtils();
 			textUtils.setTextPath(filePath+"\\"+ fileName);
 			String line=null;
-	
+
+			System.out.println("FileName: "+ fileName);
+			System.out.println("========================================");
 			while((line=textUtils.readByrow())!=null){
 				String[] items=line.split(",");
 				int timeSpan=Integer.parseInt(items[0])+24*k;			
@@ -1868,7 +1870,7 @@ public class nodePairReader implements IReader {
 					}
 				}
 			}
-			
+			fileDay += 86400000; // 下一天的文件名时间戳
 		}
 		System.out.println("readEachIpPairProtocolTimesDataItems 调用结束");
 		return ipPairProtocolDataItems;
@@ -2000,6 +2002,7 @@ public class nodePairReader implements IReader {
 					sumDataItem.data.set(sumDataItem.getLength()-1, "1");
 				} 
 			}
+	
 			
 			protocolDataItems.put("AllTraffic", sumDataItem);
 			fileDay += 86400000; // 下一天的文件名时间戳
