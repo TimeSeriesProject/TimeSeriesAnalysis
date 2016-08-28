@@ -855,28 +855,29 @@ public class nodePairReader implements IReader {
 		 */
 		if(isReadBetween==false)
 		{
+			long startTime=Long.MAX_VALUE;
+			long endTime =0;
 			File dir = new File(filePath);
-			ArrayList<String> fileList= new ArrayList<String>();
+		
 			for(int i=0;i<dir.list().length;i++)
 			{
-				fileList.add(dir.list()[i]);
+				//fileList.add(dir.list()[i]);
+				String str[]=dir.list()[i].split("\\.");
+				long time =Long.valueOf(str[0]);
+				if(time<startTime)
+					startTime=time;
+				if(time>endTime)
+					endTime=time;
+				
 			}
-			Collections.sort(fileList);
-			for(int i=0;i<fileList.size();i++)
-				System.out.println("sortedfileList"+fileList.get(i));
-			if(fileList.size()==0)
+			if(dir.list().length==0)
 			{
 				System.out.println("No file!");
+				return ;
 			}
-			System.out.println("date1:"+fileList.get(0));
-			String[] str=fileList.get(0).split("\\.");
-
-			System.out.println("date2:"+str[0]);
-			startDate = new Date(Long.valueOf(str[0]));
-
-			str = fileList.get(fileList.size()-1).split("\\.");
-			System.out.println("date1:"+str[0]);
-			endDate = new Date(Long.valueOf(str[0]));
+			
+			startDate = new Date(startTime);
+			endDate = new Date(endTime);
 		}
 
 		long[] fileDays = floorDate(startDate, endDate);
@@ -1499,30 +1500,29 @@ public class nodePairReader implements IReader {
 		 */
 		if(isReadBetween==false)
 		{
+			long startTime=Long.MAX_VALUE;
+			long endTime =0;
 			File dir = new File(filePath);
-			ArrayList<String> fileList= new ArrayList<String>();
+		
 			for(int i=0;i<dir.list().length;i++)
 			{
-				fileList.add(dir.list()[i]);
+				//fileList.add(dir.list()[i]);
+				String str[]=dir.list()[i].split("\\.");
+				long time =Long.valueOf(str[0]);
+				if(time<startTime)
+					startTime=time;
+				if(time>endTime)
+					endTime=time;
+				
 			}
-			Collections.sort(fileList);
-			for(int i=0;i<fileList.size();i++)
-				System.out.println("sortedfileList"+fileList.get(i));
-			if(fileList.size()==0)
+			if(dir.list().length==0)
 			{
 				System.out.println("No file!");
 				return protocolDataItems;
 			}
-			System.out.println("date1:"+fileList.get(0));
-			String[] str=fileList.get(0).split("\\.");
-
-			System.out.println("date2:"+str[0]);
-			date1 = new Date(Long.valueOf(str[0]));
 			
-
-			str = fileList.get(fileList.size()-1).split("\\.");
-			System.out.println("date1:"+str[0]);
-			date2 = new Date(Long.valueOf(str[0])+86400000);
+			date1 = new Date(startTime);
+			date2 = new Date(endTime);
 		}
 		
 		int start=0;
@@ -1663,26 +1663,31 @@ public class nodePairReader implements IReader {
 		 */
 		if(isReadBetween==false)
 		{
+			long startTime=Long.MAX_VALUE;
+			long endTime =0;
 			File dir = new File(filePath);
-			ArrayList<String> fileList= new ArrayList<String>();
+		
+			
 			for(int i=0;i<dir.list().length;i++)
 			{
-				fileList.add(dir.list()[i]);
+				//fileList.add(dir.list()[i]);
+				String str[]=dir.list()[i].split("\\.");
+				long time =Long.valueOf(str[0]);
+				System.out.println("time "+time);
+				if(time<startTime)
+					startTime=time;
+				if(time>endTime)
+					endTime=time;
+				
 			}
-			Collections.sort(fileList);
-			for(int i=0;i<fileList.size();i++)
-				System.out.println("sortedfileList"+fileList.get(i));
-			if(fileList.size()==0)
+			if(dir.list().length==0)
 			{
 				System.out.println("No file!");
 				return protocolDataItems;
 			}
-			String str[]=fileList.get(0).split("\\.");
-			System.out.println("node 1488 "+str[0]);
-			date1 = new Date(Long.valueOf(str[0]));
-			
-			str = fileList.get(fileList.size()-1).split("\\.");
-			date2 = new Date(Long.valueOf(str[0])+86400000);
+			System.out.println("nodepairreader"+startTime+" "+endTime);
+			date1 = new Date(startTime);
+			date2 = new Date(endTime);
 		}
 		
 		int start=0;
@@ -1810,25 +1815,29 @@ public class nodePairReader implements IReader {
 		 */
 		if(isReadBetween==false)
 		{
+			long startTime=Long.MAX_VALUE;
+			long endTime =0;
 			File dir = new File(filePath);
-			ArrayList<String> fileList= new ArrayList<String>();
+		
 			for(int i=0;i<dir.list().length;i++)
 			{
-				fileList.add(dir.list()[i]);
+				//fileList.add(dir.list()[i]);
+				String str[]=dir.list()[i].split("\\.");
+				long time =Long.valueOf(str[0]);
+				if(time<startTime)
+					startTime=time;
+				if(time>endTime)
+					endTime=time;
+				
 			}
-			Collections.sort(fileList);
-			for(int i=0;i<fileList.size();i++)
-				System.out.println("sortedfileList"+fileList.get(i));
-			if(fileList.size()==0)
+			if(dir.list().length==0)
 			{
 				System.out.println("No file!");
 				return ipPairProtocolDataItems;
 			}
-			String str[]=fileList.get(0).split("\\.");
-			date1 = new Date(Long.valueOf(str[0]));
 			
-			str = fileList.get(fileList.size()-1).split("\\.");
-			date2 = new Date(Long.valueOf(str[0])+86400000);
+			date1 = new Date(startTime);
+			date2 = new Date(endTime);
 		}
 		
 		int start=0;
@@ -1956,25 +1965,29 @@ public class nodePairReader implements IReader {
 		HashMap<String,Map<String, DataItems>> ipPairProtocolDataItems=new HashMap<String,Map<String, DataItems>>();
 		if(isReadBetween==false)
 		{
+			long startTime=Long.MAX_VALUE;
+			long endTime =0;
 			File dir = new File(filePath);
-			ArrayList<String> fileList= new ArrayList<String>();
+		
 			for(int i=0;i<dir.list().length;i++)
 			{
-				fileList.add(dir.list()[i]);
+				//fileList.add(dir.list()[i]);
+				String str[]=dir.list()[i].split("\\.");
+				long time =Long.valueOf(str[0]);
+				if(time<startTime)
+					startTime=time;
+				if(time>endTime)
+					endTime=time;
+				
 			}
-			Collections.sort(fileList);
-			for(int i=0;i<fileList.size();i++)
-				System.out.println("sortedfileList"+fileList.get(i));
-			if(fileList.size()==0)
+			if(dir.list().length==0)
 			{
 				System.out.println("No file!");
 				return ipPairProtocolDataItems;
 			}
-			String str[]=fileList.get(0).split("\\.");
-			date1 = new Date(Long.valueOf(str[0]));
 			
-			str = fileList.get(fileList.size()-1).split("\\.");
-			date2 = new Date(Long.valueOf(str[0])+86400000);
+			date1 = new Date(startTime);
+			date2 = new Date(endTime);
 		}
 		
 		int start=0;
@@ -2131,25 +2144,29 @@ public class nodePairReader implements IReader {
 		HashMap<String, DataItems> protocolDataItems = new HashMap<String, DataItems>();
 		if(isReadBetween==false)
 		{
+			long startTime=Long.MAX_VALUE;
+			long endTime =0;
 			File dir = new File(filePath);
-			ArrayList<String> fileList= new ArrayList<String>();
+		
 			for(int i=0;i<dir.list().length;i++)
 			{
-				fileList.add(dir.list()[i]);
+				//fileList.add(dir.list()[i]);
+				String str[]=dir.list()[i].split("\\.");
+				long time =Long.valueOf(str[0]);
+				if(time<startTime)
+					startTime=time;
+				if(time>endTime)
+					endTime=time;
+				
 			}
-			Collections.sort(fileList);
-			for(int i=0;i<fileList.size();i++)
-				System.out.println("sortedfileList"+fileList.get(i));
-			if(fileList.size()==0)
+			if(dir.list().length==0)
 			{
 				System.out.println("No file!");
 				return protocolDataItems;
 			}
-			String str[]=fileList.get(0).split("\\.");
-			date1 = new Date(Long.valueOf(str[0]));
 			
-			str = fileList.get(fileList.size()-1).split("\\.");
-			date2 = new Date(Long.valueOf(str[0])+86400000);
+			date1 = new Date(startTime);
+			date2 = new Date(endTime);
 		}
 		int start=0;
 		

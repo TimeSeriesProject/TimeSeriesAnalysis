@@ -343,7 +343,7 @@ public class CWNetworkReader  implements IReader{
 					String str[]=fileName.split("\\.");
 					long fileTime = Long.valueOf(str[0]);
 					//只读取时间段内的文件
-					if(fileTime<startTime||fileTime>endTime)
+					if(isReadBetween&&(fileTime<startTime||fileTime>endTime))
 						continue;
 					String curLine="";
 					String header =textReader.readLine(); //读取文件
@@ -356,7 +356,7 @@ public class CWNetworkReader  implements IReader{
 						String seg[]=curLine.split(",");
 						Long time = Long.valueOf(seg[0])*1000+fileTime;
 						
-						if(time<startTime||time>endTime)
+						if(isReadBetween&&(time<startTime||time>endTime))
 							continue;
 						
 						int index =(int)((time-startTime)/1000/task.getGranularity());
@@ -620,31 +620,35 @@ public class CWNetworkReader  implements IReader{
 		
 		if(isReadBetween==false)
 		{
-			ArrayList<String> fileList= new ArrayList<String>();
-			for(int i=0;i<srcFiles.listFiles().length;i++)
+			if(isReadBetween==false)
 			{
-				if(srcFiles.listFiles()[i].isFile())
-					continue;
-				String fileNames[] =srcFiles.listFiles()[i].list();
-				for(int j=0;j<fileNames.length;j++)
+				long startTime=Long.MAX_VALUE;
+				long endTime = 0;
+				int count=0;
+				for(int i=0;i<srcFiles.listFiles().length;i++)
 				{
-					fileList.add(fileNames[j]);
+					if(srcFiles.listFiles()[i].isFile())
+						continue;
+					String fileNames[] =srcFiles.listFiles()[i].list();
+					for(int j=0;j<fileNames.length;j++)
+					{
+						String str[]=fileNames[j].split("\\.");
+						long time =Long.valueOf(str[0]);
+						if(time<startTime)
+							startTime=time;
+						if(time>endTime)
+							endTime=time;
+						count++;
+					}
 				}
-			}
-			Collections.sort(fileList);
-			for(int i=0;i<fileList.size();i++)
-				System.out.println("sortedfileList"+fileList.get(i));
-			if(fileList.size()==0)
-			{
-				System.out.println("No file!");
-				return dataItems;
-			}
-			String str[]=fileList.get(0).split("\\.");
-		//	System.out.println("node 1488 "+str[0]);
-			startDate = new Date(Long.valueOf(str[0]));
-			
-			str = fileList.get(fileList.size()-1).split("\\.");
-			endDate = new Date(Long.valueOf(str[0])+86400000);
+				if(count==0)
+				{
+					System.out.println("No file!");
+					return dataItems;
+				}
+				startDate = new Date(startTime);
+				endDate = new Date(endTime);
+			}	
 		}	
 		getMatrixList(isReadBetween,startDate,endDate);
 		for(int i=0;i<matrixList.size();i++)
@@ -707,7 +711,9 @@ public class CWNetworkReader  implements IReader{
 		
 		if(isReadBetween==false)
 		{
-			ArrayList<String> fileList= new ArrayList<String>();
+			long startTime=Long.MAX_VALUE;
+			long endTime = 0;
+			int count=0;
 			for(int i=0;i<srcFiles.listFiles().length;i++)
 			{
 				if(srcFiles.listFiles()[i].isFile())
@@ -715,23 +721,22 @@ public class CWNetworkReader  implements IReader{
 				String fileNames[] =srcFiles.listFiles()[i].list();
 				for(int j=0;j<fileNames.length;j++)
 				{
-					fileList.add(fileNames[j]);
+					String str[]=fileNames[j].split("\\.");
+					long time =Long.valueOf(str[0]);
+					if(time<startTime)
+						startTime=time;
+					if(time>endTime)
+						endTime=time;
+					count++;
 				}
 			}
-			Collections.sort(fileList);
-			for(int i=0;i<fileList.size();i++)
-				System.out.println("sortedfileList"+fileList.get(i));
-			if(fileList.size()==0)
+			if(count==0)
 			{
 				System.out.println("No file!");
 				return dataItems;
 			}
-			String str[]=fileList.get(0).split("\\.");
-		//	System.out.println("node 1488 "+str[0]);
-			startDate = new Date(Long.valueOf(str[0]));
-			
-			str = fileList.get(fileList.size()-1).split("\\.");
-			endDate = new Date(Long.valueOf(str[0])+86400000);
+			startDate = new Date(startTime);
+			endDate = new Date(endTime);
 		}	
 		getMatrixList(isReadBetween,startDate,endDate);
 		
