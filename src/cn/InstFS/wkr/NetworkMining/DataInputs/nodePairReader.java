@@ -713,6 +713,17 @@ public class nodePairReader implements IReader {
 		
 		return dataMap;
 	}
+
+	public Map<String, DataItems> readPath(String filePath, String mining, boolean isReadBetween, Date startDate, Date endDate) {
+		Map<String, DataItems> dataMap = new HashMap<String, DataItems>();
+		String minerObject = "path";
+		if(mining.equals(MiningObject.MiningObject_Traffic.toString()))
+			minerObject = "path:traffic";
+
+		readFile(filePath, minerObject,dataMap, isReadBetween, startDate, endDate);
+
+		return dataMap;
+	}
 	/**
 	 * 读取给定文件下所有通信节点对的通信路径
 	 * @param filePath  文件地址 
@@ -825,6 +836,180 @@ public class nodePairReader implements IReader {
 			nodeList.clear();
 			hopsList.clear();
 		}
+	}
+
+	/**
+	 *
+	 * @param filePath ip文件夹地址
+	 * @param minierObject
+	 * @param dataMap
+	 * @param isReadBetween
+	 * @param startDate
+     * @param endDate
+     */
+	private void readFile(String filePath,String minierObject,Map<String, DataItems> dataMap, boolean isReadBetween, Date startDate, Date endDate){
+		Map<String, Date> timeMap = new HashMap<>();
+
+		/**
+		 * 读取文件时间段
+		 */
+		if(isReadBetween==false)
+		{
+			File dir = new File(filePath);
+			ArrayList<String> fileList= new ArrayList<String>();
+			for(int i=0;i<dir.list().length;i++)
+			{
+				fileList.add(dir.list()[i]);
+			}
+			Collections.sort(fileList);
+			for(int i=0;i<fileList.size();i++)
+				System.out.println("sortedfileList"+fileList.get(i));
+			if(fileList.size()==0)
+			{
+				System.out.println("No file!");
+			}
+			System.out.println("date1:"+fileList.get(0));
+			String[] str=fileList.get(0).split("\\.");
+
+			System.out.println("date2:"+str[0]);
+			startDate = new Date(Long.valueOf(str[0]));
+
+			str = fileList.get(fileList.size()-1).split("\\.");
+			System.out.println("date1:"+str[0]);
+			endDate = new Date(Long.valueOf(str[0]));
+		}
+
+		long[] fileDays = floorDate(startDate, endDate);
+		long fileDay = fileDays[0];
+		long endDay = fileDays[1];
+		long startDay = fileDay;
+
+
+		String line=null;
+		DataItems dataItems=null;
+		Date deadDate=null;
+		List<Integer> nodeList=new ArrayList<Integer>();
+		List<Integer> hopsList=new ArrayList<Integer>();
+		StringBuilder sb=new StringBuilder();
+		for (int k = 0; fileDay <= endDay; k++){
+			String fileName = fileDay+".csv";
+			TextUtils textUtils=new TextUtils();
+			textUtils.setTextPath(filePath+"\\"+ fileName);
+			System.out.println("readFile:"+ filePath+"\\"+ fileName);
+
+			String header=textUtils.readByrow();
+			if (header == null){
+				fileDay += 86400000;
+				continue;
+			}
+			String[] columns=header.split(",");
+			String[] miningObject = minierObject.split(":");  //miningObject针对路径次数与路径流量 若miningObject[1]为空，则指代路径次数
+			int minerObjectIndex=NameToIndex(miningObject[0], columns);
+			if(minerObjectIndex==-1){
+				throw new RuntimeException("未找到挖掘对象");
+			}
+			int TrafficColIndex=NameToIndex("traffic",columns);
+			int TimeColIndex=NameToIndex("Time(S)", columns);
+			int SIPColIndex=NameToIndex("srcIP", columns);
+			int DIPColIndex=NameToIndex("dstIP", columns);
+			if(TimeColIndex==-1||SIPColIndex==-1||DIPColIndex==-1){
+				throw new RuntimeException("Time SIP DIP 属性在文件中未找到");
+			}
+
+
+			while((line=textUtils.readByrow())!=null){
+				columns=line.split(",");
+				int time=Integer.parseInt(columns[TimeColIndex]) + 24*3600*k; //单位为s
+				Date timeDate = parseTime(time, startDay);
+
+				if (isReadBetween) {
+					if (timeDate.compareTo(startDate) < 0 || timeDate.compareTo(endDate) > 0) {
+						continue;
+					}
+				}
+				String key=columns[SIPColIndex]+","+columns[DIPColIndex];
+				if(dataMap.containsKey(key)){
+					dataItems=dataMap.get(key);
+					deadDate=timeMap.get(key);
+				}else{
+					dataItems=new DataItems();
+					dataItems.setVarSet(new HashSet<String>());
+					dataItems.setIsAllDataDouble(-1);
+					dataMap.put(key, dataItems);
+					deadDate= timeDate;
+					deadDate=DataPretreatment.getDateAfter(deadDate, 3600*1000);
+					timeMap.put(key, deadDate);
+				}
+
+				//跳过本节点 直接转到路由器节点
+				for(int j=minerObjectIndex+1;j<columns.length-1;j++)
+				{
+					int len=nodeList.size();
+					int node = Integer.valueOf(columns[j].split("-")[0]);
+					int hops = Integer.valueOf(columns[j].split(":")[1]);
+					if(len>0&&nodeList.get(len-1)==node){
+						hopsList.set(len-1, hops);
+					}else{
+						nodeList.add(node);
+						hopsList.add(hops);
+					}
+				}
+				sb.append(columns[SIPColIndex]).append(",");
+				int start=1;
+
+
+				for(int i=0;i<nodeList.size();i++){
+					int hops=hopsList.get(i);
+					for(int pos=start;pos<hops;pos++)
+						sb.append("*").append(",");
+					sb.append(nodeList.get(i)).append(",");
+					start=hops+1;
+				}
+				sb.append(columns[DIPColIndex]);
+				String path=sb.toString();
+				dataItems.getVarSet().add(path);
+				int len=dataItems.getLength();
+				int aggregateNum = 1;
+
+				if(miningObject.length > 1 && miningObject[1].toLowerCase().equals("traffic"))
+					aggregateNum = Integer.parseInt(columns[TrafficColIndex]);
+
+				if(timeDate.before(deadDate)&&len>0){
+					Map<String, Integer> data=dataItems.getNonNumData().get(len-1);
+					if(data.containsKey(path)){
+						int originValue=data.get(path);
+						data.put(path, originValue+aggregateNum);
+					}else{
+						data.put(path,aggregateNum);
+					}
+				}else{
+					if(len==0){
+						dataItems.getTime().add(timeDate);
+						Map<String, Integer> data=new HashMap<String, Integer>();
+						data.put(path, aggregateNum);
+						dataItems.getNonNumData().add(data);
+					}else{
+						while(!timeDate.before(deadDate)){
+							dataItems.getTime().add(deadDate);
+							Map<String, Integer> data=new HashMap<String, Integer>();
+							dataItems.getNonNumData().add(data);
+							deadDate=DataPretreatment.getDateAfter(deadDate, 3600*1000);
+							timeMap.put(key, deadDate);
+						}
+						int size=dataItems.getNonNumData().size();
+						Map<String, Integer> data=dataItems.getNonNumData().get(size-1);
+						data.put(path, aggregateNum);
+					}
+				}
+				sb.delete(0, sb.length());
+				nodeList.clear();
+				hopsList.clear();
+			}
+			fileDay += 86400000; // 下一天的文件名时间戳
+		}
+
+
+
 	}
 	
 	/**

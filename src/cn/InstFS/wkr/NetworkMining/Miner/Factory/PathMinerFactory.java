@@ -79,7 +79,9 @@ public class PathMinerFactory extends MinerFactorySettings{
 		}else{
 			File[] dataDirs=dataDirectory.listFiles();
 			for(int i=0;i<dataDirs.length;i++){
-				parseFile(dataDirs[i],reader);
+				//按天必须是文件夹
+				if(dataDirs[i].isDirectory())
+					parseFile(dataDirs[i],reader);
 			}
 		}
 	}
@@ -90,7 +92,8 @@ public class PathMinerFactory extends MinerFactorySettings{
 		switch(miningObject){
 		case MiningObject_Traffic:
 		case MiningObject_Times:
-			dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString());
+//			dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString());
+			dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString(), false, getStartDate(), getEndDate());
 			break;
 		default:
 			break;
@@ -108,7 +111,7 @@ public class PathMinerFactory extends MinerFactorySettings{
 
 		taskCombination.setDataItems(di);
 		taskCombination.setTaskRange(TaskRange.NodePairRange);
-		taskCombination.setRange(dataFile.getName().substring(0, dataFile.getName().lastIndexOf(".")));
+		taskCombination.setRange(dataFile.getName());
 		taskCombination.setMinerType(MinerType.MiningType_Path);
 		taskCombination.setMiningObject(miningObject.toString());
 		taskCombination.setName(MinerType.MiningType_Path);
