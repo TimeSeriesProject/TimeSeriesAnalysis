@@ -11,6 +11,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import WaveletUtil.PointPatternDetection;
 import WaveletUtil.SAXPartternDetection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
@@ -229,11 +230,14 @@ class NodeTimerTask extends TimerTask{
 					results.getRetNode().getRetOM().setIslinkDegree(false);
 				}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
 					//tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
-					if(results.getRetNode().getRetPM().getHasPeriod())
+					tsaMethod = new PointPatternDetection(ParamsAPI.getInstance().getPom().getOmPiontPatternParams(),dataItems);
+					
+					/*if(results.getRetNode().getRetPM().getHasPeriod())
 				    	tsaMethod=new SAXPartternDetection(dataItems,
 				    			results.getRetNode().getRetPM().getFirstPossiblePeriod());
+						
 					else 
-						tsaMethod=new SAXPartternDetection(dataItems,24);
+						tsaMethod=new SAXPartternDetection(dataItems,24);*/
 					results.getRetNode().getRetOM().setIslinkDegree(true);
 				}else{
 					throw new RuntimeException("方法不存在！");
