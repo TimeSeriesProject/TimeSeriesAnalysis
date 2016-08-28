@@ -196,9 +196,7 @@ public class ChartPanelShowAb extends JPanel{
         xylineandshaperenderer.setSeriesLinesVisible(0, true);
         xyplot.setRenderer(0, xylineandshaperenderer);
         XYDataset xydataset1 = createAbnormalDataset(nor,abnor);
-        /*if(nor.getLength() > 0){
-        	xydataset1 = createAbnormalDataset(nor,abnor);
-        }*/
+       
         XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
         
         xyplot.setDataset(1, xydataset1);
