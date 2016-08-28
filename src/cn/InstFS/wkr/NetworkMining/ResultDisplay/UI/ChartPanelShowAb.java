@@ -145,13 +145,13 @@ public class ChartPanelShowAb extends JPanel{
         return xyseriescollection;
     }
     //对异常点进行初始化
-    public static XYDataset createAbnormalDataset(DataItems abnor)
+    public static XYDataset createAbnormalDataset(DataItems nor,DataItems abnor)
     {  // 统计异常点的长度
         int length=abnor.getLength();
         XYSeries xyseries = new XYSeries("异常点");
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
-
+        Date date1 = nor.getTime().get(0);
 
 
         //添加数据值
@@ -162,14 +162,12 @@ public class ChartPanelShowAb extends JPanel{
             temp=abnor.getElementAt(i);
 //            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
 //            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
-            Calendar cal = Calendar.getInstance();
-   		 	cal.set(2014, 9, 1, 0, 0, 0);
-   		 	Date date1 = cal.getTime();
+   		 	
    		 	Date date2 = temp.getTime();
    		 	long diff = date2.getTime()-date1.getTime();
    		 	long hour = diff/(1000*60*60);
    		 	long index = hour*3600/timeGranunity;
-            xyseries.add((int)hour,Double.parseDouble(temp.getData()));
+            xyseries.add(index,Double.parseDouble(temp.getData()));
 
         }
         xyseriescollection.addSeries(xyseries);
@@ -196,7 +194,7 @@ public class ChartPanelShowAb extends JPanel{
         xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
         xylineandshaperenderer.setSeriesLinesVisible(0, true);
         xyplot.setRenderer(0, xylineandshaperenderer);
-        XYDataset xydataset1 = createAbnormalDataset(abnor);
+        XYDataset xydataset1 = createAbnormalDataset(nor,abnor);
         XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
         
         xyplot.setDataset(1, xydataset1);
