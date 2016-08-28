@@ -1540,6 +1540,14 @@ public class nodePairReader implements IReader {
 		
 		for (int k = 0; fileDay <= endDay; k++) {
 			String fileName = fileDay+".txt";
+			
+			File file = new File(filePath+"\\"+ fileName);
+			//如果该文件不存在，则跳过
+			if(!file.exists())
+			{
+				fileDay += 86400000; // 下一天的文件名时间戳
+				continue;
+			}
 			TextUtils textUtils=new TextUtils();
 			textUtils.setTextPath(filePath+"\\"+ fileName);
 			String line=null;
@@ -1700,6 +1708,13 @@ public class nodePairReader implements IReader {
 		start=pHour.getHour();
 		for (int k = 0; fileDay <= endDay; k++) {
 			String fileName = fileDay+".txt";
+			File file = new File(filePath+"\\"+ fileName);
+			//如果该文件不存在，则跳过
+			if(!file.exists())
+			{
+				fileDay += 86400000; // 下一天的文件名时间戳
+				continue;
+			}
 			TextUtils textUtils=new TextUtils();
 			textUtils.setTextPath(filePath+"\\"+ fileName);
 			String line=null;
@@ -2179,6 +2194,14 @@ public class nodePairReader implements IReader {
 		DataItems sumDataItem = new DataItems();
 		for (int k = 0; fileDay <= endDay; k++) {
 			String fileName = fileDay+".txt";
+			
+			File file = new File(filePath+"\\"+ fileName);
+			//如果该文件不存在，则跳过
+			if(!file.exists())
+			{
+				fileDay += 86400000; // 下一天的文件名时间戳
+				continue;
+			}
 			TextUtils textUtils=new TextUtils();
 			textUtils.setTextPath(filePath+"\\"+ fileName);
 			String line=null;
@@ -2207,6 +2230,7 @@ public class nodePairReader implements IReader {
 	
 			
 			protocolDataItems.put("AllTraffic", sumDataItem);
+//			System.out.println(sumDataItem.getData().toString());
 			fileDay += 86400000; // 下一天的文件名时间戳
 		}
 		System.out.println("readEachNodeDisapearEmergeDataItems 调用结束");
