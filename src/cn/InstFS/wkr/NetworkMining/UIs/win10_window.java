@@ -399,6 +399,7 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO Auto-generated method stub
+                ProcessBarShow processBarShow = new ProcessBarShow(null);
 
 
             }

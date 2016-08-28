@@ -152,6 +152,9 @@ public class MiningResultsFile {
         if (dataFile.isFile())
             sourceDataName = sourceDataName.substring(0, sourceDataName.lastIndexOf("."));
 
+        System.out.println(settings.getStartDate());
+        System.out.println(settings.getEndDate());
+        
         fileName.append(settings.getStartDate().getTime()).append("_"); // 起始时间
         fileName.append(settings.getEndDate().getTime()).append("_");    // 终止时间
         fileName.append(settings.getMinerType()).append("_");

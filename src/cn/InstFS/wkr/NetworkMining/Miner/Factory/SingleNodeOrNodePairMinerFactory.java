@@ -128,10 +128,10 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 				 * @author LYH
 				 * 用于测试读取时间区间数据，单节点挖掘
 				 * **/
-				/*Calendar cal1 = Calendar.getInstance();
-				Calendar cal2 = Calendar.getInstance();
-				cal1.set(2014, 9, 1, 0, 0, 0);
-				cal2.set(2014,11,20,0,0,0);*/
+//				Calendar cal1 = Calendar.getInstance();
+//				Calendar cal2 = Calendar.getInstance();
+//				cal1.set(2014, 9, 1, 0, 0, 0);
+//				cal2.set(2014,11,20,0,0,0);
 				Date date1 = getStartDate();
 				Date date2 = getEndDate();
 				rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(),false,date1,date2,3600);
@@ -159,6 +159,10 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 				Date date6 = getEndDate();
 				rawDataItems = reader.readEachNodeDisapearEmergeDataItems(dataFile.getAbsolutePath(),false,date5,date6,3600);
 				isNodeDisapearEmerge = true;
+//				if(ip.compareTo("4") == 0 ||ip.compareTo("3") == 0 ||ip.compareTo("0") == 0 ||
+//						ip.compareTo("10") == 0 ||ip.compareTo("6") == 0 ||ip.compareTo("5") == 0 ||
+//						ip.compareTo("7") == 0 || ip.compareTo("1") == 0)
+//					System.out.println(rawDataItems.get("AllTraffic").getData().toString());
 				break;
 			default:
 				break;
@@ -194,14 +198,12 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 				 * @author LYH
 				 * 用于测试读取时间区间数据，单节点挖掘
 				 * **/
-				/*Calendar cal1 = Calendar.getInstance();
+				Calendar cal1 = Calendar.getInstance();
 				Calendar cal2 = Calendar.getInstance();
 				cal1.set(2014, 9, 1, 0, 0, 0);
 				cal2.set(2014,11,20,0,0,0);
 				Date date1 = cal1.getTime();
-				Date date2 = cal2.getTime();*/
-				Date date1 = getStartDate();
-				Date date2 = getEndDate();
+				Date date2 = cal2.getTime();
 				ipPairRawDataItems=reader.readEachIpPairProtocolTrafficDataItems(dataFile.getAbsolutePath(),false,date1,date2,3600);
 				break;
 			case MiningObject_Times:
