@@ -39,6 +39,7 @@ import org.jfree.util.ShapeUtilities;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import ec.nbdemetra.ui.calendars.CalendarDocumentManager;
 public class ChartPanelShowAb extends JPanel{
     JFreeChart chart;
     Shape itemShape; // = new Ellipse2D.Double(-2,-2, 4, 4);
@@ -151,25 +152,25 @@ public class ChartPanelShowAb extends JPanel{
         XYSeries xyseries = new XYSeries("异常点");
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
-        Date date1 = nor.getTime().get(0);
-
-
-        //添加数据值
-
-        for (int i = 0; i < length; i++) {
-
-            DataItem temp=new DataItem();
-            temp=abnor.getElementAt(i);
-//            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
-//            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
-   		 	
-   		 	Date date2 = temp.getTime();
-   		 	long diff = date2.getTime()-date1.getTime();
-   		 	long hour = diff/(1000*60*60);
-   		 	long index = hour*3600/timeGranunity;
-            xyseries.add(index,Double.parseDouble(temp.getData()));
-
-        }
+        if(nor.getData().size()>0){
+        	Date date1 = nor.getTime().get(0);
+        	
+	        //添加数据值
+	
+	        for (int i = 0; i < length; i++) {
+	
+	            DataItem temp=new DataItem();
+	            temp=abnor.getElementAt(i);
+	//            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
+	//            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
+	   		 	Date date2 = temp.getTime();
+	   		 	long diff = date2.getTime()-date1.getTime();
+	   		 	long hour = diff/(1000*60*60);
+	   		 	long index = hour*3600/timeGranunity;
+	            xyseries.add(index,Double.parseDouble(temp.getData()));
+	
+	        }
+	    }
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
@@ -195,6 +196,9 @@ public class ChartPanelShowAb extends JPanel{
         xylineandshaperenderer.setSeriesLinesVisible(0, true);
         xyplot.setRenderer(0, xylineandshaperenderer);
         XYDataset xydataset1 = createAbnormalDataset(nor,abnor);
+        /*if(nor.getLength() > 0){
+        	xydataset1 = createAbnormalDataset(nor,abnor);
+        }*/
         XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
         
         xyplot.setDataset(1, xydataset1);
