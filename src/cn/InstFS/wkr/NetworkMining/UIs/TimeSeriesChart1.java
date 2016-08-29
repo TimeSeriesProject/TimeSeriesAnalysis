@@ -477,9 +477,10 @@ public class TimeSeriesChart1 extends Composite {
 
 		long off1 = dataitems1.getElementAt(0).getTime().getTime();
 		long off2 = dataitems2.getElementAt(0).getTime().getTime();
+		long off=off1>off2?off2:off1;
 		long unit = 0;
 		if (dataitems1.getLength() > 0) {
-			unit = dataitems1.getElementAt(1).getTime().getTime() - off1;
+			unit = dataitems1.getElementAt(1).getTime().getTime() - off;
 		} else {
 			unit = 3600000;
 		}
@@ -498,15 +499,32 @@ public class TimeSeriesChart1 extends Composite {
 
 			while (it.hasNext()) {
 				LinePos temp = (LinePos) it.next();
-				double[] area = new double[8];
+				double[] area = new double[(temp.B_end-temp.B_start+1)*2+(temp.A_end-temp.A_start+1)*2];
 
-				DataItem d1 = new DataItem();
+	/*			DataItem d1 = new DataItem();
 				d1 = dataitems1.getElementAt(temp.A_start);
 				DataItem d2 = new DataItem();
-				d2 = dataitems2.getElementAt(temp.B_start);
+				d2 = dataitems2.getElementAt(temp.B_start);*/
 				// DataItems ds1 = new DataItems();
-
-				area[0] = (d1.getTime().getTime() - off1) / unit;
+				int a=(temp.A_end-temp.A_start+1)*2;
+				int b=(temp.B_end-temp.B_start+1)*2;
+				for(int i=0;i<b;i=i+2){
+					DataItem d1 = new DataItem();
+					d1 = dataitems2.getElementAt(temp.B_start+i/2);
+					area[i]=(d1.getTime().getTime() - off) / unit;
+					area[i+1]=Double.parseDouble(d1.getData());
+				}
+				for(int i=0;i<a;i=i+2){
+					DataItem d = new DataItem();
+					d = dataitems1.getElementAt(temp.A_end-i/2);
+					area[b+i]=(d.getTime().getTime() - off) / unit;
+					area[b+i+1]=Double.parseDouble(d.getData());
+				}
+				System.out.println("area.length="+area.length);
+				for(int i=0;i<area.length;i++){
+					System.out.println("area["+i+"]"+"="+area[i]);
+				}
+				/*area[0] = (d1.getTime().getTime() - off1) / unit;
 				area[1] = Double.parseDouble(d1.getData());
 
 				area[2] = (d2.getTime().getTime() - off2) / unit;
@@ -521,7 +539,7 @@ public class TimeSeriesChart1 extends Composite {
 				area[5] = Double.parseDouble(d3.getData());
 
 				area[6] = (d4.getTime().getTime() - off1) / unit;
-				area[7] = Double.parseDouble(d4.getData());
+				area[7] = Double.parseDouble(d4.getData());*/
 
 
 				aModelIndex.add(area);
