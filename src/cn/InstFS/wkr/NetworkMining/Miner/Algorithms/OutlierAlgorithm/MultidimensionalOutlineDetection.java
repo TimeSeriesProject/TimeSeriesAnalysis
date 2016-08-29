@@ -88,10 +88,10 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		//获得观测值dataSet	
 		for(int i=0;i<patterns.size();i++){
 			ArrayList<Double> data = new ArrayList<Double>();
-			data.add(patterns.get(i).getSpan());
-			data.add(patterns.get(i).getAverage());
-			data.add(patterns.get(i).getSlope());
-			data.add(patterns.get(i).getAngle());
+			data.add(patterns.get(i).getSpan()); //线段时间跨度
+			data.add(patterns.get(i).getAverage()); //线段均值
+			data.add(patterns.get(i).getSlope()); //倾斜角
+			data.add(patterns.get(i).getAngle()); //与前一条线段的夹角
 			dataSet.add(data);
 		}
 		//混合高斯建模

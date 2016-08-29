@@ -227,16 +227,23 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             for (Map.Entry<String, MinerResultsOM> entry: resultOM.entrySet()) {
                 String pathName = entry.getKey();
                 MinerResultsOM result = entry.getValue();
-                DataItems outliesItems = result.getOutlies();
-                DataItems oriData = oriItems.get(pathName);
+                DataItems outlines = result.getOutlies();
+                DataItems oriDataItems = oriItems.get(pathName);
+                
+                DataItems outliesItems = new DataItems();
+                DataItems oriData = new DataItems();                
 
-                for (int i = 0; i< oriData.getData().size(); i++) {
-                    double data = Double.parseDouble(oriData.getData().get(i));
-                    oriData.getData().set(i, data/1000 + "");
+                for (int i = 0; i< oriDataItems.getData().size(); i++) {
+                    double data1 = Double.parseDouble(oriDataItems.getData().get(i));
+                    Date time = oriDataItems.getTime().get(i);
+                    String data = String.valueOf(data1/1000);
+                    oriData.add1Data(time,data);
                 }
-                for(int i = 0;i < outliesItems.getData().size();i++){
-                    double data = Double.parseDouble(outliesItems.getData().get(i));
-                    outliesItems.getData().set(i, data/1000 + "");
+                for(int i = 0;i < outlines.getData().size();i++){
+                    double data1 = Double.parseDouble(outlines.getData().get(i));
+                    Date time = outlines.getTime().get(i);
+                    String data = String.valueOf(data1/1000);
+                    outliesItems.add1Data(time, data);
                 }
 
                 ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", "值", null);
@@ -248,9 +255,9 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 JFreeChart jf;
                 if (!result.isHasOutlies()) {
                     jf = ChartPanelShowAb.createChart(new DataItems(),new DataItems());
+                    //jf = ChartPanelShowAb.createChart(oriData,new DataItems());
                 } else if (result.isIslinkDegree()) {
                     //jf = ChartPanelShowAbd.createChart(outliesItems);
-
                     jf = ChartPanelShowAbd.createChart(oriData,outliesItems);
                 } else {
                     jf = ChartPanelShowAb.createChart(oriData, outliesItems);
