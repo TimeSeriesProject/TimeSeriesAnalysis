@@ -120,7 +120,13 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 //			txtDiscreteNodes.setVisible(true);
 //		}else
 		txtDiscreteNodes.setVisible(false);
-		chartTs.displayDataItems(di);		
+		if(rets.getRetPM().getHasPeriod()){
+			chartTs.displayPeriod(di,(int)rets.getRetPM().getPeriod(), rets.getRetPM().getFirstPossiblePeriod());
+		}
+		else{
+			chartTs.displayDataItems(di);
+		}
+		
 	}
 	
 	private String formatStrOrNumber(Double str){
