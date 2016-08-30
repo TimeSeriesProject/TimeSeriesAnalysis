@@ -77,7 +77,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 	public boolean isMining;
 	public static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 	
-	static Vector<ITaskElementEventListener> listeners = new Vector<ITaskElementEventListener>();
+	public static Vector<ITaskElementEventListener> listeners = new Vector<ITaskElementEventListener>();
 	
 	
 	public static TaskElement example1 = new TaskElement();

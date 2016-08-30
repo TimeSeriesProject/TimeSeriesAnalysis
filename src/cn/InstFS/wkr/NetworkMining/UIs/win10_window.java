@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
+import Distributed.Server;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
@@ -37,6 +38,7 @@ public class win10_window extends JFrame {
     boolean isNodePairMined = false;
     boolean isPathMined = false;
     boolean isProtocolAssMined = false;
+    Server server = Server.getInstance();
 
     public boolean isNetworkStructureMined() {
         return isNetworkStructureMined;
@@ -107,10 +109,47 @@ public class win10_window extends JFrame {
             objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
             singleNoderesultMaps.put(ob.toString(), objectMap);
 
+//            HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
+//            /*if (resultsFile.hasFile(singleNodeMinerFactory)) {  // 已有，直接读取
+//                objectMap = (HashMap<TaskCombination, MinerNodeResults>) resultsFile.file2ResultMap();
+//                singleNoderesultMaps.put(ob.toString(), objectMap);
+//                NetworkMinerFactory.getInstance().taskCombinationAdd2allMiner(objectMap); //由读取的结果objectMap添加相应的miner，以供显示
+//            } else {    // 没有，则重新挖掘并保存
+//                singleNodeMinerFactory.reset();
+//                singleNodeMinerFactory.setMiningObject(ob);
+//                singleNodeMinerFactory.detect();
+//                objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
+//                singleNoderesultMaps.put(ob.toString(), objectMap);
+//                MiningResultsFile newResultsFile = new MiningResultsFile(ob);
+//                newResultsFile.resultMap2File(singleNodeMinerFactory, objectMap);
+//            }*/
+//            singleNodeMinerFactory.reset();
+//            singleNodeMinerFactory.setMiningObject(ob);
+//            singleNodeMinerFactory.detect();
+//            objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
+//            singleNoderesultMaps.put(ob.toString(), objectMap);
+
         }
 
         isSingleNodeMined=true;
     }
+
+    public void mineSingleNodeDis()
+    {
+        singleNoderesultMaps.clear();
+        NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+
+        SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis = SingleNodeOrNodePairMinerFactoryDis.getInstance();
+        List<MiningObject> miningObjectList = singleNodeOrNodePairMinerFactoryDis.getMiningObjectsChecked();
+
+        // 判断是否含有该挖掘对象结果文件
+        for (MiningObject ob: miningObjectList) {
+            server.SingleNode(singleNodeOrNodePairMinerFactoryDis, ob);
+        }
+
+        isSingleNodeMined=true;
+    }
+
     public void mineNodePair()
     {
         nodePairresultMaps.clear();
@@ -220,6 +259,8 @@ public class win10_window extends JFrame {
     }
 
     public static void main(String[] args) {
+        //分布式服务启动
+//        new Thread(Server.getStartInstance()).start();
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -515,6 +556,7 @@ public class win10_window extends JFrame {
                     mineSingleNode();
                 SingleNodeListFrame singleNodeListFrame = new SingleNodeListFrame(singleNoderesultMaps);
                 singleNodeListFrame.setVisible(true);
+//                server.showSingleNodeResult();//分布式结果显示
 
             }
         });
