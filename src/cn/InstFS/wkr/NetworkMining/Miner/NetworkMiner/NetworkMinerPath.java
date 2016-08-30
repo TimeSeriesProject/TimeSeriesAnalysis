@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import WaveletUtil.PointPatternDetection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.MinerFactorySettings;
@@ -240,7 +241,7 @@ class PathTimerTask extends TimerTask{
 
 						/*SeriesStatistics seriesStatistics=new SeriesStatistics(newItem);
 						seriesStatistics.statistics();*/
-						if(retPathStatistic.get(name).getComplex()>1.5){
+						/*if(retPathStatistic.get(name).getComplex()>1.5){
 							task.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
 						}
 
@@ -251,7 +252,8 @@ class PathTimerTask extends TimerTask{
 						}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
 							omMethod=new FastFourierOutliesDetection(paramsOM.getOmFastFourierParams(), newItem);
 							retOM.setIslinkDegree(false);
-						}
+						}*/
+						omMethod = new MultidimensionalOutlineDetection(newItem);
 						omMethod.TimeSeriesAnalysis();
 						setOMResults(retOM, omMethod);
 						retPathOM.put(name, retOM);
@@ -348,6 +350,8 @@ class PathTimerTask extends TimerTask{
 
 	private void setOMResults(MinerResultsOM retOM, IMinerOM omMethod){
 		retOM.setOutlies(omMethod.getOutlies());    //查找异常
+		retOM.setOutlinesSet(omMethod.getOutlinesSet());
+		retOM.setOutDegree(omMethod.getOutDegree());
 		if(omMethod.getOutlies()!=null){
 			DataItems outlies=omMethod.getOutlies();
 			int outliesLen=outlies.getLength();

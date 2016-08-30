@@ -4,11 +4,15 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MinerResultsOM implements Serializable{
 	ParamsTSA params;	// 或者 java.util.Properties params;
 	
-	private DataItems outlies;
+	private DataItems outlies; //异常点
+	private DataItems outDegree = new DataItems(); //异常度
+	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
 	private boolean islinkDegree=false;
 	private boolean hasOutlies;
 	private int confidence;
@@ -42,6 +46,18 @@ public class MinerResultsOM implements Serializable{
 	}
 	public void setConfidence(int confidence) {
 		this.confidence = confidence;
+	}
+	public DataItems getOutDegree() {
+		return outDegree;
+	}
+	public void setOutDegree(DataItems outDegree) {
+		this.outDegree = outDegree;
+	}
+	public List<DataItems> getOutlinesSet() {
+		return outlinesSet;
+	}
+	public void setOutlinesSet(List<DataItems> outlinesSet) {
+		this.outlinesSet = outlinesSet;
 	}
 	
 }

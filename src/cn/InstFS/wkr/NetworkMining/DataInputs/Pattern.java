@@ -3,7 +3,7 @@ package cn.InstFS.wkr.NetworkMining.DataInputs;
 public class Pattern {
 	private int start;
 	private int end;
-	private int len;
+	private int len; //end - start
 	private double span;
 	private double hspan;
 	private double slope; //倾斜角度
@@ -12,10 +12,10 @@ public class Pattern {
 	private double startValue;
 	
 	public Pattern(){}
-	public Pattern(int start,int end,int span,double slope,double startValue){
-		this.start = start;
-		this.end = end;
+	public Pattern(int start,int span,double slope,double startValue){
+		this.start = start;		
 		this.len = (int)span;
+		this.end = start+len;
 		this.span = span;
 		this.slope = slope;
 		this.startValue = startValue;

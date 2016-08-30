@@ -2,6 +2,7 @@ package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
+import cn.InstFS.wkr.NetworkMining.DataInputs.MovingAverage;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
@@ -14,6 +15,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -227,33 +229,29 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             for (Map.Entry<String, MinerResultsOM> entry: resultOM.entrySet()) {
                 String pathName = entry.getKey();
                 MinerResultsOM result = entry.getValue();
-                DataItems outlines = result.getOutlies();
-                DataItems oriDataItems = oriItems.get(pathName);
+                DataItems outlines = result.getOutlies(); //异常点
+                DataItems outDegree = result.getOutDegree(); //异常度
+                List<DataItems> outlinesSet = result.getOutlinesSet(); //异常线段
+                DataItems oriDataItems = oriItems.get(pathName); //原始数据
                 
-                DataItems outliesItems = new DataItems();
-                DataItems oriData = new DataItems();                
-
-                for (int i = 0; i< oriDataItems.getData().size(); i++) {
-                    double data1 = Double.parseDouble(oriDataItems.getData().get(i));
-                    Date time = oriDataItems.getTime().get(i);
-                    String data = String.valueOf(data1/1000);
-                    oriData.add1Data(time,data);
-                }
-                for(int i = 0;i < outlines.getData().size();i++){
-                    double data1 = Double.parseDouble(outlines.getData().get(i));
-                    Date time = outlines.getTime().get(i);
-                    String data = String.valueOf(data1/1000);
-                    outliesItems.add1Data(time, data);
+                DataItems outliesItems = comItems(outlines); //除以1000后的异常点
+                List<DataItems> outsetItems = new ArrayList<DataItems>();//除以1000后的异常线段
+                DataItems oriData = comItems(oriDataItems);  //除以1000后的原始数据           
+                
+                for(int i = 0;i < outlinesSet.size();i++){
+                    DataItems di = comItems(outlinesSet.get(i));
+                    outsetItems.add(di);
                 }
 
                 ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", "值", null);
-//                MovingAverage ma = new MovingAverage(oriData);
-//                DataItems newItems = ma.getNewItems();
+                /*MovingAverage ma = new MovingAverage(oriData);
+                DataItems newItems = ma.getNewItems();
+                chart.displayDataItems(newItems);*/
                 chart.displayDataItems(oriData);
-                //chart.displayDataItems(newItems);
+                
                 jp.add(chart);
                 JFreeChart jf;
-                if (!result.isHasOutlies()) {
+                /*if (!result.isHasOutlies()) {
                     jf = ChartPanelShowAb.createChart(new DataItems(),new DataItems());
                     //jf = ChartPanelShowAb.createChart(oriData,new DataItems());
                 } else if (result.isIslinkDegree()) {
@@ -261,7 +259,15 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                     jf = ChartPanelShowAbd.createChart(oriData,outliesItems);
                 } else {
                     jf = ChartPanelShowAb.createChart(oriData, outliesItems);
+                }*/
+                if (!result.isHasOutlies()) {
+                    jf = ChartPanelShowAbd.createChart(oriData,outDegree);    
+                } /*else if (result.isIslinkDegree()) {                    
+                    jf = ChartPanelShowAbl.createChart(oriData,outdegreeItems,outsetItems);
+                }*/ else {
+                    jf = ChartPanelShowAbc.createChart(oriData, outDegree,outliesItems);
                 }
+                
                 ChartPanel chartpanel = new ChartPanel(jf);
                 jp.add(chartpanel);
 
@@ -432,6 +438,19 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             map.put(pathName, value);
         }
         return map;
+    }
+    /**
+     * @author LYH
+     * 用于数据除以1000*/
+    public DataItems comItems(DataItems di){
+    	DataItems items = new DataItems();
+    	for(int i=0;i<di.getLength();i++){
+    		double data1 = Double.parseDouble(di.getData().get(i));
+            Date time = di.getTime().get(i);
+            String data = String.valueOf(data1/1000);
+            items.add1Data(time, data);
+    	}
+    	return items;
     }
 }
 

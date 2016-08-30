@@ -79,7 +79,7 @@ public class LinePattern {
 
         int firstTime = datas.firstKey();
         //for(int time : datas.keySet()){
-        for(int time=0;time<datas.size()-1;time++){    
+        for(int time=0;time<datas.size();time++){    
         	if(firstTime == time)
             	continue;
             double firstValue = datas.get(firstTime);
@@ -87,7 +87,7 @@ public class LinePattern {
             //double slope = (lastValue - firstValue)/(time - firstTime);//计算斜率，斜率大小随变量单位变化
             double height = lastValue - firstValue;
             double length = time - firstTime;           
-            Pattern pattern = new Pattern(firstTime,firstTime+1,time - firstTime,Math.atan2(height,length),firstValue);
+            Pattern pattern = new Pattern(firstTime,time - firstTime,Math.atan2(height,length),firstValue);
             pattern.setHspan(lastValue-firstValue); 
             linesMap.put(firstTime,pattern);
             firstTime = time;
@@ -226,7 +226,7 @@ public class LinePattern {
         //double newSlope = (datas.get(second.getSpan()+second.getStart())-first.getStartValue())/(second.getSpan()+second.getStart()-first.getStart());
         double height = datas.get(second.getLen()+second.getStart())-first.getStartValue();
         double length = second.getLen()+second.getStart()-first.getStart();
-        Pattern newLinear = new Pattern(first.getStart(),first.getStart()+first.getLen(),second.getLen()+second.getStart()-first.getStart(),Math.atan2(height,length),first.getStartValue());
+        Pattern newLinear = new Pattern(first.getStart(),second.getEnd()-first.getStart(),Math.atan2(height,length),first.getStartValue());
         newLinear.setHspan(datas.get(second.getLen()+second.getStart())-first.getStartValue());
         before.second=newLinear;
         before.after=after;
@@ -246,7 +246,7 @@ public class LinePattern {
         //double newSlope = (datas.get(second.getSpan()+second.getStart())-first.getStartValue())/(second.getSpan()+second.getStart()-first.getStart());
         double height = datas.get(second.getLen()+second.getStart())-first.getStartValue();
         double length = second.getLen()+second.getStart()-first.getStart();
-        Pattern newLinear = new Pattern(first.getStart(),first.getStart()+(first.getLen()),second.getLen()+second.getStart()-first.getStart(),Math.atan2(height,length),first.getStartValue());
+        Pattern newLinear = new Pattern(first.getStart(),second.getEnd()-first.getStart(),Math.atan2(height,length),first.getStartValue());
         newLinear.setHspan(datas.get(second.getLen()+second.getStart())-first.getStartValue());
         before.second=newLinear;
         before.after=after;

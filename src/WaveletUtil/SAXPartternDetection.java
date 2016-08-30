@@ -15,6 +15,8 @@ public class SAXPartternDetection implements IMinerOM{
 	private int patternLen;
 	private int patternAlphaNum;
 	private DataItems outlies;
+	private DataItems outDegree = new DataItems(); //异常度
+	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
 	private List<Vector> vectorList;
 	private List<Integer> numList;
 	private double dist;
@@ -275,7 +277,14 @@ public class SAXPartternDetection implements IMinerOM{
 	public DataItems getOutlies() {
 		return outlies;
 	}
-	
+	@Override
+	public DataItems getOutDegree() {
+		return outDegree;
+	}
+	@Override
+	public List<DataItems> getOutlinesSet() {
+		return outlinesSet;
+	}
 	private void sort(List<Integer> distArray,List<Integer> array){
 		int size=distArray.size();
 		int minval=Integer.MAX_VALUE;
@@ -341,6 +350,7 @@ public class SAXPartternDetection implements IMinerOM{
 			}
 			return code;
 		}
+		
 	}
 }
 

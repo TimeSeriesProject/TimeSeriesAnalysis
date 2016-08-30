@@ -26,6 +26,8 @@ public class FastFourierOutliesDetection implements IMinerOM {
     private static double sizeK = 8; //每段数据的长度len = 2^sizeK
     private DataItems di;
     private DataItems outlies = new DataItems();
+    private DataItems outDegree = new DataItems(); //异常度
+	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
     
     public FastFourierOutliesDetection(DataItems di){
     	this.di=di;
@@ -260,5 +262,13 @@ public class FastFourierOutliesDetection implements IMinerOM {
 		this.di = di;
 	}
 	
+	@Override
+	public DataItems getOutDegree() {
+		return outDegree;
+	}
+	@Override
+	public List<DataItems> getOutlinesSet() {
+		return outlinesSet;
+	}
 	
 }
