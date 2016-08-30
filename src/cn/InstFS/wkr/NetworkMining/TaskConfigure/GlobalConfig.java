@@ -26,8 +26,17 @@ public class GlobalConfig {
     private String forecastParamPath; //预测参数文件路径
     private String seriesStatisticParamPath; // 统计参数文件路径
     private String sequencePatternParamPath; //频繁项参数文件路径
+    private String loggerPath;  //日志存储路径
+    
+    public String getLoggerPath() {
+		return loggerPath;
+	}
 
-    private GlobalConfig() {
+	public void setLoggerPath(String loggerPath) {
+		this.loggerPath = loggerPath;
+	}
+
+	private GlobalConfig() {
         Element config = getRootElement();
         initParam(config);
     }
@@ -60,6 +69,7 @@ public class GlobalConfig {
         pcapParseParamPath = config.getChildText("pcapParseParamPath");
         seriesStatisticParamPath = config.getChildText("statisticsParamPath");
         sequencePatternParamPath = config.getChildText("sequencePatternParamPath");
+        loggerPath = config.getChildText("loggerPath");
     }
 
     public String getConfigPath() {
