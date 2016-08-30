@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 
@@ -39,6 +40,17 @@ public class Logger {
 		
 		try {
 			writer.write(key+":"+value+"\n");
+			writer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public static void log(Map<Object, Object> map){
+		
+		try {
+			for(Object obj : map.keySet()){
+				writer.write(obj+":"+map.get(obj)+"\n");
+			}
 			writer.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
