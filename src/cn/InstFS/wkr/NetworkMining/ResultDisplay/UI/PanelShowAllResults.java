@@ -68,6 +68,8 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 			panel = new PanelShowResultsPP(task);
 		else if (miningMethodName.equals(MiningMethod.MiningMethods_Statistics))
 			panel = new PanelShowResultsStatistics(task);
+		else if(miningMethodName.equals(MiningMethod.MiningMethods_PartialCycle))
+			panel = new PanelShowResultsPartialCycle(task);
 		if (panel != null){
 			add((JPanel)panel, task.getTaskName());
 			allPanels.put(task, panel);
@@ -141,6 +143,12 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 	
 	@Override
 	public void onTaskToDisplay(TaskCombination task) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTaskAddedDis(TaskCombination task) {
 		// TODO Auto-generated method stub
 		
 	}

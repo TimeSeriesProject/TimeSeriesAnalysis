@@ -7,12 +7,13 @@ public class MinerNodeResults implements Serializable{
 	private MinerResultsPM retPM;
 	private MinerResultsOM retOM;
 	private MinerResultsSM retSM;
-	
+	private MinerResultsPartialCycle retPartialCycle;
 	public MinerNodeResults(){
 		retStatistics=new MinerResultsStatistics();
 		retPM=new MinerResultsPM();
 		retOM=new MinerResultsOM();
 		retSM=new MinerResultsSM();
+		retPartialCycle = new MinerResultsPartialCycle();
 	}
 
 	public MinerResultsStatistics getRetStatistics() {
@@ -45,6 +46,14 @@ public class MinerNodeResults implements Serializable{
 
 	public void setRetSM(MinerResultsSM retSM) {
 		this.retSM = retSM;
+	}
+
+	public MinerResultsPartialCycle getRetPartialCycle() {
+		return retPartialCycle;
+	}
+
+	public void setRetPartialCycle(MinerResultsPartialCycle retPartialCycle) {
+		this.retPartialCycle = retPartialCycle;
 	}
 	
 }

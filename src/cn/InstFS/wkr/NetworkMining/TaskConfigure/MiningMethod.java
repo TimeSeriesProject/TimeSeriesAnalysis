@@ -5,12 +5,13 @@ import org.apache.ibatis.jdbc.Null;
 public enum MiningMethod {
 	MiningMethods_FrequenceItemMining("多元时间序列挖掘"),
 	MiningMethods_SimilarityMining("多元序列相似度挖掘"),
-	MiningMethods_SequenceMining("序列模式挖掘"),
+	MiningMethods_SequenceMining("频繁模式挖掘"),
 	MiningMethods_PeriodicityMining("周期模式发现"),
 	MiningMethods_PathProbilityMining("路径概率发现"),
 	MiningMethods_OutliesMining("序列异常检测"),
 	MiningMethods_PredictionMining("时间序列预测"),
 	MiningMethods_Statistics("统计图"),
+	MiningMethods_PartialCycle("部分周期发现"),
 	MiningMethods_None("无");
 	
 	private String value;
