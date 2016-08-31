@@ -594,6 +594,12 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						statistics.getResults().setInputData(taskCombination.getDataItems());
 						allMiners.put(task, statistics);
 						break;
+					case MiningMethods_PartialCycle:
+						NetworkMinerPartialCycle partialCycle = new NetworkMinerPartialCycle(task,null);
+						partialCycle.getResults().setRetPartialCycle(results.getRetPartialCycle());
+						partialCycle.isOver.setIsover(true);
+						partialCycle.getResults().setInputData(taskCombination.getDataItems());
+						allMiners.put(task, partialCycle);
 					default:
 						break;
 				}

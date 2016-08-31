@@ -44,6 +44,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.SingleNodeOrNodePairMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.GlobalConfig;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
@@ -83,7 +84,6 @@ public class SingleNodeListFrame extends JFrame {
 					
 					NetworkMinerFactory.getInstance();
 					SingleNodeOrNodePairMinerFactory singleNodeMinerFactory=SingleNodeOrNodePairMinerFactory.getInstance();
-					singleNodeMinerFactory.dataPath="D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\data\\out\\traffic";
 					singleNodeMinerFactory.setMiningObject(MiningObject.MiningObject_Times);
 					singleNodeMinerFactory.setTaskRange(TaskRange.SingleNodeRange);
 					singleNodeMinerFactory.detect();
