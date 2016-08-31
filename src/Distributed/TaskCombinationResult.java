@@ -1,10 +1,12 @@
 package Distributed;
 
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPath;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
 import java.io.Serializable;
 
@@ -15,10 +17,12 @@ public class TaskCombinationResult implements Serializable {
     private String name;
     private MiningObject miningObject;
     private MinerType minerType;
+    private TaskRange taskRange;
     private TaskCombination taskCombination;
     private MinerNodeResults minerNodeResults;
     private MinerResultsPath minerResultsPath;
-    private MinerNodeResults minerNodeResults2;//network
+    private MinerNodeResults minerNetworkResults;//network
+    private MinerProtocolResults minerProtocolResults;
 
 //    private HashMap<TaskElement, INetworkMiner> allMiners = new HashMap<TaskElement, INetworkMiner>();
 
@@ -37,6 +41,14 @@ public class TaskCombinationResult implements Serializable {
 
     public void setMinerType(MinerType minerType) {
         this.minerType = minerType;
+    }
+
+    public TaskRange getTaskRange() {
+        return taskRange;
+    }
+
+    public void setTaskRange(TaskRange taskRange) {
+        this.taskRange = taskRange;
     }
 
     public MiningObject getMiningObject() {
@@ -59,16 +71,24 @@ public class TaskCombinationResult implements Serializable {
         return minerResultsPath;
     }
 
-    public MinerNodeResults getMinerNodeResults2() {
-        return minerNodeResults2;
+    public MinerNodeResults getMinerNetworkResults() {
+        return minerNetworkResults;
     }
 
-    public void setMinerNodeResults2(MinerNodeResults minerNodeResults2) {
-        this.minerNodeResults2 = minerNodeResults2;
+    public void setMinerNetworkResults(MinerNodeResults minerNetworkResults) {
+        this.minerNetworkResults = minerNetworkResults;
     }
 
     public void setMinerResultsPath(MinerResultsPath minerResultsPath) {
         this.minerResultsPath = minerResultsPath;
+    }
+
+    public MinerProtocolResults getMinerProtocolResults() {
+        return minerProtocolResults;
+    }
+
+    public void setMinerProtocolResults(MinerProtocolResults minerProtocolResults) {
+        this.minerProtocolResults = minerProtocolResults;
     }
 
     public TaskCombination getTaskCombination() {

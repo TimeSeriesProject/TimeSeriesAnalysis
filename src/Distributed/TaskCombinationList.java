@@ -36,29 +36,29 @@ public class TaskCombinationList implements Serializable {
         return true;
     }
 
-    public static boolean add1Task(TaskCombination task, boolean saveToFile) {
-        if (taskCombinationList == null)
-            taskCombinationList = new ArrayList<TaskCombination>();
-        if (taskCombinationList.contains(task)) {
-            return modify1Task(task, ITaskElementEventListener.TASK_MODIFY_ELSE);
-        } else {
-            taskCombinationList.add(task);
-            notifyTaskListener(ITaskElementEventListener.TASK_ADD, task, ITaskElementEventListener.TASK_MODIFY_ELSE);
-            return true;
-        }
-    }
+//    public static boolean add1Task(TaskCombination task, boolean saveToFile) {
+//        if (taskCombinationList == null)
+//            taskCombinationList = new ArrayList<TaskCombination>();
+//        if (taskCombinationList.contains(task)) {
+//            return modify1Task(task, ITaskElementEventListener.TASK_MODIFY_ELSE);
+//        } else {
+//            taskCombinationList.add(task);
+//            notifyTaskListener(ITaskElementEventListener.TASK_ADD, task, ITaskElementEventListener.TASK_MODIFY_ELSE);
+//            return true;
+//        }
+//    }
 
 //    public static boolean display1Task(TaskElement task, int displayType) {
 //        notifyTaskListener(ITaskElementEventListener.TASK_DISPLAY, task, ITaskElementEventListener.TASK_MODIFY_ELSE);
 //        return true;
 //    }
 
-    public static boolean modify1Task(TaskCombination task, int modify_type) {
-        if (!taskCombinationList.contains(task))
-            taskCombinationList.add(task);
-        notifyTaskListener(ITaskElementEventListener.TASK_MODIFY, task, modify_type);
-        return true;
-    }
+//    public static boolean modify1Task(TaskCombination task, int modify_type) {
+//        if (!taskCombinationList.contains(task))
+//            taskCombinationList.add(task);
+//        notifyTaskListener(ITaskElementEventListener.TASK_MODIFY, task, modify_type);
+//        return true;
+//    }
 
 //    private static void notifyTaskListener(int taskEventType, TaskElement task, int modify_type) {
 //        Iterator<ITaskElementEventListener> it = TaskElement.listeners.iterator();

@@ -3,6 +3,7 @@ package Distributed;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPath;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 
@@ -81,6 +82,7 @@ public class Client {
                     NetworkMinerFactory.getInstance();
                     TaskCombinationList.addListenerOnly(taskCombination, false);
                     switch (taskCombination.getMinerType()) {
+
                         case MiningType_SinglenodeOrNodePair:
                             dataPanel.sendLog("正在执行node中..." );//控制台输出
                             HashMap<TaskCombination, MinerNodeResults> nodeResults = NetworkMinerFactory.getInstance().
@@ -89,6 +91,7 @@ public class Client {
                             for (Map.Entry<TaskCombination, MinerNodeResults> entry : nodeResults.entrySet()) {
                                 nodeTask.setName(entry.getKey().getName());
                                 nodeTask.setMinerType(entry.getKey().getMinerType());
+                                nodeTask.setTaskRange(entry.getKey().getTaskRange());
                                 nodeTask.setMiningObject(MiningObject.fromString(entry.getKey().getMiningObject()));
                                 nodeTask.setMinerNodeResults(entry.getValue());
                             }
@@ -99,11 +102,28 @@ public class Client {
                             b = System.currentTimeMillis();
                             System.out.println("node返回时间：" + (b - a));
                             dataPanel.sendLog("node返回时间：" + (b - a));//控制台输出
-
                             break;
+
                         case MiningType_ProtocolAssociation:
-
+                            dataPanel.sendLog("正在执行protocol中..." );//控制台输出
+                            HashMap<TaskCombination, MinerProtocolResults> protocolResults = NetworkMinerFactory.getInstance().
+                                    startAllProtocolMinersDis(MiningObject.fromString(taskCombination.getMiningObject()));
+                            TaskCombinationResult protocolTask = new TaskCombinationResult();
+                            for (Map.Entry<TaskCombination, MinerProtocolResults> entry : protocolResults.entrySet()) {
+                                protocolTask.setName(entry.getKey().getName());
+                                protocolTask.setMinerType(entry.getKey().getMinerType());
+                                protocolTask.setMiningObject(MiningObject.fromString(entry.getKey().getMiningObject()));
+                                protocolTask.setMinerProtocolResults(entry.getValue());
+                            }
+                            a = System.currentTimeMillis();
+                            clientInit.sendResult(protocolTask);//将结果发送回去
+                            System.out.println("protocol结果已返回");
+                            dataPanel.sendLog("protocol结果已返回");//控制台输出
+                            b = System.currentTimeMillis();
+                            System.out.println("protocol返回时间：" + (b - a));
+                            dataPanel.sendLog("protocol返回时间：" + (b - a));//控制台输出
                             break;
+
                         case MiningType_Path:
                             dataPanel.sendLog("正在执行path中..." );//控制台输出
                             HashMap<TaskCombination, MinerResultsPath> pathResults = NetworkMinerFactory.getInstance().
@@ -125,6 +145,7 @@ public class Client {
                             dataPanel.sendLog("path返回时间：" + (b - a));//控制台输出
 
                             break;
+
                         case MiningTypes_WholeNetwork:
                             dataPanel.sendLog("正在执行network中..." );//控制台输出
                             HashMap<TaskCombination, MinerNodeResults> networkResults = NetworkMinerFactory.getInstance().
@@ -134,7 +155,7 @@ public class Client {
                                 networkTask.setName(entry.getKey().getName());
                                 networkTask.setMinerType(entry.getKey().getMinerType());
                                 networkTask.setMiningObject(MiningObject.fromString(entry.getKey().getMiningObject()));
-                                networkTask.setMinerNodeResults2(entry.getValue());
+                                networkTask.setMinerNetworkResults(entry.getValue());
                             }
                             a = System.currentTimeMillis();
                             clientInit.sendResult(networkTask);//将结果发送回去
@@ -144,6 +165,7 @@ public class Client {
                             System.out.println("network结果已返回：" + (b - a));
                             dataPanel.sendLog("network结果已返回：" + (b - a));//控制台输出
                             break;
+
                         default:
                             break;
                     }

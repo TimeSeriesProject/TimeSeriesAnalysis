@@ -336,6 +336,47 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 		return resultsMap;
 	}
 
+	public HashMap<TaskCombination, MinerProtocolResults> startAllProtocolMinersDis(MiningObject miningObject){
+		HashMap<TaskCombination, MinerProtocolResults>resultsMap=
+				new HashMap<TaskCombination,MinerProtocolResults>();
+		startMinerOneByOne(MinerType.MiningType_ProtocolAssociation,miningObject);
+		waitUtilAllMinerOver(MinerType.MiningType_ProtocolAssociation, miningObject,null,resultsMap,null);
+
+		return resultsMap;
+	}
+
+	public void showProtocolMinersDis(MiningObject miningObject, HashMap<TaskCombination, MinerProtocolResults> resultsMap){
+		Iterator<Entry<TaskCombination, MinerProtocolResults>>iterator=resultsMap.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<TaskCombination, MinerProtocolResults> entry=iterator.next();
+			TaskCombination taskCombination=entry.getKey();
+			if(!taskCombination.getMiningObject().equals(miningObject.toString())||
+					!taskCombination.getMinerType().equals(MinerType.MiningType_ProtocolAssociation))
+				continue;
+			for(TaskElement task:taskCombination.getTasks()){
+				switch (task.getMiningMethod()) {
+					case MiningMethods_SimilarityMining:
+						NetworkMinerProtocolAssSim minerSim =new NetworkMinerProtocolAssSim(task,null);
+						minerSim.getResults().setRetSim(resultsMap.get(taskCombination).getRetSim());
+						minerSim.getResults().setInputData(taskCombination.getDataItems());
+						minerSim.isOver.setIsover(true);
+						allMiners.put(task, minerSim);
+						break;
+					case MiningMethods_FrequenceItemMining:
+
+						NetworkMinerProtoclAssLine minerFPLine=new NetworkMinerProtoclAssLine(task, null);
+						minerFPLine.getResults().setRetFPLine(resultsMap.get(taskCombination).getRetFP());
+						minerFPLine.isOver.setIsover(true);
+						minerFPLine.getResults().setInputData(taskCombination.getDataItems());
+						allMiners.put(task, minerFPLine);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+	}
+
 	public HashMap<TaskCombination, MinerResultsPath> startAllPathMiners(MiningObject miningObject){
 		HashMap<TaskCombination, MinerResultsPath>resultsMap=
 				new HashMap<TaskCombination,MinerResultsPath>();
