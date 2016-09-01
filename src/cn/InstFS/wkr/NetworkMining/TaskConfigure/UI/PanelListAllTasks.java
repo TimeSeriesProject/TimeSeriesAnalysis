@@ -224,6 +224,12 @@ public class PanelListAllTasks extends JScrollPane implements ITaskElementEventL
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void onTaskAddedDis(TaskCombination task) {
+		// TODO Auto-generated method stub
+
+	}
 	
 	@Override
 	public void onTaskDeleted(TaskCombination task) {
