@@ -44,7 +44,6 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GradientPaint;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,6 +65,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -162,6 +162,9 @@ public class TimeSeriesChart1 extends Composite {
 				protocol1, protocol2);
 		JFreeChart initialChart = createChart(initialDataset, pp.getMapAB(),
 				chartname, null,protocol1, protocol2);
+		
+		((XYPlot) initialChart.getPlot()).getRangeAxis().setVisible(true);
+		
 
 		GridLayout ParentsLayout = new GridLayout();
 		ParentsLayout.numColumns = 1;
@@ -285,7 +288,7 @@ public class TimeSeriesChart1 extends Composite {
 			
 			org.eclipse.swt.graphics.Color swtcolor=new org.eclipse.swt.graphics.Color(this.getDisplay(),rgb);
 			colorLabel.setForeground(swtcolor);
-			//colorLabel.setFont(new Font("宋体",100,100));
+			/*colorLabel.setFont(new Font(this.getDisplay(),"宋体",30, SWT.NULL));*/
 			swtcolor.dispose();
 			
 			final int temp = j;
