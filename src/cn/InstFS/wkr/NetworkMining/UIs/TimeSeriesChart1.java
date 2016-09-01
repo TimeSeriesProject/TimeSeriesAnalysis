@@ -162,8 +162,8 @@ public class TimeSeriesChart1 extends Composite {
 				protocol1, protocol2);
 		JFreeChart initialChart = createChart(initialDataset, pp.getMapAB(),
 				chartname, null,protocol1, protocol2);
-		
-		((XYPlot) initialChart.getPlot()).getRangeAxis().setVisible(true);
+		//原图显示坐标轴
+		//((XYPlot) initialChart.getPlot()).getRangeAxis().setVisible(true);
 		
 
 		GridLayout ParentsLayout = new GridLayout();
