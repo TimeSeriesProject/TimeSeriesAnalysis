@@ -274,6 +274,8 @@ class NodeTimerTask extends TimerTask{
 				sequencePattern.patternMining();
 				setFrequentResults(results, sequencePattern,frequentItem);
 				break;
+			case MiningMethods_PartialCycle:
+				
 			default:
 				break;
 			}

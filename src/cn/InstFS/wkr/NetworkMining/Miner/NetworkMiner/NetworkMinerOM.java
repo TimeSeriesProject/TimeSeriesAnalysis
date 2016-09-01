@@ -16,6 +16,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
@@ -170,11 +171,16 @@ class OMTimerTask extends TimerTask{
 			tsaMethod=new AnormalyDetection(dataItems);
 		}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
 			//tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
+			//tsaMethod=new MultidimensionalOutlineDetection(dataItems);
 			tsaMethod=new PointPatternDetection(dataItems,2,10);
+			
 			results.getRetOM().setIslinkDegree(true);
 		}else{
 			throw new RuntimeException("方法不存在！");
 		}
+		
+		//tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+		
 		tsaMethod.TimeSeriesAnalysis();
 		results.getRetOM().setOutlies(tsaMethod.getOutlies());    //查找异常
 		results.getRetOM().setHasOutlies(false);

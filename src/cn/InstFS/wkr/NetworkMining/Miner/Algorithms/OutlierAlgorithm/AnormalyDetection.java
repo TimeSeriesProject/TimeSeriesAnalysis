@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +22,8 @@ public class AnormalyDetection implements IMinerOM {
     private double k=3.0;
     private DataItems di;
     private DataItems outlies;
+    private DataItems outDegree = new DataItems(); //异常度
+	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
     public AnormalyDetection(){}
     public AnormalyDetection(DataItems di){
     	this.di=di;
@@ -161,6 +164,15 @@ public class AnormalyDetection implements IMinerOM {
 	}
 	public void setDi(DataItems di) {
 		this.di = di;
+	}
+	
+	@Override
+	public DataItems getOutDegree() {
+		return outDegree;
+	}
+	@Override
+	public List<DataItems> getOutlinesSet() {
+		return outlinesSet;
 	}
 	
 }

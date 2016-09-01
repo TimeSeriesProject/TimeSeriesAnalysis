@@ -38,9 +38,10 @@ import weka.gui.beans.Startable;
  **/
 public class MultidimensionalOutlineDetection implements IMinerOM{
 	private DataItems dataItems = new DataItems();
-	private DataItems outlines = new DataItems();
 	private DataItems newItems = new DataItems(); //滑动平均后的数据
-	private List<DataItems> outlinesSet = new ArrayList<DataItems>();
+	private DataItems outlines = new DataItems(); //异常点
+	private DataItems outDegree = new DataItems(); //异常度
+	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
 	
 	private List<Pattern> patterns = new ArrayList<Pattern>();   //线段模式
 	private static int dataDimen = 4; //线段属性个数
@@ -50,8 +51,8 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	private static double patternThreshold = 0.1; //PointSegment线段化参数
 	private double mergerPrice = 0.05; //LinePattern线段化参数
 	
-	ArrayList<ArrayList<Double>> dataSet = new ArrayList<ArrayList<Double>>();
-	ArrayList<ArrayList<Double>> outlinSet = new ArrayList<ArrayList<Double>>(); //异常度矩阵
+	ArrayList<ArrayList<Double>> dataSet = new ArrayList<ArrayList<Double>>(); //数据集
+	//ArrayList<ArrayList<Double>> outlinSet = new ArrayList<ArrayList<Double>>(); //异常度矩阵
 	GMMParameter gmmParameter = new GMMParameter(); //高斯混合模型参数:pMiu,pPi,pSigma
 	
 	public MultidimensionalOutlineDetection(DataItems di){
@@ -84,7 +85,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	}
 	
 	/**异常检测过程**/
-	public DataItems OutlineDetection(){
+	public void OutlineDetection(){
 		//获得观测值dataSet	
 		for(int i=0;i<patterns.size();i++){
 			ArrayList<Double> data = new ArrayList<Double>();
@@ -99,10 +100,11 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		gmmParameter = EMGMM(dataSet, GuassK, dataDimen, "EMGMMCluster");
 		//计算没点的高斯距离并归一化
 		ArrayList<Double> distance = computeDistance(dataSet, gmmParameter); //最小高斯距离(1范数距离)
+		ArrayList<Double> degree = genDegree(dataSet, patterns, gmmParameter); //异常度(补全distance)
 		//outlines = genOutline(outlinSet); //使用异常度矩阵进行异常检测
-		outlines = genOutline1(distance); //不使用异常度矩阵，仅使用gmm模型进行异常检测
-		outlinesSet = genOutlinesSet(distance);
-		return outlines;
+		outlines = genOutline(distance); //不使用异常度矩阵，仅使用gmm模型进行异常检测
+		outlinesSet = genOutlinesSet(distance); //线段模式异常,每条线段异常为一个DataItems
+		outDegree = genOutDegree(degree); //异常度				
 	}
 
 	/**
@@ -168,11 +170,11 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		return indexList;
 	}
 	/**
-	 *@Title genOutline
+	 *@Title genOutline1
 	 *@Description 根据异常度矩阵获取异常线段(点)
 	 *@return DataItems
 	 */
-	public DataItems genOutline(ArrayList<ArrayList<Double>> outlinSet){
+	public DataItems genOutline1(ArrayList<ArrayList<Double>> outlinSet){
 		int outK = 20;
 		DataItems outline = new DataItems();
 		//对异常度矩阵聚类 kmeans
@@ -222,11 +224,11 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	 *@Description 根据gmm聚类结果获取异常线段(点)
 	 *@return DataItems
 	 */
-	public DataItems genOutline1(List<Double> dis){
+	public DataItems genOutline(List<Double> dis){
 		DataItems outline = new DataItems();
 		ArrayList<Integer> indexList = new ArrayList<Integer>();
 		for(int i=0;i<dis.size();i++){
-			if(dis.get(i)>2){
+			if(dis.get(i)>3){
 				indexList.add(i);
 			}
 		}
@@ -274,28 +276,74 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		return outSet;
 	}
 	/**
+	 * @Title
+	 * @Description 得到数据的异常度(用距离表示)
+	 * @return DataItems*/
+	public DataItems genOutDegree(List<Double> degree){
+		DataItems outdegree = new DataItems();
+		
+		for(int i=0;i<degree.size();i++){
+			Date time = dataItems.getTime().get(i);
+			String data = String.valueOf(degree.get(i));
+			outdegree.add1Data(time, data);
+		}
+		return outdegree;
+	}
+	/**
 	 *@Title computeDistance
 	 *@Description 计算每个数据点到混合高斯模型的最小距离  |x-pMiu|/pSigma
 	 *@return ArrayList<Double>
-	 *@throws **/
+	 */
 	public ArrayList<Double> computeDistance(ArrayList<ArrayList<Double>> dataSet,GMMParameter parameter){		
 		ArrayList<Double> distance = new ArrayList<Double>();
 		for(int i=0;i<dataSet.size();i++){
 			ArrayList<Double> eveDis = new ArrayList<Double>();
 			for(int j=0;j<GuassK;j++){				
+				ArrayList<Double> dimenList = new ArrayList<Double>();
 				double d1 = 0;
 				for(int k=0;k<dataDimen;k++){
  					double diff = dataSet.get(i).get(k) - parameter.getpMiu().get(j).get(k);
  					double sigma = parameter.getpSigma().get(j).get(k);
- 					double d = diff/sigma;
- 					d1 += d;
+ 					double d = Math.abs(diff)/sigma;
+ 					dimenList.add(d); 					
  				}
-				eveDis.add(d1/dataDimen);
+				d1 = getMaxDis(dimenList);
+				eveDis.add(d1);
 			}
 			double dmin = getMinDis(eveDis);			
 			distance.add(dmin);
 		}
 		return distance;
+	}
+
+	/**
+	 *@Title genDegree
+	 *@Description 生成异常度,即补全distance,对同一线段的点的异常度设为该线段的高斯距离
+	 *@return ArrayList<Double>
+	 */
+	public ArrayList<Double> genDegree(ArrayList<ArrayList<Double>> dataSet,List<Pattern> patterns,GMMParameter parameter){		
+		ArrayList<Double> degree = new ArrayList<Double>();
+		for(int i=0;i<dataSet.size();i++){
+			ArrayList<Double> eveDis = new ArrayList<Double>();
+			for(int j=0;j<GuassK;j++){				
+				ArrayList<Double> dimenList = new ArrayList<Double>();
+				double d1 = 0;
+				for(int k=0;k<dataDimen;k++){
+ 					double diff = dataSet.get(i).get(k) - parameter.getpMiu().get(j).get(k);
+ 					double sigma = parameter.getpSigma().get(j).get(k);
+ 					double d = Math.abs(diff)/sigma;
+ 					dimenList.add(d);
+ 					
+ 				}
+				d1 = getMaxDis(dimenList);
+				eveDis.add(d1);
+			}
+			double dmin = getMinDis(eveDis);
+			for(int k=0;k<patterns.get(i).getLen();k++){
+				degree.add(dmin);
+			}
+		}
+		return degree;
 	}
 
 	
@@ -453,6 +501,19 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	}
 	public void setNewItems(DataItems newItems) {
 		this.newItems = newItems;
+	}
+	
+	public DataItems getOutDegree() {
+		return outDegree;
+	}
+	public void setOutDegree(DataItems outDegree) {
+		this.outDegree = outDegree;
+	}
+	public List<DataItems> getOutlinesSet() {
+		return outlinesSet;
+	}
+	public void setOutlinesSet(List<DataItems> outlinesSet) {
+		this.outlinesSet = outlinesSet;
 	}
 	
 	/*****************************************以下为计算工具***********************************************/

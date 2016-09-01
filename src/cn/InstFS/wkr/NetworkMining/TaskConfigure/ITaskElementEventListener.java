@@ -27,6 +27,7 @@ public interface ITaskElementEventListener extends EventListener {
 	public void onTaskToDisplay(TaskElement task);
 	
 	public void onTaskAdded(TaskCombination task);
+	public void onTaskAddedDis(TaskCombination task);
 	public void onTaskDeleted(TaskCombination task);
 	public void onTaskModified(TaskCombination task, int modify_type);
 	public void onTaskToDisplay(TaskCombination task);

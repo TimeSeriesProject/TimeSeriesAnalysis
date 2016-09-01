@@ -20,6 +20,8 @@ public class PointPatternDetection implements IMinerOM{
 	private double patternThreshold ;
 	private int neighborK;//计算模式P的K-邻域中的k
 	private DataItems outlies;
+	private DataItems outDegree = new DataItems(); //异常度
+	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
 	
 	public PointPatternDetection(DataItems dataItems,int densityK,int neghborK){
 		this.dataItems=dataItems;
@@ -201,4 +203,13 @@ public class PointPatternDetection implements IMinerOM{
 	public DataItems getOutlies() {
 		return outlies;
 	}
+	@Override
+	public DataItems getOutDegree() {
+		return outDegree;
+	}
+	@Override
+	public List<DataItems> getOutlinesSet() {
+		return outlinesSet;
+	}
+	
 }

@@ -896,7 +896,7 @@ public class nodePairReader implements IReader {
 			String fileName = fileDay+".csv";
 			TextUtils textUtils=new TextUtils();
 			textUtils.setTextPath(filePath+"\\"+ fileName);
-			System.out.println("readFile:"+ filePath+"\\"+ fileName);
+//			System.out.println("readFile:"+ filePath+"\\"+ fileName);
 
 			String header=textUtils.readByrow();
 			if (header == null){

@@ -22,6 +22,8 @@ public class TEOPartern implements IMinerOM{
 	private List<Pattern> patterns;       //TEO 线段模式
 	private int densityK;
 	private DataItems outlies;
+	private DataItems outDegree = new DataItems(); //异常度
+	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
 	
 	private double mergeThreshold;      //合并代价阈值
 	public TEOPartern(DataItems dataItems,int len,int operatorLen,int densityK){
@@ -556,5 +558,13 @@ public class TEOPartern implements IMinerOM{
 	@Override
 	public DataItems getOutlies() {
 		return outlies;
+	}
+	@Override
+	public DataItems getOutDegree() {
+		return outDegree;
+	}
+	@Override
+	public List<DataItems> getOutlinesSet() {
+		return outlinesSet;
 	}
 }

@@ -15,6 +15,11 @@ public class MovingAverage {
 	private int dataNum;
 	private DataItems dataItems = new DataItems();
 	private DataItems newItems = new DataItems();
+	public MovingAverage(DataItems di){
+		this.dataItems = di;
+		dataNum = di.getLength();
+		run();
+	}
 	public MovingAverage(DataItems di,int k){
 		this.dataItems = di;
 		this.piontK = k;
