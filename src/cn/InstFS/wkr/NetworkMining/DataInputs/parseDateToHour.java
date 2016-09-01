@@ -11,8 +11,8 @@ public class parseDateToHour {
 	public parseDateToHour(Date date) {
 		// TODO Auto-generated constructor stub
 		Calendar cal = Calendar.getInstance();
-		cal.set(2014, 9, 1, 0, 0, 0);
-		Date date2 = cal.getTime();
+		cal.set(2016, 4, 1, 0, 0, 0);
+		Date date2 = new Date(cal.getTimeInMillis()/1000 * 1000);
 		long diff = date.getTime()-date2.getTime();
 		long hours = diff/(1000*3600);
 		this.hour =(int) hours;
