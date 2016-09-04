@@ -920,7 +920,7 @@ public class nodePairReader implements IReader {
 
 			while((line=textUtils.readByrow())!=null){
 				columns=line.split(",");
-				int time=Integer.parseInt(columns[TimeColIndex]) + 24*3600*k; //单位为s
+				long time=Integer.parseInt(columns[TimeColIndex]) + (long)24*3600*k; //单位为s
 				Date timeDate = parseTime(time, startDay);
 
 				if (isReadBetween) {

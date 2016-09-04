@@ -654,7 +654,7 @@ public class CWNetworkReader  implements IReader{
 		for(int i=0;i<matrixList.size();i++)
 		{
 			long startTime =startDate.getTime();
-			Date date =new Date(startTime+i*1000*task.getGranularity());
+			Date date =new Date(startTime+(long)i*1000*task.getGranularity()); // 注意int溢出
 			dataItems.add1Data(date, String.valueOf(calCluster(matrixList.get(i))));
 		}
 		return dataItems;
@@ -743,7 +743,7 @@ public class CWNetworkReader  implements IReader{
 		for(int i=0;i<matrixList.size();i++)
 		{
 			long startTime =startDate.getTime();
-			Date date =new Date(startTime+i*1000*task.getGranularity());
+			Date date =new Date(startTime+(long)i*1000*task.getGranularity());
 			dataItems.add1Data(date, String.valueOf(calDiameter(matrixList.get(i))));
 		}
 		return dataItems;
