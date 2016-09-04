@@ -351,16 +351,18 @@ public class TimeSeriesChart1 extends Composite {
 
 			while (it.hasNext()) {
 				XYPolygonAnnotation xypolygonannotation = new XYPolygonAnnotation(
-						(double[]) it.next(), null, null,modelColor.get(modelname));// new
+						(double[]) it.next(), new BasicStroke(0.5F), new Color(255,255,255,100), modelColor.get(modelname));// new
 																			// Color(200,
 																			// 200,
 																			// 255,
 																			// 100)
 				xypolygonannotation.setToolTipText("Count:" + modeldata.size());
 				
+				
 				list.add(xypolygonannotation);
 				barrenderer
 						.addAnnotation(xypolygonannotation, Layer.BACKGROUND);
+			//	xypolygonannotation.
 			}
 
 
