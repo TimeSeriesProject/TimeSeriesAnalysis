@@ -5,8 +5,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.NormalDistributionTest;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
@@ -23,6 +25,7 @@ public class AnormalyDetection implements IMinerOM {
     private DataItems di;
     private DataItems outlies;
     private DataItems outDegree = new DataItems(); //异常度
+    private Map<Integer, Double> degreeMap = new HashMap<Integer, Double>();
 	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
     public AnormalyDetection(){}
     public AnormalyDetection(DataItems di){
@@ -47,7 +50,7 @@ public class AnormalyDetection implements IMinerOM {
     	if(di==null){
     		return;
     	}
-    	HashMap<Long,Long> slice = new HashMap<Long, Long>();
+    	HashMap<Long,Long> slice = new HashMap<Long, Long>(); //原始数据，map<i,data>
     	List<String> data = di.data;
     	List<Date> time = di.time;
     	outlies = new DataItems();
@@ -68,6 +71,7 @@ public class AnormalyDetection implements IMinerOM {
     			outlies.add1Data(time.get(i), data.get(i));
     		}
     	}
+     	outDegree = mapToDegree(degreeMap);
     }
     
     public HashMap<Long,Long> detect(HashMap<Long,Long> slice){
@@ -103,7 +107,17 @@ public class AnormalyDetection implements IMinerOM {
                             outlier.put((long) index,slice.get((long) index));
                             slice.put((long)index, (long)normalDistributionTest.getMean());
                         }
+                        double mean = normalDistributionTest.getMean();                        
+                        double stv;
+                    	if(normalDistributionTest.getStdeviation()<=0){
+                        	stv = 1e-3;
+                        }else {
+        					stv = normalDistributionTest.getStdeviation();
+        				}
+                    	double distance = Math.abs(target - mean)/stv;
+                        degreeMap.put(index, distance);
                     }
+                    
                     break;
                 }
             }
@@ -112,7 +126,81 @@ public class AnormalyDetection implements IMinerOM {
         }
         return outlier;
     }
-
+    /**@author LYH
+     * 滑动高斯检测，滑动窗口不重叠
+     * 不实用，窗口太大时K-S检验运行时间太长
+     * */
+    public HashMap<Long,Long> detect1(HashMap<Long,Long> slice){
+        if(slice == null){
+            return null;
+        }
+        int size = slice.size();
+        if(size < 1){
+            return null;
+        }
+        HashMap<Long,Long> outlier = new HashMap<>();
+        long max = getmaxKey(slice);
+        double[] data;
+        int index = initWindowSize;
+        int nowWindowSize = initWindowSize;
+        while(index<=max) {
+            data = new double[nowWindowSize]; //窗口内数据
+            for (int i = index-nowWindowSize; i < index; i++) {
+                if(slice.get((long) i)==null){
+                    data[i-index+nowWindowSize] = 0.0;
+                }else{
+                    data[i-index+nowWindowSize] = (double)slice.get((long)i);
+                }
+            }
+            NormalDistributionTest normalDistributionTest = new NormalDistributionTest(data,k);
+            if(!normalDistributionTest.isNormalDistri()){
+            
+            	index += expWindowSize;
+                nowWindowSize+=expWindowSize;
+            }else{               
+            	double mean = normalDistributionTest.getMean();
+                double stv;
+            	if(normalDistributionTest.getStdeviation()<=0){
+                	stv = 1e-3;
+                }else {
+					stv = normalDistributionTest.getStdeviation();
+				}
+            	for(int i=index-nowWindowSize;i<index;i++){
+                	if (slice.get((long) i)!=null) {						
+						double target = (double)slice.get((long)i);
+	                    if(!normalDistributionTest.isDawnToThisDistri(target)){
+	                        outlier.put((long)i,slice.get((long)i));
+	                        slice.put((long)i, (long)normalDistributionTest.getMean());
+	                    }
+	                    double distance = Math.abs(data[i-index+nowWindowSize] - mean)/stv;
+	                    degreeMap.put(i, distance);
+                    }  
+                }                
+                index = index + nowWindowSize;
+                nowWindowSize=initWindowSize;                
+            }            
+        }
+        
+        //从后面向前滑动一个窗口
+        data = new double[initWindowSize];
+        for(int i=(int)max-initWindowSize;i<max;i++){        	
+        	data[i+initWindowSize-(int)max] = slice.get((long)i);
+        }
+        NormalDistributionTest normalDistributionTest = new NormalDistributionTest(data,k);
+        double mean = normalDistributionTest.getMean();
+        double stv;
+        if(normalDistributionTest.getStdeviation()<=0){
+        	stv = 1e-3;
+        }else {
+			stv = normalDistributionTest.getStdeviation();
+		}
+        for(int i=(int)max-initWindowSize;i<max;i++){
+        	double distance = (slice.get((long)i) - mean)/stv;
+        	degreeMap.put(i, distance);        	
+        }
+        outDegree = mapToDegree(degreeMap);
+        return outlier;
+    }
     private long getmaxKey(HashMap<Long, Long> slice) {
         Iterator<Long> iterator = slice.keySet().iterator();
         long max = 0;
@@ -124,7 +212,20 @@ public class AnormalyDetection implements IMinerOM {
         }
         return max;
     }
-
+    private DataItems mapToDegree(Map<Integer, Double> map){
+    	DataItems degree = new DataItems();
+    	
+    	for(int i=0;i<di.getLength();i++){
+    		if(map.get(i) == null){
+    			degree.add1Data(di.getTime().get(i), "0");	
+    		}
+    		else{
+    			degree.add1Data(di.getTime().get(i),String.valueOf(map.get(i)));
+    		}
+    	}
+    	
+    	return degree;
+    }
     @Override
     public DataItems getOutlies() {
     	return outlies;

@@ -72,7 +72,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
 
         for(int i=0;i < result.length;i++)
         {
-            result[i] = denoisedslicezz[i]-original[i];
+            result[i] = denoisedslicezz[i]-original[i];                        
         }
 
         NormalDistributionTest nbt = new NormalDistributionTest(result,varK);
@@ -83,6 +83,16 @@ public class FastFourierOutliesDetection implements IMinerOM {
             	outlies.add1Data(dataItems.getTime().get(i), original[i]+"");
             	//System.out.println(original[i]);
             }
+            //计算异常度（高斯距离）
+            double mean = nbt.getMean();
+            double stv;
+            if(nbt.getStdeviation()<=0){
+            	stv = 1e-3;
+            }else{
+            	stv = nbt.getStdeviation();
+            }
+            double distance = Math.abs(result[i]-mean)/stv;
+            outDegree.add1Data(dataItems.getTime().get(i),String.valueOf(distance));
         }
     }
     
@@ -128,7 +138,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
     }
 
     /**
-     * 傅里叶变换
+     * 傅里叶滤波
      * @param silce
      * @param threshold
      * @return
@@ -206,7 +216,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
 			}
 			DataItems prediction_curTime = null;
 			curData= FFTfilter(dataSlice,amplitudeRatio);
-			prediction_curTime = new DataItems();
+			prediction_curTime = new DataItems(); //当前时间段内的数据
 			prediction_curTime.setTime(timeSlice);
 			prediction_curTime.setData(curData);
 			AnomalyDetection(prediction_curTime);
@@ -222,9 +232,8 @@ public class FastFourierOutliesDetection implements IMinerOM {
 		curData= FFTfilter(dataSlice,amplitudeRatio);
 		prediction_curTime.setTime(timeSlice);
 		prediction_curTime.setData(curData);
-		AnomalyDetection(prediction_curTime);
-		
-		int outlength=outlies.getLength();
+		AnomalyDetection(prediction_curTime);		
+		/*int outlength=outlies.getLength();
 		int dataLen=time.size();
 		int i=0;
 		for(int j=0;j<outlength;j++){
@@ -234,7 +243,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
 					break;
 				}
 			}
-		}
+		}*/
 		
 	}
 

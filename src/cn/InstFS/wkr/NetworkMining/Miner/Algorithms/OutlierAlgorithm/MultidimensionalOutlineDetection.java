@@ -12,6 +12,7 @@ import lineAssociation.BottomUpLinear;
 import lineAssociation.Linear;
 import oracle.net.aso.d;
 import WaveletUtil.VectorDistance;
+import ca.pfv.spmf.algorithms.sort.Sort;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.GMMParameter;
@@ -46,10 +47,12 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	private List<Pattern> patterns = new ArrayList<Pattern>();   //线段模式
 	private static int dataDimen = 4; //线段属性个数
 	private static int GuassK = 4; //混合高斯中高斯个数
-	private int piontK = 5; //滑动平均参数，滑动窗口大小	
+	private static double diff = 0.2; //判断是否为异常的异常度差值,如果阈值一侧的数据与前一个数据的差值小于diff,则阈值向前移,直到差值大于diff
+	private int piontK = 3; //滑动平均参数，滑动窗口大小	
 	private static int densityK = 2; //PointSegment线段化参数，找极值点的参数
 	private static double patternThreshold = 0.1; //PointSegment线段化参数
 	private double mergerPrice = 0.05; //LinePattern线段化参数
+	private double threshold; //异常度阈值
 	
 	ArrayList<ArrayList<Double>> dataSet = new ArrayList<ArrayList<Double>>(); //数据集
 	//ArrayList<ArrayList<Double>> outlinSet = new ArrayList<ArrayList<Double>>(); //异常度矩阵
@@ -100,11 +103,12 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		gmmParameter = EMGMM(dataSet, GuassK, dataDimen, "EMGMMCluster");
 		//计算没点的高斯距离并归一化
 		ArrayList<Double> distance = computeDistance(dataSet, gmmParameter); //最小高斯距离(1范数距离)
-		ArrayList<Double> degree = genDegree(dataSet, patterns, gmmParameter); //异常度(补全distance)
+		ArrayList<Double> nordis = normalization(distance);
+		ArrayList<Double> degree = genDegree(distance, patterns); //异常度(补全distance)
 		//outlines = genOutline(outlinSet); //使用异常度矩阵进行异常检测
-		outlines = genOutline(distance); //不使用异常度矩阵，仅使用gmm模型进行异常检测
-		outlinesSet = genOutlinesSet(distance); //线段模式异常,每条线段异常为一个DataItems
-		outDegree = genOutDegree(degree); //异常度				
+		outDegree = genOutDegree(degree); //把degree转换为DataItems格式
+		outlines = genOutline(degree); //根据异常度，获得异常点
+		outlinesSet = genOutlinesSet(distance); //线段模式异常,每条线段异常为一个DataItems						
 	}
 
 	/**
@@ -221,19 +225,37 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	}
 	/**
 	 *@Title genOutline
-	 *@Description 根据gmm聚类结果获取异常线段(点)
+	 *@Description 根据gmm聚类结果获取异常点
 	 *@return DataItems
 	 */
-	public DataItems genOutline(List<Double> dis){
+	public DataItems genOutline(List<Double> degree){
 		DataItems outline = new DataItems();
+		List<Double> list = new ArrayList<Double>();
+		list.addAll(degree);
 		ArrayList<Integer> indexList = new ArrayList<Integer>();
-		for(int i=0;i<dis.size();i++){
-			if(dis.get(i)>3){
-				indexList.add(i);
+		int len = degree.size();
+		Collections.sort(list);
+		Collections.reverse(list);
+		threshold = list.get((int)(len*0.02));
+		
+		for(int i=(int)(len*0.02);i>0;i--){
+			if(list.get(i)<2.5){
+				continue;
+			}
+			if((list.get(i)-threshold)<diff){
+				threshold = list.get(i);
+			}else{
+				threshold = list.get(i);
+				break;
 			}
 		}
-		
-		//找出异常模式(异常点)
+		System.out.println("异常度阈值是："+threshold);
+		for(int i=0;i<len;i++){
+			if(degree.get(i)>=threshold){
+				outline.add1Data(dataItems.getElementAt(i));
+			}
+		}
+		/*//找出异常模式(异常点)
 		for(int i=0;i<indexList.size();i++){
 			DataItem dataItem = new DataItem();
 			List<Date> time = dataItems.getTime();
@@ -244,7 +266,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 				outline.add1Data(time.get(j),data.get(j));
 			}
 			System.out.println("异常为线段"+indexList.get(i)+"的时间跨度为:"+patterns.get(indexList.get(i)).getLen());
-		}
+		}*/
 		return outline;
 	}
 	/**
@@ -256,7 +278,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		List<DataItems> outSet = new ArrayList<DataItems>();
 		ArrayList<Integer> indexList = new ArrayList<Integer>();
 		for(int i=0;i<dis.size();i++){
-			if(dis.get(i)>3){
+			if(dis.get(i)>=threshold){
 				indexList.add(i);
 			}
 		}
@@ -286,7 +308,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 			Date time = dataItems.getTime().get(i);
 			String data = String.valueOf(degree.get(i));
 			outdegree.add1Data(time, data);
-		}
+		}		
 		return outdegree;
 	}
 	/**
@@ -299,16 +321,17 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		for(int i=0;i<dataSet.size();i++){
 			ArrayList<Double> eveDis = new ArrayList<Double>();
 			for(int j=0;j<GuassK;j++){				
-				ArrayList<Double> dimenList = new ArrayList<Double>();
+				//ArrayList<Double> dimenList = new ArrayList<Double>();
 				double d1 = 0;
 				for(int k=0;k<dataDimen;k++){
  					double diff = dataSet.get(i).get(k) - parameter.getpMiu().get(j).get(k);
  					double sigma = parameter.getpSigma().get(j).get(k);
  					double d = Math.abs(diff)/sigma;
- 					dimenList.add(d); 					
+ 					d1 += d;
+ 					//dimenList.add(d); 					
  				}
-				d1 = getMaxDis(dimenList);
-				eveDis.add(d1);
+				//d1 = getMaxDis(dimenList);
+				eveDis.add(d1/dataDimen);
 			}
 			double dmin = getMinDis(eveDis);			
 			distance.add(dmin);
@@ -321,28 +344,14 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	 *@Description 生成异常度,即补全distance,对同一线段的点的异常度设为该线段的高斯距离
 	 *@return ArrayList<Double>
 	 */
-	public ArrayList<Double> genDegree(ArrayList<ArrayList<Double>> dataSet,List<Pattern> patterns,GMMParameter parameter){		
+	public ArrayList<Double> genDegree(ArrayList<Double> dis,List<Pattern> patterns){		
 		ArrayList<Double> degree = new ArrayList<Double>();
-		for(int i=0;i<dataSet.size();i++){
-			ArrayList<Double> eveDis = new ArrayList<Double>();
-			for(int j=0;j<GuassK;j++){				
-				ArrayList<Double> dimenList = new ArrayList<Double>();
-				double d1 = 0;
-				for(int k=0;k<dataDimen;k++){
- 					double diff = dataSet.get(i).get(k) - parameter.getpMiu().get(j).get(k);
- 					double sigma = parameter.getpSigma().get(j).get(k);
- 					double d = Math.abs(diff)/sigma;
- 					dimenList.add(d);
- 					
- 				}
-				d1 = getMaxDis(dimenList);
-				eveDis.add(d1);
-			}
-			double dmin = getMinDis(eveDis);
+		for(int i=0;i<dis.size();i++){			
 			for(int k=0;k<patterns.get(i).getLen();k++){
-				degree.add(dmin);
+				degree.add(dis.get(i));
 			}
 		}
+		degree.add(dis.get(dis.size()-1));
 		return degree;
 	}
 
