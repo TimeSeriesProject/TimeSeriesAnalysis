@@ -128,7 +128,7 @@ public class NetworkMinerNode implements INetworkMiner{
 		this.displayer = displayer;		
 	}
 
-	protected static MinerFactorySettings getMinerFactorySettings(TaskCombination taskCombination) {
+	public static MinerFactorySettings getMinerFactorySettings(TaskCombination taskCombination) {
 		MinerFactorySettings settings = null;
 		switch (taskCombination.getMinerType()) {
 			case MiningType_SinglenodeOrNodePair:
@@ -274,6 +274,8 @@ class NodeTimerTask extends TimerTask{
 				sequencePattern.patternMining();
 				setFrequentResults(results, sequencePattern,frequentItem);
 				break;
+			case MiningMethods_PartialCycle:
+				
 			default:
 				break;
 			}

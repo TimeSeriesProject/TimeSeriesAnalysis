@@ -44,7 +44,6 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GradientPaint;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,6 +65,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -157,11 +157,14 @@ public class TimeSeriesChart1 extends Composite {
 		// 创建原始图
 		String chartname =" TimeSeriesChart" ;
 		String subtitle ="Confidence("+protocol1+","+protocol2+"):"
-				+ pp.confidence  ;
+				+ String.format("%.4f",pp.confidence)  ;
 		chart = createChart(normalizationDataset, pp.getMapAB(), chartname,subtitle,
 				protocol1, protocol2);
 		JFreeChart initialChart = createChart(initialDataset, pp.getMapAB(),
 				chartname, null,protocol1, protocol2);
+		//原图显示坐标轴
+		//((XYPlot) initialChart.getPlot()).getRangeAxis().setVisible(true);
+		
 
 		GridLayout ParentsLayout = new GridLayout();
 		ParentsLayout.numColumns = 1;
@@ -203,12 +206,6 @@ public class TimeSeriesChart1 extends Composite {
 		frame.setLayoutData(griddata);
 		// frame.pack();
 
-		// 初始化模式虚线数据集
-		/*
-		 * createLineDataset(dataitems1, dataitems2, pp.getMapAB(),
-		 * chart.getCategoryPlot(), controller); slidingModelDataset = new
-		 * SlidingCategoryDataset(modelDataSet, 0, 30);
-		 */
 		// 初始化控制器父面板
 		controller = new Group(this, SWT.None);
 		GridLayout ControlLayout = new GridLayout();
@@ -228,37 +225,79 @@ public class TimeSeriesChart1 extends Composite {
 		Object[] s = pp.getMapAB().keySet().toArray();
 		modelnum = s.length;
 		int[] model = new int[modelnum];
+		int[] modelcount=new int[modelnum];
 		for (int i = 0; i < modelnum; i++)
 
 		{
 			model[i] = Integer.parseInt("" + s[i]);
-			System.out.println("model:" + Integer.parseInt("" + s[i]));
+			modelcount[i]=pp.getMapAB().get(s[i]).size();
+			//System.out.println("model:" + Integer.parseInt("" + s[i])+" count"+modelcount[i]);
 		}
-		model = sort(model);
+		
+	/*	System.out.println("检测排序begin... ");
+		System.out.println("model	count");
+		for (int i = 0; i < modelnum; i++)
+		{
+			
+			System.out.println(model[i]+"	"+modelcount[i]);
+		}
+		*/
+		
+		
+		
+		
+		/*
+		 *  model 模式   modelcount 模式次数
+		 *  此段对模式次数进行排序
+		 */
+
+		for(int i=0;i<modelnum;i++){
+			int maxmodel=model[i];
+			int maxmodelcount=modelcount[i];
+			for(int j=i;j<modelnum;j++){
+				if(modelcount[j]>maxmodelcount){
+					maxmodel=model[j];
+					model[j]=model[i];
+					model[i]=maxmodel;
+					
+					maxmodelcount=modelcount[j];
+					modelcount[j]=modelcount[i];
+					modelcount[i]=maxmodelcount;
+				}
+			}
+		}
+		
+
+		
+		
+		
 		isModelSelected = new HashMap<String, Integer>();
 		for (int i = 0; i < model.length; i++) {
 			isModelSelected.put("" + model[i], 0);
 		}
 
 		final Button[] button = new Button[modelnum];
-		for (int j = 1; j < modelnum; j++) {
+		for (int j = 0; j < modelnum; j++) {
 			Color aColor=getColor(color++);
 			modelColor.put(""+model[j], aColor);
 			button[j] = new Button(controller, SWT.CHECK);
 			Label colorLabel=new Label(controller,SWT.NULL);
-			button[j].setText("模式:" + model[j]);
+			button[j].setText("模式:" + model[j]+"("+modelcount[j]+")");
 			colorLabel.setText("——	");
 			RGB rgb=new RGB(aColor.getRed(),aColor.getGreen(),aColor.getBlue());
 			
 			org.eclipse.swt.graphics.Color swtcolor=new org.eclipse.swt.graphics.Color(this.getDisplay(),rgb);
 			colorLabel.setForeground(swtcolor);
+			/*colorLabel.setFont(new Font(this.getDisplay(),"宋体",30, SWT.NULL));*/
 			swtcolor.dispose();
 			
 			final int temp = j;
 			button[j].addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					// System.out.println("model "+.getText()+"is selected!");
-					String key = (button[temp].getText().split(":")[1]);
+					//注意：易错点  button文本为"模式:5(10)" 意思为模式5出现了10次，以下挖出模式key,直接根据“（”会报错，解决办法使用\\(
+					String key = (button[temp].getText().split(":")[1].split("\\(")[0]);
+					 System.out.println("key ="+key);
 					// System.out.println("model key="+key);
 					if (button[temp].getSelection()) {
 
@@ -292,6 +331,11 @@ public class TimeSeriesChart1 extends Composite {
 
 	}
 
+	private int[] sort(int[] model, int[] modelcount) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/*
 	 * 模式线段显示绘图控制，只显示选中的按钮进行绘制线段
 	 */
@@ -307,16 +351,18 @@ public class TimeSeriesChart1 extends Composite {
 
 			while (it.hasNext()) {
 				XYPolygonAnnotation xypolygonannotation = new XYPolygonAnnotation(
-						(double[]) it.next(), null, null,modelColor.get(modelname));// new
+						(double[]) it.next(), new BasicStroke(0.5F), new Color(255,255,255,100), modelColor.get(modelname));// new
 																			// Color(200,
 																			// 200,
 																			// 255,
 																			// 100)
 				xypolygonannotation.setToolTipText("Count:" + modeldata.size());
 				
+				
 				list.add(xypolygonannotation);
 				barrenderer
 						.addAnnotation(xypolygonannotation, Layer.BACKGROUND);
+			//	xypolygonannotation.
 			}
 
 

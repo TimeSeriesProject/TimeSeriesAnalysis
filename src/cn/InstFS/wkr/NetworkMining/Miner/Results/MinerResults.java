@@ -23,7 +23,7 @@ public class MinerResults {
 	private MinerProtocolResults retProtocol;
 	private MinerResultsStatistics retStatistics;
 	private MinerResultsPath retPath;
-	
+	private MinerResultsPartialCycle retPartialCycle;
 	
 	public MinerResults(INetworkMiner miner) {
 		setMiner(miner);
@@ -38,6 +38,7 @@ public class MinerResults {
 		retNode=new MinerNodeResults();
 		retProtocol=new MinerProtocolResults();
 		retStatistics=new MinerResultsStatistics();
+		retPartialCycle = new MinerResultsPartialCycle();
 	}
 	
 	public MinerResultsFP getRetFP() {
@@ -155,6 +156,14 @@ public class MinerResults {
 		this.retSim = retSim;
 	}
 
+	public MinerResultsPartialCycle getRetPartialCycle() {
+		return retPartialCycle;
+	}
+
+	public void setRetPartialCycle(MinerResultsPartialCycle retPartialCycle) {
+		this.retPartialCycle = retPartialCycle;
+	}
+	
 	
 }
 

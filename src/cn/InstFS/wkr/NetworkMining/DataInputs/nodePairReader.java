@@ -896,7 +896,7 @@ public class nodePairReader implements IReader {
 			String fileName = fileDay+".csv";
 			TextUtils textUtils=new TextUtils();
 			textUtils.setTextPath(filePath+"\\"+ fileName);
-			System.out.println("readFile:"+ filePath+"\\"+ fileName);
+//			System.out.println("readFile:"+ filePath+"\\"+ fileName);
 
 			String header=textUtils.readByrow();
 			if (header == null){
@@ -920,7 +920,7 @@ public class nodePairReader implements IReader {
 
 			while((line=textUtils.readByrow())!=null){
 				columns=line.split(",");
-				int time=Integer.parseInt(columns[TimeColIndex]) + 24*3600*k; //单位为s
+				long time=Integer.parseInt(columns[TimeColIndex]) + (long)24*3600*k; //单位为s
 				Date timeDate = parseTime(time, startDay);
 
 				if (isReadBetween) {
