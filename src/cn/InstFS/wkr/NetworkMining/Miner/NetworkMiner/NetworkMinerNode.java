@@ -30,6 +30,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.SingleNodeOrNodePairMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
@@ -271,6 +272,7 @@ class NodeTimerTask extends TimerTask{
 
 				Map<Integer, List<String>>frequentItem=sequencePattern.
 						printClusterLabelTOLines(clusterItems, dataItems);
+				List<LineElement> lineElements = sequencePattern.getLineElement(frequentItem);
 				sequencePattern.patternMining();
 				setFrequentResults(results, sequencePattern,frequentItem);
 				break;
