@@ -2,6 +2,7 @@ package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +22,9 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.AggregateMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
-import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
+import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
+import ec.tstoolkit.utilities.Comparator;
 /**
  * 
  * @author 艾长青 
@@ -430,5 +433,34 @@ public class SequencePatternsDontSplit {
 	}
 	public void setHasFreItems(boolean hasFreItems) {
 		this.hasFreItems = hasFreItems;
+	}
+	public List<LineElement> getLineElement(
+			Map<Integer, List<String>> frequentItem) {
+
+		List<LineElement> list = new ArrayList<LineElement>();
+		
+		Iterator<Integer> iter = frequentItem.keySet().iterator();
+		while(iter.hasNext()){
+			
+			int label = iter.next();
+			List<String> eList = frequentItem.get(label);
+			for(int i = 0;i < eList.size();i++)
+			{
+				String[] strs = eList.get(i).split(",");
+				LineElement le = new LineElement(label,Integer.parseInt(strs[0]),Integer.parseInt(strs[1]));
+				list.add(le);
+			}
+		}
+		class compareCmp implements java.util.Comparator<LineElement>{
+
+			@Override
+			public int compare(LineElement o1, LineElement o2) {
+				
+				return o1.getStart() - o2.getStart();
+			}
+			
+		}
+		Collections.sort(list, new compareCmp());
+		return list;
 	}
 }
