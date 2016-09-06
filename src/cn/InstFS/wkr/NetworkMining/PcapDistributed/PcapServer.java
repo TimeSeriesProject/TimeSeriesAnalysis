@@ -1,6 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.PcapDistributed;
 
-import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.PcapPanel;
+import Distributed.PcapPanel;
 
 import java.io.*;
 import java.net.BindException;
@@ -34,7 +34,7 @@ public class PcapServer {
     private String inPath;
     private String outPath = "D:\\57data";
     //    private String fileName;
-    private int index = outPath.length() + 1;
+    private int index;
     private int BUF_LEN = 5 * 1024 * 1024;
     private int count = 0;//发送次数
     private int count2 = 0;//发送次数
@@ -55,6 +55,7 @@ public class PcapServer {
         this.pcapPanel = pcapPanel;
         this.inPath = inPath;
         this.outPath = outPath;
+        this.index = outPath.length() + 1;
     }
 
     public static void main(String[] args) throws FileNotFoundException {
