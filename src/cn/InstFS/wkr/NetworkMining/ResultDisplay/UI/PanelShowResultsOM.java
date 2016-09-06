@@ -166,6 +166,8 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
 
 
             DataItems outliesItems = rslts.getRetOM().getOutlies();
+            DataItems outDegree = rslts.getRetOM().getOutDegree();
+            List<DataItems> outSet = rslts.getRetOM().getOutlinesSet();
 //			DataItems predictItems = rslts.getRetTSA().getPredictItems();
             DataItems oriItems = rslts.getInputData();
             chart1.displayDataItems(oriItems);
@@ -177,7 +179,7 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
                 }
                 if (outliesItems != null) {
                     if (islinkPic) {
-                        JFreeChart jf = ChartPanelShowAbd.createChart(oriItems,outliesItems);
+                        JFreeChart jf = ChartPanelShowAbl.createChart(oriItems,outDegree,outSet);                        
                         ChartPanel chartpanel = new ChartPanel(jf);
                         chart1.displayDataItems(oriItems);
                         chartpanel.setMouseWheelEnabled(true);
@@ -188,16 +190,25 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
                         count++;
 
                     } else {
-                        JFreeChart jf = ChartPanelShowAb.createChart(oriItems, outliesItems);
+                        JFreeChart jf = ChartPanelShowAbc.createChart(oriItems,outDegree,outliesItems);
                         ChartPanel chartpanel = new ChartPanel(jf);
                         chart1.displayDataItems(oriItems);
                         remove(chart1);
                         remove(chart2);
-                        add(chart1);
+                        //add(chart1);
                         add(chartpanel);
                         count++;
                     }
 
+                }else{
+                	JFreeChart jf = ChartPanelShowAb.createChart(oriItems,outDegree);
+                    ChartPanel chartpanel = new ChartPanel(jf);
+                    chart1.displayDataItems(oriItems);
+                    remove(chart1);
+                    remove(chart2);
+                    add(chart1);
+                    add(chartpanel);
+                    count++;
                 }
 
             }

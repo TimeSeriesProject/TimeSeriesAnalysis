@@ -19,6 +19,7 @@ import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.labels.AbstractXYItemLabelGenerator;
 import org.jfree.chart.labels.StandardXYItemLabelGenerator;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
@@ -188,7 +189,8 @@ public class ChartPanelShowAbd extends JPanel{
 //        xyplot.setDomainAxis(1, numberaxis);
         NumberAxis numberaxis1 = new NumberAxis("异常度");
         xyplot.setRangeAxis(1, numberaxis1);
-
+        numberaxis1.setTickUnit(new NumberTickUnit(1D));  //y轴单位间隔为1
+        numberaxis1.setRange(0,10);
         xyplot.setRangeAxisLocation(1, AxisLocation.BOTTOM_OR_RIGHT);
 //        XYDataset xydataset1 = createDataset("abnormal value", 1D, new Minute(), 170);
         xyplot.setDataset(1, xydataset1);
@@ -196,6 +198,7 @@ public class ChartPanelShowAbd extends JPanel{
         //设置同一个横轴显示两组数据。
         xyplot.mapDatasetToRangeAxis(1, 1);
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
+        
         numberaxis.setAutoRangeIncludesZero(false);
         XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
         xyplot.setDataset(0, xydataset);
@@ -220,8 +223,8 @@ public class ChartPanelShowAbd extends JPanel{
         xylineandshaperenderer2.setSeriesShapesVisible(0,false);
         xylineandshaperenderer2.setSeriesLinesVisible(0, true);
         xylineandshaperenderer2.setSeriesShape(0, double1);
-        xylineandshaperenderer2.setSeriesPaint(0, Color.red);
-        xylineandshaperenderer2.setSeriesFillPaint(0, Color.red);
+        xylineandshaperenderer2.setSeriesPaint(0, new Color(65,105,225));
+        xylineandshaperenderer2.setSeriesFillPaint(0, new Color(65,105,225));
         xylineandshaperenderer2.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0}:({1} , {2})", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), new DecimalFormat("#.00")));
 
 //        xylineandshaperenderer1.setBaseItemLabelsVisible(true);

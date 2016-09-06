@@ -1,10 +1,12 @@
 package WaveletUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.openide.nodes.Children.Map;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
@@ -16,28 +18,31 @@ public class PointPatternDetection implements IMinerOM{
 
 	private DataItems dataItems;     //时间序列 
 	private List<SegPattern> patterns;   //TEO 线段模式
-	private int densityK;//序列线段化时，找极值点的参数
-	private double patternThreshold ;
-	private int neighborK;//计算模式P的K-邻域中的k
-	private DataItems outlies;
+	private int densityK = 2;//序列线段化时，找极值点的参数
+	private double patternThreshold = 0.1;
+	private int neighborK = 10;//计算模式P的K-邻域中的k
+	private double threshold;
+	private double diff = 0.1;
+	private DataItems outlies = new DataItems();
 	private DataItems outDegree = new DataItems(); //异常度
 	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
+	
 	
 	public PointPatternDetection(DataItems dataItems,int densityK,int neghborK){
 		this.dataItems=dataItems;
 		this.densityK=densityK;
-		this.neighborK=neghborK;
-		outlies=new DataItems();
+		this.neighborK=neghborK;		
 	}
 	
-	public PointPatternDetection(){outlies=new DataItems();}
+	public PointPatternDetection(DataItems dataItems){
+		this.dataItems = dataItems;
+	}
 	
 	public  PointPatternDetection(OMPiontPatternParams omPiontPatternParams,DataItems di) {
 		this.dataItems=di;
 		this.densityK=omPiontPatternParams.getDensityK();
 		this.neighborK=omPiontPatternParams.getDensityK();
-		this.patternThreshold = omPiontPatternParams.getPatternThreshold();
-		outlies=new DataItems();
+		this.patternThreshold = omPiontPatternParams.getPatternThreshold();		
 	}
 	/**
 	 * 检测异常
@@ -46,7 +51,7 @@ public class PointPatternDetection implements IMinerOM{
 	public void outliesDectation(){
 		
 		//模式奇异度map
-		HashMap<SegPattern, Double> patternOutliesMap=new HashMap<SegPattern, Double>();
+		HashMap<Integer, Double> patternOutliesMap=new HashMap<Integer, Double>();
 		
 		//计算每个模式的K最近邻
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
@@ -102,7 +107,7 @@ public class PointPatternDetection implements IMinerOM{
 				if(i==j){
 					continue;
 				}else{
-					double distance=distanceOfPatterns(patterns.get(i),patterns.get(j));
+					double distance=distanceOfPatterns(patterns.get(i),patterns.get(j));//线段i，j的距离
 					double disH=Math.abs(patterns.get(i).getHeight()-patterns.get(j).getHeight());
 					double disL=Math.abs(patterns.get(i).getLength()-patterns.get(j).getLength());
 					double disM=Math.abs(patterns.get(i).getMean()-patterns.get(j).getMean());
@@ -144,10 +149,11 @@ public class PointPatternDetection implements IMinerOM{
 			int start=patterns.get(i).getStart();
 			int end=patterns.get(i).getEnd();
 			for(int pos=start;pos<end;pos++){
-				outlies.add1Data(dataItems.getTime().get(pos), ((int)(100*Math.max(pof, 0)))+"");
+				outDegree.add1Data(dataItems.getTime().get(pos), String.valueOf(Math.max(pof, 0)));
 			}
-			patternOutliesMap.put(patterns.get(i), pof);
+			patternOutliesMap.put(i, pof);
 		}
+		genOutPionts(patternOutliesMap);
 	}
 	
 	/**
@@ -161,6 +167,7 @@ public class PointPatternDetection implements IMinerOM{
 		}else{
 			double max=0;
 			int index=0;
+			//找到dist里面的最大值
 			for(int i=0;i<neighborK;i++){
 				if(dist.get(i)>max){
 					max=dist.get(i);
@@ -189,7 +196,43 @@ public class PointPatternDetection implements IMinerOM{
 		double stdDist=Math.abs(patternsA.getStd()-patternsB.getStd());
 		return Math.sqrt(heightDist*heightDist+lengthDist*lengthDist+meanDist*meanDist+stdDist*stdDist);
 	}
-	
+	/**
+	 * 有异常度获取异常点
+	 * 
+	 * @return 模式间的距离
+	 */
+	public void genOutPionts(HashMap<Integer, Double> map){
+		ArrayList<Double> list = new ArrayList<Double>();
+		int len = map.size();
+		for(int i=0;i<map.size();i++){
+			list.add(map.get(i));
+		}
+		Collections.sort(list);
+		Collections.reverse(list);
+		double threshold = list.get((int)(len*0.02));
+		
+		/*for(int i=(int)(len*0.02);i>0;i--){
+			if((list.get(i)-threshold)<diff*threshold){
+				threshold = list.get(i);
+			}else{
+				threshold = list.get(i);
+				break;
+			}
+		}*/
+		System.out.println("异常度阈值是："+threshold);
+		for(int i=0;i<len;i++){
+			if(map.get(i)>=threshold){
+				int start = patterns.get(i).getStart();
+				int end = patterns.get(i).getEnd();
+				DataItems items = new DataItems();
+				for(int j=start;j<end;j++){
+					outlies.add1Data(dataItems.getElementAt(j));
+					items.add1Data(dataItems.getElementAt(j));
+				}
+				outlinesSet.add(items);
+			}
+		}
+	}
 	@Override
 	public void TimeSeriesAnalysis() {
 		//PointSegment segment=new PointSegment(dataItems, densityK);

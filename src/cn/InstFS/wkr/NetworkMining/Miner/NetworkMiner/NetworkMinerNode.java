@@ -22,6 +22,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm.SequencePatternsDontSplit;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.averageEntropyPM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
@@ -30,6 +31,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.SingleNodeOrNodePairMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
@@ -128,7 +130,7 @@ public class NetworkMinerNode implements INetworkMiner{
 		this.displayer = displayer;		
 	}
 
-	protected static MinerFactorySettings getMinerFactorySettings(TaskCombination taskCombination) {
+	public static MinerFactorySettings getMinerFactorySettings(TaskCombination taskCombination) {
 		MinerFactorySettings settings = null;
 		switch (taskCombination.getMinerType()) {
 			case MiningType_SinglenodeOrNodePair:
@@ -216,7 +218,7 @@ class NodeTimerTask extends TimerTask{
 				setPMResults(results, pmMethod);
 				break;
 			case MiningMethods_OutliesMining:
-				if(results.getRetNode().getRetStatistics().getComplex()>1.5){
+				/*if(results.getRetNode().getRetStatistics().getComplex()>1.5){
 					task.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
 				}
 				
@@ -232,16 +234,24 @@ class NodeTimerTask extends TimerTask{
 					//tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
 					tsaMethod = new PointPatternDetection(ParamsAPI.getInstance().getPom().getOmPiontPatternParams(),dataItems);
 					
-					/*if(results.getRetNode().getRetPM().getHasPeriod())
+					if(results.getRetNode().getRetPM().getHasPeriod())
 				    	tsaMethod=new SAXPartternDetection(dataItems,
 				    			results.getRetNode().getRetPM().getFirstPossiblePeriod());
 						
 					else 
-						tsaMethod=new SAXPartternDetection(dataItems,24);*/
+						tsaMethod=new SAXPartternDetection(dataItems,24);
 					results.getRetNode().getRetOM().setIslinkDegree(true);
 				}else{
 					throw new RuntimeException("方法不存在！");
-				}
+				}*/
+				/*tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+				results.getRetNode().getRetOM().setIslinkDegree(true);*/
+				/*tsaMethod = new PointPatternDetection(dataItems);
+				results.getRetNode().getRetOM().setIslinkDegree(true);*/
+				tsaMethod = new FastFourierOutliesDetection(dataItems);
+				results.getRetNode().getRetOM().setIslinkDegree(false);
+				/*tsaMethod = new AnormalyDetection(dataItems);
+				results.getRetNode().getRetOM().setIslinkDegree(false);*/
 				tsaMethod.TimeSeriesAnalysis();
 				setOMResults(results, tsaMethod);
 				break;
@@ -271,6 +281,7 @@ class NodeTimerTask extends TimerTask{
 
 				Map<Integer, List<String>>frequentItem=sequencePattern.
 						printClusterLabelTOLines(clusterItems, dataItems);
+				List<LineElement> lineElements = sequencePattern.getLineElement(frequentItem);
 				sequencePattern.patternMining();
 				setFrequentResults(results, sequencePattern,frequentItem);
 				break;
@@ -305,6 +316,8 @@ class NodeTimerTask extends TimerTask{
 	
 	private void setOMResults(MinerResults results,IMinerOM tsaMethod){
 		results.getRetNode().getRetOM().setOutlies(tsaMethod.getOutlies());    //查找异常
+		results.getRetNode().getRetOM().setOutDegree(tsaMethod.getOutDegree());
+		results.getRetNode().getRetOM().setOutlinesSet(tsaMethod.getOutlinesSet());
 		if(tsaMethod.getOutlies()!=null){
 			DataItems outlies=tsaMethod.getOutlies();
 			int outliesLen=outlies.getLength();

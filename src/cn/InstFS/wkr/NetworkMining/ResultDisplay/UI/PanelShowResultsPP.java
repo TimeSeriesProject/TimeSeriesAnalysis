@@ -261,10 +261,10 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                     jf = ChartPanelShowAb.createChart(oriData, outliesItems);
                 }*/
                 if (!result.isHasOutlies()) {
-                    jf = ChartPanelShowAbd.createChart(oriData,outDegree);    
-                } /*else if (result.isIslinkDegree()) {                    
-                    jf = ChartPanelShowAbl.createChart(oriData,outdegreeItems,outsetItems);
-                }*/ else {
+                    jf = ChartPanelShowAbc.createChart(oriData,outDegree,outliesItems);    
+                } else if (result.isIslinkDegree()) {                    
+                    jf = ChartPanelShowAbl.createChart(oriData,outDegree,outsetItems);
+                } else {
                     jf = ChartPanelShowAbc.createChart(oriData, outDegree,outliesItems);
                 }
                 

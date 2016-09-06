@@ -1,9 +1,12 @@
 package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.NormalDistributionTest;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
@@ -19,14 +22,17 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 public class FastFourierOutliesDetection implements IMinerOM {
 
     private static FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
-    private static double[] original; 
-    private static double[] denoisedslicezz;
-    private static double varK = 3.0;
-    private static double amplitudeRatio = 0.8;
+    private static double[] original; //原始数据（非参数）
+    private static double[] denoisedslicezz; //滤波后的数据（非参数）
+    private static double varK = 3.0; //高斯距离阈值 (x-u)/sigma > varK 则x点是异常点（暂时没用到）
+    private static double amplitudeRatio = 0.8; //滤波参数，傅里叶变换以后，保留amplitudeRatio的低频，过滤高频
     private static double sizeK = 8; //每段数据的长度len = 2^sizeK
+    private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
+    private double threshold; //异常度阈值（非参数）
     private DataItems di;
-    private DataItems outlies = new DataItems();
+    private DataItems outlies = new DataItems();//异常点
     private DataItems outDegree = new DataItems(); //异常度
+    private Map<Date, Double> degreeMap = new HashMap<Date, Double>();
 	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
     
     public FastFourierOutliesDetection(DataItems di){
@@ -69,21 +75,35 @@ public class FastFourierOutliesDetection implements IMinerOM {
 
     public void AnomalyDetection(DataItems dataItems) {
         double[] result = new double[dataItems.getLength()];
+        
 
         for(int i=0;i < result.length;i++)
         {
-            result[i] = denoisedslicezz[i]-original[i];
+            result[i] = denoisedslicezz[i]-original[i];                        
         }
 
         NormalDistributionTest nbt = new NormalDistributionTest(result,varK);
         for(int i=0;i < result.length;i++)
         {
-            if(!nbt.isDawnToThisDistri(result[i]))
+            /*if(!nbt.isDawnToThisDistri(result[i]))
             {
             	outlies.add1Data(dataItems.getTime().get(i), original[i]+"");
             	//System.out.println(original[i]);
+            }*/
+            //计算异常度（高斯距离）
+            double mean = nbt.getMean();
+            double stv;
+            if(nbt.getStdeviation()<=0){
+            	stv = 1e-3;
+            }else{
+            	stv = nbt.getStdeviation();
             }
+            double distance = Math.abs(result[i]-mean)/stv;            
+            distance = distance>5 ? 1 : distance/5;
+            degreeMap.put(dataItems.getTime().get(i),distance);            
+            
         }
+        
     }
     
 
@@ -128,7 +148,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
     }
 
     /**
-     * 傅里叶变换
+     * 傅里叶滤波
      * @param silce
      * @param threshold
      * @return
@@ -206,7 +226,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
 			}
 			DataItems prediction_curTime = null;
 			curData= FFTfilter(dataSlice,amplitudeRatio);
-			prediction_curTime = new DataItems();
+			prediction_curTime = new DataItems(); //当前时间段内的数据
 			prediction_curTime.setTime(timeSlice);
 			prediction_curTime.setData(curData);
 			AnomalyDetection(prediction_curTime);
@@ -222,17 +242,38 @@ public class FastFourierOutliesDetection implements IMinerOM {
 		curData= FFTfilter(dataSlice,amplitudeRatio);
 		prediction_curTime.setTime(timeSlice);
 		prediction_curTime.setData(curData);
-		AnomalyDetection(prediction_curTime);
+		AnomalyDetection(prediction_curTime);		
 		
-		int outlength=outlies.getLength();
-		int dataLen=time.size();
-		int i=0;
-		for(int j=0;j<outlength;j++){
-			for(;i<dataLen;i++){
-				if(time.get(i).equals(outlies.getTime().get(j))){
-					//System.out.print(i+1+",");
-					break;
-				}
+		//把degreeMap转换为outDegree
+		List<Double> list = new ArrayList<Double>();
+		for(int i=0;i<degreeMap.size();i++){
+			Date date = di.getTime().get(i);
+			double d = degreeMap.get(date);
+			outDegree.add1Data(date, String.valueOf(d));
+			list.add(degreeMap.get(date));
+		}
+		//取异常度前2%的点作为异常点
+				
+        Collections.sort(list);
+        Collections.reverse(list);
+        threshold = list.get((int)(list.size()*0.02));
+        threshold = threshold>0.4 ? threshold : 0.4;
+        for(int i=(int)(list.size()*0.02);i>0;i--){
+			if(list.get(i)<0.4){				
+				continue;
+			}
+			if((list.get(i)-threshold)<diff){
+				threshold = list.get(i);
+			}else{
+				threshold = list.get(i);
+				break;
+			}
+		}
+        threshold = threshold>0.6 ? 0.6 : threshold;
+		System.out.println("应用快速法里叶算法，异常度阈值是："+threshold);
+		for(int i=0;i<list.size();i++){
+			if(Double.parseDouble(outDegree.getData().get(i))>=threshold){
+				outlies.add1Data(di.getElementAt(i));
 			}
 		}
 		

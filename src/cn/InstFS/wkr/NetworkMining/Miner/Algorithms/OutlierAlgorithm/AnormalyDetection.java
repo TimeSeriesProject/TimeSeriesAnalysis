@@ -1,12 +1,18 @@
 package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.NormalDistributionTest;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
@@ -16,13 +22,16 @@ import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
  * Created by xzbang on 2015/3/24.
  */
 public class AnormalyDetection implements IMinerOM {
-    private int initWindowSize = 30;
-    private int maxWindowSize = 60;
-    private int expWindowSize = 3;
-    private double k=3.0;
+    private static int initWindowSize = 30;
+    private static int maxWindowSize = 60;
+    private static int expWindowSize = 3;
+    private static double k=3.0; //高斯距离阈值 (x-u)/sigma > k 则x点是异常点（暂时没用到）
+    private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
+    private double threshold; //异常度阈值（非参数）
     private DataItems di;
     private DataItems outlies;
     private DataItems outDegree = new DataItems(); //异常度
+    private Map<Integer, Double> degreeMap = new HashMap<Integer, Double>();
 	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
     public AnormalyDetection(){}
     public AnormalyDetection(DataItems di){
@@ -47,7 +56,7 @@ public class AnormalyDetection implements IMinerOM {
     	if(di==null){
     		return;
     	}
-    	HashMap<Long,Long> slice = new HashMap<Long, Long>();
+    	HashMap<Long,Long> slice = new HashMap<Long, Long>(); //原始数据，map<i,data>
     	List<String> data = di.data;
     	List<Date> time = di.time;
     	outlies = new DataItems();
@@ -55,28 +64,19 @@ public class AnormalyDetection implements IMinerOM {
     	for(int i = 0;i < size;i++){
     		slice.put((long)i, Math.round(Double.parseDouble(data.get(i))));
     	}
-    	HashMap<Long,Long> result = detect(slice);
-
-    	Iterator<Entry<Long, Long>> iterator=result.entrySet().iterator();
-    	while (iterator.hasNext()) {
-			long index=iterator.next().getKey();
-			outlies.add1Data(time.get((int)index), data.get((int)index));
-		}
-     	for(int i=0;i < size;i++){
-    		if(result.containsKey((long)i)){
-    			System.out.print(i+1+",");
-    			outlies.add1Data(time.get(i), data.get(i));
-    		}
-    	}
+    	detect(slice);
+    	
+     	outDegree = mapToDegree(degreeMap);
+     	outlies = genOutline(outDegree);
     }
     
-    public HashMap<Long,Long> detect(HashMap<Long,Long> slice){
+    public void detect(HashMap<Long,Long> slice){
         if(slice == null){
-            return null;
+            return;
         }
         int size = slice.size();
         if(size < 1){
-            return null;
+            return;
         }
         HashMap<Long,Long> outlier = new HashMap<>();
         long max = getmaxKey(slice);
@@ -100,19 +100,103 @@ public class AnormalyDetection implements IMinerOM {
                     if(slice.get((long) index)!=null){
                         double target = (double)slice.get((long) index);
                         if(!normalDistributionTest.isDawnToThisDistri(target)){
-                            outlier.put((long) index,slice.get((long) index));
+                            //outlier.put((long) index,slice.get((long) index));
                             slice.put((long)index, (long)normalDistributionTest.getMean());
                         }
-                    }
+                        double mean = normalDistributionTest.getMean();                        
+                        double stv;
+                    	if(normalDistributionTest.getStdeviation()<=0){
+                        	stv = 1e-3;
+                        }else {
+        					stv = normalDistributionTest.getStdeviation();
+        				}
+                    	double distance = Math.abs(target - mean)/stv;
+                    	distance = distance>5 ? 1 : distance/5;
+                        degreeMap.put(index, distance);
+                    }                    
                     break;
                 }
             }
             index++;
             nowWindowSize=initWindowSize;
         }
+       
+    }
+    /**@author LYH
+     * 滑动高斯检测，滑动窗口不重叠
+     * 不实用，窗口太大时K-S检验运行时间太长
+     * */
+    public HashMap<Long,Long> detect1(HashMap<Long,Long> slice){
+        if(slice == null){
+            return null;
+        }
+        int size = slice.size();
+        if(size < 1){
+            return null;
+        }
+        HashMap<Long,Long> outlier = new HashMap<>();
+        long max = getmaxKey(slice);
+        double[] data;
+        int index = initWindowSize;
+        int nowWindowSize = initWindowSize;
+        while(index<=max) {
+            data = new double[nowWindowSize]; //窗口内数据
+            for (int i = index-nowWindowSize; i < index; i++) {
+                if(slice.get((long) i)==null){
+                    data[i-index+nowWindowSize] = 0.0;
+                }else{
+                    data[i-index+nowWindowSize] = (double)slice.get((long)i);
+                }
+            }
+            NormalDistributionTest normalDistributionTest = new NormalDistributionTest(data,k);
+            if(!normalDistributionTest.isNormalDistri()){
+            
+            	index += expWindowSize;
+                nowWindowSize+=expWindowSize;
+            }else{               
+            	double mean = normalDistributionTest.getMean();
+                double stv;
+            	if(normalDistributionTest.getStdeviation()<=0){
+                	stv = 1e-3;
+                }else {
+					stv = normalDistributionTest.getStdeviation();
+				}
+            	for(int i=index-nowWindowSize;i<index;i++){
+                	if (slice.get((long) i)!=null) {						
+						double target = (double)slice.get((long)i);
+	                    if(!normalDistributionTest.isDawnToThisDistri(target)){
+	                        outlier.put((long)i,slice.get((long)i));
+	                        slice.put((long)i, (long)normalDistributionTest.getMean());
+	                    }
+	                    double distance = Math.abs(data[i-index+nowWindowSize] - mean)/stv;
+	                    degreeMap.put(i, distance);
+                    }  
+                }                
+                index = index + nowWindowSize;
+                nowWindowSize=initWindowSize;                
+            }            
+        }
+        
+        //从后面向前滑动一个窗口
+        data = new double[initWindowSize];
+        for(int i=(int)max-initWindowSize;i<max;i++){        	
+        	data[i+initWindowSize-(int)max] = slice.get((long)i);
+        }
+        NormalDistributionTest normalDistributionTest = new NormalDistributionTest(data,k);
+        double mean = normalDistributionTest.getMean();
+        double stv;
+        if(normalDistributionTest.getStdeviation()<=0){
+        	stv = 1e-3;
+        }else {
+			stv = normalDistributionTest.getStdeviation();
+		}
+        for(int i=(int)max-initWindowSize;i<max;i++){
+        	double distance = (slice.get((long)i) - mean)/stv;
+        	degreeMap.put(i, distance);        	
+        }
+        outDegree = mapToDegree(degreeMap);
         return outlier;
     }
-
     private long getmaxKey(HashMap<Long, Long> slice) {
         Iterator<Long> iterator = slice.keySet().iterator();
         long max = 0;
@@ -124,7 +208,57 @@ public class AnormalyDetection implements IMinerOM {
         }
         return max;
     }
-
+    //获取异常度
+    private DataItems mapToDegree(Map<Integer, Double> map){
+    	DataItems degree = new DataItems();
+    	
+    	for(int i=0;i<di.getLength();i++){
+    		if(map.get(i) == null){
+    			degree.add1Data(di.getTime().get(i), "0");	
+    		}
+    		else{
+    			degree.add1Data(di.getTime().get(i),String.valueOf(map.get(i)));
+    		}
+    	}
+    	
+    	return degree;
+    }
+    //获取异常点
+    public DataItems genOutline(DataItems degreeItems){
+    	List<Double> degree = new ArrayList<Double>();
+    	for(int i=0;i<degreeItems.getLength();i++){
+    		degree.add(Double.parseDouble(degreeItems.getData().get(i)));
+    	}
+    	DataItems outline = new DataItems();
+		List<Double> list = new ArrayList<Double>();
+		list.addAll(degree);		
+		int len = degree.size();
+		Collections.sort(list);
+		Collections.reverse(list);
+		threshold = list.get((int)(len*0.02));
+		threshold = threshold>0.4 ? threshold : 0.4;
+		for(int i=(int)(len*0.02);i>0;i--){
+			if(list.get(i)<0.4){				
+				continue;
+			}
+			if((list.get(i)-threshold)/threshold<diff){
+				threshold = list.get(i);
+			}else{
+				threshold = list.get(i);
+				break;
+			}
+		}
+		threshold = threshold>0.6 ? 0.6 : threshold;
+		
+		System.out.println("异常度阈值是："+threshold);
+		for(int i=0;i<len;i++){
+			if(degree.get(i)>=threshold){
+				outline.add1Data(di.getElementAt(i));
+			}
+		}
+		
+		return outline;
+	}
     @Override
     public DataItems getOutlies() {
     	return outlies;
