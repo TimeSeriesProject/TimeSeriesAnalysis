@@ -234,12 +234,12 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 							nnor.add1Data(tempItem);
 						}
 
-						if (last < nor.getLength()) {
+						if (last <= nor.getLength()) {
 
-//							tempItem.setTime(nor.getElementAt(last - 1).getTime());
-//							tempItem.setData(nor.getElementAt(last - 1).getData());
-							tempItem.setTime(nor.getElementAt(last).getTime());
-							tempItem.setData(nor.getElementAt(last).getData());
+							tempItem.setTime(nor.getElementAt(last - 1).getTime());
+							tempItem.setData(nor.getElementAt(last - 1).getData());
+//							tempItem.setTime(nor.getElementAt(last).getTime());
+//							tempItem.setData(nor.getElementAt(last).getData());
 
 							nor_line.add1Data(tempItem);
 							nnor.add1Data(tempItem);
