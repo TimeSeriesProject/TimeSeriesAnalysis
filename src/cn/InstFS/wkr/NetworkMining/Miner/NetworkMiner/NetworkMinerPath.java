@@ -254,6 +254,7 @@ class PathTimerTask extends TimerTask{
 							retOM.setIslinkDegree(false);
 						}*/
 						omMethod = new MultidimensionalOutlineDetection(newItem);
+						retOM.setIslinkDegree(true);
 						omMethod.TimeSeriesAnalysis();
 						setOMResults(retOM, omMethod);
 						retPathOM.put(name, retOM);
@@ -350,8 +351,8 @@ class PathTimerTask extends TimerTask{
 
 	private void setOMResults(MinerResultsOM retOM, IMinerOM omMethod){
 		retOM.setOutlies(omMethod.getOutlies());    //查找异常
-		retOM.setOutlinesSet(omMethod.getOutlinesSet());
-		retOM.setOutDegree(omMethod.getOutDegree());
+		retOM.setOutlinesSet(omMethod.getOutlinesSet()); //异常线段
+		retOM.setOutDegree(omMethod.getOutDegree()); //异常度
 		if(omMethod.getOutlies()!=null){
 			DataItems outlies=omMethod.getOutlies();
 			int outliesLen=outlies.getLength();

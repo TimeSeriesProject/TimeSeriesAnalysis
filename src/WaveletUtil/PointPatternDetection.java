@@ -211,14 +211,14 @@ public class PointPatternDetection implements IMinerOM{
 		Collections.reverse(list);
 		double threshold = list.get((int)(len*0.02));
 		
-		for(int i=(int)(len*0.02);i>0;i--){
+		/*for(int i=(int)(len*0.02);i>0;i--){
 			if((list.get(i)-threshold)<diff*threshold){
 				threshold = list.get(i);
 			}else{
 				threshold = list.get(i);
 				break;
 			}
-		}
+		}*/
 		System.out.println("异常度阈值是："+threshold);
 		for(int i=0;i<len;i++){
 			if(map.get(i)>=threshold){
@@ -227,7 +227,7 @@ public class PointPatternDetection implements IMinerOM{
 				DataItems items = new DataItems();
 				for(int j=start;j<end;j++){
 					outlies.add1Data(dataItems.getElementAt(j));
-					items.add1Data(dataItems.getElementAt(start));
+					items.add1Data(dataItems.getElementAt(j));
 				}
 				outlinesSet.add(items);
 			}

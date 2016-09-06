@@ -172,7 +172,14 @@ public class ChartPanelShowAbc extends JPanel{
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         xyplot.setDomainPannable(true);
         xyplot.setOrientation(PlotOrientation.VERTICAL);
-       
+        //设置原始坐标轴
+        double max = getMaxPiont(oriItems);
+        NumberAxis numberAxis0 = new NumberAxis();
+        xyplot.setRangeAxis(0,numberAxis0);
+        numberAxis0.setLowerMargin(10);
+        numberAxis0.setLowerBound(0-max/10);
+        numberAxis0.setUpperBound(max*1.01);
+        //设置异常度坐标轴
         NumberAxis numberaxis1 = new NumberAxis("异常度");
         xyplot.setRangeAxis(1, numberaxis1);
         numberaxis1.setAutoTickUnitSelection(false);//数据轴的数据标签是否自动确定
@@ -185,6 +192,7 @@ public class ChartPanelShowAbc extends JPanel{
         xyplot.setDataset(2, xyDataset2);
         
         //设置同一个横轴显示两组数据。
+        xyplot.mapDatasetToRangeAxis(0, 0);
         xyplot.mapDatasetToRangeAxis(1, 1);
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
@@ -223,5 +231,15 @@ public class ChartPanelShowAbc extends JPanel{
         xylineandshaperenderer2.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
         xylineandshaperenderer2.setBaseItemLabelsVisible(true);
         return jfreechart;
+    }
+    private static double getMaxPiont(DataItems items){
+    	double max = 0;
+    	for(int i=0;i<items.getLength();i++){
+    		double data = Double.parseDouble(items.getData().get(i));
+    		if(data>max){
+    			max = data;
+    		}
+    	}
+    	return max;
     }
 }

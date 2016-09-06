@@ -106,8 +106,8 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		ArrayList<Double> nordis = normalization(distance);
 		ArrayList<Double> degree = genDegree(distance, patterns); //异常度(补全distance)
 		//outlines = genOutline(outlinSet); //使用异常度矩阵进行异常检测
-		outDegree = genOutDegree(degree); //把degree转换为DataItems格式
-		outlines = genOutline(degree); //根据异常度，获得异常点
+		outDegree = genOutDegree(degree); //把degree转换为DataItems格式  (取值范围0~1)
+		outlines = genOutline(degree); //根据异常度，获得异常点(前2%的线段)
 		outlinesSet = genOutlinesSet(distance); //线段模式异常,每条线段异常为一个DataItems						
 	}
 
@@ -236,37 +236,26 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		int len = degree.size();
 		Collections.sort(list);
 		Collections.reverse(list);
-		threshold = list.get((int)(len*0.02));
-		
+		threshold = list.get((int)(len*0.02));		
 		for(int i=(int)(len*0.02);i>0;i--){
-			if(list.get(i)<2.5){
+			if(list.get(i)<0.5){				
 				continue;
 			}
-			if((list.get(i)-threshold)<diff){
+			if((list.get(i)-threshold)/threshold<diff){
 				threshold = list.get(i);
 			}else{
 				threshold = list.get(i);
 				break;
 			}
 		}
-		System.out.println("异常度阈值是："+threshold);
+		threshold = threshold>0.4 ? threshold : 0.4;
+		System.out.println("基于混合高斯模型，异常度阈值是："+threshold);
 		for(int i=0;i<len;i++){
 			if(degree.get(i)>=threshold){
 				outline.add1Data(dataItems.getElementAt(i));
 			}
 		}
-		/*//找出异常模式(异常点)
-		for(int i=0;i<indexList.size();i++){
-			DataItem dataItem = new DataItem();
-			List<Date> time = dataItems.getTime();
-			List<String> data = dataItems.getData();
-			int start = patterns.get(indexList.get(i)).getStart();
-			int end = patterns.get(indexList.get(i)).getEnd();
-			for(int j=start;j<=end;j++){				
-				outline.add1Data(time.get(j),data.get(j));
-			}
-			System.out.println("异常为线段"+indexList.get(i)+"的时间跨度为:"+patterns.get(indexList.get(i)).getLen());
-		}*/
+		threshold = threshold>0.6 ? 0.6 : threshold;
 		return outline;
 	}
 	/**
@@ -274,11 +263,12 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	 *@Description 根据gmm聚类结果获取异常线段,每条线段存为一个DataItems
 	 *@return List<DataItems>
 	 */
-	public List<DataItems> genOutlinesSet(List<Double> dis){
+	public List<DataItems> genOutlinesSet(List<Double> distance){
 		List<DataItems> outSet = new ArrayList<DataItems>();
-		ArrayList<Integer> indexList = new ArrayList<Integer>();
-		for(int i=0;i<dis.size();i++){
-			if(dis.get(i)>=threshold){
+		ArrayList<Integer> indexList = new ArrayList<Integer>();		
+		for(int i=0;i<distance.size();i++){
+			double dis = distance.get(i)>5 ? 1 : distance.get(i)/5;
+			if(dis>=threshold){
 				indexList.add(i);
 			}
 		}
@@ -346,12 +336,17 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	 */
 	public ArrayList<Double> genDegree(ArrayList<Double> dis,List<Pattern> patterns){		
 		ArrayList<Double> degree = new ArrayList<Double>();
-		for(int i=0;i<dis.size();i++){			
+		for(int i=0;i<dis.size();i++){
+			double distance = dis.get(i);
+			distance = distance>5 ? 1 : distance/5;
+			
 			for(int k=0;k<patterns.get(i).getLen();k++){
-				degree.add(dis.get(i));
+				degree.add(distance);
 			}
 		}
-		degree.add(dis.get(dis.size()-1));
+		double d=dis.get(dis.size()-1);
+		d = dis.get(dis.size()-1)>5 ? 1 : d/5;
+		degree.add(d);
 		return degree;
 	}
 
