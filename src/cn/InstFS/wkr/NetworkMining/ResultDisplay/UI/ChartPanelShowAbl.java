@@ -168,14 +168,14 @@ public class ChartPanelShowAbl extends JPanel{
         XYDataset xydataset1 = createAbnormalDataset(outdegree);//异常度
         List<XYDataset> xyDatasetlist = createAbLineDataset(oriItems,outSet);//异常点
         
-        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "序列编号", yName, null);
+        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "序列编号", yName, xydataset);
         jfreechart.removeLegend();
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         xyplot.setDomainPannable(true);
         xyplot.setOrientation(PlotOrientation.VERTICAL);
         //设置原始坐标轴
         double max = getMaxPiont(oriItems);
-        NumberAxis numberAxis0 = new NumberAxis();
+        NumberAxis numberAxis0 = new NumberAxis(yName);
         xyplot.setRangeAxis(0,numberAxis0);
         numberAxis0.setLowerMargin(10);
         numberAxis0.setLowerBound(0-max/10);
