@@ -158,7 +158,7 @@ public class ChartPanelShowAbc extends JPanel{
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
-    public static JFreeChart createChart(DataItems oriItems,DataItems outdegree,DataItems outItems)
+    public static JFreeChart createChart(DataItems oriItems,DataItems outdegree,DataItems outItems,String yName)
     {
 
         //设置异常点提示红点大小
@@ -168,17 +168,20 @@ public class ChartPanelShowAbc extends JPanel{
         XYDataset xydataset1 = createAbnormalDataset(outdegree);//异常度
         XYDataset xyDataset2 = createAbnormalDataset1(oriItems,outItems);//异常点
         
-        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "时间", "值", null);
+        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "序列编号", yName, null);
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         xyplot.setDomainPannable(true);
         xyplot.setOrientation(PlotOrientation.VERTICAL);
         //设置原始坐标轴
         double max = getMaxPiont(oriItems);
         NumberAxis numberAxis0 = new NumberAxis();
+
         xyplot.setRangeAxis(0,numberAxis0);
+        numberAxis0.setLabelFont(new Font("Arial",Font.BOLD,12));
         numberAxis0.setLowerMargin(10);
         numberAxis0.setLowerBound(0-max/10);
         numberAxis0.setUpperBound(max*1.01);
+        numberAxis0.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
         //设置异常度坐标轴
         NumberAxis numberaxis1 = new NumberAxis("异常度");
         xyplot.setRangeAxis(1, numberaxis1);
@@ -186,6 +189,9 @@ public class ChartPanelShowAbc extends JPanel{
         //numberaxis1.setTickUnit(new NumberTickUnit(1D));  //y轴单位间隔为1
         numberaxis1.setRange(0,10);
         numberaxis1.setUpperMargin(1);
+        numberaxis1.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
+        NumberAxis xAxis=(NumberAxis)xyplot.getDomainAxis();
+        xAxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
         xyplot.setRangeAxisLocation(1, AxisLocation.BOTTOM_OR_RIGHT);
         xyplot.setDataset(0, xydataset);
         xyplot.setDataset(1, xydataset1);

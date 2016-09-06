@@ -32,15 +32,18 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
     TaskElement task;
     List<TaskCombination> alltaskCombination;
     TaskCombination taskCombination;
-
+    private String obName;
+    private String xName;
+    private String yName;
     /**
      * Create the panel.
      */
     public PanelShowResultsPP(TaskElement task) {
         this.task = task;
+        obName=task.getMiningObject();
         alltaskCombination = task.allCombinationTasks;
         setLayout(new GridLayout(0, 1, 0, 0));
-        chart1 = new ChartPanelShowTs("路径挖掘", "时间", "值", null);
+        chart1 = new ChartPanelShowTs("路径挖掘", "时间", obName, null);
         add(chart1);
         miningMethod = task.getMiningMethod();
         InitMiner(task);
@@ -100,13 +103,13 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             JPanel jp=new JPanel();
 
             remove(chart1);
-
             HashMap<String, MinerResultsPM> resultPM = rslt.getRetPath().getRetPM();
 
             HashMap<String,Integer> period = new HashMap<>();
             HashMap<String,Integer> firstPeriod = new HashMap<>();
             HashMap<String,DataItems> pathDataItems = new HashMap<>();
 
+            yName=obName;
 
 
             for (Map.Entry<String, MinerResultsPM> entry : resultPM.entrySet()) {
@@ -204,7 +207,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                     DataItems nor=new DataItems();
                     DataItems abnor=new DataItems();
                     if(numPeriod>0){
-                        JFreeChart jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod);
+                        JFreeChart jf = ChartPanelShowPP.createChart(pathNor,pathname, nor, abnor,numPeriod,numfirstPeriod,yName);
                         ChartPanel chartpanel = new ChartPanel(jf);
                         jp.add(chartpanel);
                         pathNor = new ArrayList<>();
@@ -243,7 +246,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                     outsetItems.add(di);
                 }
 
-                ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", "值", null);
+                ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", yName, null);
                 /*MovingAverage ma = new MovingAverage(oriData);
                 DataItems newItems = ma.getNewItems();
                 chart.displayDataItems(newItems);*/
@@ -261,11 +264,12 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                     jf = ChartPanelShowAb.createChart(oriData, outliesItems);
                 }*/
                 if (!result.isHasOutlies()) {
-                    jf = ChartPanelShowAbc.createChart(oriData,outDegree,outliesItems);    
+                   
+                    jf = ChartPanelShowAbc.createChart(oriData,outDegree,outliesItems,yName);
                 } else if (result.isIslinkDegree()) {                    
-                    jf = ChartPanelShowAbl.createChart(oriData,outDegree,outsetItems);
+                    jf = ChartPanelShowAbl.createChart(oriData,outDegree,outsetItems,yName);
                 } else {
-                    jf = ChartPanelShowAbc.createChart(oriData, outDegree,outliesItems);
+                    jf = ChartPanelShowAbc.createChart(oriData, outDegree,outliesItems,yName);
                 }
                 
                 ChartPanel chartpanel = new ChartPanel(jf);

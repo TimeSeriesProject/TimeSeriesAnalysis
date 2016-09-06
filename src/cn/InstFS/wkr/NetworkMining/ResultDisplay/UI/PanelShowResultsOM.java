@@ -29,7 +29,7 @@ import java.awt.GridLayout;
 import java.util.Timer;
 
 public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
-    private Date now;    // 指示现在时间，但有可能不是真正的现在时间
+    private Date now;    // 指示现在序列编号，但有可能不是真正的现在序列编号
     private INetworkMiner miner;
     private Timer timer;
     JDesktopPane desktopPane;
@@ -38,9 +38,20 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
     ChartPanelShowTs chart3;
     ChartPanelShowAb chart2;
     ChartPanelShowPre chart4;
-
+    private String obName;
+    private String xName;
+    private String yName;
     public PanelShowResultsOM(TaskElement task) {
-        this();
+        InitChartScheme();
+        obName=task.getMiningObject();
+        setLayout(new GridLayout(0, 1, 0, 0));
+//		chart1 = new ChartPanelShowTs("原始值", "序列编号", "值", null);
+//		chart2 = new ChartPanelShowTs("预测值", "序列编号", "", null);
+//
+//		add(chart1);
+//		add(chart2);
+        chart1 = new ChartPanelShowTs("原始值", "序列编号", obName, null);
+        chart2 = new ChartPanelShowAb("异常值", "序列编号", obName, null);
         InitMiner(task);
 
 
@@ -57,14 +68,14 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
     private PanelShowResultsOM() {
         InitChartScheme();
         setLayout(new GridLayout(0, 1, 0, 0));
-//		chart1 = new ChartPanelShowTs("原始值", "时间", "值", null);
-//		chart2 = new ChartPanelShowTs("预测值", "时间", "", null);
+//		chart1 = new ChartPanelShowTs("原始值", "序列编号", "值", null);
+//		chart2 = new ChartPanelShowTs("预测值", "序列编号", "", null);
 //
 //		add(chart1);
 //		add(chart2);
-        chart1 = new ChartPanelShowTs("原始值", "时间", "值", null);
-        chart2 = new ChartPanelShowAb("异常值", "时间", "", null);
-//        chart3= new ChartPanelShowTs("预测值", "时间", "", null);
+        chart1 = new ChartPanelShowTs("原始值", "序列编号", obName, null);
+        chart2 = new ChartPanelShowAb("异常值", "序列编号", obName, null);
+//        chart3= new ChartPanelShowTs("预测值", "序列编号", "", null);
 //        add(chart1);
 //        add(chart2);
 
@@ -164,6 +175,7 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
 
         if (count == 0) {
 
+            yName=obName;
 
             DataItems outliesItems = rslts.getRetOM().getOutlies();
             DataItems outDegree = rslts.getRetOM().getOutDegree();
@@ -179,7 +191,7 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
                 }
                 if (outliesItems != null) {
                     if (islinkPic) {
-                        JFreeChart jf = ChartPanelShowAbl.createChart(oriItems,outDegree,outSet);                        
+                        JFreeChart jf = ChartPanelShowAbl.createChart(oriItems,outDegree,outSet,yName);
                         ChartPanel chartpanel = new ChartPanel(jf);
                         chart1.displayDataItems(oriItems);
                         chartpanel.setMouseWheelEnabled(true);
@@ -190,7 +202,7 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
                         count++;
 
                     } else {
-                        JFreeChart jf = ChartPanelShowAbc.createChart(oriItems,outDegree,outliesItems);
+                        JFreeChart jf = ChartPanelShowAbc.createChart(oriItems,outDegree,outliesItems,yName);
                         ChartPanel chartpanel = new ChartPanel(jf);
                         chart1.displayDataItems(oriItems);
                         remove(chart1);
@@ -201,7 +213,7 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
                     }
 
                 }else{
-                	JFreeChart jf = ChartPanelShowAb.createChart(oriItems,outDegree);
+                	JFreeChart jf = ChartPanelShowAb.createChart(oriItems,outDegree,yName);
                     ChartPanel chartpanel = new ChartPanel(jf);
                     chart1.displayDataItems(oriItems);
                     remove(chart1);

@@ -163,7 +163,7 @@ public class ChartPanelShowAbd extends JPanel{
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
-    public static JFreeChart createChart(DataItems nor,DataItems abnor)
+    public static JFreeChart createChart(DataItems nor,DataItems abnor,String yName)
     {
 //        XYDataset xydataset = createNormalDataset(nor);
 
@@ -179,8 +179,8 @@ public class ChartPanelShowAbd extends JPanel{
 //        xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
         XYDataset xydataset = createNormalDataset(nor);
         XYDataset xydataset1 = createAbnormalDataset(abnor);
-        //JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("异常度检测", "时间", "值", xydataset1);
-        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "时间", "值", xydataset);
+        //JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("异常度检测", "序列编号", "值", xydataset1);
+        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "序列编号", yName, xydataset);
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         xyplot.setDomainPannable(true);
         xyplot.setOrientation(PlotOrientation.VERTICAL);
@@ -197,8 +197,9 @@ public class ChartPanelShowAbd extends JPanel{
 //        xyplot.mapDatasetToDomainAxis(1, 1);
         //设置同一个横轴显示两组数据。
         xyplot.mapDatasetToRangeAxis(1, 1);
+
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
-        
+
         numberaxis.setAutoRangeIncludesZero(false);
         XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
         xyplot.setDataset(0, xydataset);

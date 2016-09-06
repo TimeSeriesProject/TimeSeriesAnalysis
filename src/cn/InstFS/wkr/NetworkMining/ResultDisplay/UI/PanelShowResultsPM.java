@@ -28,18 +28,70 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 	DecimalFormat formatter = new DecimalFormat("0.00");
 //	JDesktopPane desktopPane;
 	
-	SubPanelShowMinerResultsTs subPanel = new SubPanelShowMinerResultsTs();
+	SubPanelShowMinerResultsTs subPanel = new SubPanelShowMinerResultsTs("值");
 	
 	ChartPanelShowScatterPlot chartDistribute;
 	JLabel lblIsPeriod;
 	JLabel lblPeriodValue;
 	JLabel lblFirstPossiblePeriod;
+	private String obName;
+	private String xName;
+	private String yName;
 //	JLabel lblPeriodFeature;
 	private JCheckBox chckShowFeatureVal;
 	
 	
 	public PanelShowResultsPM(TaskElement task){
-		this();		
+		obName=task.getMiningObject();
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{450, 0};
+//		gridBagLayout.rowHeights = new int[] {0, 1, 0};
+		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
+		setLayout(gridBagLayout);
+
+		subPanel = new SubPanelShowMinerResultsTs(obName);
+		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+		gbc_panel_1.insets = new Insets(0, 0, 5, 0);
+		gbc_panel_1.fill = GridBagConstraints.BOTH;
+		gbc_panel_1.gridx = 0;
+		gbc_panel_1.gridy = 0;
+		add(subPanel, gbc_panel_1);
+
+		//以下用来显示文字描述一栏
+		JPanel panel = new JPanel(new GridLayout(0, 3));
+		lblIsPeriod = new JLabel("是否周期:");
+		lblPeriodValue = new JLabel("周期值:");
+		lblFirstPossiblePeriod = new JLabel("最小的可能周期:");
+//		lblPeriodFeature = new JLabel("特征值:");
+		panel.add(lblIsPeriod);
+		panel.add(lblPeriodValue);
+		panel.add(lblFirstPossiblePeriod);
+//		panel.add(lblPeriodFeature);
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_panel.insets = new Insets(0, 0, 5, 0);
+		gbc_panel.gridx = 0;
+		gbc_panel.gridy = 1;
+		add(panel, gbc_panel);
+
+		//设置检查框
+		chckShowFeatureVal = new JCheckBox("显示特征值");
+		panel.add(chckShowFeatureVal);
+		chckShowFeatureVal.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				refreshFeatureVal();
+			}
+		});
+		yName=obName;
+		//显示周期内分布
+		chartDistribute = new ChartPanelShowScatterPlot("周期内分布", "周期内的点", obName, null);
+		GridBagConstraints gbc_chartDistribute = new GridBagConstraints();
+		gbc_chartDistribute.fill = GridBagConstraints.BOTH;
+		gbc_chartDistribute.gridx = 0;
+		gbc_chartDistribute.gridy = 2;
+		add(chartDistribute, gbc_chartDistribute);
 		InitMiner(task);
 	}
 	private void InitMiner(TaskElement task){
@@ -57,7 +109,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
 		setLayout(gridBagLayout);
 		
-		subPanel = new SubPanelShowMinerResultsTs();
+		subPanel = new SubPanelShowMinerResultsTs("值");
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
 		gbc_panel_1.insets = new Insets(0, 0, 5, 0);
 		gbc_panel_1.fill = GridBagConstraints.BOTH;
@@ -91,9 +143,9 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 				refreshFeatureVal();
 			}
 		});
-		
+		yName=obName;
 		//显示周期内分布
-		chartDistribute = new ChartPanelShowScatterPlot("周期内分布", "周期内的点", "值", null);
+		chartDistribute = new ChartPanelShowScatterPlot("周期内分布", "周期内的点", obName, null);
 		GridBagConstraints gbc_chartDistribute = new GridBagConstraints();
 		gbc_chartDistribute.fill = GridBagConstraints.BOTH;
 		gbc_chartDistribute.gridx = 0;
@@ -174,7 +226,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 	@Override
 	public void displayMinerResults() {
 		MinerResults rets = miner.getResults();
-		displayMinerResults(rets);		
+		displayMinerResults(rets);
 	}
 	
 }

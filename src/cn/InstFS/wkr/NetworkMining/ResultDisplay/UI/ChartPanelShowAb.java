@@ -48,11 +48,11 @@ public class ChartPanelShowAb extends JPanel{
         // 创建主题样式
         StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
         // 设置标题字体
-        standardChartTheme.setExtraLargeFont(new Font("隶书", Font.BOLD, 15));
+        standardChartTheme.setExtraLargeFont(new Font("微软雅黑",Font.BOLD,12));
         // 设置图例的字体
         standardChartTheme.setRegularFont(new Font("宋书", Font.PLAIN, 10));
         // 设置轴向的字体
-        standardChartTheme.setLargeFont(new Font("宋书", Font.PLAIN, 10));
+        standardChartTheme.setLargeFont(new Font("微软雅黑",Font.BOLD,12));
         // 应用主题样式
         ChartFactory.setChartTheme(standardChartTheme);
 
@@ -174,16 +174,18 @@ public class ChartPanelShowAb extends JPanel{
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
-    public static JFreeChart createChart(DataItems nor,DataItems abnor)
+    public static JFreeChart createChart(DataItems nor,DataItems abnor,String yName)
     {
         XYDataset xydataset = createNormalDataset(nor);
-        //JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("异常点检测", "时间", "值", xydataset);
-        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常点检测", "时间", "值", xydataset);
+        //JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("异常点检测", "序列编号", "值", xydataset);
+        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常点检测", "序列编号", yName, xydataset);
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
         //xyplot.setDataset(0, xydataset);
-        
+        numberaxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
+        NumberAxis xAxis=(NumberAxis)xyplot.getDomainAxis();
+        xAxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
         //设置异常点提示红点大小        
         java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(-4D, -4D, 6D, 6D);
         XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer)xyplot.getRenderer();

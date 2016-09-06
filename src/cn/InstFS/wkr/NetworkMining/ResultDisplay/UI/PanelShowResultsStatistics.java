@@ -44,7 +44,7 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 		gridBagLayout.rowWeights = new double[]{1.0, 0.0};
 		setLayout(gridBagLayout);
 		
-		ts= new ChartPanelShowStatistics("时间序列","时间",task.getMiningObject(),null);
+		ts= new ChartPanelShowStatistics("时间序列","序列编号",task.getMiningObject(),null);
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
 		gbc_panel_1.insets = new Insets(0, 0, 5, 0);
 		gbc_panel_1.fill = GridBagConstraints.BOTH;

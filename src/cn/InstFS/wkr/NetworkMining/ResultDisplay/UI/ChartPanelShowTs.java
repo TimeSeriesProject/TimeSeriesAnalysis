@@ -49,11 +49,11 @@ public class ChartPanelShowTs extends JPanel{
 		// 创建主题样式
 		StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
 		// 设置标题字体
-		standardChartTheme.setExtraLargeFont(new Font("隶书", Font.BOLD, 15));
+		standardChartTheme.setExtraLargeFont(new Font("微软雅黑",Font.BOLD,12));
 		// 设置图例的字体
-		standardChartTheme.setRegularFont(new Font("宋书", Font.PLAIN, 10));
+		standardChartTheme.setRegularFont(new Font("微软雅黑",Font.BOLD,12));
 		// 设置轴向的字体
-		standardChartTheme.setLargeFont(new Font("宋书", Font.PLAIN, 10));
+		standardChartTheme.setLargeFont(new Font("微软雅黑",Font.BOLD,12));
 		// 应用主题样式
 		ChartFactory.setChartTheme(standardChartTheme);
 				

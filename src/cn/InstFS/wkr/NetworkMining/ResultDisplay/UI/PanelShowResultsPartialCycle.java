@@ -27,7 +27,9 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 	private INetworkMiner miner;
 	DecimalFormat formatter = new DecimalFormat("0.00");
 //	JDesktopPane desktopPane;
-	
+	private String obName;
+	private String xName;
+	private String yName;
 	SubPanelShowMinerResultsTs subPanel = new SubPanelShowMinerResultsTs();
 	
 	ChartPanelShowScatterPlot chartDistribute;
@@ -39,7 +41,21 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 	
 	
 	public PanelShowResultsPartialCycle(TaskElement task){
-		this();		
+		obName=task.getMiningObject();
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{450, 0};
+//		gridBagLayout.rowHeights = new int[] {0, 1, 0};
+		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
+		setLayout(gridBagLayout);
+
+		subPanel = new SubPanelShowMinerResultsTs(obName);
+		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+		gbc_panel_1.insets = new Insets(0, 0, 5, 0);
+		gbc_panel_1.fill = GridBagConstraints.BOTH;
+		gbc_panel_1.gridx = 0;
+		gbc_panel_1.gridy = 0;
+		add(subPanel, gbc_panel_1);
 		InitMiner(task);
 	}
 	private void InitMiner(TaskElement task){

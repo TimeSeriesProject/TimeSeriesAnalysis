@@ -37,16 +37,16 @@ public class PanelShowResultsFP extends JPanel implements IPanelShowResults {
      */
     public PanelShowResultsFP(TaskElement task) {
 //		pane.setLayout(new GridLayout(3, 3));
-//		chart1 = new ChartPanelShowTs("原始值", "时间", "值", null);
-//		chart2 = new ChartPanelShowTs("预测值", "时间", "", null);
+//		chart1 = new ChartPanelShowTs("原始值", "序列编号", "值", null);
+//		chart2 = new ChartPanelShowTs("预测值", "序列编号", "", null);
 //
 //        setLayout(new GridLayout(2,3));
         setLayout(new GridLayout(0, 1, 0, 0));
 
 //		add(chart1);
 //		add(chart2);
-        chart1 = new ChartPanelShowTs("第一种模式", "时间", "值", null);
-//        chart2 =new ChartPanelShowTs("第二种模式","时间","值",null);
+        chart1 = new ChartPanelShowTs("第一种模式", "序列编号", "值", null);
+//        chart2 =new ChartPanelShowTs("第二种模式","序列编号","值",null);
         add(chart1);
 //        add(chart2);
 //        add(chart1);
