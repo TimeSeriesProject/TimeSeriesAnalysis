@@ -27,6 +27,7 @@ import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.openide.nodes.Children;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -51,6 +52,13 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 	public int firstclick = 0;
 	public ArrayList<JCheckBox> box = new ArrayList<>();
 	public int []modelindex=new int[10];
+	public ArrayList<JCheckBox> checkboxArr=new ArrayList<>();
+	public ArrayList<JLabel> labelArr=new ArrayList<>();
+	public String xName;
+	public String yName;
+	public String ObName;
+
+
 
 	/**
 	 * Create the panel.
@@ -101,13 +109,14 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 //		gbc_tblPatterns.gridy = 3;
 ////		add(tblPatterns, gbc_tblPatterns);
 ////		InitChartScheme();
+		ObName=task.getMiningObject();
 		setLayout(new BorderLayout());
-//		chart1 = new ChartPanelShowTs("原始值", "时间", "值", null);
-//		chart2 = new ChartPanelShowTs("预测值", "时间", "", null);
+//		chart1 = new ChartPanelShowTs("原始值", "序列编号", "值", null);
+//		chart2 = new ChartPanelShowTs("预测值", "序列编号", "", null);
 //
 //		add(chart1);
 //		add(chart2);
-		chart1 = new ChartPanelShowTs("频繁模式", "时间", "值", null);
+		chart1 = new ChartPanelShowTs("频繁模式", "序列编号", ObName, null);
 		add(chart1);
 //
 		InitMiner(task);
@@ -175,7 +184,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 
 		int cc = 0;
 		Map<Integer, List<String>> freq = rslt.getRetSM().getFrequentItem();
-
+		rslt.getRetSM().getPatterns();
 		if (rslt == null || rslt.getRetSM() == null ||
 				!rslt.getMiner().getClass().equals(NetworkMinerSM.class))
 			return;
@@ -277,6 +286,17 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				cb8 = new JCheckBox("模式八");
 				cb9 = new JCheckBox("模式九");
 				cb10 = new JCheckBox("模式十");
+				checkboxArr.add(cb1);
+				checkboxArr.add(cb2);
+				checkboxArr.add(cb3);
+				checkboxArr.add(cb4);
+				checkboxArr.add(cb5);
+				checkboxArr.add(cb6);
+				checkboxArr.add(cb7);
+				checkboxArr.add(cb8);
+				checkboxArr.add(cb9);
+				checkboxArr.add(cb10);
+
 				l1 = new JLabel("—");
 				l2 = new JLabel("—");
 				l3 = new JLabel("—");
@@ -289,7 +309,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				l10 = new JLabel("—");
 				l1.setForeground(new Color(220, 87, 19));
 				l1.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
-				l2.setForeground(new Color(224, 208, 0));
+				l2.setForeground(new Color(107, 194, 53));
 				l2.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
 				l3.setForeground(new Color(29, 131, 8));
 				l3.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
@@ -305,39 +325,61 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				l7.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
 				l8.setForeground(new Color(32, 90, 9));
 				l8.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
-				l9.setForeground(new Color(107, 194, 53));
+				l9.setForeground(new Color(224, 208, 0));
 				l9.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
-
-				box.add(cb1);
-				box.add(cb2);
-				box.add(cb3);
-				box.add(cb4);
-				box.add(cb5);
-				box.add(cb6);
-				box.add(cb7);
-				box.add(cb8);
-				box.add(cb9);
-				box.add(cb10);
-				checkboxPanel.add(cb1);
-				checkboxPanel.add(l1);
-				checkboxPanel.add(cb2);
-				checkboxPanel.add(l2);
-				checkboxPanel.add(cb3);
-				checkboxPanel.add(l3);
-				checkboxPanel.add(cb4);
-				checkboxPanel.add(l4);
-				checkboxPanel.add(cb5);
-				checkboxPanel.add(l5);
-				checkboxPanel.add(cb6);
-				checkboxPanel.add(l6);
-				checkboxPanel.add(cb7);
-				checkboxPanel.add(l7);
-				checkboxPanel.add(cb8);
-				checkboxPanel.add(l8);
-				checkboxPanel.add(cb9);
-				checkboxPanel.add(l9);
-				checkboxPanel.add(cb10);
-				checkboxPanel.add(l10);
+				l10.setForeground(new Color(55, 99, 53));
+				l10.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
+				labelArr.add(l1);
+				labelArr.add(l2);
+				labelArr.add(l3);
+				labelArr.add(l4);
+				labelArr.add(l5);
+				labelArr.add(l6);
+				labelArr.add(l7);
+				labelArr.add(l8);
+				labelArr.add(l9);
+				labelArr.add(l10);
+				for(int i=0;i<f_model_nor.size();i++)
+				{
+					if(i<10) {
+						box.add(checkboxArr.get(i));
+						checkboxPanel.add(checkboxArr.get(i));
+						checkboxPanel.add(labelArr.get(i));
+					}
+					else
+						break;
+				}
+				yName=ObName;
+//				box.add(cb1);
+//				box.add(cb2);
+//				box.add(cb3);
+//				box.add(cb4);
+//				box.add(cb5);
+//				box.add(cb6);
+//				box.add(cb7);
+//				box.add(cb8);
+//				box.add(cb9);
+//				box.add(cb10);
+//				checkboxPanel.add(cb1);
+//				checkboxPanel.add(l1);
+//				checkboxPanel.add(cb2);
+//				checkboxPanel.add(l2);
+//				checkboxPanel.add(cb3);
+//				checkboxPanel.add(l3);
+//				checkboxPanel.add(cb4);
+//				checkboxPanel.add(l4);
+//				checkboxPanel.add(cb5);
+//				checkboxPanel.add(l5);
+//				checkboxPanel.add(cb6);
+//				checkboxPanel.add(l6);
+//				checkboxPanel.add(cb7);
+//				checkboxPanel.add(l7);
+//				checkboxPanel.add(cb8);
+//				checkboxPanel.add(l8);
+//				checkboxPanel.add(cb9);
+//				checkboxPanel.add(l9);
+//				checkboxPanel.add(cb10);
+//				checkboxPanel.add(l10);
 				if (f_model_nor.size() == nor_model.size()) {
 					//System.out.println("ppppppppp"+f_model_nor.size());
 					int[] temp = new int[10];
@@ -350,7 +392,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 							System.out.println();
 						}
 					}
-					JFreeChart jf = ChartPanelShowFI.createChart(temp_f_model_nor, nnor, temp_f_model_nor_mode, temp);
+					JFreeChart jf = ChartPanelShowFI.createChart(temp_f_model_nor, nnor, temp_f_model_nor_mode, temp,yName);
 					ChartPanel chartpanel = new ChartPanel(jf);
 					remove(chart1);
 					add(chartpanel, BorderLayout.CENTER);
@@ -363,7 +405,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 							@Override
 							public void actionPerformed(ActionEvent e) {
 
-								for (int k = 0; k < 10; k++) {
+								for (int k = 0; k < box.size(); k++) {
 									if (box.get(k).isSelected()) {
 										modelindex[k] = 1;
 									} else
@@ -371,7 +413,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 								}
 
 								removeAll();
-								JFreeChart jf1 = ChartPanelShowFI.createChart(f_model_nor, nnor, f_model_nor_mode, modelindex);
+								JFreeChart jf1 = ChartPanelShowFI.createChart(f_model_nor, nnor, f_model_nor_mode, modelindex,yName);
 								ChartPanel chartpanel1 = new ChartPanel(jf1);
 								add(chartpanel1, BorderLayout.CENTER);
 								add(checkboxPanel, BorderLayout.SOUTH);

@@ -3,6 +3,7 @@ package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common;
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.inference.TestUtils;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.KolmogorovSmirnovCheckout;
 
 /**
  * Created by qt on 2015/1/8.
@@ -12,7 +13,7 @@ public class NormalDistributionTest {
     private double[] arr;
     private double mean;
     private double stdeviation;
-    private final static double CONFIDENCE = 0.01;
+    private final static double CONFIDENCE = 0.01;//显著性水平。取值为0.01, 0.02, 0.05, 0.1, 0.2
     private static double K = 3;
     private NormalDistribution distribution;
     public NormalDistributionTest(double[] arr,double K){
@@ -34,7 +35,8 @@ public class NormalDistributionTest {
     }
 
     public boolean isNormalDistri(){
-        return !TestUtils.kolmogorovSmirnovTest(distribution, arr,CONFIDENCE);
+    	KolmogorovSmirnovCheckout ks = new KolmogorovSmirnovCheckout();
+        return ks.kolmogorovSmirnovTest(distribution, arr,CONFIDENCE);
     }
     
     //检查以数据是否服从该分布

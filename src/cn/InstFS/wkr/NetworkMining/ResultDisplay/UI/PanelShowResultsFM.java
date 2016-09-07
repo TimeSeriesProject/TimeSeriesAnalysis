@@ -38,9 +38,12 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
     ChartPanelShowTs chart3;
     ChartPanelShowAb chart2;
     ChartPanelShowPre chart4;
-
+    private String obName;
+    private String xName;
+    private String yName;
     public PanelShowResultsFM(TaskElement task) {
         this();
+        obName=task.getMiningObject();
         InitMiner(task);
 
 
@@ -57,14 +60,13 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
     private PanelShowResultsFM() {
         InitChartScheme();
         setLayout(new GridLayout(0, 1, 0, 0));
-//		chart1 = new ChartPanelShowTs("原始值", "时间", "值", null);
-//		chart2 = new ChartPanelShowTs("预测值", "时间", "", null);
-//
+//		chart1 = new ChartPanelShowTs("原始值", "序列编号", "值", null);
+//		chart2 = new ChartPanelShowTs("预测值", "序列编号", "", null);
 //		add(chart1);
 //		add(chart2);
-        chart1 = new ChartPanelShowTs("原始值", "时间", "值", null);
-//        chart2 = new ChartPanelShowAb("预测值", "时间", "", null);
-        chart3= new ChartPanelShowTs("预测值", "时间", "", null);
+        chart1 = new ChartPanelShowTs("原始值", "序列编号", obName, null);
+//        chart2 = new ChartPanelShowAb("预测值", "序列编号", "", null);
+        chart3= new ChartPanelShowTs("预测值", "序列编号", obName, null);
         add(chart1);
         add(chart3);
 
@@ -72,10 +74,10 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
 
     private void InitChartScheme() {
         StandardChartTheme sct = new StandardChartTheme("");
-        sct.setExtraLargeFont(new Font("宋体", 0, 20));
-        sct.setLargeFont(new Font("宋体", 0, 15));
-        sct.setRegularFont(new Font("宋体", 0, 12));
-        sct.setSmallFont(new Font("宋体", 0, 8));
+        sct.setExtraLargeFont(new Font("微软雅黑",Font.BOLD,12));
+        sct.setLargeFont(new Font("微软雅黑",Font.BOLD,12));
+        sct.setRegularFont(new Font("微软雅黑",Font.BOLD,12));
+        sct.setSmallFont(new Font("微软雅黑",Font.BOLD,12));
         ChartFactory.setChartTheme(sct);
     }
 
@@ -163,7 +165,7 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
             return;
 
         if (count == 0) {
-
+            yName=obName;
 
 //            DataItems  = rslts.getRetOM().getOutlies();
 			DataItems predictItems = rslts.getRetFM().getPredictItems();
@@ -198,7 +200,7 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
 			{
 //				XYDataset nor=ChartPanelShowPre.createNormalDataset(oriItems);
 //				XYDataset abnor=ChartPanelShowPre.createAbnormalDataset();
-				JFreeChart jf=ChartPanelShowPre.createChart(oriItems,predictItems);
+				JFreeChart jf=ChartPanelShowPre.createChart(oriItems,predictItems,yName);
 				ChartPanel chartpanel = new ChartPanel(jf);
 				chart1.displayDataItems(oriItems);
 				remove(chart1);

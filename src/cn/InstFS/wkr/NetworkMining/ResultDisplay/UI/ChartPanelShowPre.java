@@ -45,11 +45,11 @@ public class ChartPanelShowPre extends JPanel{
         // 创建主题样式
         StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
         // 设置标题字体
-        standardChartTheme.setExtraLargeFont(new Font("隶书", Font.BOLD, 15));
+        standardChartTheme.setExtraLargeFont(new Font("微软雅黑",Font.BOLD,12));
         // 设置图例的字体
-        standardChartTheme.setRegularFont(new Font("宋书", Font.PLAIN, 10));
+        standardChartTheme.setRegularFont(new Font("微软雅黑",Font.BOLD,12));
         // 设置轴向的字体
-        standardChartTheme.setLargeFont(new Font("宋书", Font.PLAIN, 10));
+        standardChartTheme.setLargeFont(new Font("微软雅黑",Font.BOLD,12));
         // 应用主题样式
         ChartFactory.setChartTheme(standardChartTheme);
 
@@ -155,11 +155,11 @@ public class ChartPanelShowPre extends JPanel{
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
-    public static JFreeChart createChart(DataItems nor,DataItems abnor)
+    public static JFreeChart createChart(DataItems nor,DataItems abnor,String yname)
     {
 
         XYDataset xydataset = createNormalDataset(nor);
-        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 预测", "time", "value", xydataset);
+        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 预测", "序列编号", yname, xydataset);
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);

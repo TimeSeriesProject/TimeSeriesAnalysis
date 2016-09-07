@@ -144,7 +144,7 @@ public class win10_window extends JFrame {
 
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
-            server.SingleNode(singleNodeOrNodePairMinerFactoryDis, ob);
+            server.SingleNodeOrNodePair(singleNodeOrNodePairMinerFactoryDis, ob);
         }
 
         isSingleNodeMined=true;

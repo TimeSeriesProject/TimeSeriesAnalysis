@@ -158,7 +158,7 @@ public class ChartPanelShowAbl extends JPanel{
     	}
     	return xyDatasetList;
     }
-    public static JFreeChart createChart(DataItems oriItems,DataItems outdegree,List<DataItems> outSet)
+    public static JFreeChart createChart(DataItems oriItems,DataItems outdegree,List<DataItems> outSet,String yName)
     {
 
         //设置异常点提示红点大小
@@ -168,18 +168,20 @@ public class ChartPanelShowAbl extends JPanel{
         XYDataset xydataset1 = createAbnormalDataset(outdegree);//异常度
         List<XYDataset> xyDatasetlist = createAbLineDataset(oriItems,outSet);//异常点
         
-        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "时间", "值", null);
+        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "序列编号", yName, xydataset);
         jfreechart.removeLegend();
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         xyplot.setDomainPannable(true);
         xyplot.setOrientation(PlotOrientation.VERTICAL);
         //设置原始坐标轴
         double max = getMaxPiont(oriItems);
-        NumberAxis numberAxis0 = new NumberAxis();
+        NumberAxis numberAxis0 = new NumberAxis(yName);
         xyplot.setRangeAxis(0,numberAxis0);
         numberAxis0.setLowerMargin(10);
         numberAxis0.setLowerBound(0-max/10);
         numberAxis0.setUpperBound(max*1.01);
+        numberAxis0.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
+
         //设置异常度坐标轴 
         NumberAxis numberaxis1 = new NumberAxis("异常度");
         xyplot.setRangeAxis(1, numberaxis1);
@@ -188,7 +190,9 @@ public class ChartPanelShowAbl extends JPanel{
         numberaxis1.setTickUnit(new NumberTickUnit(1D));  //y轴单位间隔为1
         numberaxis1.setRange(0,10);
         numberaxis1.setUpperMargin(1);
-        
+        numberaxis1.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
+        NumberAxis xAxis=(NumberAxis)xyplot.getDomainAxis();
+        xAxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
         xyplot.setDataset(0, xydataset);
         xyplot.setDataset(1, xydataset1);        
         //设置同一个横轴显示两组数据。

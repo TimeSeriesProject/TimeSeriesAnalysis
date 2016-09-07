@@ -231,18 +231,20 @@ public class ChartPanelShowPP extends JPanel {
 
     	return xyseriescollectionlist;
     }
-    public static JFreeChart createChart(ArrayList<DataItems> _nor_model,ArrayList<String> name, DataItems nor, DataItems abnor,int period,int firstperiod) {
+    public static JFreeChart createChart(ArrayList<DataItems> _nor_model,ArrayList<String> name, DataItems nor, DataItems abnor,int period,int firstperiod,String yName) {
         XYDataset xydataset = createNormalDataset(nor);
-        //JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("周期值: "+period+"    "+"最可能子周期值 : "+firstperiod, "时间", "值", xydataset);
-        //JFreeChart jfreechart = ChartFactory.createScatterPlot("周期值: "+period+"    "+"最可能子周期值 : "+firstperiod, "时间", "值", xydataset);
-        JFreeChart jfreechart = ChartFactory.createXYLineChart( "路径："+name.get(0)+"   周期值: "+period+"    "+"最可能子周期值 : "+firstperiod, "时间", "值", xydataset);
+        //JFreeChart jfreechart = ChartFactory.createTimeSeriesChart("周期值: "+period+"    "+"最可能子周期值 : "+firstperiod, "序列编号", "值", xydataset);
+        //JFreeChart jfreechart = ChartFactory.createScatterPlot("周期值: "+period+"    "+"最可能子周期值 : "+firstperiod, "序列编号", "值", xydataset);
+        JFreeChart jfreechart = ChartFactory.createXYLineChart( "路径："+name.get(0)+"   周期值: "+period+"    "+"最可能子周期值 : "+firstperiod, "序列编号", yName, xydataset);
         jfreechart.removeLegend();
 
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
         xyplot.setAxisOffset(new RectangleInsets(10D, 10D, 10D, 10D));
         NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
-
+        numberaxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
+        NumberAxis xAxis=(NumberAxis)xyplot.getDomainAxis();
+        xAxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
         java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(-4D, -4D, 6D, 6D);
         //设置异常点提示红点大小
         /*XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer) xyplot.getRenderer();

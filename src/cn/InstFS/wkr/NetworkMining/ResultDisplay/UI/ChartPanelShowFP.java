@@ -184,10 +184,13 @@ public class ChartPanelShowFP extends JPanel {
 
     public static JFreeChart createChart(ArrayList<DataItems> _nor_model, ArrayList<DataItems> _abnor_model, DataItems nor, DataItems abnor) {
         XYDataset xydataset = createNormalDataset(nor);
-        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 多元任务", "时间", "值", xydataset);
+        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 多元任务", "序列编号", "值", xydataset);
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
+        numberaxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
+        NumberAxis xAxis=(NumberAxis)xyplot.getDomainAxis();
+        xAxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
         java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(-4D, -4D, 6D, 6D);
         //设置异常点提示红点大小
         XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer) xyplot.getRenderer();
