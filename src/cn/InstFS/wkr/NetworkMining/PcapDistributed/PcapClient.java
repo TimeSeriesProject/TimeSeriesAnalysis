@@ -52,7 +52,7 @@ public class PcapClient {
 
     private void sendReady() {
         try {
-            clientInit.sendMsg("Ready");
+            clientInit.sendPcapMsg("Ready");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -107,9 +107,9 @@ public class PcapClient {
                     System.out.println("开始");
                     sendReady();//先发送Ready
                     System.out.println("ready已发送");
-                    taskFlag = clientInit.receiveData();//判断执行哪个任务
+                    taskFlag = clientInit.receiveStr();//判断执行哪个任务
                     if (taskFlag.equals("First")) {
-                        tasks = clientInit.receiveData();//收到要完成的任务string
+                        tasks = clientInit.receiveStr();//收到要完成的任务string
                         if (tasks.equals("Empty")) {
                             System.out.println("empty");
                             continue;//所有结果已发送，返回
@@ -120,8 +120,8 @@ public class PcapClient {
                         pcapUtils = new PcapUtils();
                         pcapUtils.First2Step(fileList, outPath + part1);//执行前两步每次在不同的文件夹下保存结果
                         System.out.println("执行完毕");
-                        clientInit.sendMsg(tasks);
-                        String str = clientInit.receiveData();
+                        clientInit.sendPcapMsg(tasks);
+                        String str = clientInit.receiveStr();
                         if (str.equals("Absent")) {
                             System.out.println("absent...");
                             //返回结果
@@ -130,7 +130,7 @@ public class PcapClient {
                             continue;
                         }
                     } else if (taskFlag.equals("Last")) {
-                        tasks2 = clientInit.receiveData();
+                        tasks2 = clientInit.receiveStr();
                         System.out.println("task2: " + tasks2);
                         if (tasks2.equals("Empty")) {
                             System.out.println("empty");
@@ -144,8 +144,8 @@ public class PcapClient {
                         pcapUtils = new PcapUtils();
                         pcapUtils.Last2Step(fileList, outPath + part2);
                         System.out.println("执行完毕");
-                        clientInit.sendMsg(tasks2);
-                        String str = clientInit.receiveData();
+                        clientInit.sendPcapMsg(tasks2);
+                        String str = clientInit.receiveStr();
                         if (str.equals("Absent")) {
                             System.out.println("absent...");
                             //返回结果
@@ -229,7 +229,7 @@ public class PcapClient {
                     sendResult(f.getAbsolutePath());
                 }
             }
-            clientInit.sendMsg("endTransmit");
+            clientInit.sendPcapMsg("endTransmit");
         }
 
         private void preprocess(File folder) {
@@ -259,8 +259,8 @@ public class PcapClient {
         private void sendFolder(File folder) {
             String selectFolderPath = folder.getAbsolutePath().substring(index);//选择的文件夹名字：routesrc或node
             try {
-                clientInit.sendMsg("sendFolder");
-                clientInit.sendMsg(selectFolderPath);
+                clientInit.sendPcapMsg("sendFolder");
+                clientInit.sendPcapMsg(selectFolderPath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -287,8 +287,8 @@ public class PcapClient {
             byte[] sendBuffer = new byte[BUF_LEN];
             int length;
             try {
-                clientInit.sendMsg("sendFile");
-                clientInit.sendMsg(file.getName());
+                clientInit.sendPcapMsg("sendFile");
+                clientInit.sendPcapMsg(file.getName());
                 System.out.println("fileName: " + file.getName());
 
                 DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
@@ -326,13 +326,13 @@ public class PcapClient {
 }
 
 class ClientInit {
-    private ClientConnectServer clientConnectServerMsg = new ClientConnectServer();
+    private ClientConnectServer pcapClientConnectServerMsg = new ClientConnectServer();
     //    private ClientConnectServerObject clientConnectServerObject = new ClientConnectServerObject();
     private static boolean flag;
     private static boolean isConnected;
 
     public void close() {
-        clientConnectServerMsg.close();
+        pcapClientConnectServerMsg.close();
 //        clientConnectServerObject.close();
     }
 
@@ -365,7 +365,7 @@ class ClientInit {
                 }
             }
         }
-        clientConnectServerMsg.connectServer(socket1);
+        pcapClientConnectServerMsg.connectServer(socket1);
 //        clientConnectServerObject.connectServer2(socket2);
     }
 
@@ -375,46 +375,46 @@ class ClientInit {
 
     //发送文件
     public void sendInt(int len) throws IOException {
-        clientConnectServerMsg.getDosWithServer().writeInt(len);
+        pcapClientConnectServerMsg.getDosWithServer().writeInt(len);
     }
 
     //发送文件长度
     public void sendLong(long len) throws IOException {
-        clientConnectServerMsg.getDosWithServer().writeLong(len);
-        clientConnectServerMsg.getDosWithServer().flush();
+        pcapClientConnectServerMsg.getDosWithServer().writeLong(len);
+        pcapClientConnectServerMsg.getDosWithServer().flush();
     }
 
     public void sendByte(byte[] bytes, int off, int len) throws IOException {
-        clientConnectServerMsg.getDosWithServer().write(bytes, off, len);
-        clientConnectServerMsg.getDosWithServer().flush();
+        pcapClientConnectServerMsg.getDosWithServer().write(bytes, off, len);
+        pcapClientConnectServerMsg.getDosWithServer().flush();
     }
 
     //发送Ready信息
-    public void sendMsg(String str) throws IOException {
-        clientConnectServerMsg.getDosWithServer().writeUTF(str);
-        clientConnectServerMsg.getDosWithServer().flush();
+    public void sendPcapMsg(String str) throws IOException {
+        pcapClientConnectServerMsg.getDosWithServer().writeUTF(str);
+        pcapClientConnectServerMsg.getDosWithServer().flush();
     }
 
     public int receiveInt() throws IOException {
-        return clientConnectServerMsg.getDisWithServer().readInt();
+        return pcapClientConnectServerMsg.getDisWithServer().readInt();
     }
 
     public long receiveLong() throws IOException {
-        return clientConnectServerMsg.getDisWithServer().readLong();
+        return pcapClientConnectServerMsg.getDisWithServer().readLong();
     }
 
     public String receiveMsg() throws IOException {
-        return clientConnectServerMsg.getDisWithServer().readUTF();
+        return pcapClientConnectServerMsg.getDisWithServer().readUTF();
     }
 
     public void receiveFullByte(byte[] bytes, int off, int len) throws IOException {
-        clientConnectServerMsg.getDisWithServer().readFully(bytes, off, len);
+        pcapClientConnectServerMsg.getDisWithServer().readFully(bytes, off, len);
     }
 
 
     //接收执行指令
-    public String receiveData() throws IOException, ClassNotFoundException {
-        return clientConnectServerMsg.getDisWithServer().readUTF();
+    public String receiveStr() throws IOException, ClassNotFoundException {
+        return pcapClientConnectServerMsg.getDisWithServer().readUTF();
     }
 }
 
