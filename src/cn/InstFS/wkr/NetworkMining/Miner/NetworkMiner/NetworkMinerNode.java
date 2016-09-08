@@ -283,7 +283,7 @@ class NodeTimerTask extends TimerTask{
 						printClusterLabelTOLines(clusterItems, dataItems);
 				List<LineElement> lineElements = sequencePattern.getLineElement(frequentItem);
 				sequencePattern.patternMining();
-				setFrequentResults(results, sequencePattern,frequentItem);
+				setFrequentResults(results, sequencePattern,frequentItem, lineElements);
 				break;
 			case MiningMethods_PartialCycle:
 				
@@ -350,12 +350,13 @@ class NodeTimerTask extends TimerTask{
 	}
 	
 	private void setFrequentResults(MinerResults results,SequencePatternsDontSplit sequencePattern,
-			Map<Integer, List<String>>frequentItem){
+			Map<Integer, List<String>>frequentItem, List<LineElement> lineElements){
 		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
 		if(sequencePattern.isHasFreItems()){
 			results.getRetNode().getRetSM().setPatters(patterns);
 			results.getRetNode().getRetSM().setHasFreItems(true);
 			results.getRetNode().getRetSM().setFrequentItem(frequentItem);
+			results.getRetNode().getRetSM().setLineElements(lineElements);
 			System.out.println(taskCombination.getName()+" has freitems");
 		}else{
 			results.getRetNode().getRetSM().setHasFreItems(false);

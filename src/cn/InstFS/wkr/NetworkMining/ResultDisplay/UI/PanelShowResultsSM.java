@@ -10,6 +10,7 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.*;
 
+import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.NetworkMinerSM;
@@ -183,8 +184,9 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 
 
 		int cc = 0;
-		Map<Integer, List<String>> freq = rslt.getRetSM().getFrequentItem();
-		rslt.getRetSM().getPatterns();
+		Map<Integer, List<String>> freq = rslt.getRetSM().getFrequentItem(); //Integer对应线段类标签，List为该类所有线段的起始点
+		DataItems freqPatterns = rslt.getRetSM().getPatterns();	// 频繁模式
+		List<LineElement> lineElements = rslt.getRetSM().getLineElements();
 		if (rslt == null || rslt.getRetSM() == null ||
 				!rslt.getMiner().getClass().equals(NetworkMinerSM.class))
 			return;
@@ -194,81 +196,71 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 			long startTime = System.currentTimeMillis();
 			if (freq != null && count == 0) {
 
-				HashMap<String, ArrayList<String>> nor_model = new HashMap<>();
-				for (Integer key : freq.keySet()) {
-					String skey = key.toString();
-					ArrayList<String> astring = new ArrayList<>();
-					for (String s : freq.get(key)) {
-						astring.add(s);
+				for (LineElement e: lineElements) {	// 创建线段化后原图
+					int start = e.getStart();
+					int end = e.getEnd();
+					DataItem tempItem = new DataItem();
+					if (start < nor.getLength()) {
+						tempItem.setTime(nor.getElementAt(start).getTime());
+						tempItem.setData(nor.getElementAt(start).getData());
+						nnor.add1Data(tempItem);
 					}
-					nor_model.put(skey, astring);
+					if (end < nor.getLength()) {
+						tempItem.setTime(nor.getElementAt(end).getTime());
+						tempItem.setData(nor.getElementAt(end).getData());
+						nnor.add1Data(tempItem);
+					} else if (end == nor.getLength()) {
+						tempItem.setTime(nor.getElementAt(end -1).getTime());
+						tempItem.setData(nor.getElementAt(end -1).getData());
+						nnor.add1Data(tempItem);
+					}
 				}
 
-				for (int i = 0; i < nor_model.size(); i++) {
-					String key = Integer.toString(i);
-					ArrayList<DataItems> nor_data = new ArrayList<DataItems>();
-					ArrayList<DataItems> nor_data_mode = new ArrayList<DataItems>();
+				List<String>freqPatternsList = freqPatterns.getData();
+				int key = 0;
+				for (String pattern: freqPatternsList) {
+					ArrayList<DataItems> nor_data = new ArrayList<DataItems>(); // 存储符合某一频繁模式的所有线段
+					String[] indexList = pattern.split(",");
+					for (int i = 0; i < lineElements.size() - indexList.length;){
 
-					final ArrayList<String> model_line = nor_model.get(key);
-					for (int j = 0; j < model_line.size(); j++) {
-						String temp = model_line.get(j);
-						String[] temp_processData = temp.split(",");
-						int first = 0;
-						int last = 0;
-
-						DataItems nor_line = new DataItems();
-						DataItems nor_line_mode = new DataItems();
-
-						if (temp_processData[0] != null) {
-							String firstString = temp_processData[0];
-							first = Integer.parseInt(firstString);
-
+						boolean match = true;
+						ArrayList<DataItems> temp = new ArrayList<>();
+						for (int j = 0; j < indexList.length; j++){
+							LineElement line = lineElements.get(i+j);
+							if (line.getLabel() != Integer.parseInt(indexList[j])) {
+								match = false;
+								break;
+							}
+							int start = line.getStart();
+							int end = line.getEnd();
+							DataItem tempItem = new DataItem();
+							DataItems tempLine = new DataItems();
+							if (start < nor.getLength()) {
+								tempItem.setTime(nor.getElementAt(start).getTime());
+								tempItem.setData(nor.getElementAt(start).getData());
+								tempLine.add1Data(tempItem);
+							}
+							if (end < nor.getLength()) {
+								tempItem.setTime(nor.getElementAt(end).getTime());
+								tempItem.setData(nor.getElementAt(end).getData());
+								tempLine.add1Data(tempItem);
+							} else if (end == nor.getLength()) {
+								tempItem.setTime(nor.getElementAt(end -1).getTime());
+								tempItem.setData(nor.getElementAt(end -1).getData());
+								tempLine.add1Data(tempItem);
+							}
+							temp.add(tempLine);
 						}
-						if (temp_processData.length > 1) {
-							String endString = temp_processData[1];
-							last = Integer.parseInt(endString);
-
+						if (match) {
+							nor_data.addAll(temp);
+							i += indexList.length;
+						} else {
+							i++;
 						}
-
-						DataItem tempItem = new DataItem();
-						DataItem tempMode = new DataItem();
-
-
-						if (first < nor.getLength()) {
-
-							tempItem.setTime(nor.getElementAt(first).getTime());
-							tempItem.setData(nor.getElementAt(first).getData());
-
-							nor_line.add1Data(tempItem);
-							nnor.add1Data(tempItem);
-						}
-
-						if (last <= nor.getLength()) {
-
-							tempItem.setTime(nor.getElementAt(last - 1).getTime());
-							tempItem.setData(nor.getElementAt(last - 1).getData());
-//							tempItem.setTime(nor.getElementAt(last).getTime());
-//							tempItem.setData(nor.getElementAt(last).getData());
-
-							nor_line.add1Data(tempItem);
-							nnor.add1Data(tempItem);
-						}
-
-						if (first < nor.getLength() && last <= nor.getLength()) {
-							tempMode.setTime(nor.getElementAt((first + last) / 2).getTime());
-							tempMode.setData(Math.abs(Double.valueOf
-									(nor.getElementAt(last - 1).getData()) + Double.valueOf(nor.getElementAt(first).getData())) / 2 + "");
-						}
-
-						if (tempMode.getData() != null) {
-							nor_line_mode.add1Data(tempMode);
-							nor_data.add(nor_line);
-							nor_data_mode.add(nor_line_mode);
-						}
-
 					}
-					f_model_nor.put(key, nor_data);
-					f_model_nor_mode.put(key, nor_data_mode);
+
+					f_model_nor.put(String.valueOf(key), nor_data);
+					key++;
 				}
 
 				final JPanel checkboxPanel = new JPanel();
@@ -380,7 +372,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 //				checkboxPanel.add(l9);
 //				checkboxPanel.add(cb10);
 //				checkboxPanel.add(l10);
-				if (f_model_nor.size() == nor_model.size()) {
+
 					//System.out.println("ppppppppp"+f_model_nor.size());
 					int[] temp = new int[10];
 					HashMap<String, ArrayList<DataItems>> temp_f_model_nor = new HashMap<>();
@@ -425,7 +417,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 					}
 					long endTime = System.currentTimeMillis();
 					System.out.println(endTime - startTime + "ms");
-				}
+
 			}
 		}
 	}

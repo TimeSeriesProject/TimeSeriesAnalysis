@@ -1,6 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.Miner.Common;
 
-public class LineElement {
+import java.io.Serializable;
+
+public class LineElement implements Serializable {
 
 	int label = 0;
 	int start = 0;
