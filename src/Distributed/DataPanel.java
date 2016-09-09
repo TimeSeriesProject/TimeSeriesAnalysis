@@ -76,11 +76,11 @@ public class DataPanel extends JPanel {
                 setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 0));
 
         //log
-        this.add(getLog(), new PropertiesGBC(0, 3, 1, 1).
+        this.add(getLog(), new PropertiesGBC(0, 2, 1, 1).
                 setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 0));
 
         //log内容
-        this.add(getJScrollPane(), new PropertiesGBC(0, 4, 4, 1).
+        this.add(getJScrollPane(), new PropertiesGBC(0, 3, 4, 1).
                 setFill(PropertiesGBC.BOTH).setWeight(1, 1).setInsets(5, 5, 5, 0));
 
     }
@@ -175,6 +175,8 @@ public class DataPanel extends JPanel {
             login.setText("连接");
             getIPFiled().setEditable(true);
             getPortFiled().setEditable(true);
+            getPcapFolderFiled().setEditable(true);
+            getFileFolderFiled().setEditable(true);
             client.close();
         }
     }

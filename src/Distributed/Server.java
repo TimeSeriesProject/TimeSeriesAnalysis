@@ -891,6 +891,10 @@ public class Server {
                         }
                     }
                     System.out.println("执行完毕");
+
+
+
+
                 }
             } catch (IOException e) {
                 System.out.println("接收ready关闭");
@@ -1363,11 +1367,12 @@ public class Server {
 //                pcapPanel.getBar().setMaximum(allTasks.size());//进度条最大
 //                pcapPanel.getBar().setValue(recCount);
 //                pcapPanel.getjLabel().setText("阶段 1/2");
+                    long a = System.currentTimeMillis();
                     while (firstConnected) {
                         dataFromClient = userClient.receiveMsg();
                         //设置初始的进度条，只设置一次
                         if (flag) {
-                            pcapPanel.getBar().setMaximum(allTasks.size());//进度条最大
+                            pcapPanel.getBar().setMaximum(tasksCount * 2);//进度条最大
                             pcapPanel.getBar().setValue(recCount);
                             pcapPanel.getjLabel().setText("阶段 1/2");
                             flag = false;
@@ -1409,8 +1414,8 @@ public class Server {
                         }
 
                         //接收结果
-                        recLock.lock();
-                        try {
+//                        recLock.lock();
+//                        try {
                             if (!isEmpty) {
                                 //判断是否返回已存在结果，若不存在，则接收
                                 task = userClient.receiveMsg();
@@ -1459,14 +1464,14 @@ public class Server {
                                 lastConnected = true;
 //                            recCon.await();
                             }
-                        } finally {
-                            recLock.unlock();
-                        }
+//                        } finally {
+//                            recLock.unlock();
+//                        }
                     }
 
                     tasksCount = allTasks2.size();
-                    pcapPanel.getBar().setMaximum(allTasks2.size());//进度条最大
-                    pcapPanel.getBar().setValue(recCount2);
+                    pcapPanel.getBar().setMaximum(tasksCount * 2);//进度条最大
+                    pcapPanel.getBar().setValue(recCount2 + tasksCount);
                     pcapPanel.getjLabel().setText("阶段 2/2");
                     //执行后2步
                     while (lastConnected) {
@@ -1510,8 +1515,8 @@ public class Server {
                         }
 
                         //接收结果
-                        recLock2.lock();
-                        try {
+//                        recLock2.lock();
+//                        try {
                             if (!isEmpty2) {
                                 //判断是否返回已存在结果
                                 task2 = userClient.receiveMsg();
@@ -1532,7 +1537,7 @@ public class Server {
                                         receiveResult2(finalFolderPath);
                                         updateMap2(task2);
                                         recCount2 += 1;
-                                        pcapPanel.getBar().setValue(recCount2);
+                                        pcapPanel.getBar().setValue(recCount2 + tasksCount);
                                         pcapPanel.getjLabel().setText("阶段 2/2");
                                         if (recCount2 == tasksCount) {
                                             System.out.println("运行结束2.1");
@@ -1546,6 +1551,8 @@ public class Server {
                                             flag = true;
                                             isPcapSuspend = true;
                                             setIsPcapRunning(false);
+                                            long b = System.currentTimeMillis();
+                                            System.out.println("time.... " + (b - a));
                                         }
                                     }
                                 } else if (status.equals("Existent")) {
@@ -1559,6 +1566,8 @@ public class Server {
                                         flag = true;
                                         isPcapSuspend = true;
                                         setIsPcapRunning(false);
+                                        long b = System.currentTimeMillis();
+                                        System.out.println("time.... " + (b - a));
                                     }
                                 }
                             } else {
@@ -1569,9 +1578,9 @@ public class Server {
                                 isPcapSuspend = true;
                                 setIsPcapRunning(false);
                             }
-                        } finally {
-                            recLock2.unlock();
-                        }
+//                        } finally {
+//                            recLock2.unlock();
+//                        }
                     }
                 }
             } catch (IOException e) {
