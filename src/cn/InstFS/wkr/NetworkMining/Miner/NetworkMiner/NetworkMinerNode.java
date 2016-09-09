@@ -23,6 +23,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm.SequencePa
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.PartialCycle;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.averageEntropyPM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
@@ -286,7 +287,13 @@ class NodeTimerTask extends TimerTask{
 				setFrequentResults(results, sequencePattern,frequentItem, lineElements);
 				break;
 			case MiningMethods_PartialCycle:
-				
+				if(task.getRange().equals("10.0.7.2"))
+				{
+					PartialCycle partialCycle = new PartialCycle(results);
+					partialCycle.setDataItems(dataItems);
+					partialCycle.run();
+				}
+				break;
 			default:
 				break;
 			}

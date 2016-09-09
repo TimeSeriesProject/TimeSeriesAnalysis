@@ -473,7 +473,7 @@ public class CWNetworkReader  implements IReader{
 	 * @param matrix
 	 * @return
 	 */
-	private int calDiameter(Set<Pair> matrix)
+	private double calDiameter(Set<Pair> matrix)
 	{
 		// TODO Auto-generated method stub
 		int result = 0;
@@ -507,11 +507,20 @@ public class CWNetworkReader  implements IReader{
 					if(dis[i][k]!=Integer.MAX_VALUE&&dis[k][j]!=Integer.MAX_VALUE)
 						dis[i][j]=(dis[i][k]+dis[k][j])<dis[i][j]?(dis[i][k]+dis[k][j]):dis[i][j];
 				}
-		
+		double sum=0;
+		double num=0;
 		for(int i=0;i<p.length;i++)
 			for(int j=0;j<p.length;j++)
+			{
 				result = dis[i][j]>result?dis[i][j]:result;
-		return result-1;
+				if(dis[i][j]!=Integer.MAX_VALUE)
+				{
+					sum+=dis[i][j];
+					num++;
+				}
+			}
+		return sum/num;
+		//return result-1; //计算的是中间路由器的个数，而dis是主机及路由器之间连接的长度
 	}
 	
 //	private DataItems readNodeFrequenceByText(){
