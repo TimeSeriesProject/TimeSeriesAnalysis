@@ -17,7 +17,7 @@ public class ClientFrame extends JFrame{
 
         this.setTitle("网络规律挖掘模拟器");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(new Dimension(400, 500));
+        this.setSize(new Dimension(600, 500));
         this.add(dataPanel);
         this.setResizable(true);
         this.setVisible(true);

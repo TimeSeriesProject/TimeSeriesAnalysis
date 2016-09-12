@@ -23,6 +23,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm.SequencePa
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.PartialCycle;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.averageEntropyPM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
@@ -283,10 +284,16 @@ class NodeTimerTask extends TimerTask{
 						printClusterLabelTOLines(clusterItems, dataItems);
 				List<LineElement> lineElements = sequencePattern.getLineElement(frequentItem);
 				sequencePattern.patternMining();
-				setFrequentResults(results, sequencePattern,frequentItem);
+				setFrequentResults(results, sequencePattern,frequentItem, lineElements);
 				break;
 			case MiningMethods_PartialCycle:
-				
+				if(task.getRange().equals("10.0.7.2"))
+				{
+					PartialCycle partialCycle = new PartialCycle(results);
+					partialCycle.setDataItems(dataItems);
+					partialCycle.run();
+				}
+				break;
 			default:
 				break;
 			}
@@ -350,12 +357,13 @@ class NodeTimerTask extends TimerTask{
 	}
 	
 	private void setFrequentResults(MinerResults results,SequencePatternsDontSplit sequencePattern,
-			Map<Integer, List<String>>frequentItem){
+			Map<Integer, List<String>>frequentItem, List<LineElement> lineElements){
 		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
 		if(sequencePattern.isHasFreItems()){
 			results.getRetNode().getRetSM().setPatters(patterns);
 			results.getRetNode().getRetSM().setHasFreItems(true);
 			results.getRetNode().getRetSM().setFrequentItem(frequentItem);
+			results.getRetNode().getRetSM().setLineElements(lineElements);
 			System.out.println(taskCombination.getName()+" has freitems");
 		}else{
 			results.getRetNode().getRetSM().setHasFreItems(false);

@@ -230,16 +230,6 @@ public class ChartPanelShowFI extends JPanel {
         ArrayList<DataItems> eighth = new ArrayList<DataItems>();
         ArrayList<DataItems> ninth = new ArrayList<>();
         ArrayList<DataItems> tenth = new ArrayList<>();
-        ArrayList<DataItems> one_mode = new ArrayList<DataItems>();
-        ArrayList<DataItems> second_mode = new ArrayList<DataItems>();
-        ArrayList<DataItems> third_mode = new ArrayList<DataItems>();
-        ArrayList<DataItems> fourth_mode = new ArrayList<DataItems>();
-        ArrayList<DataItems> fifth_mode = new ArrayList<DataItems>();
-        ArrayList<DataItems> sixth_mode = new ArrayList<DataItems>();
-        ArrayList<DataItems> seventh_mode = new ArrayList<DataItems>();
-        ArrayList<DataItems> eighth_mode = new ArrayList<DataItems>();
-        ArrayList<DataItems> ninth_mode = new ArrayList<>();
-        ArrayList<DataItems> tenth_mode = new ArrayList<>();
         for (int i = 0; i < nor_model.size(); i++) {    // 循环不同的频繁模式
             int count = 0;
             String key = Integer.toString(i);
@@ -248,7 +238,7 @@ public class ChartPanelShowFI extends JPanel {
             if (i == 0) {
                 if (modelindex[i] == 1) {
                     one = nor_model.get(key);
-                    one_mode = nor_model_mode.get(key);
+
                     for (int j = 0; j < one.size(); j++) {
                         count++;
                         DataItems _nor_model = new DataItems();
@@ -301,12 +291,12 @@ public class ChartPanelShowFI extends JPanel {
             if (i == 1) {
                 if (modelindex[1] == 1) {
                     second = nor_model.get(key);
-                    second_mode = nor_model_mode.get(key);
+
                     for (int j = 0; j < second.size(); j++) {
                         XYDataset xydataset3 = createmodeDataset(second.get(j));
                         XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
-                        xyplot.setDataset(j + 1 + one.size() + one_mode.size(), xydataset3);
-                        xyplot.setRenderer(j + 1 + one.size() + one_mode.size(), xylineandshaperenderer3);
+                        xyplot.setDataset(j + 1 + one.size() , xydataset3);
+                        xyplot.setRenderer(j + 1 + one.size() , xylineandshaperenderer3);
                         //设置不可见到点。
                         xylineandshaperenderer3.setBaseShapesVisible(false);
                         //设置可以看见线。
@@ -329,12 +319,12 @@ public class ChartPanelShowFI extends JPanel {
             if (i == 2) {
                 if (modelindex[i] == 1) {
                     third = nor_model.get(key);
-                    third_mode = nor_model_mode.get(key);
+
                     for (int j = 0; j < third.size(); j++) {
                         XYDataset xydataset4 = createmodeDataset(third.get(j));
                         XYLineAndShapeRenderer xylineandshaperenderer4 = new XYLineAndShapeRenderer();
-                        xyplot.setDataset(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size(), xydataset4);
-                        xyplot.setRenderer(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size(), xylineandshaperenderer4);
+                        xyplot.setDataset(j + 1 + one.size()  + second.size() , xydataset4);
+                        xyplot.setRenderer(j + 1 + one.size() + second.size() , xylineandshaperenderer4);
                         //设置不可见到点。
                         xylineandshaperenderer4.setBaseShapesVisible(false);
 
@@ -357,12 +347,12 @@ public class ChartPanelShowFI extends JPanel {
             if (i == 3) {
                 if (modelindex[i] == 1) {
                     fourth = nor_model.get(key);
-                    fourth_mode = nor_model_mode.get(key);
+
                     for (int j = 0; j < fourth.size(); j++) {
                         XYDataset xydataset5 = createmodeDataset(fourth.get(j));
                         XYLineAndShapeRenderer xylineandshaperenderer5 = new XYLineAndShapeRenderer();
-                        xyplot.setDataset(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size(), xydataset5);
-                        xyplot.setRenderer(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size(), xylineandshaperenderer5);
+                        xyplot.setDataset(j + 1 + one.size() + second.size()  + third.size() , xydataset5);
+                        xyplot.setRenderer(j + 1 + one.size() + second.size()  + third.size() , xylineandshaperenderer5);
                         //设置不可见到点。
                         xylineandshaperenderer5.setBaseShapesVisible(false);
                         //设置可以看见线。
@@ -388,14 +378,14 @@ public class ChartPanelShowFI extends JPanel {
             if (i == 4) {
                 if (modelindex[i] == 1) {
                     fifth = nor_model.get(key);
-                    fifth_mode = nor_model_mode.get(key);
+
                     for (int j = 0; j < fifth.size(); j++) {
                         XYDataset xydataset6 = createmodeDataset(fifth.get(j));
                         XYLineAndShapeRenderer xylineandshaperenderer6 = new XYLineAndShapeRenderer();
-                        xyplot.setDataset(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size()
-                                + fourth.size() + fourth_mode.size(), xydataset6);
-                        xyplot.setRenderer(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size()
-                                + fourth.size() + fourth_mode.size(), xylineandshaperenderer6);
+                        xyplot.setDataset(j + 1 + one.size()  + second.size() + third.size()
+                                + fourth.size() , xydataset6);
+                        xyplot.setRenderer(j + 1 + one.size()  + second.size()  + third.size()
+                                + fourth.size() , xylineandshaperenderer6);
                         //设置不可见到点。
                         xylineandshaperenderer6.setBaseShapesVisible(false);
                         //设置可以看见线。
@@ -422,14 +412,13 @@ public class ChartPanelShowFI extends JPanel {
             if (i == 5) {
                 if (modelindex[i] == 1) {
                     sixth = nor_model.get(key);
-                    sixth_mode = nor_model_mode.get(key);
                     for (int j = 0; j < sixth.size(); j++) {
                         XYDataset xydataset7 = createmodeDataset(sixth.get(j));
                         XYLineAndShapeRenderer xylineandshaperenderer7 = new XYLineAndShapeRenderer();
-                        xyplot.setDataset(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size()
-                                + fourth.size() + fourth_mode.size() + fifth.size() + fifth_mode.size(), xydataset7);
-                        xyplot.setRenderer(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size()
-                                + fourth.size() + fourth_mode.size() + fifth.size() + fifth_mode.size(), xylineandshaperenderer7);
+                        xyplot.setDataset(j + 1 + one.size()  + second.size()  + third.size()
+                                + fourth.size()  + fifth.size() , xydataset7);
+                        xyplot.setRenderer(j + 1 + one.size()  + second.size()  + third.size()
+                                + fourth.size()  + fifth.size() , xylineandshaperenderer7);
                         //设置不可见到点。
                         xylineandshaperenderer7.setBaseShapesVisible(false);
                         //设置可以看见线。
@@ -456,14 +445,14 @@ public class ChartPanelShowFI extends JPanel {
             if (i == 6) {
                 if (modelindex[i] == 1) {
                     seventh = nor_model.get(key);
-                    seventh_mode = nor_model_mode.get(key);
+
                     for (int j = 0; j < seventh.size(); j++) {
                         XYDataset xydataset8 = createmodeDataset(seventh.get(j));
                         XYLineAndShapeRenderer xylineandshaperenderer8 = new XYLineAndShapeRenderer();
-                        xyplot.setDataset(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size()
-                                + fourth.size() + fourth_mode.size() + fifth.size() + fifth_mode.size() + sixth.size() + sixth_mode.size(), xydataset8);
-                        xyplot.setRenderer(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size()
-                                + fourth.size() + fourth_mode.size() + fifth.size() + fifth_mode.size() + sixth.size() + sixth_mode.size(), xylineandshaperenderer8);
+                        xyplot.setDataset(j + 1 + one.size() + second.size()  + third.size()
+                                + fourth.size()  + fifth.size()  + sixth.size() , xydataset8);
+                        xyplot.setRenderer(j + 1 + one.size()  + second.size()  + third.size()
+                                + fourth.size()  + fifth.size()  + sixth.size() , xylineandshaperenderer8);
                         //设置不可见到点。
                         xylineandshaperenderer8.setBaseShapesVisible(false);
                         //设置可以看见线。
@@ -491,16 +480,16 @@ public class ChartPanelShowFI extends JPanel {
             if (i == 7) {
                 if (modelindex[i] == 1) {
                     eighth = nor_model.get(key);
-                    eighth_mode = nor_model_mode.get(key);
+
                     for (int j = 0; j < eighth.size(); j++) {
                         XYDataset xydataset9 = createmodeDataset(eighth.get(j));
                         XYLineAndShapeRenderer xylineandshaperenderer9 = new XYLineAndShapeRenderer();
-                        xyplot.setDataset(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size()
-                                + fourth.size() + fourth_mode.size() + fifth.size() + fifth_mode.size() + sixth.size() + sixth_mode.size()
-                                + seventh.size() + seventh_mode.size(), xydataset9);
-                        xyplot.setRenderer(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size()
-                                + fourth.size() + fourth_mode.size() + fifth.size() + fifth_mode.size() + sixth.size() + sixth_mode.size()
-                                + seventh.size() + seventh_mode.size(), xylineandshaperenderer9);
+                        xyplot.setDataset(j + 1 + one.size()  + second.size()  + third.size()
+                                + fourth.size()  + fifth.size() + sixth.size()
+                                + seventh.size() , xydataset9);
+                        xyplot.setRenderer(j + 1 + one.size()  + second.size()  + third.size()
+                                + fourth.size()  + fifth.size()  + sixth.size()
+                                + seventh.size() , xylineandshaperenderer9);
                         //设置不可见到点。
                         xylineandshaperenderer9.setBaseShapesVisible(false);
                         //设置可以看见线。
@@ -526,16 +515,16 @@ public class ChartPanelShowFI extends JPanel {
             if (i == 8) {
                 if (modelindex[i] == 1) {
                     ninth = nor_model.get(key);
-                    ninth = nor_model_mode.get(key);
+
                     for (int j = 0; j < ninth.size(); j++) {
                         XYDataset xydataset10 = createmodeDataset(ninth.get(j));
                         XYLineAndShapeRenderer xylineandshaperenderer10 = new XYLineAndShapeRenderer();
-                        xyplot.setDataset(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size()
-                                + fourth.size() + fourth_mode.size() + fifth.size() + fifth_mode.size() + sixth.size() + sixth_mode.size()
-                                + seventh.size() + seventh_mode.size() + eighth.size() + eighth_mode.size(), xydataset10);
-                        xyplot.setRenderer(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size()
-                                + fourth.size() + fourth_mode.size() + fifth.size() + fifth_mode.size() + sixth.size() + sixth_mode.size()
-                                + seventh.size() + seventh_mode.size() + eighth.size() + eighth_mode.size(), xylineandshaperenderer10);
+                        xyplot.setDataset(j + 1 + one.size()  + second.size()  + third.size()
+                                + fourth.size()  + fifth.size()  + sixth.size()
+                                + seventh.size()  + eighth.size() , xydataset10);
+                        xyplot.setRenderer(j + 1 + one.size()  + second.size() + third.size() +
+                                + fourth.size()  + fifth.size()  + sixth.size()
+                                + seventh.size()  + eighth.size() , xylineandshaperenderer10);
                         //设置不可见到点。
                         xylineandshaperenderer10.setBaseShapesVisible(false);
                         //设置可以看见线。
@@ -561,16 +550,16 @@ public class ChartPanelShowFI extends JPanel {
             if (i == 9) {
                 if (modelindex[i] == 1) {
                     tenth = nor_model.get(key);
-                    tenth_mode = nor_model_mode.get(key);
+
                     for (int j = 0; j < tenth.size(); j++) {
                         XYDataset xydataset11 = createmodeDataset(tenth.get(j));
                         XYLineAndShapeRenderer xylineandshaperenderer11 = new XYLineAndShapeRenderer();
-                        xyplot.setDataset(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size()
-                                + fourth.size() + fourth_mode.size() + fifth.size() + fifth_mode.size() + sixth.size() + sixth_mode.size()
-                                + seventh.size() + seventh_mode.size() + eighth.size() + eighth_mode.size()+ninth.size()+ninth_mode.size(), xydataset11);
-                        xyplot.setRenderer(j + 1 + one.size() + one_mode.size() + second.size() + second_mode.size() + third.size() + third_mode.size()
-                                + fourth.size() + fourth_mode.size() + fifth.size() + fifth_mode.size() + sixth.size() + sixth_mode.size()
-                                + seventh.size() + seventh_mode.size() + eighth.size() + eighth_mode.size()+ninth.size()+ninth_mode.size(), xylineandshaperenderer11);
+                        xyplot.setDataset(j + 1 + one.size()  + second.size()  + third.size()
+                                + fourth.size() + fifth.size()  + sixth.size()
+                                + seventh.size()  + eighth.size() +ninth.size(), xydataset11);
+                        xyplot.setRenderer(j + 1 + one.size()  + second.size()  + third.size()
+                                + fourth.size()  + fifth.size()  + sixth.size()
+                                + seventh.size()  + eighth.size() +ninth.size(), xylineandshaperenderer11);
                         //设置不可见到点。
                         xylineandshaperenderer11.setBaseShapesVisible(false);
                         //设置可以看见线。

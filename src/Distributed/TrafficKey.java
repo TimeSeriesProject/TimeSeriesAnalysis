@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.PcapDistributed;
+package Distributed;
 
 /**
  * Created by zsc on 2016/8/18.

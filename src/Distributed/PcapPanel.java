@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
  */
 
 public class PcapPanel extends JPanel {
-    private PcapServer pcapServer = null;
+    private Server Server = Distributed.Server.getInstance();
 
     private JButton inJB = null;
     private JButton outJB = null;
@@ -106,7 +106,7 @@ public class PcapPanel extends JPanel {
     public JTextField getInText() {
         if (inText == null) {
             inText = new JTextField();
-            inText.setText("D:\\pcap");
+            inText.setText("D:\\pppp");
         }
         return inText;
     }
@@ -114,7 +114,7 @@ public class PcapPanel extends JPanel {
     public JTextField getOutText() {
         if (outText == null) {
             outText = new JTextField();
-            outText.setText("D:\\57data");
+            outText.setText("D:\\out");
         }
         return outText;
     }
@@ -141,9 +141,11 @@ public class PcapPanel extends JPanel {
                                     @Override
                                     public void run() {
                                         System.out.println("进入......");
-                                        pcapServer = new PcapServer(PcapPanel.this, inText.getText().trim(), outText.getText().trim());
-                                        pcapServer.genTasks(inText.getText().trim(), "pcap");
-                                        new Thread(pcapServer.new PcapServerStart()).start();
+                                        Server.initPcap(PcapPanel.this, inText.getText().trim(), outText.getText().trim());
+                                        Server.genTasks(inText.getText().trim(), "pcap");
+                                        Server.awakePcap();
+                                        Server.setIsPcapRunning(true);
+//                                        new Thread(pcapServer.new PcapServerStart()).start();
                                     }
                                 };
                                 new Thread(runnable).start();

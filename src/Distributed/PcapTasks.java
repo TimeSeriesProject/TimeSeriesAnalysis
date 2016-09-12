@@ -1,4 +1,4 @@
-package cn.InstFS.wkr.NetworkMining.PcapDistributed;
+package Distributed;
 
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.PcapData;
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.PcapHeader;

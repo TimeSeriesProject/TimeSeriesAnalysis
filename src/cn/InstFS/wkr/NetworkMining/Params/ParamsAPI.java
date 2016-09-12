@@ -2,10 +2,7 @@ package cn.InstFS.wkr.NetworkMining.Params;
 
 import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleLineParams;
 import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleSimilarityParams;
-import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMFastFourierParams;
-import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
-import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMPiontPatternParams;
-import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMTEOParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.*;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.Params.PcapParseParams.PcapParseParams;
 import cn.InstFS.wkr.NetworkMining.Params.PredictionAlgorithmParams.ARIMAParams;
@@ -122,11 +119,17 @@ public class ParamsAPI {
 			OMPiontPatternParams pointPattern = new OMPiontPatternParams(pointPatternParams);
 			Element TEOParams = outlierParams.getChild("TEOParams");
 			OMTEOParams teo = new OMTEOParams(TEOParams);
+			Element multiDimensionalParams = outlierParams.getChild("multidimensionalParams");
+			OMMultidimensionalParams multi = new OMMultidimensionalParams(multiDimensionalParams);
+			Element saxPatternParams = outlierParams.getChild("saxPatternParams");
+			OMSAXPartternParams sax = new OMSAXPartternParams(saxPatternParams);
 
 			paramsOutlierMiner.setOmFastFourierParams(fastFourier);
 			paramsOutlierMiner.setOmGuassianParams(gaussian);
 			paramsOutlierMiner.setOmPiontPatternParams(pointPattern);
 			paramsOutlierMiner.setOmteoParams(teo);
+			paramsOutlierMiner.setOmMultidimensionalParams(multi);
+			paramsOutlierMiner.setOmSaxPartternParams(sax);
 		}
 		return paramsOutlierMiner;
 	}

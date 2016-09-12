@@ -24,4 +24,16 @@
 		<mergeThreshold>0.025</mergeThreshold>
 		<neighborK>7</neighborK>
 	</TEOParams>
+	<!-- 多维高斯 -->
+	<multidimensionalParams>
+		<GuassK>4</GuassK>
+		<piontK>5</piontK>
+		<densityK>2</densityK>
+		<patternThreshold>0.1</patternThreshold>
+		<mergerPrice>0.05</mergerPrice>
+	</multidimensionalParams>
+	<saxPatternParams>
+		<patternLen>24</patternLen>
+		<patternAlphaNum>5</patternAlphaNum>
+	</saxPatternParams>
 </outlierMinerParam>

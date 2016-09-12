@@ -27,9 +27,9 @@ public class averageEntropyPM implements IMinerPM {
 	private DataItems maxItemsInPeriod;
 	private Double minEntropy = Double.MAX_VALUE;  
     private Double []entropies;   //存储每个可能周期的平均熵或平均ERP距离
-    private HashMap<Integer, Integer[]> predictValuesMap;
-    private HashMap<Integer, Integer[]> minPredictValuesMap;
-    private HashMap<Integer, Integer[]> maxPredictValuesMap;
+    private HashMap<Integer, Double[]> predictValuesMap;
+    private HashMap<Integer, Double[]> minPredictValuesMap;
+    private HashMap<Integer, Double[]> maxPredictValuesMap;
 	private double threshold;  //是否具有周期的阈值
 	private int longestPeriod;
 	private int lastNumIndexInPeriod;//最后一个数在周期中的位置
@@ -38,7 +38,7 @@ public class averageEntropyPM implements IMinerPM {
 	private Map<String, List<Integer>> existPeriodOfNonNumDataItems;
 	private Map<String, Boolean> hasPeriodOfNonNumDataItms;
 	private Map<String, Integer> predictPeriodOfNonNumDataItems;
-	private Map<String, Map<Integer, Integer[]>> predictValuesMapOfNonNumDataItems;
+	private Map<String, Map<Integer, Double[]>> predictValuesMapOfNonNumDataItems;
 	private Map<String, DataItems> itemsInperiodMapOfNonNumDataitems;
 	
 	public averageEntropyPM(TaskElement taskElement,int dimension){
@@ -47,9 +47,9 @@ public class averageEntropyPM implements IMinerPM {
 		hasPeriod = false;	
 		predictPeriod=1;
 		minEntropy = Double.MAX_VALUE;
-		predictValuesMap=new HashMap<Integer, Integer[]>();
-		minPredictValuesMap=new HashMap<Integer, Integer[]>();
-		maxPredictValuesMap=new HashMap<Integer, Integer[]>();
+		predictValuesMap= new HashMap<>();
+		minPredictValuesMap= new HashMap<>();
+		maxPredictValuesMap= new HashMap<>();
 		existPeriod=new ArrayList<Integer>();
 	}
 	
@@ -60,9 +60,9 @@ public class averageEntropyPM implements IMinerPM {
 		predictPeriod=1;		
 		this.threshold=threshold;
 		minEntropy = Double.MAX_VALUE;
-		predictValuesMap=new HashMap<Integer, Integer[]>();
-		minPredictValuesMap=new HashMap<Integer, Integer[]>();
-		maxPredictValuesMap=new HashMap<Integer, Integer[]>();
+		predictValuesMap= new HashMap<>();
+		minPredictValuesMap= new HashMap<>();
+		maxPredictValuesMap= new HashMap<>();
 		existPeriod=new ArrayList<Integer>();
 	}
 	
@@ -72,9 +72,9 @@ public class averageEntropyPM implements IMinerPM {
 		hasPeriod = false;	
 		predictPeriod=1;
 		minEntropy = Double.MAX_VALUE;
-		predictValuesMap=new HashMap<Integer, Integer[]>();
-		minPredictValuesMap=new HashMap<Integer, Integer[]>();
-		maxPredictValuesMap=new HashMap<Integer, Integer[]>();
+		predictValuesMap= new HashMap<>();
+		minPredictValuesMap= new HashMap<>();
+		maxPredictValuesMap= new HashMap<>();
 		existPeriod=new ArrayList<Integer>();
 		this.threshold=pmParam.getThreshold();
 		this.longestPeriod=pmParam.getLongestPeriod();
@@ -196,7 +196,7 @@ public class averageEntropyPM implements IMinerPM {
 	private void isPeriodExist(int maxPeriod,String item,List<String>seq){
 		itemsInPeriod=new DataItems();
 		existPeriod=new ArrayList<Integer>();
-		predictValuesMap=new HashMap<Integer, Integer[]>();
+		predictValuesMap= new HashMap<>();
 		Map<Integer, Double> ratio=new HashMap<Integer, Double>();
 		hasPeriod=false;
 		for(int i=1;i<maxPeriod;i++){
@@ -210,16 +210,16 @@ public class averageEntropyPM implements IMinerPM {
 				}
 				hasPeriod=true;
 				existPeriod.add(i+1);
-				Integer[] predictValues=new Integer[i+1];
-				Integer[] minPredictValues=new Integer[i+1];
-				Integer[] maxPredictValues=new Integer[i+1];
+				Double[] predictValues=new Double[i+1];
+				Double[] minPredictValues=new Double[i+1];
+				Double[] maxPredictValues=new Double[i+1];
 				for(int index=0;index<=i;index++){
-					predictValues[index]=0;
-					minPredictValues[index]=Integer.MAX_VALUE;
-					maxPredictValues[index]=Integer.MIN_VALUE;
+					predictValues[index]=0.0;
+					minPredictValues[index]=Double.MAX_VALUE;
+					maxPredictValues[index]=Double.MIN_VALUE;
 				}
 				for(int j=0;j<di.getLength();j++){
-					int value=(int)Double.parseDouble(seq.get(j));
+					double value=Double.parseDouble(seq.get(j));
 					predictValues[j%(i+1)]+=value;
 					if(minPredictValues[j%(i+1)]>value){
 						minPredictValues[j%(i+1)]=value;
@@ -258,20 +258,20 @@ public class averageEntropyPM implements IMinerPM {
 			itemsInPeriod=new DataItems();
 			minItemsInPeriod=new DataItems();
 			maxItemsInPeriod=new DataItems();
-			Integer[] predictValues=predictValuesMap.get(predictPeriod);
-			Integer[] minPredictValues=minPredictValuesMap.get(predictPeriod);
-			Integer[] maxPredictValues=maxPredictValuesMap.get(predictPeriod);
+			Double[] predictValues=predictValuesMap.get(predictPeriod);
+			Double[] minPredictValues=minPredictValuesMap.get(predictPeriod);
+			Double[] maxPredictValues=maxPredictValuesMap.get(predictPeriod);
 			if(predictValues==null){
-				predictValues=new Integer[predictPeriod];
-				minPredictValues=new Integer[predictPeriod];
-				maxPredictValues=new Integer[predictPeriod];
+				predictValues=new Double[predictPeriod];
+				minPredictValues=new Double[predictPeriod];
+				maxPredictValues=new Double[predictPeriod];
 				for(int index=0;index<predictPeriod;index++){
-					predictValues[index]=0;
-					minPredictValues[index]=Integer.MAX_VALUE;
-					maxPredictValues[index]=Integer.MIN_VALUE;
+					predictValues[index]=0.0;
+					minPredictValues[index]=Double.MAX_VALUE;
+					maxPredictValues[index]=Double.MIN_VALUE;
 				}
 				for(int j=0;j<di.getLength();j++){
-					int value=(int)Double.parseDouble(seq.get(j));
+					double value=Double.parseDouble(seq.get(j));
 					predictValues[j%(predictPeriod)]+=value;
 					if(minPredictValues[j%(predictPeriod)]>value){
 						minPredictValues[j%(predictPeriod)]=value;
@@ -386,7 +386,7 @@ public class averageEntropyPM implements IMinerPM {
 		existPeriodOfNonNumDataItems=new HashMap<String, List<Integer>>();
 		hasPeriodOfNonNumDataItms=new HashMap<String, Boolean>();
 		predictPeriodOfNonNumDataItems=new HashMap<String, Integer>();
-		predictValuesMapOfNonNumDataItems=new HashMap<String, Map<Integer,Integer[]>>();
+		predictValuesMapOfNonNumDataItems= new HashMap<>();
 		itemsInperiodMapOfNonNumDataitems=new HashMap<String, DataItems>();
 	}
 	
@@ -490,11 +490,11 @@ public class averageEntropyPM implements IMinerPM {
 			Map<String, Integer> predictPeriodOfNonNumDataItems) {
 		this.predictPeriodOfNonNumDataItems = predictPeriodOfNonNumDataItems;
 	}
-	public Map<String, Map<Integer, Integer[]>> getPredictValuesMapOfNonNumDataItems() {
+	public Map<String, Map<Integer, Double[]>> getPredictValuesMapOfNonNumDataItems() {
 		return predictValuesMapOfNonNumDataItems;
 	}
 	public void setPredictValuesMapOfNonNumDataItems(
-			Map<String, Map<Integer, Integer[]>> predictValuesMapOfNonNumDataItems) {
+			Map<String, Map<Integer, Double[]>> predictValuesMapOfNonNumDataItems) {
 		this.predictValuesMapOfNonNumDataItems = predictValuesMapOfNonNumDataItems;
 	}
 

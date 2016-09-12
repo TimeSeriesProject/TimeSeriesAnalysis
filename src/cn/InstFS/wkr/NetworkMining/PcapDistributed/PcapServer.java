@@ -1,6 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.PcapDistributed;
 
 import Distributed.PcapPanel;
+import Distributed.TrafficKey;
 
 import java.io.*;
 import java.net.BindException;
@@ -36,8 +37,8 @@ public class PcapServer {
     //    private String fileName;
     private int index;
     private int BUF_LEN = 5 * 1024 * 1024;
-    private int count = 0;//发送次数
-    private int count2 = 0;//发送次数
+    private int pcapCount1 = 0;//发送次数
+    private int pcapCount2 = 0;//发送次数
     private int recCount = 0;
     private int recCount2 = 0;
     private int tasksCount = 0;
@@ -174,14 +175,14 @@ public class PcapServer {
                     System.out.println("First接收到ready");
                     userClient.sendMsg("First");
                     if (dataFromClient.equals("Ready")) {
-                        //count < 或 =两种情况，只发送一次
+                        //pcapCount1 < 或 =两种情况，只发送一次
                         sendLock.lock();
                         try {
-                            if (count < allTasks.size()) {
-                                userClient.sendTask(allTasks.get(count));
-                                System.out.println("第" + count + "次已发送" + allTasks.size());
-                                count += 1;
-                                System.out.println("下一次发送：" + count);
+                            if (pcapCount1 < allTasks.size()) {
+                                userClient.sendTask(allTasks.get(pcapCount1));
+                                System.out.println("第" + pcapCount1 + "次已发送" + allTasks.size());
+                                pcapCount1 += 1;
+                                System.out.println("下一次发送：" + pcapCount1);
                             } else {
                                 int temp = 0;//中途最后一个结果发回来，发送Empty，避免客户端发送ready后接收不到任务造成死锁
 
@@ -274,15 +275,15 @@ public class PcapServer {
                     System.out.println("last接收到ready");
                     userClient.sendMsg("Last");
                     if (dataFromClient.equals("Ready")) {
-                        //count < 或 =两种情况，只发送一次
+                        //pcapCount1 < 或 =两种情况，只发送一次
                         sendLock2.lock();
                         try {
-                            if (count2 < allTasks2.size()) {
-                                userClient.sendTask(allTasks2.get(count2));
-                                System.out.println("第" + count2 + "次已发送" + allTasks2.size());
-                                sendFileTask(allTasks2.get(count2).split(DELIMITER)[0]);//发送单个文件,routesrc/10.0.0.1_10.0.0.2.bin
-                                count2 += 1;
-                                System.out.println("下一次发送：" + count2);
+                            if (pcapCount2 < allTasks2.size()) {
+                                userClient.sendTask(allTasks2.get(pcapCount2));
+                                System.out.println("第" + pcapCount2 + "次已发送" + allTasks2.size());
+                                sendFileTask(allTasks2.get(pcapCount2).split(DELIMITER)[0]);//发送单个文件,routesrc/10.0.0.1_10.0.0.2.bin
+                                pcapCount2 += 1;
+                                System.out.println("下一次发送：" + pcapCount2);
                             } else {
                                 int temp = 0;//中途最后一个结果发回来，发送Empty，避免客户端发送ready后接收不到任务造成死锁
 

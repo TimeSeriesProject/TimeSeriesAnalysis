@@ -24,7 +24,7 @@ public interface IMinerPM {
 	public Map<String, List<Integer>> getExistPeriodOfNonNumDataItems();
 	public Map<String, Boolean> getHasPeriodOfNonNumDataItms();
 	public Map<String, Integer> getPredictPeriodOfNonNumDataItems() ;
-	public Map<String, Map<Integer, Integer[]>> getPredictValuesMapOfNonNumDataItems() ;
+	public Map<String, Map<Integer, Double[]>> getPredictValuesMapOfNonNumDataItems() ;
 	public Map<String, DataItems> getItemsInperiodMapOfNonNumDataitems();
 
 }
