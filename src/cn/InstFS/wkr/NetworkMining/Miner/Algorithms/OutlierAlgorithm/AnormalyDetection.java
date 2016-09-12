@@ -49,6 +49,7 @@ public class AnormalyDetection implements IMinerOM {
     	this.maxWindowSize=omGuassianParams.getMaxWindowSize();
     	this.expWindowSize = omGuassianParams.getExpWindowSize();
     	this.k = omGuassianParams.getWindowVarK();
+    	this.diff = omGuassianParams.getDiff();
     	this.di=di;
     }
     @Override

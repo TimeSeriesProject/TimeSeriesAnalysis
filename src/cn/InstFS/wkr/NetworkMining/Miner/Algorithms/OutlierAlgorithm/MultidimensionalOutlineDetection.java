@@ -68,6 +68,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		this.densityK = omMultidimensionalParams.getDensityK();
 		this.patternThreshold = omMultidimensionalParams.getPatternThreshold();
 		this.mergerPrice = omMultidimensionalParams.getMergerPrice();
+		this.diff = omMultidimensionalParams.getDiff();
 	}
 	@Override
 	public void TimeSeriesAnalysis(){

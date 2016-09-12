@@ -16,6 +16,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.NodeAMent;
 import cn.InstFS.wkr.NetworkMining.DataInputs.NodeAPatter;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.NormalDistributionTest;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGaussianNodeParams;
 /**
  * @author LYH
  * @decription 应用于节点的出现与消失的高斯异常检测算法
@@ -32,6 +33,10 @@ public class GaussianOutlierDetection implements IMinerOM{
     private double threshold; //异常度阈值（非参数）
     public GaussianOutlierDetection(DataItems di){
     	this.dataItems = di;
+    }
+    public GaussianOutlierDetection(DataItems di,OMGaussianNodeParams omGaussianNodeParams){
+    	this.dataItems = di;
+    	this.diff = omGaussianNodeParams.getDiff();
     }
     @Override
     public void TimeSeriesAnalysis(){

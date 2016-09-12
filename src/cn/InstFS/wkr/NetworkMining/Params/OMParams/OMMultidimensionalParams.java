@@ -9,6 +9,7 @@ public class OMMultidimensionalParams {
 	private static int densityK = 2; //PointSegment线段化参数，找极值点的参数
 	private static double patternThreshold = 0.1; //PointSegment线段化参数
 	private double mergerPrice = 0.05; //LinePattern线段化参数
+	private static double diff = 0.2; //判断是否为异常的异常度差值,如果阈值一侧的数据与前一个数据的差值小于diff,则阈值向前移,直到差值大于diff
 	
 	public OMMultidimensionalParams(Element paramsConfig){
 		String param = "";
@@ -34,6 +35,10 @@ public class OMMultidimensionalParams {
     	param = paramsConfig.getChildText("mergerPrice");
     	if(param != null){
     		mergerPrice = Double.parseDouble(param);
+    	}
+    	param = paramsConfig.getChildText("diff");
+    	if(param != null){
+    		diff = Double.parseDouble(param);
     	}
 	}
 
@@ -77,6 +82,14 @@ public class OMMultidimensionalParams {
 		this.mergerPrice = mergerPrice;
 	}
 
+	public static double getDiff() {
+		return diff;
+	}
+
+	public static void setDiff(double diff) {
+		OMMultidimensionalParams.diff = diff;
+	}
+	
 	
 	
 }
