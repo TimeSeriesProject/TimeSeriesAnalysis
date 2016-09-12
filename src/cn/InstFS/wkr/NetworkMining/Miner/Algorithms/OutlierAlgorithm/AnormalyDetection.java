@@ -253,7 +253,7 @@ public class AnormalyDetection implements IMinerOM {
 		
 		System.out.println("异常度阈值是："+threshold);
 		for(int i=0;i<len;i++){
-			if(degree.get(i)>=threshold){
+			if(degree.get(i)>threshold){
 				outline.add1Data(di.getElementAt(i));
 			}
 		}

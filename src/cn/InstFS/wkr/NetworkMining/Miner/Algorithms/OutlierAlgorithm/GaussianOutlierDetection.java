@@ -171,7 +171,7 @@ public class GaussianOutlierDetection implements IMinerOM{
      * */
     public void genOutlies(DataItems degree){
     	for(int i=0;i<degree.getLength();i++){
-    		if(Double.parseDouble(degree.getData().get(i))>=threshold){
+    		if(Double.parseDouble(degree.getData().get(i))>threshold*5){
     			outlies.add1Data(dataItems.getElementAt(i));
     		}
     	}
@@ -184,7 +184,7 @@ public class GaussianOutlierDetection implements IMinerOM{
     public Map<Integer, DataItems> genOutset(Map<Integer, Double> map0,Map<Integer, Double> map1){
     	Map<Integer, DataItems> map = new HashMap<Integer, DataItems>();
     	for(int i=0;i<map0.size();i++){
-    		if(map0.get(i)>=threshold){
+    		if(map0.get(i)>threshold*5){
     			DataItems items = new DataItems();
     			int start = patters0.get(i).getStart();
     			int end = patters0.get(i).getEnd();
@@ -195,7 +195,7 @@ public class GaussianOutlierDetection implements IMinerOM{
     		}
     	}
     	for(int i=0;i<map1.size();i++){
-    		if(map1.get(i)>=threshold){
+    		if(map1.get(i)>threshold*5){
     			DataItems items = new DataItems();
     			int start = patters1.get(i).getStart();
     			int end = patters1.get(i).getEnd();

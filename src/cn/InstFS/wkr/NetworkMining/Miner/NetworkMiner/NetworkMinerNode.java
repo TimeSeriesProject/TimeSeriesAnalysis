@@ -22,6 +22,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm.SequencePatternsDontSplit;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.GaussianOutlierDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.PartialCycle;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
@@ -219,47 +220,18 @@ class NodeTimerTask extends TimerTask{
 				setPMResults(results, pmMethod);
 				break;
 			case MiningMethods_OutliesMining:
-				/*if(results.getRetNode().getRetStatistics().getComplex()>1.5){
-					task.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
-				}
-				
-				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
-					tsaMethod=new FastFourierOutliesDetection(
-							ParamsAPI.getInstance().getPom().getOmFastFourierParams(),dataItems);
-
-					results.getRetNode().getRetOM().setIslinkDegree(false);
-				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_GaussDetection)){
-					tsaMethod=new AnormalyDetection(ParamsAPI.getInstance().getPom().getOmGuassianParams(),dataItems);
-					results.getRetNode().getRetOM().setIslinkDegree(false);
-				}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
-					//tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
-					tsaMethod = new PointPatternDetection(ParamsAPI.getInstance().getPom().getOmPiontPatternParams(),dataItems);
-					
-					if(results.getRetNode().getRetPM().getHasPeriod())
-				    	tsaMethod=new SAXPartternDetection(dataItems,
-				    			results.getRetNode().getRetPM().getFirstPossiblePeriod());
-						
-					else 
-						tsaMethod=new SAXPartternDetection(dataItems,24);
+				if(task.getMiningObject().equals("结点出现消失")){
+					tsaMethod = new GaussianOutlierDetection(dataItems);
 					results.getRetNode().getRetOM().setIslinkDegree(true);
-				}else{
-					throw new RuntimeException("方法不存在！");
-				}*/
-				/*tsaMethod = new MultidimensionalOutlineDetection(dataItems);
-				results.getRetNode().getRetOM().setIslinkDegree(true);*/
-				/*tsaMethod = new PointPatternDetection(dataItems);
-				results.getRetNode().getRetOM().setIslinkDegree(true);*/
-				/*tsaMethod = new FastFourierOutliesDetection(dataItems);
-				results.getRetNode().getRetOM().setIslinkDegree(false);*/
-				/*tsaMethod = new AnormalyDetection(dataItems);
-				results.getRetNode().getRetOM().setIslinkDegree(false);*/
-				if(results.getRetNode().getRetPM().getHasPeriod()){
-					tsaMethod = new MultidimensionalOutlineDetection(dataItems);
-					results.getRetNode().getRetOM().setIslinkDegree(true);
-				}else{
-					tsaMethod = new AnormalyDetection(dataItems);
-					results.getRetNode().getRetOM().setIslinkDegree(false);
-				}
+				}else {
+					if(results.getRetNode().getRetPM().getHasPeriod()){
+						tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+						results.getRetNode().getRetOM().setIslinkDegree(true);
+					}else{
+						tsaMethod = new AnormalyDetection(dataItems);
+						results.getRetNode().getRetOM().setIslinkDegree(false);
+					}
+				}				
 				tsaMethod.TimeSeriesAnalysis();
 				setOMResults(results, tsaMethod);
 				break;
