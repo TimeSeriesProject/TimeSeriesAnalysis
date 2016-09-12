@@ -251,8 +251,15 @@ class NodeTimerTask extends TimerTask{
 				results.getRetNode().getRetOM().setIslinkDegree(true);*/
 				/*tsaMethod = new FastFourierOutliesDetection(dataItems);
 				results.getRetNode().getRetOM().setIslinkDegree(false);*/
-				tsaMethod = new AnormalyDetection(dataItems);
-				results.getRetNode().getRetOM().setIslinkDegree(false);
+				/*tsaMethod = new AnormalyDetection(dataItems);
+				results.getRetNode().getRetOM().setIslinkDegree(false);*/
+				if(results.getRetNode().getRetPM().getHasPeriod()){
+					tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+					results.getRetNode().getRetOM().setIslinkDegree(true);
+				}else{
+					tsaMethod = new AnormalyDetection(dataItems);
+					results.getRetNode().getRetOM().setIslinkDegree(false);
+				}
 				tsaMethod.TimeSeriesAnalysis();
 				setOMResults(results, tsaMethod);
 				break;

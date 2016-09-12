@@ -175,11 +175,13 @@ public class ChartPanelShowAbl extends JPanel{
         xyplot.setOrientation(PlotOrientation.VERTICAL);
         //设置原始坐标轴
         double max = getMaxPiont(oriItems);
+        double min = getMinPiont(oriItems);
+        double diff = max - min;
         NumberAxis numberAxis0 = new NumberAxis(yName);
         xyplot.setRangeAxis(0,numberAxis0);
-        numberAxis0.setLowerMargin(10);
-        numberAxis0.setLowerBound(0-max/10);
-        numberAxis0.setUpperBound(max*1.01);
+        
+        numberAxis0.setLowerBound(min - diff*0.1);
+        numberAxis0.setUpperBound(max + diff*0.1);
         numberAxis0.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
 
         //设置异常度坐标轴 
@@ -251,5 +253,15 @@ public class ChartPanelShowAbl extends JPanel{
     		}
     	}
     	return max;
+    }
+    private static double getMinPiont(DataItems items){
+    	double min = Double.MAX_VALUE;
+    	for(int i=0;i<items.getLength();i++){
+    		double data = Double.parseDouble(items.getData().get(i));
+    		if(data<min){
+    			min = data;
+    		}
+    	}
+    	return min;
     }
 }
