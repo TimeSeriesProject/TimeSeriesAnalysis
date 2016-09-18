@@ -130,6 +130,11 @@ public class Server {
 
     }
 
+
+    public static void closeServer() {
+        server = null;
+    }
+
     public static Server getInstance() {
         if (server != null) {
             return server;

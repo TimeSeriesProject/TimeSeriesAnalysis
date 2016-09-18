@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
+import Distributed.PcapFrame;
 import Distributed.Server;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.*;
@@ -38,7 +39,8 @@ public class win10_window extends JFrame {
     boolean isNodePairMined = false;
     boolean isPathMined = false;
     boolean isProtocolAssMined = false;
-    Server server = Server.getInstance();
+    boolean isDistributed = false;
+    Server server;
 
     public boolean isNetworkStructureMined() {
         return isNetworkStructureMined;
@@ -58,6 +60,18 @@ public class win10_window extends JFrame {
     public void setNodePairMined(boolean isNodePairMined) {
         this.isNodePairMined = isNodePairMined;
     }
+
+    public void distribute() {
+        server = Server.getInstance();
+        new Thread(Server.getStartInstance()).start();
+        isDistributed = true;
+    }
+
+    public void single() {
+        Server.closeServer();
+        isDistributed = false;
+    }
+
     public void mineNetworkStructor()
     {
         networkStructureresultMaps.clear();
@@ -79,6 +93,23 @@ public class win10_window extends JFrame {
 
         isNetworkStructureMined=true;
     }
+
+    public void mineNetworkStructorDis()
+    {
+        networkStructureresultMaps.clear();
+        NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+
+        NetworkFactoryDis networkFactoryDis = NetworkFactoryDis.getInstance();
+        List<MiningObject> miningObjectList = networkFactoryDis.getMiningObjectsChecked();
+
+        // 判断是否含有该挖掘对象结果文件
+        for (MiningObject ob: miningObjectList) {
+            server.network(networkFactoryDis, ob);
+        }
+
+        isNetworkStructureMined=true;
+    }
+
     public void mineSingleNode()
     {
         singleNoderesultMaps.clear();
@@ -173,6 +204,23 @@ public class win10_window extends JFrame {
         isNodePairMined=true;
     }
 
+    public void mineNodePairDis()
+    {
+        nodePairresultMaps.clear();
+        NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+
+        SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis = SingleNodeOrNodePairMinerFactoryDis.getPairInstance();
+        singleNodeOrNodePairMinerFactoryDis.setTaskRange(TaskRange.NodePairRange);
+        List<MiningObject> miningObjectList = singleNodeOrNodePairMinerFactoryDis.getMiningObjectsChecked();
+
+        // 判断是否含有该挖掘对象结果文件
+        for (MiningObject ob: miningObjectList) {
+            server.SingleNodeOrNodePair(singleNodeOrNodePairMinerFactoryDis, ob);
+        }
+
+        isNodePairMined=true;
+    }
+
     public void mineProtocolAss() {
         protocolResultsMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
@@ -189,6 +237,21 @@ public class win10_window extends JFrame {
             protocolAssMinerFactory.detect();
             objectMap = NetworkMinerFactory.getInstance().startAllProtocolMiners(ob);
             protocolResultsMaps = objectMap;
+        }
+
+        isProtocolAssMined=true;
+    }
+
+    public void mineProtocolAssDis() {
+        protocolResultsMaps.clear();
+        NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+
+        ProtocolAssMinerFactoryDis protocolAssMinerFactoryDis = ProtocolAssMinerFactoryDis.getInstance();
+        List<MiningObject> miningObjectList = protocolAssMinerFactoryDis.getMiningObjectsChecked();
+
+        // 判断是否含有该挖掘对象结果文件
+        for (MiningObject ob: miningObjectList) {
+            server.protocol(protocolAssMinerFactoryDis, ob);
         }
 
         isProtocolAssMined=true;
@@ -258,9 +321,22 @@ public class win10_window extends JFrame {
         isPathMined = true;
     }
 
+    public void minePathDis() {
+        pathResultsMaps.clear();
+        NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+
+        PathMinerFactoryDis pathMinerFactoryDis = PathMinerFactoryDis.getInstance();
+        List<MiningObject> miningObjectList = pathMinerFactoryDis.getMiningObjectsChecked();
+
+        // 判断是否含有该挖掘对象结果文件
+        for (MiningObject ob: miningObjectList) {
+            server.path(pathMinerFactoryDis, ob);
+        }
+
+        isPathMined = true;
+    }
+
     public static void main(String[] args) {
-        //分布式服务启动
-//        new Thread(Server.getStartInstance()).start();
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -269,6 +345,9 @@ public class win10_window extends JFrame {
 //					JDialog.setDefaultLookAndFeelDecorated(true);
                     win10_window frame = new win10_window();
                     frame.setVisible(true);
+                    //启动分布式
+//                    frame.distribute();
+//                    System.out.println("启动分布式服务");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -439,10 +518,12 @@ public class win10_window extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO Auto-generated method stub
-                ProcessBarShow processBarShow = new ProcessBarShow(null);
-
-
+                if (!isDistributed) {
+                    ProcessBarShow processBarShow = new ProcessBarShow(null);
+                } else if (isDistributed) {
+                    PcapFrame pcapFrame = new PcapFrame();
+                    pcapFrame.init();
+                }
             }
         });
         //显示承载路径设置响应
@@ -538,12 +619,18 @@ public class win10_window extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO Auto-generated method stub
-                if(!isNetworkStructureMined)
-                    mineNetworkStructor();
+                if (!isDistributed) {
+                    if(!isNetworkStructureMined){
+                        mineNetworkStructor();
+                    }
                 WholeNetworkFrame wholeNetworkFrame = new WholeNetworkFrame(networkStructureresultMaps);
                 wholeNetworkFrame.setVisible(true);
-
+                } else if (isDistributed) {
+                    if(!isNetworkStructureMined){
+                        mineNetworkStructorDis();
+                    }
+                    server.showNetworkResult();//分布式结果显示
+                }
             }
         });
         //挖掘节点规律按钮设置
@@ -551,13 +638,18 @@ public class win10_window extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO Auto-generated method stub
-                if(!isSingleNodeMined)
-                    mineSingleNode();
+                if (!isDistributed) {
+                    if(!isSingleNodeMined){
+                        mineSingleNode();
+                    }
                 SingleNodeListFrame singleNodeListFrame = new SingleNodeListFrame(singleNoderesultMaps);
                 singleNodeListFrame.setVisible(true);
-//                server.showSingleNodeResult();//分布式结果显示
-
+                } else if (isDistributed) {
+                    if(!isSingleNodeMined){
+                        mineSingleNodeDis();
+                    }
+                    server.showSingleNodeResult();//分布式结果显示
+                }
             }
         });
         //挖掘链路规律按钮设置
@@ -565,12 +657,18 @@ public class win10_window extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO Auto-generated method stub
-                if(!isNodePairMined)
-                    mineNodePair();
+                if (!isDistributed) {
+                    if(!isNodePairMined){
+                        mineNodePair();
+                    }
                 NodePairListFrame nodePairListFrame = new NodePairListFrame(nodePairresultMaps);
                 nodePairListFrame.setVisible(true);
-
+                } else if (isDistributed) {
+                    if(!isNodePairMined){
+                        mineNodePairDis();
+                    }
+                    server.showNodePairResult();
+                }
             }
         });
         //挖掘承载路径规律按钮设置
@@ -578,12 +676,19 @@ public class win10_window extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO Auto-generated method stub
-                if (!isPathMined)
-                    minePath();
+                if (!isDistributed) {
+                    if (!isPathMined){
+                        minePath();
+                    }
                 PathListFrame pathListFrame = new PathListFrame(pathResultsMaps);
                 pathListFrame.setVisible(true);
-
+                } else if (isDistributed) {
+                    // TODO Auto-generated method stub
+                    if (!isPathMined){
+                        minePathDis();
+                    }
+                    server.showPathResult();//分布式结果显示
+                }
             }
         });
         //挖掘多业务规律按钮设置
@@ -591,11 +696,20 @@ public class win10_window extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO Auto-generated method stub
-                if (!isProtocolAssMined)
-                    mineProtocolAss();
+                if (!isDistributed) {
+                    // TODO Auto-generated method stub
+                    if (!isProtocolAssMined){
+                        mineProtocolAss();
+                    }
                 AssociationIpListFrame frame = new AssociationIpListFrame(protocolResultsMaps);
                 frame.setVisible(true);
+                } else if (isDistributed) {
+                    // TODO Auto-generated method stub
+                    if (!isProtocolAssMined){
+                        mineProtocolAssDis();
+                    }
+                    server.showProtocolResult();
+                }
             }
         });
     }
