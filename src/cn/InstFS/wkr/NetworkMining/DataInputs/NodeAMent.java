@@ -35,6 +35,7 @@ public class NodeAMent {
 	           
 	          int key = i;
 	          double value = Double.parseDouble(di.getData().get(i));
+	          value = value>0 ? 1 : 0; 
 	          sourceDatas.put(key,value);
 	     }
 		return sourceDatas;

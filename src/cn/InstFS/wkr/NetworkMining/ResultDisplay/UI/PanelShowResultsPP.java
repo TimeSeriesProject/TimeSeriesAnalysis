@@ -47,6 +47,8 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
         add(chart1);
         miningMethod = task.getMiningMethod();
         InitMiner(task);
+        ChartPanelShowAbc chartc = new ChartPanelShowAbc(task);
+        ChartPanelShowAbl chartl = new ChartPanelShowAbl(task);
     }
 
     private void InitMiner(TaskElement task) {
@@ -265,11 +267,13 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 }*/
                 if (!result.isHasOutlies()) {
                    
-                    jf = ChartPanelShowAbc.createChart(oriData,outDegree,outliesItems,yName);
+                	jf = ChartPanelShowAbl.createChart(oriData,outDegree,outsetItems,yName);
                 } else if (result.isIslinkDegree()) {                    
                     jf = ChartPanelShowAbl.createChart(oriData,outDegree,outsetItems,yName);
-                } else {
+                } else if(!result.isIslinkDegree()){
                     jf = ChartPanelShowAbc.createChart(oriData, outDegree,outliesItems,yName);
+                } else{
+                	jf = ChartPanelShowAbc.createChart(oriData, outDegree,outliesItems,yName);
                 }
                 
                 ChartPanel chartpanel = new ChartPanel(jf);

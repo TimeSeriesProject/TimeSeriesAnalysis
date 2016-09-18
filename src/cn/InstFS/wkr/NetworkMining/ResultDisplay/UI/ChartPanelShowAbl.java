@@ -31,6 +31,7 @@ import org.jfree.util.ShapeUtilities;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 /**
  * @author LYH
@@ -39,8 +40,12 @@ public class ChartPanelShowAbl extends JPanel{
 	JFreeChart chart;
     Shape itemShape; // = new Ellipse2D.Double(-2,-2, 4, 4);
     public static int timeGranunity = 3600;
-    private ChartPanelShowAbl() {
-        // 创建主题样式
+    public ChartPanelShowAbl(TaskElement task) {
+        timeGranunity = task.getGranularity();
+    }
+    ChartPanelShowAbl(String title, String timeAxisLabel, String valueAxisLabel,
+                      XYDataset dataset/*, boolean legend, boolean tooltips, boolean urls*/){
+    	// 创建主题样式
         StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
         // 设置标题字体
         standardChartTheme.setExtraLargeFont(new Font("隶书", Font.BOLD, 15));
@@ -52,11 +57,6 @@ public class ChartPanelShowAbl extends JPanel{
         ChartFactory.setChartTheme(standardChartTheme);
 
         setLayout(new BorderLayout());
-
-    }
-    ChartPanelShowAbl(String title, String timeAxisLabel, String valueAxisLabel,
-                      XYDataset dataset/*, boolean legend, boolean tooltips, boolean urls*/){
-        this();
     }
 
 
@@ -179,9 +179,10 @@ public class ChartPanelShowAbl extends JPanel{
         double diff = max - min;
         NumberAxis numberAxis0 = new NumberAxis(yName);
         xyplot.setRangeAxis(0,numberAxis0);
-        
-        numberAxis0.setLowerBound(min - diff*0.1);
-        numberAxis0.setUpperBound(max + diff*0.1);
+        if(diff>0){        
+        	numberAxis0.setLowerBound(min - diff*0.1);
+        	numberAxis0.setUpperBound(max + diff*0.1);
+        }
         numberAxis0.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
 
         //设置异常度坐标轴 

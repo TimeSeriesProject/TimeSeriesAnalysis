@@ -29,6 +29,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 /**
  * @author LYH
@@ -37,8 +38,12 @@ public class ChartPanelShowAbc extends JPanel{
 	JFreeChart chart;
     Shape itemShape; // = new Ellipse2D.Double(-2,-2, 4, 4);
     public static int timeGranunity = 3600;
-    private ChartPanelShowAbc() {
-        // 创建主题样式
+    public ChartPanelShowAbc(TaskElement task) {
+    	timeGranunity = task.getGranularity();
+    }
+    ChartPanelShowAbc(String title, String timeAxisLabel, String valueAxisLabel,
+                      XYDataset dataset/*, boolean legend, boolean tooltips, boolean urls*/){
+    	// 创建主题样式
         StandardChartTheme standardChartTheme = new StandardChartTheme("CN");
         // 设置标题字体
         standardChartTheme.setExtraLargeFont(new Font("隶书", Font.BOLD, 15));
@@ -50,11 +55,6 @@ public class ChartPanelShowAbc extends JPanel{
         ChartFactory.setChartTheme(standardChartTheme);
 
         setLayout(new BorderLayout());
-
-    }
-    ChartPanelShowAbc(String title, String timeAxisLabel, String valueAxisLabel,
-                      XYDataset dataset/*, boolean legend, boolean tooltips, boolean urls*/){
-        this();
     }
 
 

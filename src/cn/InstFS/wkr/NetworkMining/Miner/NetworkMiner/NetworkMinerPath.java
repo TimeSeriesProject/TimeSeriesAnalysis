@@ -8,7 +8,9 @@ import java.util.concurrent.TimeUnit;
 
 import WaveletUtil.PointPatternDetection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.*;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.GaussianOutlierDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
@@ -149,7 +151,8 @@ class PathTimerTask extends TimerTask{
 
 	private void PMDetect(DataItems dataItems,List<TaskElement>tasks){
 		DataItems oriDataItems=dataItems;
-		results.setInputData(oriDataItems);
+		
+		//results.setInputData(oriDataItems);
 		HashMap<String, MinerResultsPM> retPathPM=new HashMap<String, MinerResultsPM>();
 		HashMap<String, MinerResultsOM> retPathOM=new HashMap<String, MinerResultsOM>();
 		HashMap<String, DataItems> retPathOriDataItems = new HashMap<>();
@@ -205,8 +208,10 @@ class PathTimerTask extends TimerTask{
 				seq.remove(0);
 				newItem.setData(seq);
 				newItem.setTime(dataItems.getTime());
+				//聚合
+				newItem=DataPretreatment.aggregateData(newItem, task.getGranularity(), task.getAggregateMethod(),dataItems.isAllDataIsDouble());				
 				retPathOriDataItems.put(name,newItem);
-
+				
 				switch (task.getMiningMethod()){
 					case MiningMethods_Statistics:
 						SeriesStatisticsParam ssp = ParamsAPI.getInstance().getParamsStatistic().getSsp();
@@ -238,23 +243,16 @@ class PathTimerTask extends TimerTask{
 					case MiningMethods_OutliesMining:
 						IMinerOM omMethod = null;
 						MinerResultsOM retOM = new MinerResultsOM();
-
-						/*SeriesStatistics seriesStatistics=new SeriesStatistics(newItem);
-						seriesStatistics.statistics();*/
-						/*if(retPathStatistic.get(name).getComplex()>1.5){
-							task.setMiningAlgo(MiningAlgo.MiningAlgo_FastFourier);
-						}
-
-						ParamsOM paramsOM = ParamsAPI.getInstance().getPom();
-						if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)){
-							omMethod = new PointPatternDetection(paramsOM.getOmPiontPatternParams(), newItem);
+												
+						if(retPathPM.get(name).getHasPeriod()){
+							omMethod = new MultidimensionalOutlineDetection(newItem);
 							retOM.setIslinkDegree(true);
-						}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_FastFourier)){
-							omMethod=new FastFourierOutliesDetection(paramsOM.getOmFastFourierParams(), newItem);
+						}else if(!retPathPM.get(name).getHasPeriod()){
+							omMethod = new AnormalyDetection(newItem);
 							retOM.setIslinkDegree(false);
-						}*/
-						omMethod = new MultidimensionalOutlineDetection(newItem);
-						retOM.setIslinkDegree(true);
+						}else {
+							System.out.println("方法不存在");
+						}																						
 						omMethod.TimeSeriesAnalysis();
 						setOMResults(retOM, omMethod);
 						retPathOM.put(name, retOM);
@@ -262,43 +260,7 @@ class PathTimerTask extends TimerTask{
 					default:
 						break;
 				}
-			}
-
-			/*switch (task.getMiningMethod()) {
-			case MiningMethods_PeriodicityMining:
-				IMinerPM pmMethod = null;
-				
-				//针对每一个seq做一次周期检测
-				HashMap<String, MinerResultsPM> retPathPM=new HashMap<String, MinerResultsPM>();
-				for(List<String>seq:seqs){
-					DataItems newItem=new DataItems();
-					String name=seq.get(0);
-					seq.remove(0);
-					newItem.setData(seq);
-					newItem.setTime(dataItems.getTime());
-					
-					if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
-						pmMethod=new ERPDistencePM();
-					}else{
-						throw new RuntimeException("方法不存在！");
-					}
-					pmMethod.setDataItems(newItem);
-					pmMethod.setOriginDataItems(newItem);
-					pmMethod.predictPeriod();
-					MinerResultsPM retPM = new MinerResultsPM();
-					if(pmMethod.hasPeriod()){
-						System.out.println("period:"+name+":"+pmMethod.getPredictPeriod()+":"+pmMethod.getFirstPossiblePeriod());
-					}
-					setPMResults(retPM, pmMethod);
-					retPathPM.put(name, retPM);
-				}
-				
-				results.getRetPath().setRetPM(retPathPM);
-				break;
-			default:
-				break;
-			}*/
-
+			}		
 		}
 		HashMap<String, Double> pathProb = getPathProb(retPathOriDataItems);
 		results.getRetPath().setPathProb(pathProb);
@@ -391,7 +353,8 @@ class PathTimerTask extends TimerTask{
 			DataItems di = entry.getValue();
 			int times = 0;
 			for (String value : di.getData()) {
-				times += Integer.parseInt(value);
+				double val = Double.parseDouble(value);
+				times += (int)val;
 			}
 			total.put(pathName, times);
 			totalTimes += times;
@@ -436,6 +399,6 @@ class PathTimerTask extends TimerTask{
 */
 
 		return pathProb;
-	}
+	}	
 }
 

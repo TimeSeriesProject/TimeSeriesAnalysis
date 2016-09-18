@@ -52,9 +52,9 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
 //		add(chart2);
         chart1 = new ChartPanelShowTs("原始值", "序列编号", obName, null);
         chart2 = new ChartPanelShowAb("异常值", "序列编号", obName, null);
+        ChartPanelShowAbc jf1 = new ChartPanelShowAbc(task);
+        ChartPanelShowAbl jf2 = new ChartPanelShowAbl(task);
         InitMiner(task);
-
-
     }
 
     private void InitMiner(TaskElement task) {

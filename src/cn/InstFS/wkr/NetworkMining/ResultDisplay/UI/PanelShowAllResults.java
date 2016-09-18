@@ -34,7 +34,7 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 
 	public void displayTask(TaskElement task) {
 		if (task == null || allPanels.get(task) == null)
-			return;
+			return;		
 		CardLayout card = (CardLayout) getLayout();
 		card.show(this, task.getTaskName());
 		updateUI();

@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import WaveletUtil.PointPatternDetection;
 import WaveletUtil.SAXPartternDetection;
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
@@ -185,19 +186,27 @@ class NodeTimerTask extends TimerTask{
 	private void PMDetect(DataItems dataItems,List<TaskElement>tasks){
 
 		DataItems oriDataItems=dataItems;
-		results.setInputData(oriDataItems);
+		//results.setInputData(oriDataItems);
 		for(TaskElement task:tasks){
 			dataItems=oriDataItems;
 			if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
-				dataItems=DataPretreatment.aggregateData(oriDataItems, task.getGranularity(), task.getAggregateMethod(),
-						!dataItems.isAllDataIsDouble());
+				if(task.getMiningObject().equals("结点出现消失")){
+					DataItems items=DataPretreatment.aggregateData(oriDataItems, task.getGranularity(), task.getAggregateMethod(),
+							!dataItems.isAllDataIsDouble());
+					dataItems = NodeDisapearData(items);
+					
+				}else{
+					dataItems=DataPretreatment.aggregateData(oriDataItems, task.getGranularity(), task.getAggregateMethod(),
+							!dataItems.isAllDataIsDouble());
+				}				
 			}
 			
 			if(!task.getDiscreteMethod().equals(DiscreteMethod.None)){
 				dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 						task.getDiscreteEndNodes());
 			}
-			
+			results.setInputData(dataItems);
+			taskCombination.setDataItems(dataItems);
 			int dimension = task.getDiscreteDimension();
 			dimension = Math.max(task.getDiscreteDimension(), dataItems.getDiscretizedDimension());
 			IMinerPM pmMethod=null;
@@ -347,6 +356,17 @@ class NodeTimerTask extends TimerTask{
 		}else{
 			results.getRetNode().getRetSM().setHasFreItems(false);
 		}
+	}
+	private DataItems NodeDisapearData(DataItems items){
+		DataItems di = new DataItems();
+		for(int i=0;i<items.getLength();i++){
+			DataItem it = items.getElementAt(i);
+			Date time = it.getTime();
+			double data = Double.parseDouble(it.getData());
+			data = data>0 ? 1 : 0;
+			di.add1Data(time, String.valueOf(data));
+		}
+		return di;
 	}
 }
 
