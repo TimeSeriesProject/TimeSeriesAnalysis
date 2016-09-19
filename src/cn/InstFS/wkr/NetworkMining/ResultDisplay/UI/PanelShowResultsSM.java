@@ -173,14 +173,6 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 	public void displayMinerResults(MinerResults rslt) {
 		final DataItems nor = rslt.getInputData();
 
-
-		ArrayList<Date> timeList = (ArrayList<Date>) nor.getTime();
-		for (int i = 0; i < nor.getTime().size()-1; i++) {
-			if (timeList.get(i+1).compareTo(timeList.get(i)) <= 0) {
-				System.out.println();
-			}
-		}
-
 		System.out.println("length:" + nor.getLength() + "lastTime:" + nor.getLastTime());
 
 
@@ -188,6 +180,9 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		Map<Integer, List<String>> freq = rslt.getRetSM().getFrequentItem(); //Integer对应线段类标签，List为该类所有线段的起始点
 		DataItems freqPatterns = rslt.getRetSM().getPatterns();	// 频繁模式
 		List<LineElement> lineElements = rslt.getRetSM().getLineElements();
+
+		final HashMap<Integer, List<List<LineElement>>> modeList = new HashMap<>();
+
 		if (rslt == null || rslt.getRetSM() == null ||
 				!rslt.getMiner().getClass().equals(NetworkMinerSM.class))
 			return;
@@ -197,35 +192,18 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 			long startTime = System.currentTimeMillis();
 			if (freq != null && count == 0) {
 
-				for (LineElement e: lineElements) {	// 创建线段化后原图
-					int start = e.getStart();
-					int end = e.getEnd();
-					DataItem tempItem = new DataItem();
-					if (start < nor.getLength()) {
-						tempItem.setTime(nor.getElementAt(start).getTime());
-						tempItem.setData(nor.getElementAt(start).getData());
-						nnor.add1Data(tempItem);
-					}
-					if (end < nor.getLength()) {
-						tempItem.setTime(nor.getElementAt(end).getTime());
-						tempItem.setData(nor.getElementAt(end).getData());
-						nnor.add1Data(tempItem);
-					} else if (end == nor.getLength()) {
-						tempItem.setTime(nor.getElementAt(end -1).getTime());
-						tempItem.setData(nor.getElementAt(end -1).getData());
-						nnor.add1Data(tempItem);
-					}
-				}
-
 				List<String>freqPatternsList = freqPatterns.getData();
 				int key = 0;
 				for (String pattern: freqPatternsList) {
 					ArrayList<DataItems> nor_data = new ArrayList<DataItems>(); // 存储符合某一频繁模式的所有线段
+					ArrayList<List<LineElement>> nor_data_List = new ArrayList<>();
+
 					String[] indexList = pattern.split(",");
 					for (int i = 0; i < lineElements.size() - indexList.length;){
 
 						boolean match = true;
 						ArrayList<DataItems> temp = new ArrayList<>();
+						ArrayList<LineElement> tempList = new ArrayList<>();
 						for (int j = 0; j < indexList.length; j++){
 							LineElement line = lineElements.get(i+j);
 							if (line.getLabel() != Integer.parseInt(indexList[j])) {
@@ -234,37 +212,26 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 							}
 							int start = line.getStart();
 							int end = line.getEnd();
-							DataItem tempItem = new DataItem();
-							DataItems tempLine = new DataItems();
+
 							if (start < nor.getLength()) {
-								tempItem.setTime(nor.getElementAt(start).getTime());
-								tempItem.setData(nor.getElementAt(start).getData());
-								tempLine.add1Data(tempItem);
-							}
-							if (end < nor.getLength()) {
-								for (int k = start+1; k <= end; k++) {
-									tempItem.setTime(nor.getElementAt(k).getTime());
-									tempItem.setData(nor.getElementAt(k).getData());
-									tempLine.add1Data(tempItem);
-								}
-							} else if (end == nor.getLength()) {
-								for (int k = start+1; k < end; k++) {
-									tempItem.setTime(nor.getElementAt(k).getTime());
-									tempItem.setData(nor.getElementAt(k).getData());
-									tempLine.add1Data(tempItem);
+								if (end < nor.getLength())
+									tempList.add(line);
+								else if (end == nor.getLength()) {
+									line.setEnd(end-1);
+									tempList.add(line);
 								}
 							}
-							temp.add(tempLine);
+
 						}
 						if (match) {
-							nor_data.addAll(temp);
+							nor_data_List.add(tempList);
 							i += indexList.length;
 						} else {
 							i++;
 						}
 					}
 
-					f_model_nor.put(String.valueOf(key), nor_data);
+					modeList.put(key, nor_data_List);
 					key++;
 				}
 
@@ -346,82 +313,46 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 					else
 						break;
 				}
-				yName=ObName;
-//				box.add(cb1);
-//				box.add(cb2);
-//				box.add(cb3);
-//				box.add(cb4);
-//				box.add(cb5);
-//				box.add(cb6);
-//				box.add(cb7);
-//				box.add(cb8);
-//				box.add(cb9);
-//				box.add(cb10);
-//				checkboxPanel.add(cb1);
-//				checkboxPanel.add(l1);
-//				checkboxPanel.add(cb2);
-//				checkboxPanel.add(l2);
-//				checkboxPanel.add(cb3);
-//				checkboxPanel.add(l3);
-//				checkboxPanel.add(cb4);
-//				checkboxPanel.add(l4);
-//				checkboxPanel.add(cb5);
-//				checkboxPanel.add(l5);
-//				checkboxPanel.add(cb6);
-//				checkboxPanel.add(l6);
-//				checkboxPanel.add(cb7);
-//				checkboxPanel.add(l7);
-//				checkboxPanel.add(cb8);
-//				checkboxPanel.add(l8);
-//				checkboxPanel.add(cb9);
-//				checkboxPanel.add(l9);
-//				checkboxPanel.add(cb10);
-//				checkboxPanel.add(l10);
+				yName = ObName;
 
-					//System.out.println("ppppppppp"+f_model_nor.size());
-					int[] temp = new int[10];
-					HashMap<String, ArrayList<DataItems>> temp_f_model_nor = new HashMap<>();
-					HashMap<String, ArrayList<DataItems>> temp_f_model_nor_mode = new HashMap<>();
+				int[] temp = new int[10];
+				HashMap<String, ArrayList<DataItems>> temp_f_model_nor = new HashMap<>();
+				HashMap<String, ArrayList<DataItems>> temp_f_model_nor_mode = new HashMap<>();
 
-					ArrayList<Date> nnorTimeList = (ArrayList<Date>) nnor.getTime();
-					for (int k = 0; k < nnor.getTime().size() - 1; k++) {
-						if (nnorTimeList.get(k + 1).compareTo(nnorTimeList.get(k)) <= 0) {
-							System.out.println();
-						}
-					}
-					JFreeChart jf = ChartPanelShowFI.createChart(temp_f_model_nor, nor, temp_f_model_nor_mode, temp,yName);
-					ChartPanel chartpanel = new ChartPanel(jf);
-					remove(chart1);
-					add(chartpanel, BorderLayout.CENTER);
-					repaint();
-					validate();
-					add(checkboxPanel, BorderLayout.SOUTH);
-					//设置监听器
-					for (int j = 0; j < box.size(); j++) {
-						box.get(j).addActionListener(new ActionListener() {
-							@Override
-							public void actionPerformed(ActionEvent e) {
+				JFreeChart jf = ChartPanelShowFI.createChart(temp_f_model_nor, nor, temp_f_model_nor_mode, temp, yName);
+				ChartPanel chartpanel = new ChartPanel(jf);
+				remove(chart1);
+				add(chartpanel, BorderLayout.CENTER);
+				repaint();
+				validate();
+				add(checkboxPanel, BorderLayout.SOUTH);
+				//设置监听器
+				for (int j = 0; j < box.size(); j++) {
+					box.get(j).addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
 
-								for (int k = 0; k < box.size(); k++) {
-									if (box.get(k).isSelected()) {
-										modelindex[k] = 1;
-									} else
-										modelindex[k] = 0;
-								}
-
-								removeAll();
-								JFreeChart jf1 = ChartPanelShowFI.createChart(f_model_nor, nor, f_model_nor_mode, modelindex,yName);
-								ChartPanel chartpanel1 = new ChartPanel(jf1);
-								add(chartpanel1, BorderLayout.CENTER);
-								add(checkboxPanel, BorderLayout.SOUTH);
-								repaint();
-								validate();
+							for (int k = 0; k < box.size(); k++) {
+								if (box.get(k).isSelected()) {
+									modelindex[k] = 1;
+								} else
+									modelindex[k] = 0;
 							}
-						});
-						count++;
-					}
-					long endTime = System.currentTimeMillis();
-					System.out.println(endTime - startTime + "ms");
+
+							removeAll();
+//								JFreeChart jf1 = ChartPanelShowFI.createChart(f_model_nor, nor, f_model_nor_mode, modelindex,yName);
+							JFreeChart jf1 = ChartPanelShowFI.createChart(modeList, nor, modelindex, yName);
+							ChartPanel chartpanel1 = new ChartPanel(jf1);
+							add(chartpanel1, BorderLayout.CENTER);
+							add(checkboxPanel, BorderLayout.SOUTH);
+							repaint();
+							validate();
+						}
+					});
+					count++;
+				}
+				long endTime = System.currentTimeMillis();
+				System.out.println(endTime - startTime + "ms");
 
 			}
 		}
