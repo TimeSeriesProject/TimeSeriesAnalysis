@@ -171,7 +171,8 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 
 	@Override
 	public void displayMinerResults(MinerResults rslt) {
-		DataItems nor = rslt.getInputData();
+		final DataItems nor = rslt.getInputData();
+
 
 		ArrayList<Date> timeList = (ArrayList<Date>) nor.getTime();
 		for (int i = 0; i < nor.getTime().size()-1; i++) {
@@ -241,13 +242,17 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 								tempLine.add1Data(tempItem);
 							}
 							if (end < nor.getLength()) {
-								tempItem.setTime(nor.getElementAt(end).getTime());
-								tempItem.setData(nor.getElementAt(end).getData());
-								tempLine.add1Data(tempItem);
+								for (int k = start+1; k <= end; k++) {
+									tempItem.setTime(nor.getElementAt(k).getTime());
+									tempItem.setData(nor.getElementAt(k).getData());
+									tempLine.add1Data(tempItem);
+								}
 							} else if (end == nor.getLength()) {
-								tempItem.setTime(nor.getElementAt(end -1).getTime());
-								tempItem.setData(nor.getElementAt(end -1).getData());
-								tempLine.add1Data(tempItem);
+								for (int k = start+1; k < end; k++) {
+									tempItem.setTime(nor.getElementAt(k).getTime());
+									tempItem.setData(nor.getElementAt(k).getData());
+									tempLine.add1Data(tempItem);
+								}
 							}
 							temp.add(tempLine);
 						}
@@ -384,7 +389,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 							System.out.println();
 						}
 					}
-					JFreeChart jf = ChartPanelShowFI.createChart(temp_f_model_nor, nnor, temp_f_model_nor_mode, temp,yName);
+					JFreeChart jf = ChartPanelShowFI.createChart(temp_f_model_nor, nor, temp_f_model_nor_mode, temp,yName);
 					ChartPanel chartpanel = new ChartPanel(jf);
 					remove(chart1);
 					add(chartpanel, BorderLayout.CENTER);
@@ -405,7 +410,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 								}
 
 								removeAll();
-								JFreeChart jf1 = ChartPanelShowFI.createChart(f_model_nor, nnor, f_model_nor_mode, modelindex,yName);
+								JFreeChart jf1 = ChartPanelShowFI.createChart(f_model_nor, nor, f_model_nor_mode, modelindex,yName);
 								ChartPanel chartpanel1 = new ChartPanel(jf1);
 								add(chartpanel1, BorderLayout.CENTER);
 								add(checkboxPanel, BorderLayout.SOUTH);

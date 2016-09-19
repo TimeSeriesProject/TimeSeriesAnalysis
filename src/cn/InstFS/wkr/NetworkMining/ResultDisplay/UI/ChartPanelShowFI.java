@@ -127,7 +127,7 @@ public class ChartPanelShowFI extends JPanel {
         chart.getXYPlot().setDataset(tsc);
     }
 
-    public static XYDataset createNormalDataset(DataItems normal) {
+    public static XYDataset createNormalDataset(DataItems normal, Date startDate) {
         //获取正常数据的长度、
         int length = normal.getLength();
         int time[] = new int[length];
@@ -140,7 +140,7 @@ public class ChartPanelShowFI extends JPanel {
         for (int i = 0; i < length; i++) {
             DataItem temp = new DataItem();
             temp = normal.getElementAt(i);
-            parseDateToHour pHour = new parseDateToHour(temp.getTime());
+            parseDateToHour pHour = new parseDateToHour(temp.getTime(), startDate);
             int hour = pHour.getHour();
 //            xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData())); // 对应的横轴
             xyseries.add(hour, Double.parseDouble(temp.getData())); // 对应的横轴
@@ -173,7 +173,7 @@ public class ChartPanelShowFI extends JPanel {
         return xyseriescollection;
     }
 
-    public static XYDataset createmodeDataset(DataItems normal) {
+    public static XYDataset createmodeDataset(DataItems normal, Date startDate) {
         //获取正常数据的长度、
         int length = normal.getLength();
         int time[] = new int[length];
@@ -186,7 +186,7 @@ public class ChartPanelShowFI extends JPanel {
         for (int i = 0; i < length; i++) {
             DataItem temp = new DataItem();
             temp = normal.getElementAt(i);
-            parseDateToHour pHour = new parseDateToHour(temp.getTime());
+            parseDateToHour pHour = new parseDateToHour(temp.getTime(), startDate);
             int hour = pHour.getHour();
             //xyseries.add((double) temp.getTime().getTime(), Double.parseDouble(temp.getData())); // 对应的横轴
             xyseries.add(hour, Double.parseDouble(temp.getData())); // 对应的横轴
@@ -197,7 +197,8 @@ public class ChartPanelShowFI extends JPanel {
     }
 
     public static JFreeChart createChart(HashMap<String, ArrayList<DataItems>> nor_model, DataItems nor, HashMap<String, ArrayList<DataItems>> nor_model_mode,int []modelindex,String yName) {
-        XYDataset xydataset = createNormalDataset(nor);
+        Date startDate = nor.getTime().get(0);
+        XYDataset xydataset = createNormalDataset(nor, startDate);
 //        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 频繁项集挖掘结果", "序列编号", "值", xydataset);
         JFreeChart jfreechart = ChartFactory.createScatterPlot(" 频繁项集挖掘结果", "序列编号", yName, xydataset);
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
@@ -243,7 +244,7 @@ public class ChartPanelShowFI extends JPanel {
                         count++;
                         DataItems _nor_model = new DataItems();
                         _nor_model = one.get(j);
-                        XYDataset xydataset2 = createmodeDataset(_nor_model);
+                        XYDataset xydataset2 = createmodeDataset(_nor_model, startDate);
                         XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
                         xyplot.setDataset(j + 1, xydataset2);
                         xyplot.setRenderer(1 + j, xylineandshaperenderer2);
@@ -293,7 +294,7 @@ public class ChartPanelShowFI extends JPanel {
                     second = nor_model.get(key);
 
                     for (int j = 0; j < second.size(); j++) {
-                        XYDataset xydataset3 = createmodeDataset(second.get(j));
+                        XYDataset xydataset3 = createmodeDataset(second.get(j), startDate);
                         XYLineAndShapeRenderer xylineandshaperenderer3 = new XYLineAndShapeRenderer();
                         xyplot.setDataset(j + 1 + one.size() , xydataset3);
                         xyplot.setRenderer(j + 1 + one.size() , xylineandshaperenderer3);
@@ -321,7 +322,7 @@ public class ChartPanelShowFI extends JPanel {
                     third = nor_model.get(key);
 
                     for (int j = 0; j < third.size(); j++) {
-                        XYDataset xydataset4 = createmodeDataset(third.get(j));
+                        XYDataset xydataset4 = createmodeDataset(third.get(j), startDate);
                         XYLineAndShapeRenderer xylineandshaperenderer4 = new XYLineAndShapeRenderer();
                         xyplot.setDataset(j + 1 + one.size()  + second.size() , xydataset4);
                         xyplot.setRenderer(j + 1 + one.size() + second.size() , xylineandshaperenderer4);
@@ -349,7 +350,7 @@ public class ChartPanelShowFI extends JPanel {
                     fourth = nor_model.get(key);
 
                     for (int j = 0; j < fourth.size(); j++) {
-                        XYDataset xydataset5 = createmodeDataset(fourth.get(j));
+                        XYDataset xydataset5 = createmodeDataset(fourth.get(j), startDate);
                         XYLineAndShapeRenderer xylineandshaperenderer5 = new XYLineAndShapeRenderer();
                         xyplot.setDataset(j + 1 + one.size() + second.size()  + third.size() , xydataset5);
                         xyplot.setRenderer(j + 1 + one.size() + second.size()  + third.size() , xylineandshaperenderer5);
@@ -380,7 +381,7 @@ public class ChartPanelShowFI extends JPanel {
                     fifth = nor_model.get(key);
 
                     for (int j = 0; j < fifth.size(); j++) {
-                        XYDataset xydataset6 = createmodeDataset(fifth.get(j));
+                        XYDataset xydataset6 = createmodeDataset(fifth.get(j), startDate);
                         XYLineAndShapeRenderer xylineandshaperenderer6 = new XYLineAndShapeRenderer();
                         xyplot.setDataset(j + 1 + one.size()  + second.size() + third.size()
                                 + fourth.size() , xydataset6);
@@ -413,7 +414,7 @@ public class ChartPanelShowFI extends JPanel {
                 if (modelindex[i] == 1) {
                     sixth = nor_model.get(key);
                     for (int j = 0; j < sixth.size(); j++) {
-                        XYDataset xydataset7 = createmodeDataset(sixth.get(j));
+                        XYDataset xydataset7 = createmodeDataset(sixth.get(j),startDate);
                         XYLineAndShapeRenderer xylineandshaperenderer7 = new XYLineAndShapeRenderer();
                         xyplot.setDataset(j + 1 + one.size()  + second.size()  + third.size()
                                 + fourth.size()  + fifth.size() , xydataset7);
@@ -447,7 +448,7 @@ public class ChartPanelShowFI extends JPanel {
                     seventh = nor_model.get(key);
 
                     for (int j = 0; j < seventh.size(); j++) {
-                        XYDataset xydataset8 = createmodeDataset(seventh.get(j));
+                        XYDataset xydataset8 = createmodeDataset(seventh.get(j),startDate);
                         XYLineAndShapeRenderer xylineandshaperenderer8 = new XYLineAndShapeRenderer();
                         xyplot.setDataset(j + 1 + one.size() + second.size()  + third.size()
                                 + fourth.size()  + fifth.size()  + sixth.size() , xydataset8);
@@ -482,7 +483,7 @@ public class ChartPanelShowFI extends JPanel {
                     eighth = nor_model.get(key);
 
                     for (int j = 0; j < eighth.size(); j++) {
-                        XYDataset xydataset9 = createmodeDataset(eighth.get(j));
+                        XYDataset xydataset9 = createmodeDataset(eighth.get(j),startDate);
                         XYLineAndShapeRenderer xylineandshaperenderer9 = new XYLineAndShapeRenderer();
                         xyplot.setDataset(j + 1 + one.size()  + second.size()  + third.size()
                                 + fourth.size()  + fifth.size() + sixth.size()
@@ -517,7 +518,7 @@ public class ChartPanelShowFI extends JPanel {
                     ninth = nor_model.get(key);
 
                     for (int j = 0; j < ninth.size(); j++) {
-                        XYDataset xydataset10 = createmodeDataset(ninth.get(j));
+                        XYDataset xydataset10 = createmodeDataset(ninth.get(j),startDate);
                         XYLineAndShapeRenderer xylineandshaperenderer10 = new XYLineAndShapeRenderer();
                         xyplot.setDataset(j + 1 + one.size()  + second.size()  + third.size()
                                 + fourth.size()  + fifth.size()  + sixth.size()
@@ -552,7 +553,7 @@ public class ChartPanelShowFI extends JPanel {
                     tenth = nor_model.get(key);
 
                     for (int j = 0; j < tenth.size(); j++) {
-                        XYDataset xydataset11 = createmodeDataset(tenth.get(j));
+                        XYDataset xydataset11 = createmodeDataset(tenth.get(j),startDate);
                         XYLineAndShapeRenderer xylineandshaperenderer11 = new XYLineAndShapeRenderer();
                         xyplot.setDataset(j + 1 + one.size()  + second.size()  + third.size()
                                 + fourth.size() + fifth.size()  + sixth.size()
