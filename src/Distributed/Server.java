@@ -3,6 +3,7 @@ package Distributed;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.*;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.NetworkMinerNode;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
+import cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt.ParseByDay;
 import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
@@ -19,6 +20,7 @@ import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.Map;
@@ -114,6 +116,8 @@ public class Server {
     private int recCount = 0;
     private int recCount2 = 0;
     private int tasksCount = 0;
+    private String date;
+    private ParseByDay parseByDay;
 
     private Lock recLock = new ReentrantLock();//接收结果
     private Lock sendLock = new ReentrantLock();
@@ -1956,6 +1960,9 @@ public class Server {
                                             isPcapSuspend = true;
                                             setIsPcapRunning(false);
                                             setIsRunning(false);
+                                            getModifiedTime(inPath, "pcap");
+                                            parseByDay = new ParseByDay(outPath, outPath, date);
+                                            parseByDay.genDataByDay();
                                             long b = System.currentTimeMillis();
                                             System.out.println("time.... " + (b - a));
                                         }
@@ -2008,6 +2015,22 @@ public class Server {
                 }
             }
 
+        }
+
+        //得到最后修改时间
+        private void getModifiedTime(String fPath, String type) {
+            File ff = new File(fPath);
+            if (ff.isFile() && fPath.endsWith(type)) {
+                long time = ff.lastModified();
+                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+                date = sdf.format(new Date(time));
+                return;
+            } else if (ff.isDirectory()) {
+                File[] files = ff.listFiles();
+                for (File f : files) {
+                    getModifiedTime(f.getAbsolutePath(), type);
+                }
+            }
         }
 
         private void sendFileTask(String task) throws IOException{

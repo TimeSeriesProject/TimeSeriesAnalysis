@@ -3,6 +3,7 @@ package cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -12,27 +13,45 @@ import java.util.concurrent.*;
 public class ParseByDay {
     private String inputPath = "D:\\57data";
     private String outputPath = "D:\\57data";
+    private String date = "2016-05-01";
     private ArrayList<File> fileList = new ArrayList<File>();
+    private HashSet<String> fileNameList = new HashSet<String>();
     long initTime = System.currentTimeMillis();
 
-    public static void main(String[] args) {
-        ParseByDay parseByDay = new ParseByDay();
-        parseByDay.setInitTime();
-        parseByDay.parseNode();
-        parseByDay.parseRoute();
-        parseByDay.parseTraffic();
-        System.out.println("执行完毕");
+    public ParseByDay(String inputPath, String outputPath, String date) {
+        this.inputPath = inputPath;
+        this.outputPath = outputPath;
+        this.date = date;
     }
 
-    private void setInitTime() {
+//    public static void main(String[] args) {
+//        ParseByDay parseByDay = new ParseByDay("D:\\out", "D:\\out", "2016-05-01");
+//        parseByDay.setInitTime("2016-05-01");
+//        parseByDay.parseNode();
+//        parseByDay.parseRoute();
+//        parseByDay.parseTraffic();
+//        System.out.println("执行完毕");
+//    }
+
+    public void genDataByDay() {
+        setInitTime(date);
+        parseNode();
+        parseRoute();
+        parseTraffic();
+    }
+
+    private void setInitTime(String date) {
         Calendar cal = Calendar.getInstance();
-        cal.set(2016, 4, 1, 0, 0, 0);//初始时间为2016/05/01/0:0:0
+        cal.set(Integer.parseInt(date.split("-")[0]), Integer.parseInt(date.split("-")[1]) - 1,
+                Integer.parseInt(date.split("-")[2]), 0, 0, 0);//初始时间为2016/05/01/0:0:0
         initTime = cal.getTimeInMillis() / 1000 * 1000;
+        System.out.println("ini:" + initTime);
     }
 
     private void parseNode() {
         String inPath = inputPath + "\\node";
         fileList.clear();
+        fileNameList.clear();
         getFileList(inPath, "txt");
 
         ExecutorService exec = Executors.newFixedThreadPool(4);
@@ -58,12 +77,14 @@ public class ParseByDay {
                 exec.shutdown();
             }
         }
+        deleteFile(fileNameList);
 
     }
 
     private void parseRoute() {
         String inPath = inputPath + "\\route";
         fileList.clear();
+        fileNameList.clear();
         getFileList(inPath, "csv");
 
         ExecutorService exec = Executors.newFixedThreadPool(4);
@@ -89,11 +110,14 @@ public class ParseByDay {
                 exec.shutdown();
             }
         }
+        deleteFile(fileNameList);
+
     }
 
     private void parseTraffic() {
         String inPath = inputPath + "\\traffic";
         fileList.clear();
+        fileNameList.clear();
         getFileList(inPath, "txt");
 
         ExecutorService exec = Executors.newFixedThreadPool(4);
@@ -119,18 +143,31 @@ public class ParseByDay {
                 exec.shutdown();
             }
         }
+        deleteFile(fileNameList);
     }
 
     private void getFileList(String fPath, String type) {
         File ff = new File(fPath);
         if (ff.isFile() && fPath.endsWith(type)) {
             fileList.add(ff);
+            fileNameList.add(ff.getAbsolutePath());
         } else if (ff.isDirectory()) {
             File[] files = ff.listFiles();
             for (File f : files) {
                 getFileList(f.getAbsolutePath(), type);
             }
         }
+    }
+
+    private boolean deleteFile(HashSet<String> fileNameList) {
+        boolean flag = false;
+        for (String fileName : fileNameList) {
+            File file = new File(fileName);
+            if (file.isFile()) {
+                file.delete();
+            }
+        }
+        return flag;
     }
 }
 
@@ -181,6 +218,7 @@ class NodeGen implements Callable {
                 e.printStackTrace();
             }
         }
+        bin.close();
 
         return true;
     }
@@ -240,6 +278,7 @@ class RouteGenerate implements Callable {
                 e.printStackTrace();
             }
         }
+        bin.close();
 
         return true;
     }
@@ -296,6 +335,7 @@ class TrafficGen implements Callable {
                 e.printStackTrace();
             }
         }
+        bin.close();
 
         return true;
     }
