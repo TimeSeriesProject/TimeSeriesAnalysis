@@ -62,12 +62,14 @@ public class win10_window extends JFrame {
     }
 
     public void distribute() {
+        System.out.println("启动分布式");
         server = Server.getInstance();
         new Thread(Server.getStartInstance()).start();
         isDistributed = true;
     }
 
     public void single() {
+        System.out.println("启动单机版");
         Server.closeServer();
         isDistributed = false;
     }
@@ -345,9 +347,6 @@ public class win10_window extends JFrame {
 //					JDialog.setDefaultLookAndFeelDecorated(true);
                     win10_window frame = new win10_window();
                     frame.setVisible(true);
-                    //启动分布式
-//                    frame.distribute();
-//                    System.out.println("启动分布式服务");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -442,6 +441,15 @@ public class win10_window extends JFrame {
 //        final JButton bSetting=new JButton("设置");
 //        bSetting.setBackground(Color.orange);
 //        bSetting.setBounds(138,824,200,100);
+
+        final JButton bSingle = new JButton("单机版");
+        bSingle.setBounds(310,540, 200, 200);
+        setIcon("img\\standalone_version_Icon.png", bSingle);
+
+        final JButton bDis = new JButton("分布式");
+        bDis.setBounds(520, 540, 200, 200);
+        setIcon("img\\distributed_version_Icon.png", bDis);
+
         //最后一列
         final JButton bMinNet=new JButton("挖掘网络结构");
         bMinNet.setBounds(730,120,200,200);
@@ -479,6 +487,8 @@ public class win10_window extends JFrame {
         ct.add(bNetLoad);
         ct.add(bNode);
         ct.add(bPcap);
+        ct.add(bDis);
+        ct.add(bSingle);
 //        ct.add(bgp);
         ct.setBackground(new Color(0,90,171));
 
@@ -495,8 +505,26 @@ public class win10_window extends JFrame {
         bNetLoad.setMargin(new Insets(0, 0, 0, 0));
         bNode.setMargin(new Insets(0, 0, 0, 0));
         bPcap.setMargin(new Insets(0, 0, 0, 0));
+        bSingle.setMargin(new Insets(0, 0, 0, 0));
+        bDis.setMargin(new Insets(0, 0, 0, 0));
 //        bNetwork.setMargin(new Insets(0, 0, 0, 0));
 
+
+        //单机版按钮响应
+        bSingle.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                single();
+            }
+        });
+
+        //分布式按钮响应
+        bDis.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                distribute();
+            }
+        });
 
         //显示网络结构按钮响应
         bNetwork.addActionListener(new ActionListener() {
