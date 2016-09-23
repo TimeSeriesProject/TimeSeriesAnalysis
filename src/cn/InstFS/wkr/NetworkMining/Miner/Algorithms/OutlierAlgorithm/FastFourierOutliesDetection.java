@@ -24,12 +24,14 @@ public class FastFourierOutliesDetection implements IMinerOM {
     private static FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
     private static double[] original; //原始数据（非参数）
     private static double[] denoisedslicezz; //滤波后的数据（非参数）
+    
     private static double varK = 3.0; //高斯距离阈值 (x-u)/sigma > varK 则x点是异常点（暂时没用到）
     private static double amplitudeRatio = 0.8; //滤波参数，傅里叶变换以后，保留amplitudeRatio的低频，过滤高频
     private static double sizeK = 8; //每段数据的长度len = 2^sizeK
     private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
+    
     private double threshold; //异常度阈值（非参数）
-    private DataItems di;
+    private DataItems di = new DataItems();
     private DataItems outlies = new DataItems();//异常点
     private DataItems outDegree = new DataItems(); //异常度
     private Map<Date, Double> degreeMap = new HashMap<Date, Double>();
@@ -47,11 +49,13 @@ public class FastFourierOutliesDetection implements IMinerOM {
     	this.varK = omFastFourierParams.getVarK();
     	this.amplitudeRatio = omFastFourierParams.getAmplitudeRatio();
     	this.sizeK = omFastFourierParams.getSizeK();
+    	this.diff = omFastFourierParams.getDiff();
     }
     public FastFourierOutliesDetection(OMFastFourierParams omFastFourierParams,DataItems di){
     	this.varK = omFastFourierParams.getVarK();
     	this.amplitudeRatio = omFastFourierParams.getAmplitudeRatio();
     	this.sizeK = omFastFourierParams.getSizeK();
+    	this.diff = omFastFourierParams.getDiff();
     	this.di = di;
     }
 

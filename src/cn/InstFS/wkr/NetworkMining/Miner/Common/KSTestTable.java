@@ -69,7 +69,7 @@ public class KSTestTable {
 				{0.168,0.191,0.213,0.238,0.255},
 				{0.165,0.189,0.210,0.235,0.252},
 				
-				//n>40时： value*sqrt(n)
+				//n>40时： value/sqrt(n)
 				{1.07,1022,1.36,1.52,1.63},
 		};
 		
@@ -89,7 +89,7 @@ public class KSTestTable {
         if(x<=40){
         	D = table[x][y];
         }else if(x>41){
-        	D = table[x][y]*Math.sqrt(n);
+        	D = table[x][y]/Math.sqrt(n);
         }
         return D;
 	}

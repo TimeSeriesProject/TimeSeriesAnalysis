@@ -189,18 +189,23 @@ public class ChartPanelShowTs extends JPanel{
 		ArrayList<XYDataset> xyseriescollectionlist = new ArrayList<XYDataset>();
 
     	double maxY = 0;
+    	double minY = Double.MAX_VALUE;
     	for(int k=0;k<normal.getLength();k++){
     		DataItem temp = normal.getElementAt(k);
     		if(Double.parseDouble(temp.getData())>maxY){
     			maxY = Double.parseDouble(temp.getData());
     		}
+    		if(Double.parseDouble(temp.getData())<minY){
+    			minY = Double.parseDouble(temp.getData());
+    		}
     	}
     	int i=period;
+    	double diff = maxY-minY;
     	while(i<normal.getLength()){
     		XYSeries xySeries = new XYSeries("周期分割线"+i);
     		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
-        	xySeries.add(i,0);
-    		xySeries.add(i,maxY*1.1);
+        	xySeries.add(i,minY);
+    		xySeries.add(i,maxY+diff*0.1);
     		xyseriescollection.addSeries(xySeries);
     		xyseriescollectionlist.add(xyseriescollection);
     		i = i+period;

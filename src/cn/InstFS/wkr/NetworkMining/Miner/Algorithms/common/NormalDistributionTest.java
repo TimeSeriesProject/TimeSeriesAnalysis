@@ -1,8 +1,11 @@
 package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common;
 
+import java.util.List;
+
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.inference.TestUtils;
+
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.KolmogorovSmirnovCheckout;
 
 /**
@@ -32,8 +35,7 @@ public class NormalDistributionTest {
             stdeviation = 0.0001;
         }
         distribution = new NormalDistribution(mean, stdeviation);
-    }
-
+    }    
     public boolean isNormalDistri(){
     	KolmogorovSmirnovCheckout ks = new KolmogorovSmirnovCheckout();
         return ks.kolmogorovSmirnovTest(distribution, arr,CONFIDENCE);

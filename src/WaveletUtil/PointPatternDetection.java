@@ -42,7 +42,8 @@ public class PointPatternDetection implements IMinerOM{
 		this.dataItems=di;
 		this.densityK=omPiontPatternParams.getDensityK();
 		this.neighborK=omPiontPatternParams.getDensityK();
-		this.patternThreshold = omPiontPatternParams.getPatternThreshold();		
+		this.patternThreshold = omPiontPatternParams.getPatternThreshold();	
+		this.diff = omPiontPatternParams.getDiff();
 	}
 	/**
 	 * 检测异常
@@ -209,17 +210,19 @@ public class PointPatternDetection implements IMinerOM{
 		}
 		Collections.sort(list);
 		Collections.reverse(list);
-		double threshold = list.get((int)(len*0.02));
-		
-		/*for(int i=(int)(len*0.02);i>0;i--){
+		double threshold = list.get((int)(len*0.02));		
+		for(int i=(int)(len*0.02);i>0;i--){
 			if((list.get(i)-threshold)<diff*threshold){
 				threshold = list.get(i);
 			}else{
 				threshold = list.get(i);
 				break;
 			}
-		}*/
+		}
+		threshold = threshold>0.4 ? threshold : 0.4;
+		threshold = threshold>0.6 ?  0.6 :threshold;
 		System.out.println("异常度阈值是："+threshold);
+		
 		for(int i=0;i<len;i++){
 			if(map.get(i)>=threshold){
 				int start = patterns.get(i).getStart();

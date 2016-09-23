@@ -10,6 +10,7 @@ public class OMGuassianParams {
     private int maxWindowSize = 60;//最大窗口大小
     private int expWindowSize = 3;//扩展窗口大小
     private double windowVarK=3.0;//异常标准差倍数阈值 |Xi - mean|/std < windowVarK
+    private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
     public OMGuassianParams(Element paramsConfig){
     	String param = "";
     	param = paramsConfig.getChildText("initWindowSize");
@@ -30,6 +31,11 @@ public class OMGuassianParams {
     	param = paramsConfig.getChildText("windowVarK");
     	if(param != null){
     		windowVarK = Double.parseDouble(param);
+    	}
+    	
+    	param = paramsConfig.getChildText("diff");
+    	if(param != null){
+    		diff = Double.parseDouble(param);
     	}
     }
     public int getInitWindowSize() {
@@ -60,6 +66,12 @@ public class OMGuassianParams {
 	}
 	public void setWindowVarK(double k) {
 		this.windowVarK = k;
+	}
+	public static double getDiff() {
+		return diff;
+	}
+	public static void setDiff(double diff) {
+		OMGuassianParams.diff = diff;
 	}
 	
 }

@@ -6,6 +6,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -628,6 +629,8 @@ public class PcapUtils {
     private HashMap<String, BufferedWriter> bws = new HashMap<String, BufferedWriter>();
     private ConcurrentHashMap<String, BufferedOutputStream> bos = new ConcurrentHashMap<String, BufferedOutputStream>();
     private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap = new ConcurrentHashMap<String, ArrayList<PcapNode>>();
+    private String date;
+    private ParseByDay parseByDay;
 
     public enum Status {
         PREPARE("prepare"), PARSE("parse"), GENROUTE("genroute"), END("end");
@@ -987,6 +990,7 @@ public class PcapUtils {
     }
 
     public void readInput(String fpath, String outpath) throws IOException, FileNotFoundException {
+        getModifiedTime(fpath, "pcap");//获取最后修改时间，当天0点
 
         File folder = new File(outpath + "\\routesrc");
         boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
@@ -1021,6 +1025,9 @@ public class PcapUtils {
         long e = System.currentTimeMillis();
         System.out.println("时间3：" + (e - d) / 1000);
 
+        parseByDay = new ParseByDay(outpath, outpath, date);
+        parseByDay.genDataByDay();
+
         status = Status.END;
         System.out.println("解析结束");
 
@@ -1035,6 +1042,21 @@ public class PcapUtils {
             for (File f : files) {
                 String path = f.getPath();
                 getFileList(f.getAbsolutePath(), type);
+            }
+        }
+    }
+
+    private void getModifiedTime(String fPath, String type) {
+        File ff = new File(fPath);
+        if (ff.isFile() && fPath.endsWith(type)) {
+            long time = ff.lastModified();
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+            date = sdf.format(new Date(time));
+            return;
+        } else if (ff.isDirectory()) {
+            File[] files = ff.listFiles();
+            for (File f : files) {
+                getModifiedTime(f.getAbsolutePath(), type);
             }
         }
     }

@@ -421,6 +421,90 @@ public class DataPretreatment {
 		return dataOut;
 	}
 	
+	//datItems在相同的时间粒度上的聚合
+		public static DataItems aggregateData1(DataItems di,int granularity,
+				AggregateMethod method,boolean isDiscreteOrNonDouble){	
+			
+			if(granularity ==3600)
+				return di;
+			DataItems dataOut = new DataItems();
+			dataOut.setIsAllDataDouble(di.getIsAllDataDouble());
+			int len = di.getLength();
+			if (di == null || di.getTime() == null || di.getData() == null || len == 0)
+				return dataOut;
+			
+			List<Date> times = di.getTime();
+			List<String> datas = di.getData();
+			Date t1 = times.get(0);
+			Date t2 = getDateAfter(t1, granularity * 1000);
+			Map<String,Integer> valsStr = new HashMap<String, Integer>(); // 字符串的聚合结果
+			Set<String> varSet=new HashSet<String>();                     //字符串的集合
+			List<Double> vals = new ArrayList<Double>(); 	// 数值的聚合结果
+			
+//			Date t = t1;									// 聚合后的时间点
+			int i=0;
+			int  flag=0;
+			for(;!t1.after(times.get(times.size()-1));t1=t2,t2 = getDateAfter(t2, granularity * 1000))
+			{
+				
+				while(i<times.size()&&times.get(i).before(t2))
+				{
+					if(i>0&&times.get(i).before(times.get(i-1)))
+					{
+						System.out.println("序列未排序，请先排序！");
+//						JOptionPane.showMessageDialog((new MainFrame()).topFrame, "序列未排序");
+					
+					}
+					if (isDiscreteOrNonDouble){	// 离散值或字符串
+						if(valsStr.containsKey(datas.get(i))){
+							int originValue=valsStr.get(datas.get(i));
+							valsStr.remove(datas.get(i));
+							int newValue=originValue+1;
+							valsStr.put(datas.get(i), newValue);
+						}else{
+							valsStr.put(datas.get(i), 1);
+						}
+						varSet.add(datas.get(i));
+					}
+					else{			// 若为连续值，则加至vals中，后续一起聚合
+						try{
+							double data= Double.parseDouble(datas.get(i));
+							vals.add(data);
+						}catch(Exception e){}					
+					}
+					i++;
+				}
+				//一个时间粒度内的值读完了，则建立新的值
+				if(isDiscreteOrNonDouble){
+//					StringBuilder sb = new StringBuilder();
+//					for (String valStr : valsStr)
+//						sb.append(valStr+" ");
+//					if (sb.length() > 0)
+//						dataOut.add1Data(t1, sb.toString().trim());
+//					else
+//						dataOut.add1Data(t1, "");
+					dataOut.add1Data(t1, valsStr);
+					flag++;
+					valsStr.clear();
+				}else{
+					Double[] valsArray = vals.toArray(new Double[0]);
+					
+					if (valsArray.length > 0){
+						Double val = aggregateDoubleVals(valsArray, method);
+						dataOut.add1Data(t1, val.toString());
+					}
+					else
+					{
+						dataOut.add1Data(t1,String.valueOf(0.0));
+					}
+					vals.clear();
+				}
+			}			
+			if(varSet.size()!=0){
+				dataOut.setVarSet(varSet);
+			}
+			return dataOut;
+		}
 	/**
 	 * 根据discreteMethod,对该数据进行离散化
 	 * @param discreteMethod	离散化方法

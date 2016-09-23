@@ -129,6 +129,7 @@ public class PathMinerFactory extends MinerFactorySettings{
 		task.setMiningMethod(method);
 		task.setTaskRange(taskRange);
 		task.setRange(fileName.substring(0, fileName.lastIndexOf(".")));
+		task.setGranularity(Integer.parseInt(getGranularity()));
 		
 		String taskName = null;
 		switch (method) {
