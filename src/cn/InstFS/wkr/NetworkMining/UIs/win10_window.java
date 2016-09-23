@@ -6,10 +6,16 @@ import cn.InstFS.wkr.NetworkMining.Miner.Factory.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPath;
-import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
+import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgressBar;
+import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgress;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.*;
+import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.border.StandardBorderPainter;
+import org.jvnet.substance.painter.StandardGradientPainter;
+import org.jvnet.substance.skin.SubstanceBusinessBlackSteelLookAndFeel;
+import org.jvnet.substance.title.MatteHeaderPainter;
 
 import javax.swing.*;
 
@@ -77,6 +83,7 @@ public class win10_window extends JFrame {
             networkStructureresultMaps.put(ob.toString(), objectMap);
         }
 
+        TaskProgress.getInstance().clear();
         isNetworkStructureMined=true;
     }
     public void mineSingleNode()
@@ -84,54 +91,60 @@ public class win10_window extends JFrame {
         singleNoderesultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
-        SingleNodeOrNodePairMinerFactory singleNodeMinerFactory = SingleNodeOrNodePairMinerFactory.getInstance();
-        List<MiningObject> miningObjectList = singleNodeMinerFactory.getMiningObjectsChecked();
+        final SingleNodeOrNodePairMinerFactory singleNodeMinerFactory = SingleNodeOrNodePairMinerFactory.getInstance();
+        final List<MiningObject> miningObjectList = singleNodeMinerFactory.getMiningObjectsChecked();
 
-        // 判断是否含有该挖掘对象结果文件
-        for (MiningObject ob: miningObjectList) {
-            HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
-            /*if (resultsFile.hasFile(singleNodeMinerFactory)) {  // 已有，直接读取
-                objectMap = (HashMap<TaskCombination, MinerNodeResults>) resultsFile.file2ResultMap();
-                singleNoderesultMaps.put(ob.toString(), objectMap);
-                NetworkMinerFactory.getInstance().taskCombinationAdd2allMiner(objectMap); //由读取的结果objectMap添加相应的miner，以供显示
-            } else {    // 没有，则重新挖掘并保存
-                singleNodeMinerFactory.reset();
-                singleNodeMinerFactory.setMiningObject(ob);
-                singleNodeMinerFactory.detect();
-                objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
-                singleNoderesultMaps.put(ob.toString(), objectMap);
-                MiningResultsFile newResultsFile = new MiningResultsFile(ob);
-                newResultsFile.resultMap2File(singleNodeMinerFactory, objectMap);
-            }*/
+        JFrame frame = new JFrame("任务挖掘进度");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        final JComponent newContentPane = new TaskProgressBar();
+        newContentPane.setOpaque(true);
+        frame.setContentPane(newContentPane);
+        frame.pack();
+        frame.setVisible(true);
+
+        // detect生成taskCombination及CombinationMiner
+        /*for (MiningObject ob: miningObjectList) {
             singleNodeMinerFactory.reset();
             singleNodeMinerFactory.setMiningObject(ob);
             singleNodeMinerFactory.detect();
-            objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
-            singleNoderesultMaps.put(ob.toString(), objectMap);
-
-//            HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
-//            /*if (resultsFile.hasFile(singleNodeMinerFactory)) {  // 已有，直接读取
-//                objectMap = (HashMap<TaskCombination, MinerNodeResults>) resultsFile.file2ResultMap();
-//                singleNoderesultMaps.put(ob.toString(), objectMap);
-//                NetworkMinerFactory.getInstance().taskCombinationAdd2allMiner(objectMap); //由读取的结果objectMap添加相应的miner，以供显示
-//            } else {    // 没有，则重新挖掘并保存
-//                singleNodeMinerFactory.reset();
-//                singleNodeMinerFactory.setMiningObject(ob);
-//                singleNodeMinerFactory.detect();
-//                objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
-//                singleNoderesultMaps.put(ob.toString(), objectMap);
-//                MiningResultsFile newResultsFile = new MiningResultsFile(ob);
-//                newResultsFile.resultMap2File(singleNodeMinerFactory, objectMap);
-//            }*/
-//            singleNodeMinerFactory.reset();
-//            singleNodeMinerFactory.setMiningObject(ob);
-//            singleNodeMinerFactory.detect();
-//            objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
-//            singleNoderesultMaps.put(ob.toString(), objectMap);
-
         }
+        TaskProgressBar bar = (TaskProgressBar) newContentPane;
+        bar.startTask();*/
+
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        for (MiningObject ob: miningObjectList) {
+                            singleNodeMinerFactory.reset();
+                            singleNodeMinerFactory.setMiningObject(ob);
+                            singleNodeMinerFactory.detect();
+                        }
+                        TaskProgressBar bar = (TaskProgressBar) newContentPane;
+                        bar.startTask();
+
+                        for (MiningObject ob: miningObjectList) {
+                            TaskProgress.getInstance().setPhase(ob.toString());
+                            HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
+                            objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
+                            singleNoderesultMaps.put(ob.toString(), objectMap);
+                        }
+                        TaskProgress.getInstance().clear();
+                        SingleNodeListFrame singleNodeListFrame = new SingleNodeListFrame(singleNoderesultMaps);
+                        singleNodeListFrame.setVisible(true);
+                    }
+                };
+                new Thread(runnable).start();
+            }
+        });
+
+
 
         isSingleNodeMined=true;
+
+
     }
 
     public void mineSingleNodeDis()
@@ -310,7 +323,20 @@ public class win10_window extends JFrame {
 //         SubstanceLookAndFeel.setCurrentGradientPainter(new StandardGradientPainter());
 //         //设置标题
 //         SubstanceLookAndFeel.setCurrentTitlePainter( new MatteHeaderPainter());
+        try {
+//			org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
 
+            UIManager.setLookAndFeel( new SubstanceBusinessBlackSteelLookAndFeel());
+            JFrame.setDefaultLookAndFeelDecorated(true);
+
+            SubstanceLookAndFeel.setCurrentBorderPainter(new StandardBorderPainter());
+            //设置渐变渲染
+            SubstanceLookAndFeel.setCurrentGradientPainter(new StandardGradientPainter());
+            //设置标题
+            SubstanceLookAndFeel.setCurrentTitlePainter( new MatteHeaderPainter());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
 
         setTitle("网络规律挖掘模拟器");
@@ -554,8 +580,11 @@ public class win10_window extends JFrame {
                 // TODO Auto-generated method stub
                 if(!isSingleNodeMined)
                     mineSingleNode();
-                SingleNodeListFrame singleNodeListFrame = new SingleNodeListFrame(singleNoderesultMaps);
-                singleNodeListFrame.setVisible(true);
+                else {
+                    SingleNodeListFrame singleNodeListFrame = new SingleNodeListFrame(singleNoderesultMaps);
+                    singleNodeListFrame.setVisible(true);
+                }
+
 //                server.showSingleNodeResult();//分布式结果显示
 
             }

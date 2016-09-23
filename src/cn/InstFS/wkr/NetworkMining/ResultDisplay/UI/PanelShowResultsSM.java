@@ -303,7 +303,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				labelArr.add(l8);
 				labelArr.add(l9);
 				labelArr.add(l10);
-				for(int i=0;i<f_model_nor.size();i++)
+				for(int i=0;i<modeList.size();i++)
 				{
 					if(i<10) {
 						box.add(checkboxArr.get(i));

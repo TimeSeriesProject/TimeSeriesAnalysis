@@ -39,6 +39,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
+import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgress;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
@@ -69,6 +70,8 @@ public class NetworkMinerNode implements INetworkMiner{
 			MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
 			results.setRetNode(resultNode);
 
+			TaskProgress taskProgress = TaskProgress.getInstance();
+			taskProgress.increaseComplete();
 			return false;
 		}
 
@@ -90,6 +93,11 @@ public class NetworkMinerNode implements INetworkMiner{
 			e.printStackTrace();
 			isRunning = false;
 			Over.setIsover(false);
+
+			/* 记录发生异常的taskCombination至任务进度 */
+			TaskProgress taskProgress = TaskProgress.getInstance();
+			taskProgress.increaseComplete();
+			taskProgress.addErrTaskCombination(taskCombination);
 			timer.shutdownNow();
 		}
 		return isRunning;
@@ -196,7 +204,6 @@ class NodeTimerTask extends TimerTask{
 				dataItems=DataPretreatment.toDiscreteNumbers(dataItems, task.getDiscreteMethod(), task.getDiscreteDimension(),
 						task.getDiscreteEndNodes());
 			}
-			
 			int dimension = task.getDiscreteDimension();
 			dimension = Math.max(task.getDiscreteDimension(), dataItems.getDiscretizedDimension());
 			IMinerPM pmMethod=null;
@@ -307,6 +314,9 @@ class NodeTimerTask extends TimerTask{
 		MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(taskCombination);
 		MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(taskCombination.getMiningObject()));
 		newResultsFile.result2File(settings, taskCombination, results.getRetNode());
+
+		TaskProgress taskProgress = TaskProgress.getInstance();
+		taskProgress.increaseComplete();
 	}
 	
 	private void setPMResults(MinerResults results,IMinerPM pmMethod){
