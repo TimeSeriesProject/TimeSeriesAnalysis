@@ -79,7 +79,7 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 	public void detect(){
 		File dataDirectory=new File(dataPath);
 		nodePairReader reader=new nodePairReader();
-		int granularity=3600;
+		int granularity= Integer.parseInt(getGranularity());
 		if(dataDirectory.isFile()){
 //			addTask(dataDirectory,granularity,reader);
 		}else{

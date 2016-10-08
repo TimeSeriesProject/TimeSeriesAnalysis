@@ -234,6 +234,7 @@ public class DialogSettings extends JDialog {
         dataPath.setText(data.getDataPath());
         fieldGranularity.setText(data.getGranularity());
         fieldTaskRange.setText(data.getTaskRange().toString());
+        granularityComboBox.setSelectedItem(Integer.parseInt(data.getGranularity()) / 3600 +"");
     }
 
     public void getData(MinerFactorySettings data) {
