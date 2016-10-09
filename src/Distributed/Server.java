@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.*;
 
 
@@ -34,7 +35,8 @@ import java.util.concurrent.locks.*;
 public class Server {
     private static Server server;
     private static ServerStart serverStart;
-    private int taskCount = 0;//发送次数
+//    private int taskCount = 0;//发送次数
+    private AtomicInteger taskCount = new AtomicInteger(0);
     private boolean singleNodeTimeFlag = true;//判断是否生成result界面
     private boolean singleNodeTrafficFlag = true;//判断是否生成result界面
     private boolean singleNodeDisapearEmergeFlag = true;//判断是否生成result界面
@@ -363,7 +365,8 @@ public class Server {
                 allCombinationTasks.put(combinationList.getTaskCombinationList().get(i), "n");
             }
         }
-        taskCount = 0;
+//        taskCount = 0;
+        taskCount.set(0);
         TaskCombinationList.clearTaskCombinationList();
         /*for (Map.Entry<TaskCombination, String> entry : allCombinationTasks.entrySet()) {
             System.out.println("初始化后 TaskCombination= " + entry.getKey().getName().hashCode() +
@@ -865,19 +868,23 @@ public class Server {
                         /*for(Map.Entry<TaskCombination, String> entry : allCombinationTasks.entrySet()){
                             userClientObject.sendObject(entry.getKey());
                         }*/
-                        countLock.lock();
-                        try {
-                            if (taskCount < tempList.size()) {
-//                                isSuspend = true;
 
-                                long a = System.currentTimeMillis();
-                                System.out.println("第" + taskCount + "次发送" + tempList.size());
-                                userClientObject.sendObject(tempList.get(taskCount));
-                                long b = System.currentTimeMillis();
-                                System.out.println("发送时间：" + (b - a));
-                                taskCount += 1;
-                                System.out.println("第" + taskCount + "次即将开始");
-                            } else {
+                        int tempCount;
+                        if ((tempCount = taskCount.getAndIncrement()) < tempList.size()) {
+                            System.out.println("第" + taskCount.get() + "次发送" + tempList.size());
+
+                            countLock.lock();
+                            try {
+                                userClientObject.sendObject(tempList.get(tempCount));
+                            } finally {
+                                countLock.unlock();
+                            }
+
+//                            taskCount += 1;
+                            System.out.println("第" + taskCount.get() + "次即将开始");
+                        } else {
+                            countLock.lock();
+                            try {
                                 int temp = 0;//中途最后一个结果发回来，强行再发一次最后一个任务，防止客户端没有ready卡死
                                 //线程加锁，防止其他线程调用Map
 //                                isSuspend = true;
@@ -906,9 +913,9 @@ public class Server {
                                 //                            } finally {
                                 //                                mapLock.readLock().unlock();
                                 //                            }
+                            } finally {
+                                countLock.unlock();
                             }
-                        } finally {
-                            countLock.unlock();
                         }
                     }
                     System.out.println("执行完毕");
