@@ -5,7 +5,7 @@
         <minSupport>5</minSupport>
         <sizeWindow>10</sizeWindow>
         <stepWindow>1</stepWindow>
-        <splitLeastLen>20</splitLeastLen>
+        <splitLeastLen>4</splitLeastLen>
         <clusterNum>8</clusterNum>
     </smParam>
 </sParams>

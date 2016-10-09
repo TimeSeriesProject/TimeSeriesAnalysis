@@ -2240,6 +2240,9 @@ public class nodePairReader implements IReader {
 				
 				String[] items = line.split(",");
 				int timeSpan = Integer.parseInt(items[0])+24*k;
+				if (timeSpan-start < 0) {
+					continue;
+				}
 				while(sumDataItem.getLength()<=timeSpan-start)
 				{
 					int j=sumDataItem.getLength();  //j为新增数据点的下标

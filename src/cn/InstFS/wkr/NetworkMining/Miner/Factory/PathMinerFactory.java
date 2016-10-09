@@ -93,7 +93,7 @@ public class PathMinerFactory extends MinerFactorySettings{
 		case MiningObject_Traffic:
 		case MiningObject_Times:
 //			dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString());
-			dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString(), false, getStartDate(), getEndDate());
+			dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString(), true, getStartDate(), getEndDate());
 			break;
 		default:
 			break;

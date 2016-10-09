@@ -121,7 +121,7 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 		Date date1 = getStartDate();
 		Date date2 = getEndDate();
 		HashMap<String, DataItems> rawDataItems = 
-				reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(), false, date1, date2, 3600);
+				reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(), true, date1, date2, 3600);
 		eachProtocolItems.put(ip, rawDataItems);
 	}
 	
