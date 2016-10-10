@@ -124,7 +124,7 @@ public class PathMinerFactory extends MinerFactorySettings{
 		TaskElement task = new TaskElement();
 		task.setDataSource("File");
 		task.setSourcePath(file.getAbsolutePath());
-		task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		task.setAggregateMethod(AggregateMethod.Aggregate_MEAN);
 		task.setDiscreteMethod(DiscreteMethod.None);
 		task.setMiningMethod(method);
 		task.setTaskRange(taskRange);

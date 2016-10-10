@@ -301,9 +301,9 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
         Arrays.fill(array, true);
         show_path = new PathDisplayPredicate<>(array);
 
-        control_panel.add(zoomPanel, BorderLayout.NORTH);
+        control_panel.add(zoomPanel, BorderLayout.SOUTH);
         control_panel.add(show_edge_panel, BorderLayout.CENTER);
-        control_panel.add(gm.getModeComboBox(), BorderLayout.SOUTH);
+        control_panel.add(gm.getModeComboBox(), BorderLayout.NORTH);
     }
 
     @Override
