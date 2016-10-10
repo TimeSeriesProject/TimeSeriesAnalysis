@@ -85,21 +85,44 @@ public class win10_window extends JFrame {
         networkStructureresultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
-        NetworkFactory networkFactory = NetworkFactory.getInstance();
-        List<MiningObject> miningObjectList = networkFactory.getMiningObjectsChecked();
+        final NetworkFactory networkFactory = NetworkFactory.getInstance();
+        final List<MiningObject> miningObjectList = networkFactory.getMiningObjectsChecked();
+        final JComponent newContentPane = new TaskProgressBar();
+        newContentPane.setOpaque(true);
 
-        // 判断是否含有该挖掘对象结果文件
-        for (MiningObject ob: miningObjectList) {
-            HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        for (MiningObject ob: miningObjectList) {
+                            networkFactory.reset();
+                            networkFactory.setMiningObject(ob);
+                            networkFactory.detect();
+                        }
+                        TaskProgressBar bar = (TaskProgressBar) newContentPane;
+                        bar.startTask();
 
-            networkFactory.reset();
-            networkFactory.setMiningObject(ob);
-            networkFactory.detect();
-            objectMap = NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(ob);
-            networkStructureresultMaps.put(ob.toString(), objectMap);
-        }
+                        for (MiningObject ob: miningObjectList) {
+                            TaskProgress.getInstance().setPhase(ob.toString());
+                            HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
+                            objectMap = NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(ob);
+                            networkStructureresultMaps.put(ob.toString(), objectMap);
+                        }
+                        TaskProgress.getInstance().clear();
+                        WholeNetworkFrame wholeNetworkFrame = new WholeNetworkFrame(networkStructureresultMaps);
+                        wholeNetworkFrame.setVisible(true);
+                    }
+                };
+                new Thread(runnable).start();
+            }
+        });
 
-        TaskProgress.getInstance().clear();
+        JDialog dialog = new JDialog(this, "网络结构任务挖掘进度", true);
+        dialog.setContentPane(newContentPane);
+        dialog.pack();
+        dialog.setVisible(true);
+
         isNetworkStructureMined=true;
     }
 
@@ -127,14 +150,17 @@ public class win10_window extends JFrame {
         final SingleNodeOrNodePairMinerFactory singleNodeMinerFactory = SingleNodeOrNodePairMinerFactory.getInstance();
         final List<MiningObject> miningObjectList = singleNodeMinerFactory.getMiningObjectsChecked();
 
-        JFrame frame = new JFrame("任务挖掘进度");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+       /* JFrame frame = new JFrame("任务挖掘进度");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);*/
 
         final JComponent newContentPane = new TaskProgressBar();
         newContentPane.setOpaque(true);
-        frame.setContentPane(newContentPane);
+
+
+
+        /*frame.setContentPane(newContentPane);
         frame.pack();
-        frame.setVisible(true);
+        frame.setVisible(true);*/
 
         // detect生成taskCombination及CombinationMiner
         /*for (MiningObject ob: miningObjectList) {
@@ -173,6 +199,10 @@ public class win10_window extends JFrame {
             }
         });
 
+        JDialog dialog = new JDialog(this, "任务挖掘进度", true);
+        dialog.setContentPane(newContentPane);
+        dialog.pack();
+        dialog.setVisible(true);
 
 
         isSingleNodeMined=true;
@@ -201,20 +231,43 @@ public class win10_window extends JFrame {
         nodePairresultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
-        SingleNodeOrNodePairMinerFactory nodePairMinerFactory = SingleNodeOrNodePairMinerFactory.getPairInstance();
-        nodePairMinerFactory.setTaskRange(TaskRange.NodePairRange);
-        List<MiningObject> miningObjectList = nodePairMinerFactory.getMiningObjectsChecked();
+        final SingleNodeOrNodePairMinerFactory nodePairMinerFactory = SingleNodeOrNodePairMinerFactory.getPairInstance();
+        final List<MiningObject> miningObjectList = nodePairMinerFactory.getMiningObjectsChecked();
+        final JComponent newContentPane = new TaskProgressBar();
+        newContentPane.setOpaque(true);
 
-        // 判断是否含有该挖掘对象结果文件
-        for (MiningObject ob: miningObjectList) {
-            HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        for (MiningObject ob: miningObjectList) {
+                            nodePairMinerFactory.reset();
+                            nodePairMinerFactory.setMiningObject(ob);
+                            nodePairMinerFactory.detect();
+                        }
+                        TaskProgressBar bar = (TaskProgressBar) newContentPane;
+                        bar.startTask();
 
-            nodePairMinerFactory.reset();
-            nodePairMinerFactory.setMiningObject(ob);
-            nodePairMinerFactory.detect();
-            objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
-            nodePairresultMaps.put(ob.toString(), objectMap);
-        }
+                        for (MiningObject ob: miningObjectList) {
+                            TaskProgress.getInstance().setPhase(ob.toString());
+                            HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
+                            objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
+                            nodePairresultMaps.put(ob.toString(), objectMap);
+                        }
+                        TaskProgress.getInstance().clear();
+                        NodePairListFrame nodePairListFrame = new NodePairListFrame(nodePairresultMaps);
+                        nodePairListFrame.setVisible(true);
+                    }
+                };
+                new Thread(runnable).start();
+            }
+        });
+
+        JDialog dialog = new JDialog(this, "链路任务挖掘进度", true);
+        dialog.setContentPane(newContentPane);
+        dialog.pack();
+        dialog.setVisible(true);
 
         isNodePairMined=true;
     }
@@ -240,19 +293,43 @@ public class win10_window extends JFrame {
         protocolResultsMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
-        ProtocolAssMinerFactory protocolAssMinerFactory = ProtocolAssMinerFactory.getInstance();
-        List<MiningObject> miningObjectList = protocolAssMinerFactory.getMiningObjectsChecked();
+        final ProtocolAssMinerFactory protocolAssMinerFactory = ProtocolAssMinerFactory.getInstance();
+        final List<MiningObject> miningObjectList = protocolAssMinerFactory.getMiningObjectsChecked();
+        final JComponent newContentPane = new TaskProgressBar();
+        newContentPane.setOpaque(true);
 
-        // 判断是否含有该挖掘对象结果文件
-        for (MiningObject ob: miningObjectList) {
-            HashMap<TaskCombination, MinerProtocolResults> objectMap = new HashMap<>();
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        for (MiningObject ob: miningObjectList) {
+                            protocolAssMinerFactory.reset();
+                            protocolAssMinerFactory.setMiningObject(ob);
+                            protocolAssMinerFactory.detect();
+                        }
+                        TaskProgressBar bar = (TaskProgressBar) newContentPane;
+                        bar.startTask();
 
-            protocolAssMinerFactory.reset();
-            protocolAssMinerFactory.setMiningObject(ob);
-            protocolAssMinerFactory.detect();
-            objectMap = NetworkMinerFactory.getInstance().startAllProtocolMiners(ob);
-            protocolResultsMaps = objectMap;
-        }
+                        for (MiningObject ob: miningObjectList) {
+                            TaskProgress.getInstance().setPhase(ob.toString());
+                            HashMap<TaskCombination, MinerProtocolResults> objectMap = new HashMap<>();
+                            objectMap = NetworkMinerFactory.getInstance().startAllProtocolMiners(ob);
+                            protocolResultsMaps = objectMap;
+                        }
+                        TaskProgress.getInstance().clear();
+                        AssociationIpListFrame frame = new AssociationIpListFrame(protocolResultsMaps);
+                        frame.setVisible(true);
+                    }
+                };
+                new Thread(runnable).start();
+            }
+        });
+
+        JDialog dialog = new JDialog(this, "路径任务挖掘进度", true);
+        dialog.setContentPane(newContentPane);
+        dialog.pack();
+        dialog.setVisible(true);
 
         isProtocolAssMined=true;
     }
@@ -320,18 +397,43 @@ public class win10_window extends JFrame {
         pathResultsMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
-        PathMinerFactory pathMinerFactory = PathMinerFactory.getInstance();
-        List<MiningObject> miningObjectList = pathMinerFactory.getMiningObjectsChecked();
+        final PathMinerFactory pathMinerFactory = PathMinerFactory.getInstance();
+        final List<MiningObject> miningObjectList = pathMinerFactory.getMiningObjectsChecked();
+        final JComponent newContentPane = new TaskProgressBar();
+        newContentPane.setOpaque(true);
 
-        // 判断是否含有该挖掘对象结果文件
-        for (MiningObject ob: miningObjectList) {
-            HashMap<TaskCombination, MinerResultsPath> objectMap = new HashMap<>();
-            pathMinerFactory.reset();
-            pathMinerFactory.setMiningObject(ob);
-            pathMinerFactory.detect();
-            objectMap = NetworkMinerFactory.getInstance().startAllPathMiners(ob);
-            pathResultsMaps.put(ob.toString(), objectMap);
-        }
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        for (MiningObject ob: miningObjectList) {
+                            pathMinerFactory.reset();
+                            pathMinerFactory.setMiningObject(ob);
+                            pathMinerFactory.detect();
+                        }
+                        TaskProgressBar bar = (TaskProgressBar) newContentPane;
+                        bar.startTask();
+
+                        for (MiningObject ob: miningObjectList) {
+                            TaskProgress.getInstance().setPhase(ob.toString());
+                            HashMap<TaskCombination, MinerResultsPath> objectMap = new HashMap<>();;
+                            objectMap = NetworkMinerFactory.getInstance().startAllPathMiners(ob);
+                            pathResultsMaps.put(ob.toString(), objectMap);
+                        }
+                        TaskProgress.getInstance().clear();
+                        PathListFrame pathListFrame = new PathListFrame(pathResultsMaps);
+                        pathListFrame.setVisible(true);
+                    }
+                };
+                new Thread(runnable).start();
+            }
+        });
+
+        JDialog dialog = new JDialog(this, "路径任务挖掘进度", true);
+        dialog.setContentPane(newContentPane);
+        dialog.pack();
+        dialog.setVisible(true);
 
         isPathMined = true;
     }
@@ -676,9 +778,10 @@ public class win10_window extends JFrame {
                 if (!isDistributed) {
                     if(!isNetworkStructureMined){
                         mineNetworkStructor();
+                    } else {
+                        WholeNetworkFrame wholeNetworkFrame = new WholeNetworkFrame(networkStructureresultMaps);
+                        wholeNetworkFrame.setVisible(true);
                     }
-                WholeNetworkFrame wholeNetworkFrame = new WholeNetworkFrame(networkStructureresultMaps);
-                wholeNetworkFrame.setVisible(true);
                 } else if (isDistributed) {
                     if(!isNetworkStructureMined){
                         mineNetworkStructorDis();
@@ -715,9 +818,10 @@ public class win10_window extends JFrame {
                 if (!isDistributed) {
                     if(!isNodePairMined){
                         mineNodePair();
+                    } else {
+                        NodePairListFrame nodePairListFrame = new NodePairListFrame(nodePairresultMaps);
+                        nodePairListFrame.setVisible(true);
                     }
-                NodePairListFrame nodePairListFrame = new NodePairListFrame(nodePairresultMaps);
-                nodePairListFrame.setVisible(true);
                 } else if (isDistributed) {
                     if(!isNodePairMined){
                         mineNodePairDis();
@@ -734,9 +838,10 @@ public class win10_window extends JFrame {
                 if (!isDistributed) {
                     if (!isPathMined){
                         minePath();
+                    } else {
+                        PathListFrame pathListFrame = new PathListFrame(pathResultsMaps);
+                        pathListFrame.setVisible(true);
                     }
-                PathListFrame pathListFrame = new PathListFrame(pathResultsMaps);
-                pathListFrame.setVisible(true);
                 } else if (isDistributed) {
                     // TODO Auto-generated method stub
                     if (!isPathMined){
@@ -755,9 +860,10 @@ public class win10_window extends JFrame {
                     // TODO Auto-generated method stub
                     if (!isProtocolAssMined){
                         mineProtocolAss();
+                    } else {
+                        AssociationIpListFrame frame = new AssociationIpListFrame(protocolResultsMaps);
+                        frame.setVisible(true);
                     }
-                AssociationIpListFrame frame = new AssociationIpListFrame(protocolResultsMaps);
-                frame.setVisible(true);
                 } else if (isDistributed) {
                     // TODO Auto-generated method stub
                     if (!isProtocolAssMined){

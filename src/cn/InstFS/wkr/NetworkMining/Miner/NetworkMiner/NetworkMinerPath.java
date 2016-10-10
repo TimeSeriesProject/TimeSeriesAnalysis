@@ -24,6 +24,7 @@ import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsOM;
 import cn.InstFS.wkr.NetworkMining.Params.statistics.SeriesStatisticsParam;
+import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgress;
 import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
@@ -56,6 +57,8 @@ public class NetworkMinerPath implements INetworkMiner{
 			MinerResultsPath resultPath = (MinerResultsPath) resultsFile.file2Result();
 			results.setRetPath(resultPath);
 
+			TaskProgress taskProgress = TaskProgress.getInstance();
+			taskProgress.increaseComplete();
 			return false;
 		}
 
@@ -76,6 +79,11 @@ public class NetworkMinerPath implements INetworkMiner{
 		} catch (Exception e) {
 			isRunning=false;
 			Over.setIsover(false);
+
+			/* 记录发生异常的taskCombination至任务进度 */
+			TaskProgress taskProgress = TaskProgress.getInstance();
+			taskProgress.increaseComplete();
+			taskProgress.addErrTaskCombination(taskCombination);
 			timer.shutdownNow();
 		}
 		return true;
@@ -278,6 +286,9 @@ class PathTimerTask extends TimerTask{
 		MinerFactorySettings settings = PathMinerFactory.getInstance();
 		MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(taskCombination.getMiningObject()));
 		newResultsFile.result2File(settings, taskCombination, results.getRetPath());
+
+		TaskProgress taskProgress = TaskProgress.getInstance();
+		taskProgress.increaseComplete();
 	}
 
 	private void setStatisticResults(MinerResultsStatistics retStatistic,SeriesStatistics statistics){

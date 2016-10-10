@@ -50,6 +50,7 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 		if(pairInst==null){
 			isMining=false;
 			pairInst=new SingleNodeOrNodePairMinerFactory("链路规律挖掘");
+			pairInst.setTaskRange(TaskRange.NodePairRange);
 		}
 		return pairInst;
 	}

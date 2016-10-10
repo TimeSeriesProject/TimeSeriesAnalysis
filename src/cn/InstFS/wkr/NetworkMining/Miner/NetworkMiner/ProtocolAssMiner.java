@@ -27,6 +27,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
+import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgress;
 import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
@@ -60,6 +61,8 @@ public class ProtocolAssMiner implements INetworkMiner {
 			MinerProtocolResults resultNode = (MinerProtocolResults) resultsFile.file2Result();
 			results.setRetProtocol(resultNode);
 
+			TaskProgress taskProgress = TaskProgress.getInstance();
+			taskProgress.increaseComplete();
 			return false;
 		}
 
@@ -80,6 +83,11 @@ public class ProtocolAssMiner implements INetworkMiner {
 		} catch (Exception e) {
 			isRunning = false;
 			isOver.setIsover(false);
+
+			/* 记录发生异常的taskCombination至任务进度 */
+			TaskProgress taskProgress = TaskProgress.getInstance();
+			taskProgress.increaseComplete();
+			taskProgress.addErrTaskCombination(taskCombination);
 			timer.shutdownNow();
 		}
 		UtilsUI.appendOutput(taskCombination.getName() + " -- started");
@@ -191,5 +199,8 @@ class ProtocolMinerTask extends TimerTask{
 		MinerFactorySettings settings = ProtocolAssMinerFactory.getInstance();
 		MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(taskCombination.getMiningObject()));
 		newResultsFile.result2File(settings, taskCombination, results.getRetProtocol());
+
+		TaskProgress taskProgress = TaskProgress.getInstance();
+		taskProgress.increaseComplete();
 	}
 }
