@@ -5,6 +5,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Factory.MinerFactorySettings;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
@@ -20,6 +21,8 @@ public class MiningResultsFile {
 
     public MiningResultsFile(MiningObject miningObject) {
         this.miningObject = miningObject;
+        dataPath = generateResultPath("configs/algorithmsParams.xml")+"/";
+        mkdir(dataPath);
     }
 
     public void resultMap2File(MinerFactorySettings settings, HashMap resultMap) {
@@ -166,5 +169,41 @@ public class MiningResultsFile {
         fileName.append(".ser");
 
         return fileName.toString();
+    }
+
+    /**
+     * 根据算法参数生成md5值作为结果存储目录
+     * @param paramFile 算法参数文件
+     * @return
+     */
+    private String generateResultPath(String paramFile) {
+        String md5 = null;
+        try {
+            md5 = Md5Util.fileMD5("configs/algorithmsParams.xml");
+            System.out.println(md5);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return dataPath+md5;
+    }
+
+    private void mkdir(String dataPath) {
+        File dir = new File(dataPath);
+        if (dir.exists()) {
+            System.out.println(dataPath + "目标目录已经存在");
+        }else {
+            if (dir.mkdirs()) {
+                System.out.println("创建目录" + dataPath + "成功！");
+
+                //将算法参数文件复制入该目录
+                try {
+                    Files.copy(new File("configs/algorithmsParams.xml").toPath(),new File(dataPath+"/algorithmsParams.xml").toPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("创建目录" + dataPath+ "失败！");
+            }
+        }
     }
 }

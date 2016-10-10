@@ -2,12 +2,12 @@
 <config>
     <dataPath>D:\57data</dataPath>
     <granularityList>1,2,4,8,16,24</granularityList>
-    <pmParamPath>./configs/periodMinerParams.xml</pmParamPath>
-    <omParamPath>./configs/outlierMinerParams.xml</omParamPath>
-    <arParamPath>./configs/associationRuleParam.xml</arParamPath>
-    <pcapParseParamPath>./configs/pcapParseParams.xml</pcapParseParamPath>
-    <forecastParamsPath>./configs/forecastMinerParams.xml</forecastParamsPath>
-    <statisticsParamPath>./configs/seriesStatisticsParams.xml</statisticsParamPath>
-    <sequencePatternParamPath>./configs/sequencePatternParam.xml</sequencePatternParamPath>
+    <pmParamPath>pmParams</pmParamPath>
+    <omParamPath>outlierMinerParam</omParamPath>
+    <arParamPath>arParams</arParamPath>
+    <pcapParseParamPath>pcapParseParams</pcapParseParamPath>
+    <forecastParamsPath>forecastParams</forecastParamsPath>
+    <statisticsParamPath>ssParams</statisticsParamPath>
+    <sequencePatternParamPath>sParams</sequencePatternParamPath>
 	<loggerPath>D:\57data\logger</loggerPath>
 </config>

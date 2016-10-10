@@ -56,14 +56,14 @@ public class ParamsAPI {
 		return ParamsAPIHolder.INSTANCE;
 	}
 
-	private Element getRootElement(String filePath) {
+	private Element getRootElement(String algoParams) {
 		Element classElement = null;
 		try {
 			SAXBuilder saxBuilder = new SAXBuilder();
-			File inputFile = new File(filePath);
+			File inputFile = new File("configs/algorithmsParams.xml");
 			Document document = saxBuilder.build(inputFile);
 
-			classElement = document.getRootElement();
+			classElement = document.getRootElement().getChild(algoParams);
 		} catch (JDOMException | IOException e) {
 			e.printStackTrace();
 		}
