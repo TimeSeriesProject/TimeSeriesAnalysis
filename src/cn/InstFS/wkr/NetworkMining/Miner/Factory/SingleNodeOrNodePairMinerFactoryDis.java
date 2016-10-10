@@ -24,6 +24,7 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
     private MiningObject miningObject;
     private TaskRange taskRange = TaskRange.SingleNodeRange;
     private MiningMethod method;
+    private ArrayList<String> list = new ArrayList<String>();
 
     private SingleNodeOrNodePairMinerFactoryDis(String minertype){
         super(minertype);
@@ -51,6 +52,7 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
         if(pairInst==null){
             isMining=false;
             pairInst=new SingleNodeOrNodePairMinerFactoryDis("链路规律挖掘");
+            pairInst.setTaskRange(TaskRange.NodePairRange);
         }
         return pairInst;
     }
@@ -135,7 +137,7 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
 //				cal2.set(2014,11,20,0,0,0);
                     Date date1 = getStartDate();
                     Date date2 = getEndDate();
-                    rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(),false,date1,date2,3600);
+                    rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(),true,date1,date2,3600);
 
                     break;
                 case MiningObject_Times:
@@ -153,12 +155,12 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
 				Date date4 = cal4.getTime();*/
                     Date date3 = getStartDate();
                     Date date4 = getEndDate();
-                    rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),false,date3,date4,3600);
+                    rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),true,date3,date4,3600);
                     break;
                 case MiningObject_NodeDisapearEmerge:
                     Date date5 = getStartDate();
                     Date date6 = getEndDate();
-                    rawDataItems = reader.readEachNodeDisapearEmergeDataItems(dataFile.getAbsolutePath(),false,date5,date6,3600);
+                    rawDataItems = reader.readEachNodeDisapearEmergeDataItems(dataFile.getAbsolutePath(),true,date5,date6,3600);
                     isNodeDisapearEmerge = true;
 //				if(ip.compareTo("4") == 0 ||ip.compareTo("3") == 0 ||ip.compareTo("0") == 0 ||
 //						ip.compareTo("10") == 0 ||ip.compareTo("6") == 0 ||ip.compareTo("5") == 0 ||
@@ -197,31 +199,16 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
             switch (miningObject) {
                 case MiningObject_Traffic:
                     //ipPairRawDataItems=reader.readEachIpPairProtocolTrafficDataItems(dataFile.getAbsolutePath());
-                    /**2016/7/14
-                     * @author LYH
-                     * 用于测试读取时间区间数据，单节点挖掘
-                     * **/
-                    Calendar cal1 = Calendar.getInstance();
-                    Calendar cal2 = Calendar.getInstance();
-                    cal1.set(2014, 9, 1, 0, 0, 0);
-                    cal2.set(2014,11,20,0,0,0);
-                    Date date1 = cal1.getTime();
-                    Date date2 = cal2.getTime();
-                    ipPairRawDataItems=reader.readEachIpPairProtocolTrafficDataItems(dataFile.getAbsolutePath(),false,date1,date2,3600);
+
+                    Date date1 = getStartDate();
+                    Date date2 = getEndDate();
+                    ipPairRawDataItems=reader.readEachIpPairProtocolTrafficDataItems(dataFile.getAbsolutePath(),true,date1,date2,3600);
                     break;
                 case MiningObject_Times:
                     //ipPairRawDataItems=reader.readEachIpPairProtocolTimesDataItems(dataFile.getAbsolutePath());
-                    /**2016/7/14
-                     * @author LYH
-                     * 用于测试读取时间区间数据，单节点挖掘
-                     * **/
-                    Calendar cal3 = Calendar.getInstance();
-                    Calendar cal4 = Calendar.getInstance();
-                    cal3.set(2014, 9, 10, 0, 0, 0);
-                    cal4.set(2014,10,1,0,0,0);
-                    Date date3 = cal3.getTime();
-                    Date date4 = cal4.getTime();
-                    ipPairRawDataItems=reader.readEachIpPairProtocolTimesDataItems(dataFile.getAbsolutePath(),false,date3,date4,3600);
+                    Date date3 = getStartDate();
+                    Date date4 = getEndDate();
+                    ipPairRawDataItems=reader.readEachIpPairProtocolTimesDataItems(dataFile.getAbsolutePath(),true,date3,date4,3600);
                     break;
                 default:
                     break;
@@ -321,4 +308,140 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
         else
             return false;
     }
+    public int getCount(){
+        if(isMining)
+            return list.size();
+
+        isMining=true;
+        File dataDirectory = null;
+        if(MiningObject.MiningObject_NodeDisapearEmerge.toString().equals(miningObject.toString()))
+        {
+            dataDirectory = new File(rootPath);
+        }
+        else{
+            dataDirectory = new File(dataPath);
+        }
+
+        nodePairReader reader=new nodePairReader();
+//		if(dataDirectory.isFile()){
+//			parseFile(dataDirectory,reader);
+//		}else{
+
+        File[] dataDirs=dataDirectory.listFiles();
+        for(int i=0;i<dataDirs.length;i++){
+            //按天必须是文件夹
+            if(dataDirs[i].isDirectory())
+                parseFile2(dataDirs[i],reader, list);
+        }
+        return list.size();
+    }
+
+    private void parseFile2(File dataFile,nodePairReader reader, ArrayList<String> list){
+        String ip=dataFile.getName();//.substring(0, dataFile.getName().lastIndexOf("."));
+        //事先读取每一个IP上，每一个协议的DataItems
+        //if(ip.equals("10.0.13.2"))
+        //System.out.println();
+        int granularity= Integer.parseInt(this.getGranularity());
+        if(taskRange.toString().equals(TaskRange.SingleNodeRange.toString())){
+            HashMap<String, DataItems> rawDataItems=null;
+            boolean isNodeDisapearEmerge = false;
+            switch (miningObject) {
+                case MiningObject_Traffic:
+                    //rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath());
+                    //rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(),reader.getTask().getIsReadBetween(),reader.getTask().getDateStart(),reader.getTask().getDateEnd());
+                    /**2016/7/14
+                     * @author LYH
+                     * 用于测试读取时间区间数据，单节点挖掘
+                     * **/
+//				Calendar cal1 = Calendar.getInstance();
+//				Calendar cal2 = Calendar.getInstance();
+//				cal1.set(2014, 9, 1, 0, 0, 0);
+//				cal2.set(2014,11,20,0,0,0);
+                    Date date1 = getStartDate();
+                    Date date2 = getEndDate();
+                    rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(),false,date1,date2,3600);
+
+                    break;
+                case MiningObject_Times:
+                    //rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath());
+                    //rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),reader.getTask().getIsReadBetween(),reader.getTask().getDateStart(),reader.getTask().getDateEnd());
+                    /**2016/7/14
+                     * @author LYH
+                     * 用于测试读取时间区间数据，单节点挖掘
+                     * **/
+				/*Calendar cal3 = Calendar.getInstance();
+				Calendar cal4 = Calendar.getInstance();
+				cal3.set(2014, 9, 1, 2, 0, 0);
+				cal4.set(2014,9,3,2,0,0);
+				Date date3 = cal3.getTime();
+				Date date4 = cal4.getTime();*/
+                    Date date3 = getStartDate();
+                    Date date4 = getEndDate();
+                    rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),false,date3,date4,3600);
+                    break;
+                case MiningObject_NodeDisapearEmerge:
+                    Date date5 = getStartDate();
+                    Date date6 = getEndDate();
+                    rawDataItems = reader.readEachNodeDisapearEmergeDataItems(dataFile.getAbsolutePath(),false,date5,date6,3600);
+                    isNodeDisapearEmerge = true;
+//				if(ip.compareTo("4") == 0 ||ip.compareTo("3") == 0 ||ip.compareTo("0") == 0 ||
+//						ip.compareTo("10") == 0 ||ip.compareTo("6") == 0 ||ip.compareTo("5") == 0 ||
+//						ip.compareTo("7") == 0 || ip.compareTo("1") == 0)
+//					System.out.println(rawDataItems.get("AllTraffic").getData().toString());
+                    break;
+                default:
+                    break;
+            }
+            for(String protocol:rawDataItems.keySet()){
+                DataItems dataItems=rawDataItems.get(protocol);
+                if(!isDataItemSparse(dataItems) || isNodeDisapearEmerge){
+                    list.add("0");
+                }
+            }
+        }else if(taskRange.toString().equals(TaskRange.NodePairRange.toString())){
+            HashMap<String, Map<String, DataItems>> ipPairRawDataItems=null;
+            switch (miningObject) {
+                case MiningObject_Traffic:
+                    //ipPairRawDataItems=reader.readEachIpPairProtocolTrafficDataItems(dataFile.getAbsolutePath());
+                    /**2016/7/14
+                     * @author LYH
+                     * 用于测试读取时间区间数据，单节点挖掘
+                     * **/
+                    Calendar cal1 = Calendar.getInstance();
+                    Calendar cal2 = Calendar.getInstance();
+                    cal1.set(2014, 9, 1, 0, 0, 0);
+                    cal2.set(2014,11,20,0,0,0);
+                    Date date1 = cal1.getTime();
+                    Date date2 = cal2.getTime();
+                    ipPairRawDataItems=reader.readEachIpPairProtocolTrafficDataItems(dataFile.getAbsolutePath(),false,date1,date2,3600);
+                    break;
+                case MiningObject_Times:
+                    //ipPairRawDataItems=reader.readEachIpPairProtocolTimesDataItems(dataFile.getAbsolutePath());
+                    /**2016/7/14
+                     * @author LYH
+                     * 用于测试读取时间区间数据，单节点挖掘
+                     * **/
+                    Calendar cal3 = Calendar.getInstance();
+                    Calendar cal4 = Calendar.getInstance();
+                    cal3.set(2014, 9, 10, 0, 0, 0);
+                    cal4.set(2014,10,1,0,0,0);
+                    Date date3 = cal3.getTime();
+                    Date date4 = cal4.getTime();
+                    ipPairRawDataItems=reader.readEachIpPairProtocolTimesDataItems(dataFile.getAbsolutePath(),false,date3,date4,3600);
+                    break;
+                default:
+                    break;
+            }
+            for(String ipPair:ipPairRawDataItems.keySet()){
+                Map<String, DataItems> itemsMap=ipPairRawDataItems.get(ipPair);
+                for(String protocol:itemsMap.keySet()){
+                    DataItems dataItems=itemsMap.get(protocol);
+                    if(!isDataItemSparse(dataItems)){
+                        list.add("0");
+                    }
+                }
+            }
+        }
+    }
+
 }

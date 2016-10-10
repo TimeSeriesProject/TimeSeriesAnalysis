@@ -36,7 +36,9 @@ public class Server {
     private static Server server;
     private static ServerStart serverStart;
     private int taskCount = 0;//发送次数
-//    private AtomicInteger taskCount = new AtomicInteger(0);
+    private int totalCount = 18;
+
+    //    private AtomicInteger taskCount = new AtomicInteger(0);
     private boolean singleNodeTimeFlag = true;//判断是否生成result界面
     private boolean singleNodeTrafficFlag = true;//判断是否生成result界面
     private boolean singleNodeDisapearEmergeFlag = true;//判断是否生成result界面
@@ -93,6 +95,7 @@ public class Server {
 
     //PcapServer
     private PcapPanel pcapPanel;
+    private TaskPanel taskPanel;
     private ArrayList<String> allTasks = new ArrayList<String>();
     private ArrayList<String> allTasks2 = new ArrayList<String>();//第二步任务
     private ConcurrentHashMap<String, String> allTasksTags = new ConcurrentHashMap<String, String>();//带标签，所有不同类型任务
@@ -385,9 +388,16 @@ public class Server {
         return isExisted;
     }
 
+        public void getSingleCount(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject) {
+        singleNodeOrNodePairMinerFactoryDis.reset();
+        singleNodeOrNodePairMinerFactoryDis.setMiningObject(miningObject);
+        totalCount = singleNodeOrNodePairMinerFactoryDis.getCount();
+    }
+
     public void SingleNodeOrNodePair(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject) {
         genSingleNodeTask(singleNodeOrNodePairMinerFactoryDis, miningObject);
         initMap(MinerType.MiningType_SinglenodeOrNodePair);
+        //判断是否存在结果，不必启动客户端
         if (!getExistedResult()) {
             awakeThread();
             setIsRunning(true);
@@ -398,25 +408,31 @@ public class Server {
     public void path(PathMinerFactoryDis pathMinerFactoryDis, MiningObject miningObject) {
         genPathTask(pathMinerFactoryDis, miningObject);
         initMap(MinerType.MiningType_Path);
-        awakeThread();
-        setIsRunning(true);
-        isPathOver(miningObject);
+        if (!getExistedResult()) {
+            awakeThread();
+            setIsRunning(true);
+            isPathOver(miningObject);
+        }
     }
 
     public void network(NetworkFactoryDis networkFactoryDis, MiningObject miningObject) {
         genNetworkTask(networkFactoryDis, miningObject);
         initMap(MinerType.MiningTypes_WholeNetwork);
-        awakeThread();
-        setIsRunning(true);
-        isNetworkOver(miningObject);
+        if (!getExistedResult()) {
+            awakeThread();
+            setIsRunning(true);
+            isNetworkOver(miningObject);
+        }
     }
 
     public void protocol(ProtocolAssMinerFactoryDis protocolAssMinerFactoryDis, MiningObject miningObject) {
         genProtocoTask(protocolAssMinerFactoryDis, miningObject);
         initMap(MinerType.MiningType_ProtocolAssociation);
-        awakeThread();
-        setIsRunning(true);
-        isProtocolOver(miningObject);
+        if (!getExistedResult()) {
+            awakeThread();
+            setIsRunning(true);
+            isProtocolOver(miningObject);
+        }
     }
 
 
@@ -684,6 +700,15 @@ public class Server {
         this.inPath = inPath;
         this.outPath = outPath;
         this.index = outPath.length() + 1;
+    }
+
+    public void initTask(TaskPanel taskPanel) {
+        this.taskPanel = taskPanel;
+    }
+
+    public void initBar() {
+        taskPanel.getBar().setMaximum(totalCount);
+        taskPanel.getBar().setString("读取数据中...");
     }
 
     public void genTasks(String filePath, String type) {
@@ -1264,8 +1289,7 @@ public class Server {
 
                                 //节点对
                                 if (taskCombinationResult.getTaskRange().equals(TaskRange.NodePairRange)){
-                                    if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Times)
-                                            && nodePairTimeFlag) {
+                                    if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Times)) {
                                         if (nodePairTimes.size() < allCombinationTasks.size()) {
                                             nodePairTimeFlag = true;
                                             for (int i = 0; i < tempList.size(); i++) {
@@ -1295,11 +1319,12 @@ public class Server {
 //                                            else {
 //                                                awakeSingleThread();
 //                                            }
+                                        } else {
+                                            isSuspend = true;
                                         }
                                     }
 
-                                    if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)
-                                            && nodePairTrafficFlag) {
+                                    if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)) {
                                         if (singleNodeTraffic.size() < allCombinationTasks.size()) {
                                             nodePairTrafficFlag = true;
                                             for (int i = 0; i < tempList.size(); i++) {
@@ -1329,14 +1354,15 @@ public class Server {
 //                                            else {
 //                                                awakeSingleThread();
 //                                            }
+                                        } else {
+                                            isSuspend = true;
                                         }
                                     }
                                 }
                                 break;
 
                             case MiningType_ProtocolAssociation:
-                                if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)
-                                        && protocolTrafficFlag) {
+                                if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)) {
                                     if (protocolTraffic.size() < allCombinationTasks.size()) {
                                         protocolTrafficFlag = true;
                                         for (int i = 0; i < tempList.size(); i++) {
@@ -1347,7 +1373,7 @@ public class Server {
                                                             /* 挖掘完成，保存结果文件 */
                                                     MinerFactorySettings settings = ProtocolAssMinerFactory.getInstance();
                                                     MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                                    newResultsFile.result2File(settings, tempList.get(i),  taskCombinationResult.getMinerProtocolResults());
+                                                    newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerProtocolResults());
                                                 } finally {
                                                     resultLock.unlock();
                                                 }
@@ -1367,13 +1393,14 @@ public class Server {
 //                                        else {
 //                                            awakeSingleThread();
 //                                        }
+                                    } else {
+                                        isSuspend = true;
                                     }
                                 }
                                 break;
 
                             case MiningType_Path:
-                                if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Times)
-                                        && pathTimeFlag) {
+                                if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Times)) {
                                     if (pathTimes.size() < allCombinationTasks.size()) {
                                         pathTimeFlag = true;
                                         for (int i = 0; i < tempList.size(); i++) {
@@ -1404,11 +1431,12 @@ public class Server {
 //                                        else {
 //                                            awakeSingleThread();
 //                                        }
+                                    } else {
+                                        isSuspend = true;
                                     }
                                 }
 
-                                if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)
-                                        && pathTrafficFlag) {
+                                if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)) {
                                     if (pathTraffic.size() < allCombinationTasks.size()) {
                                         pathTrafficFlag = true;
                                         for (int i = 0; i < tempList.size(); i++) {
@@ -1439,6 +1467,8 @@ public class Server {
 //                                        else {
 //                                            awakeSingleThread();
 //                                        }
+                                    } else {
+                                        isSuspend = true;
                                     }
                                 }
                                 System.out.println("跳出switch");
@@ -1446,8 +1476,7 @@ public class Server {
 
                             case MiningTypes_WholeNetwork:
 
-                                if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Cluster)
-                                        && networkClusterFlag) {
+                                if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Cluster)) {
                                     if (networkCluster.size() < allCombinationTasks.size()) {
                                         networkClusterFlag = true;
                                         for (int i = 0; i < tempList.size(); i++) {
@@ -1477,11 +1506,12 @@ public class Server {
 //                                        else {
 //                                            awakeSingleThread();
 //                                        }
+                                    } else {
+                                        isSuspend = true;
                                     }
                                 }
 
-                                if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Diameter)
-                                        && networkDiameterFlag) {
+                                if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Diameter)) {
                                     if (networkDiameter.size() < allCombinationTasks.size()) {
                                         networkDiameterFlag = true;
                                         for (int i = 0; i < tempList.size(); i++) {
@@ -1511,6 +1541,8 @@ public class Server {
 //                                        else {
 //                                            awakeSingleThread();
 //                                        }
+                                    } else {
+                                        isSuspend = true;
                                     }
                                 }
                                 System.out.println("跳出nnnnnswitch");

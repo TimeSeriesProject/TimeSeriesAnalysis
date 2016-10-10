@@ -362,16 +362,28 @@ public class win10_window extends JFrame {
 
     private void settingsWholeNetwork() {
         NetworkMinerFactory.getInstance();
-        DialogSettings dialog = new DialogSettings(this, NetworkFactory.getInstance(), "网络结构规律挖掘配置");
-        dialog.pack();
-        dialog.setVisible(true);
+        if (!isDistributed) {
+            DialogSettings dialog = new DialogSettings(this, NetworkFactory.getInstance(), "网络结构规律挖掘配置");
+            dialog.pack();
+            dialog.setVisible(true);
+        } else {
+            DialogSettings dialog = new DialogSettings(this, NetworkFactoryDis.getInstance(), "网络结构规律挖掘配置");
+            dialog.pack();
+            dialog.setVisible(true);
+        }
     }
 
     private void settingsPath() {
         NetworkMinerFactory.getInstance();
-        DialogSettings dialog = new DialogSettings(this, PathMinerFactory.getInstance(), "承载路径规律挖掘配置");
-        dialog.pack();
-        dialog.setVisible(true);
+        if (!isDistributed) {
+            DialogSettings dialog = new DialogSettings(this, PathMinerFactory.getInstance(), "承载路径规律挖掘配置");
+            dialog.pack();
+            dialog.setVisible(true);
+        } else {
+            DialogSettings dialog = new DialogSettings(this, PathMinerFactoryDis.getInstance(), "承载路径规律挖掘配置");
+            dialog.pack();
+            dialog.setVisible(true);
+        }
     }
 
     private void settingsSingleNode() {
@@ -402,16 +414,29 @@ public class win10_window extends JFrame {
 
     private void settingsNodePair() {
         NetworkMinerFactory.getInstance();
-        DialogSettings dialog = new DialogSettings(this, SingleNodeOrNodePairMinerFactory.getPairInstance(),"链路规律挖掘配置");
-        dialog.pack();
-        dialog.setVisible(true);
+        if (!isDistributed) {
+            DialogSettings dialog = new DialogSettings(this, SingleNodeOrNodePairMinerFactory.getPairInstance(), "链路规律挖掘配置");
+            dialog.pack();
+            dialog.setVisible(true);
+        } else {
+            DialogSettings dialog = new DialogSettings(this, SingleNodeOrNodePairMinerFactoryDis.getPairInstance(),"链路规律挖掘配置");
+            dialog.pack();
+            dialog.setVisible(true);
+        }
+
     }
 
     private void settingsProtocolAss() {
         NetworkMinerFactory.getInstance();
-        DialogSettings dialog = new DialogSettings(this, ProtocolAssMinerFactory.getInstance(), "多业务关联挖掘配置");
-        dialog.pack();
-        dialog.setVisible(true);
+        if (!isDistributed) {
+            DialogSettings dialog = new DialogSettings(this, ProtocolAssMinerFactory.getInstance(), "多业务关联挖掘配置");
+            dialog.pack();
+            dialog.setVisible(true);
+        } else {
+            DialogSettings dialog = new DialogSettings(this, ProtocolAssMinerFactoryDis.getInstance(), "多业务关联挖掘配置");
+            dialog.pack();
+            dialog.setVisible(true);
+        }
     }
 
     public void minePath() {
@@ -684,6 +709,8 @@ public class win10_window extends JFrame {
                 settingsWholeNetwork();
                 if (NetworkFactory.getInstance().isModified())
                     isNetworkStructureMined = false;
+                if (NetworkFactoryDis.getInstance().isModified())
+                    isDisNetworkStructureMined = false;
             	/*if(isNetworkStructureMined==false)
             		mineNetworkStructor();
             	WholeNetworkFrame wholeNetworkFrame = new WholeNetworkFrame(networkStructureresultMaps);
@@ -712,6 +739,8 @@ public class win10_window extends JFrame {
                 settingsPath();
                 if (PathMinerFactory.getInstance().isModified())
                     isPathMined = false;
+                if (PathMinerFactoryDis.getInstance().isModified())
+                    isDisPathMined = false;
 
             }
         });			//设置按钮响应
@@ -766,6 +795,9 @@ public class win10_window extends JFrame {
                 if (ProtocolAssMinerFactory.getInstance().isModified())
                     isProtocolAssMined = false;
 
+                if (ProtocolAssMinerFactoryDis.getInstance().isModified())
+                    isDisProtocolAssMined = false;
+
             }
         });
         //全部挖掘按钮响应
@@ -793,6 +825,8 @@ public class win10_window extends JFrame {
                 settingsNodePair();
                 if (SingleNodeOrNodePairMinerFactory.getPairInstance().isModified())
                     isNodePairMined = false;
+                if (SingleNodeOrNodePairMinerFactoryDis.getPairInstance().isModified())
+                    isDisNodePairMined = false;
             }
         });
         //挖掘网络结构按钮设置
@@ -808,10 +842,12 @@ public class win10_window extends JFrame {
                         wholeNetworkFrame.setVisible(true);
                     }
                 } else if (isDistributed) {
-                    if(!isNetworkStructureMined){
+                    if (!isDisNetworkStructureMined) {
                         mineNetworkStructorDis();
+                        server.showNetworkResult();//分布式结果显示
+                    } else {
+                        server.showNetworkResult();//分布式结果显示
                     }
-                    server.showNetworkResult();//分布式结果显示
                 }
             }
         });
@@ -866,10 +902,12 @@ public class win10_window extends JFrame {
                         nodePairListFrame.setVisible(true);
                     }
                 } else if (isDistributed) {
-                    if(!isNodePairMined){
+                    if (!isDisNodePairMined) {
                         mineNodePairDis();
+                        server.showNodePairResult();
+                    } else {
+                        server.showNodePairResult();
                     }
-                    server.showNodePairResult();
                 }
             }
         });
@@ -887,10 +925,12 @@ public class win10_window extends JFrame {
                     }
                 } else if (isDistributed) {
                     // TODO Auto-generated method stub
-                    if (!isPathMined){
+                    if (!isDisPathMined) {
                         minePathDis();
+                        server.showPathResult();//分布式结果显示
+                    } else {
+                        server.showPathResult();//分布式结果显示
                     }
-                    server.showPathResult();//分布式结果显示
                 }
             }
         });
@@ -909,10 +949,11 @@ public class win10_window extends JFrame {
                     }
                 } else if (isDistributed) {
                     // TODO Auto-generated method stub
-                    if (!isProtocolAssMined){
+                    if (!isDisProtocolAssMined) {
                         mineProtocolAssDis();
+                    } else {
+                        server.showProtocolResult();
                     }
-                    server.showProtocolResult();
                 }
             }
         });

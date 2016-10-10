@@ -1692,7 +1692,7 @@ public class nodePairReader implements IReader {
 				//fileList.add(dir.list()[i]);
 				String str[]=dir.list()[i].split("\\.");
 				long time =Long.valueOf(str[0]);
-				System.out.println("time "+time);
+//				System.out.println("time "+time);
 				if(time<startTime)
 					startTime=time;
 				if(time>endTime)

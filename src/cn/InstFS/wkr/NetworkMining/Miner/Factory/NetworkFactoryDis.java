@@ -75,7 +75,7 @@ public class NetworkFactoryDis extends MinerFactorySettings {
         task.setGranularity(granularity);
         task.setMiningObject(miningObject.toString());
         CWNetworkReader reader = new CWNetworkReader(task);
-        DataItems dataItems = reader.readInputByText(false,getStartDate(),getEndDate());
+        DataItems dataItems = reader.readInputByText(true,getStartDate(),getEndDate());
 
 		/*用于测试*/
 		/*Calendar cal1 = Calendar.getInstance();

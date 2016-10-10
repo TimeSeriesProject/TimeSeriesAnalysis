@@ -95,7 +95,7 @@ public class PathMinerFactoryDis extends MinerFactorySettings{
             case MiningObject_Traffic:
             case MiningObject_Times:
 //			dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString());
-                dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString(), false, getStartDate(), getEndDate());
+                dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString(), true, getStartDate(), getEndDate());
                 break;
             default:
                 break;
@@ -126,7 +126,7 @@ public class PathMinerFactoryDis extends MinerFactorySettings{
         TaskElement task = new TaskElement();
         task.setDataSource("File");
         task.setSourcePath(file.getAbsolutePath());
-        task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+        task.setAggregateMethod(AggregateMethod.Aggregate_MEAN);
         task.setDiscreteMethod(DiscreteMethod.None);
         task.setMiningMethod(method);
         task.setTaskRange(taskRange);

@@ -83,7 +83,7 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
     public void detect(){
         File dataDirectory=new File(dataPath);
         nodePairReader reader=new nodePairReader();
-        int granularity=3600;
+        int granularity= Integer.parseInt(getGranularity());
         if(dataDirectory.isFile()){
 //			addTask(dataDirectory,granularity,reader);
         }else{
@@ -125,7 +125,7 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
         Date date1 = getStartDate();
         Date date2 = getEndDate();
         HashMap<String, DataItems> rawDataItems =
-                reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(), false, date1, date2, 3600);
+                reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(), true, date1, date2, 3600);
         eachProtocolItems.put(ip, rawDataItems);
     }
 
