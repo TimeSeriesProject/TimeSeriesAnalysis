@@ -2,6 +2,7 @@ package cn.InstFS.wkr.NetworkMining.UIs;
 
 import Distributed.PcapFrame;
 import Distributed.Server;
+import Distributed.TaskFrame;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
@@ -45,6 +46,11 @@ public class win10_window extends JFrame {
     boolean isNodePairMined = false;
     boolean isPathMined = false;
     boolean isProtocolAssMined = false;
+    boolean isDisNetworkStructureMined=false;
+    boolean isDisSingleNodeMined=false;
+    boolean isDisNodePairMined = false;
+    boolean isDisPathMined = false;
+    boolean isDisProtocolAssMined = false;
     boolean isDistributed = false;
     Server server;
 
@@ -139,7 +145,7 @@ public class win10_window extends JFrame {
             server.network(networkFactoryDis, ob);
         }
 
-        isNetworkStructureMined=true;
+        isDisNetworkStructureMined=true;
     }
 
     public void mineSingleNode()
@@ -218,12 +224,17 @@ public class win10_window extends JFrame {
         SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis = SingleNodeOrNodePairMinerFactoryDis.getInstance();
         List<MiningObject> miningObjectList = singleNodeOrNodePairMinerFactoryDis.getMiningObjectsChecked();
 
+//        for (MiningObject ob : miningObjectList) {
+//            server.getSingleCount(singleNodeOrNodePairMinerFactoryDis, ob);
+//        }
+
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
+            System.out.println("obj: " + ob.toString());
             server.SingleNodeOrNodePair(singleNodeOrNodePairMinerFactoryDis, ob);
         }
 
-        isSingleNodeMined=true;
+        isDisSingleNodeMined=true;
     }
 
     public void mineNodePair()
@@ -286,7 +297,7 @@ public class win10_window extends JFrame {
             server.SingleNodeOrNodePair(singleNodeOrNodePairMinerFactoryDis, ob);
         }
 
-        isNodePairMined=true;
+        isDisNodePairMined=true;
     }
 
     public void mineProtocolAss() {
@@ -346,7 +357,7 @@ public class win10_window extends JFrame {
             server.protocol(protocolAssMinerFactoryDis, ob);
         }
 
-        isProtocolAssMined=true;
+        isDisProtocolAssMined=true;
     }
 
     private void settingsWholeNetwork() {
@@ -365,12 +376,22 @@ public class win10_window extends JFrame {
 
     private void settingsSingleNode() {
         NetworkMinerFactory.getInstance();
-        SingleNodeOrNodePairMinerFactory.getInstance().setTaskRange(TaskRange.SingleNodeRange);
-//        DialogSettings dialog = new DialogSettings(SingleNodeOrNodePairMinerFactory.getInstance(),"节点规律挖掘配置");
-        DialogSettings dialog = new DialogSettings(this, SingleNodeOrNodePairMinerFactory.getInstance(), "结点");
+        if (!isDistributed) {
+            SingleNodeOrNodePairMinerFactory.getInstance().setTaskRange(TaskRange.SingleNodeRange);
+//            DialogSettings dialog = new DialogSettings(SingleNodeOrNodePairMinerFactory.getInstance(),"节点规律挖掘配置");
+            DialogSettings dialog = new DialogSettings(this, SingleNodeOrNodePairMinerFactory.getInstance(), "结点");
         /*DialogSettingTest dialog = new DialogSettingTest("节点");*/
-        dialog.pack();
-        dialog.setVisible(true);
+            dialog.pack();
+            dialog.setVisible(true);
+        } else {
+            SingleNodeOrNodePairMinerFactoryDis.getInstance().setTaskRange(TaskRange.SingleNodeRange);
+//            DialogSettings dialog = new DialogSettings(SingleNodeOrNodePairMinerFactory.getInstance(),"节点规律挖掘配置");
+            DialogSettings dialog = new DialogSettings(this, SingleNodeOrNodePairMinerFactoryDis.getInstance(), "结点");
+        /*DialogSettingTest dialog = new DialogSettingTest("节点");*/
+            dialog.pack();
+            dialog.setVisible(true);
+        }
+
         /*JFrame jf = new JFrame();
         DateTimePicker date = new DateTimePicker();
         JPanel jp = date.getPane();
@@ -450,7 +471,7 @@ public class win10_window extends JFrame {
             server.path(pathMinerFactoryDis, ob);
         }
 
-        isPathMined = true;
+        isDisPathMined = true;
     }
 
     public static void main(String[] args) {
@@ -719,6 +740,10 @@ public class win10_window extends JFrame {
                 if (SingleNodeOrNodePairMinerFactory.getInstance().isModified())
                     isSingleNodeMined = false;
 
+                if (SingleNodeOrNodePairMinerFactoryDis.getInstance().isModified()) {
+                    isDisSingleNodeMined = false;
+                }
+
                 /*JFrame jf=new JFrame();
                 DialogSettingTask dialogSettingTask=new DialogSettingTask(jf);
                 dialogSettingTask.setVisible(true);*/
@@ -803,10 +828,28 @@ public class win10_window extends JFrame {
                         singleNodeListFrame.setVisible(true);
                     }
                 } else if (isDistributed) {
-                    if(!isSingleNodeMined){
+                    if (!isDisSingleNodeMined) {
+//                        TaskFrame taskFrame = new TaskFrame();
+//                        taskFrame.init();
+//                        EventQueue.invokeLater(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Runnable runnable = new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        mineSingleNodeDis();
+//                                        server.showSingleNodeResult();//分布式结果显示
+//                                    }
+//                                };
+//                                new Thread(runnable).start();
+//                            }
+//                        });
                         mineSingleNodeDis();
+                        server.showSingleNodeResult();//分布式结果显示
+                    } else {
+                        server.showSingleNodeResult();//分布式结果显示
                     }
-                    server.showSingleNodeResult();//分布式结果显示
+
                 }
             }
         });

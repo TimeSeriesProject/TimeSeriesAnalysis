@@ -35,8 +35,8 @@ import java.util.concurrent.locks.*;
 public class Server {
     private static Server server;
     private static ServerStart serverStart;
-//    private int taskCount = 0;//发送次数
-    private AtomicInteger taskCount = new AtomicInteger(0);
+    private int taskCount = 0;//发送次数
+//    private AtomicInteger taskCount = new AtomicInteger(0);
     private boolean singleNodeTimeFlag = true;//判断是否生成result界面
     private boolean singleNodeTrafficFlag = true;//判断是否生成result界面
     private boolean singleNodeDisapearEmergeFlag = true;//判断是否生成result界面
@@ -157,12 +157,242 @@ public class Server {
         return serverStart;
     }
 
+    public boolean getExistedResult() {
+        System.out.println("进入existed");
+        boolean isExisted = false;
+        //判断是否有已存储的结果
+        switch (tempList.get(0).getMinerType()) {
+
+            case MiningType_SinglenodeOrNodePair:
+                if (tempList.get(0).getTaskRange().equals(TaskRange.SingleNodeRange)) {
+                    if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
+                        int count = 0;
+                        for (int i = 0; i < tempList.size(); i++) {
+                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                            MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                            if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                                MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+                                singleNodeTimes.put(tempList.get(i), resultNode);
+                                NetworkMinerFactory.getInstance().
+                                        showNodeMinersDis(MiningObject.MiningObject_Times, singleNodeTimes);
+                                count += 1;
+                            }
+                        }
+                        if (count == tempList.size()) {
+                            System.out.println("singlenode1存在结果");
+                            singleNodeResultMaps.put(MiningObject.MiningObject_Times.toString(), singleNodeTimes);//存结果
+                            isExisted = true;
+                            awakeNode();
+                        }
+                    }
+
+                    if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
+                        int count = 0;
+                        for (int i = 0; i < tempList.size(); i++) {
+                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                            MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                            if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                                MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+                                singleNodeTraffic.put(tempList.get(i), resultNode);
+                                NetworkMinerFactory.getInstance().
+                                        showNodeMinersDis(MiningObject.MiningObject_Traffic, singleNodeTraffic);
+                                count += 1;
+                            }
+                        }
+                        if (count == tempList.size()) {
+                            System.out.println("singlenode2存在结果");
+                            singleNodeResultMaps.put(MiningObject.MiningObject_Traffic.toString(), singleNodeTraffic);//存结果
+                            isExisted = true;
+                            awakeNode();
+                        }
+                    }
+
+                    if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())) {
+                        int count = 0;
+                        for (int i = 0; i < tempList.size(); i++) {
+                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                            MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                            if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                                MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+                                singleNodeDisapearEmerge.put(tempList.get(i), resultNode);
+                                NetworkMinerFactory.getInstance().
+                                        showNodeMinersDis(MiningObject.MiningObject_NodeDisapearEmerge, singleNodeDisapearEmerge);
+                                count += 1;
+                            }
+                        }
+                        if (count == tempList.size()) {
+                            System.out.println("singlenode3存在结果");
+                            singleNodeResultMaps.put(MiningObject.MiningObject_NodeDisapearEmerge.toString(), singleNodeDisapearEmerge);//存结果
+                            isExisted = true;
+                            awakeNode();
+                        }
+                    }
+                }
+
+                //nodePair
+                if (tempList.get(0).getTaskRange().equals(TaskRange.NodePairRange)) {
+                    if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
+                        int count = 0;
+                        for (int i = 0; i < tempList.size(); i++) {
+                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                            MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                            if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                                MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+                                nodePairTimes.put(tempList.get(i), resultNode);
+                                NetworkMinerFactory.getInstance().
+                                        showNodeMinersDis(MiningObject.MiningObject_Times, nodePairTimes);
+                                count += 1;
+                            }
+                        }
+                        if (count == tempList.size()) {
+                            nodePairResultMaps.put(MiningObject.MiningObject_Times.toString(), nodePairTimes);//存结果
+                            isExisted = true;
+                            awakeNode();
+                        }
+                    }
+
+                    if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
+                        int count = 0;
+                        for (int i = 0; i < tempList.size(); i++) {
+                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                            MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                            if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                                MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+                                nodePairTraffic.put(tempList.get(i), resultNode);
+                                NetworkMinerFactory.getInstance().
+                                        showNodeMinersDis(MiningObject.MiningObject_Traffic, nodePairTraffic);
+                                count += 1;
+                            }
+                        }
+                        if (count == tempList.size()) {
+                            System.out.println("nodepair存在结果");
+                            nodePairResultMaps.put(MiningObject.MiningObject_Traffic.toString(), nodePairTraffic);//存结果
+                            isExisted = true;
+                            awakeNode();
+                        }
+                    }
+                }
+                break;
+
+            case MiningType_ProtocolAssociation:
+                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
+                    int count = 0;
+                    for (int i = 0; i < tempList.size(); i++) {
+                        MinerFactorySettings settings = ProtocolAssMinerFactory.getInstance();
+                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                        if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                            MinerProtocolResults resultNode = (MinerProtocolResults) resultsFile.file2Result();
+                            protocolTraffic.put(tempList.get(i), resultNode);
+                            NetworkMinerFactory.getInstance().
+                                    showProtocolMinersDis(MiningObject.MiningObject_Traffic, protocolTraffic);
+                            count += 1;
+                        }
+                    }
+                    if (count == tempList.size()) {
+                        System.out.println("protocol存在结果");
+                        protocolResultMaps = protocolTraffic;//存结果
+                        isExisted = true;
+                        awakeProtocol();
+                    }
+                }
+
+                break;
+
+            case MiningType_Path:
+                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
+                    int count = 0;
+                    for (int i = 0; i < tempList.size(); i++) {
+                        MinerFactorySettings settings = PathMinerFactory.getInstance();
+                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                        if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                            MinerResultsPath resultPath = (MinerResultsPath) resultsFile.file2Result();
+                            pathTimes.put(tempList.get(i), resultPath);
+                            NetworkMinerFactory.getInstance().
+                                    showPathMinersDis(MiningObject.MiningObject_Times, pathTimes);
+                            count += 1;
+                        }
+                    }
+                    if (count == tempList.size()) {
+                        pathResultMaps.put(MiningObject.MiningObject_Times.toString(), pathTimes);//存结果
+                        isExisted = true;
+                        awakePath();
+                    }
+                }
+
+                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
+                    int count = 0;
+                    for (int i = 0; i < tempList.size(); i++) {
+                        MinerFactorySettings settings = PathMinerFactory.getInstance();
+                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                        if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                            MinerResultsPath resultPath = (MinerResultsPath) resultsFile.file2Result();
+                            pathTraffic.put(tempList.get(i), resultPath);
+                            NetworkMinerFactory.getInstance().
+                                    showPathMinersDis(MiningObject.MiningObject_Traffic, pathTraffic);
+                            count += 1;
+                        }
+                    }
+                    if (count == tempList.size()) {
+                        pathResultMaps.put(MiningObject.MiningObject_Traffic.toString(), pathTraffic);//存结果
+                        isExisted = true;
+                        awakePath();
+                    }
+                }
+                break;
+
+            case MiningTypes_WholeNetwork:
+                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Cluster.toString())) {
+                    int count = 0;
+                    for (int i = 0; i < tempList.size(); i++) {
+                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                        if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                            MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+                            networkCluster.put(tempList.get(i), resultNode);
+                            NetworkMinerFactory.getInstance().
+                                    showNetWorkMinersDis(MiningObject.MiningObject_Cluster, networkCluster);
+                            count += 1;
+                        }
+                    }
+                    if (count == tempList.size()) {
+                        networkResultMaps.put(MiningObject.MiningObject_Cluster.toString(), networkCluster);//存结果
+                        isExisted = true;
+                        awakeNet();
+                    }
+                }
+
+                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Diameter.toString())) {
+                    int count = 0;
+                    for (int i = 0; i < tempList.size(); i++) {
+                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                        if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                            MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+                            networkDiameter.put(tempList.get(i), resultNode);
+                            NetworkMinerFactory.getInstance().
+                                    showNetWorkMinersDis(MiningObject.MiningObject_Diameter, networkDiameter);
+                            count += 1;
+                        }
+                    }
+                    if (count == tempList.size()) {
+                        networkResultMaps.put(MiningObject.MiningObject_Diameter.toString(), networkDiameter);//存结果
+                        isExisted = true;
+                        awakeNet();
+                    }
+                }
+                break;
+        }
+        return isExisted;
+    }
+
     public void SingleNodeOrNodePair(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject) {
         genSingleNodeTask(singleNodeOrNodePairMinerFactoryDis, miningObject);
         initMap(MinerType.MiningType_SinglenodeOrNodePair);
-        awakeThread();
-        setIsRunning(true);
-        isSingleNodeOver(miningObject);
+        if (!getExistedResult()) {
+            awakeThread();
+            setIsRunning(true);
+            isSingleNodeOver(miningObject);
+        }
     }
 
     public void path(PathMinerFactoryDis pathMinerFactoryDis, MiningObject miningObject) {
@@ -365,8 +595,8 @@ public class Server {
                 allCombinationTasks.put(combinationList.getTaskCombinationList().get(i), "n");
             }
         }
-//        taskCount = 0;
-        taskCount.set(0);
+        taskCount = 0;
+//        taskCount.set(0);
         TaskCombinationList.clearTaskCombinationList();
         /*for (Map.Entry<TaskCombination, String> entry : allCombinationTasks.entrySet()) {
             System.out.println("初始化后 TaskCombination= " + entry.getKey().getName().hashCode() +
@@ -633,234 +863,234 @@ public class Server {
 
 
                     //判断是否有已存储的结果
-                    switch (tempList.get(0).getMinerType()) {
-
-                        case MiningType_SinglenodeOrNodePair:
-                            if (tempList.get(0).getTaskRange().equals(TaskRange.SingleNodeRange)) {
-                                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
-                                    int count = 0;
-                                    for (int i = 0; i < tempList.size(); i++) {
-                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
-                                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                        if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
-                                            MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
-                                            singleNodeTimes.put(tempList.get(i), resultNode);
-                                            NetworkMinerFactory.getInstance().
-                                                    showNodeMinersDis(MiningObject.MiningObject_Times, singleNodeTimes);
-                                            count += 1;
-                                        }
-                                    }
-                                    if (count == tempList.size()) {
-                                        singleNodeResultMaps.put(MiningObject.MiningObject_Times.toString(), singleNodeTimes);//存结果
-                                        awakeNode();
-                                        isSuspend = true;
-                                        continue;
-                                    }
-                                }
-
-                                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
-                                    int count = 0;
-                                    for (int i = 0; i < tempList.size(); i++) {
-                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
-                                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                        if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
-                                            MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
-                                            singleNodeTraffic.put(tempList.get(i), resultNode);
-                                            NetworkMinerFactory.getInstance().
-                                                    showNodeMinersDis(MiningObject.MiningObject_Traffic, singleNodeTraffic);
-                                            count += 1;
-                                        }
-                                    }
-                                    if (count == tempList.size()) {
-                                        singleNodeResultMaps.put(MiningObject.MiningObject_Traffic.toString(), singleNodeTraffic);//存结果
-                                        awakeNode();
-                                        isSuspend = true;
-                                        continue;
-                                    }
-                                }
-
-                                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())) {
-                                    int count = 0;
-                                    for (int i = 0; i < tempList.size(); i++) {
-                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
-                                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                        if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
-                                            MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
-                                            singleNodeDisapearEmerge.put(tempList.get(i), resultNode);
-                                            NetworkMinerFactory.getInstance().
-                                                    showNodeMinersDis(MiningObject.MiningObject_NodeDisapearEmerge, singleNodeDisapearEmerge);
-                                            count += 1;
-                                        }
-                                    }
-                                    if (count == tempList.size()) {
-                                        singleNodeResultMaps.put(MiningObject.MiningObject_NodeDisapearEmerge.toString(), singleNodeDisapearEmerge);//存结果
-                                        awakeNode();
-                                        isSuspend = true;
-                                        continue;
-                                    }
-                                }
-                            }
-
-                            //nodePair
-                            if (tempList.get(0).getTaskRange().equals(TaskRange.NodePairRange)) {
-                                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
-                                    int count = 0;
-                                    for (int i = 0; i < tempList.size(); i++) {
-                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
-                                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                        if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
-                                            MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
-                                            nodePairTimes.put(tempList.get(i), resultNode);
-                                            NetworkMinerFactory.getInstance().
-                                                    showNodeMinersDis(MiningObject.MiningObject_Times, nodePairTimes);
-                                            count += 1;
-                                        }
-                                    }
-                                    if (count == tempList.size()) {
-                                        nodePairResultMaps.put(MiningObject.MiningObject_Times.toString(), nodePairTimes);//存结果
-                                        awakeNode();
-                                        isSuspend = true;
-                                        continue;
-                                    }
-                                }
-
-                                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
-                                    int count = 0;
-                                    for (int i = 0; i < tempList.size(); i++) {
-                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
-                                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                        if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
-                                            MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
-                                            nodePairTraffic.put(tempList.get(i), resultNode);
-                                            NetworkMinerFactory.getInstance().
-                                                    showNodeMinersDis(MiningObject.MiningObject_Traffic, nodePairTraffic);
-                                            count += 1;
-                                        }
-                                    }
-                                    if (count == tempList.size()) {
-                                        nodePairResultMaps.put(MiningObject.MiningObject_Traffic.toString(), nodePairTraffic);//存结果
-                                        awakeNode();
-                                        isSuspend = true;
-                                        continue;
-                                    }
-                                }
-                            }
-                            break;
-
-                        case MiningType_ProtocolAssociation:
-                            if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
-                                int count = 0;
-                                for (int i = 0; i < tempList.size(); i++) {
-                                    MinerFactorySettings settings = ProtocolAssMinerFactory.getInstance();
-                                    MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                    if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
-                                        MinerProtocolResults resultNode = (MinerProtocolResults) resultsFile.file2Result();
-                                        protocolTraffic.put(tempList.get(i), resultNode);
-                                        NetworkMinerFactory.getInstance().
-                                                showProtocolMinersDis(MiningObject.MiningObject_Traffic, protocolTraffic);
-                                        count += 1;
-                                    }
-                                }
-                                if (count == tempList.size()) {
-                                    System.out.println("protocol存在结果");
-                                    protocolResultMaps = protocolTraffic;//存结果
-                                    awakeProtocol();
-                                    isSuspend = true;
-                                    continue;
-                                }
-                            }
-
-                        break;
-
-                        case MiningType_Path:
-                            if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
-                                int count = 0;
-                                for (int i = 0; i < tempList.size(); i++) {
-                                    MinerFactorySettings settings = PathMinerFactory.getInstance();
-                                    MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                    if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
-                                        MinerResultsPath resultPath = (MinerResultsPath) resultsFile.file2Result();
-                                        pathTimes.put(tempList.get(i), resultPath);
-                                        NetworkMinerFactory.getInstance().
-                                                showPathMinersDis(MiningObject.MiningObject_Times, pathTimes);
-                                        count += 1;
-                                    }
-                                }
-                                if (count == tempList.size()) {
-                                    pathResultMaps.put(MiningObject.MiningObject_Times.toString(), pathTimes);//存结果
-                                    awakePath();
-                                    isSuspend = true;
-                                    continue;
-                                }
-                            }
-
-                            if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
-                                int count = 0;
-                                for (int i = 0; i < tempList.size(); i++) {
-                                    MinerFactorySettings settings = PathMinerFactory.getInstance();
-                                    MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                    if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
-                                        MinerResultsPath resultPath = (MinerResultsPath) resultsFile.file2Result();
-                                        pathTraffic.put(tempList.get(i), resultPath);
-                                        NetworkMinerFactory.getInstance().
-                                                showPathMinersDis(MiningObject.MiningObject_Traffic, pathTraffic);
-                                        count += 1;
-                                    }
-                                }
-                                if (count == tempList.size()) {
-                                    pathResultMaps.put(MiningObject.MiningObject_Traffic.toString(), pathTraffic);//存结果
-                                    awakePath();
-                                    isSuspend = true;
-                                    continue;
-                                }
-                            }
-                            break;
-
-                        case MiningTypes_WholeNetwork:
-                            if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Cluster.toString())) {
-                                int count = 0;
-                                for (int i = 0; i < tempList.size(); i++) {
-                                    MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
-                                    MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                    if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
-                                        MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
-                                        networkCluster.put(tempList.get(i), resultNode);
-                                        NetworkMinerFactory.getInstance().
-                                                showNetWorkMinersDis(MiningObject.MiningObject_Cluster, networkCluster);
-                                        count += 1;
-                                    }
-                                }
-                                if (count == tempList.size()) {
-                                    networkResultMaps.put(MiningObject.MiningObject_Cluster.toString(), networkCluster);//存结果
-                                    awakeNet();
-                                    isSuspend = true;
-                                    continue;
-                                }
-                            }
-
-                            if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Diameter.toString())) {
-                                int count = 0;
-                                for (int i = 0; i < tempList.size(); i++) {
-                                    MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
-                                    MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                    if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
-                                        MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
-                                        networkDiameter.put(tempList.get(i), resultNode);
-                                        NetworkMinerFactory.getInstance().
-                                                showNetWorkMinersDis(MiningObject.MiningObject_Diameter, networkDiameter);
-                                        count += 1;
-                                    }
-                                }
-                                if (count == tempList.size()) {
-                                    networkResultMaps.put(MiningObject.MiningObject_Diameter.toString(), networkDiameter);//存结果
-                                    awakeNet();
-                                    isSuspend = true;
-                                    continue;
-                                }
-                            }
-                            break;
-
-                    }
+//                    switch (tempList.get(0).getMinerType()) {
+//
+//                        case MiningType_SinglenodeOrNodePair:
+//                            if (tempList.get(0).getTaskRange().equals(TaskRange.SingleNodeRange)) {
+//                                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
+//                                    int count = 0;
+//                                    for (int i = 0; i < tempList.size(); i++) {
+//                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+//                                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+//                                        if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+//                                            MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+//                                            singleNodeTimes.put(tempList.get(i), resultNode);
+//                                            NetworkMinerFactory.getInstance().
+//                                                    showNodeMinersDis(MiningObject.MiningObject_Times, singleNodeTimes);
+//                                            count += 1;
+//                                        }
+//                                    }
+//                                    if (count == tempList.size()) {
+//                                        singleNodeResultMaps.put(MiningObject.MiningObject_Times.toString(), singleNodeTimes);//存结果
+//                                        awakeNode();
+//                                        isSuspend = true;
+//                                        continue;
+//                                    }
+//                                }
+//
+//                                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
+//                                    int count = 0;
+//                                    for (int i = 0; i < tempList.size(); i++) {
+//                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+//                                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+//                                        if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+//                                            MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+//                                            singleNodeTraffic.put(tempList.get(i), resultNode);
+//                                            NetworkMinerFactory.getInstance().
+//                                                    showNodeMinersDis(MiningObject.MiningObject_Traffic, singleNodeTraffic);
+//                                            count += 1;
+//                                        }
+//                                    }
+//                                    if (count == tempList.size()) {
+//                                        singleNodeResultMaps.put(MiningObject.MiningObject_Traffic.toString(), singleNodeTraffic);//存结果
+//                                        awakeNode();
+//                                        isSuspend = true;
+//                                        continue;
+//                                    }
+//                                }
+//
+//                                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())) {
+//                                    int count = 0;
+//                                    for (int i = 0; i < tempList.size(); i++) {
+//                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+//                                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+//                                        if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+//                                            MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+//                                            singleNodeDisapearEmerge.put(tempList.get(i), resultNode);
+//                                            NetworkMinerFactory.getInstance().
+//                                                    showNodeMinersDis(MiningObject.MiningObject_NodeDisapearEmerge, singleNodeDisapearEmerge);
+//                                            count += 1;
+//                                        }
+//                                    }
+//                                    if (count == tempList.size()) {
+//                                        singleNodeResultMaps.put(MiningObject.MiningObject_NodeDisapearEmerge.toString(), singleNodeDisapearEmerge);//存结果
+//                                        awakeNode();
+//                                        isSuspend = true;
+//                                        continue;
+//                                    }
+//                                }
+//                            }
+//
+//                            //nodePair
+//                            if (tempList.get(0).getTaskRange().equals(TaskRange.NodePairRange)) {
+//                                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
+//                                    int count = 0;
+//                                    for (int i = 0; i < tempList.size(); i++) {
+//                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+//                                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+//                                        if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+//                                            MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+//                                            nodePairTimes.put(tempList.get(i), resultNode);
+//                                            NetworkMinerFactory.getInstance().
+//                                                    showNodeMinersDis(MiningObject.MiningObject_Times, nodePairTimes);
+//                                            count += 1;
+//                                        }
+//                                    }
+//                                    if (count == tempList.size()) {
+//                                        nodePairResultMaps.put(MiningObject.MiningObject_Times.toString(), nodePairTimes);//存结果
+//                                        awakeNode();
+//                                        isSuspend = true;
+//                                        continue;
+//                                    }
+//                                }
+//
+//                                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
+//                                    int count = 0;
+//                                    for (int i = 0; i < tempList.size(); i++) {
+//                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+//                                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+//                                        if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+//                                            MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+//                                            nodePairTraffic.put(tempList.get(i), resultNode);
+//                                            NetworkMinerFactory.getInstance().
+//                                                    showNodeMinersDis(MiningObject.MiningObject_Traffic, nodePairTraffic);
+//                                            count += 1;
+//                                        }
+//                                    }
+//                                    if (count == tempList.size()) {
+//                                        nodePairResultMaps.put(MiningObject.MiningObject_Traffic.toString(), nodePairTraffic);//存结果
+//                                        awakeNode();
+//                                        isSuspend = true;
+//                                        continue;
+//                                    }
+//                                }
+//                            }
+//                            break;
+//
+//                        case MiningType_ProtocolAssociation:
+//                            if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
+//                                int count = 0;
+//                                for (int i = 0; i < tempList.size(); i++) {
+//                                    MinerFactorySettings settings = ProtocolAssMinerFactory.getInstance();
+//                                    MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+//                                    if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+//                                        MinerProtocolResults resultNode = (MinerProtocolResults) resultsFile.file2Result();
+//                                        protocolTraffic.put(tempList.get(i), resultNode);
+//                                        NetworkMinerFactory.getInstance().
+//                                                showProtocolMinersDis(MiningObject.MiningObject_Traffic, protocolTraffic);
+//                                        count += 1;
+//                                    }
+//                                }
+//                                if (count == tempList.size()) {
+//                                    System.out.println("protocol存在结果");
+//                                    protocolResultMaps = protocolTraffic;//存结果
+//                                    awakeProtocol();
+//                                    isSuspend = true;
+//                                    continue;
+//                                }
+//                            }
+//
+//                        break;
+//
+//                        case MiningType_Path:
+//                            if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
+//                                int count = 0;
+//                                for (int i = 0; i < tempList.size(); i++) {
+//                                    MinerFactorySettings settings = PathMinerFactory.getInstance();
+//                                    MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+//                                    if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+//                                        MinerResultsPath resultPath = (MinerResultsPath) resultsFile.file2Result();
+//                                        pathTimes.put(tempList.get(i), resultPath);
+//                                        NetworkMinerFactory.getInstance().
+//                                                showPathMinersDis(MiningObject.MiningObject_Times, pathTimes);
+//                                        count += 1;
+//                                    }
+//                                }
+//                                if (count == tempList.size()) {
+//                                    pathResultMaps.put(MiningObject.MiningObject_Times.toString(), pathTimes);//存结果
+//                                    awakePath();
+//                                    isSuspend = true;
+//                                    continue;
+//                                }
+//                            }
+//
+//                            if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
+//                                int count = 0;
+//                                for (int i = 0; i < tempList.size(); i++) {
+//                                    MinerFactorySettings settings = PathMinerFactory.getInstance();
+//                                    MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+//                                    if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+//                                        MinerResultsPath resultPath = (MinerResultsPath) resultsFile.file2Result();
+//                                        pathTraffic.put(tempList.get(i), resultPath);
+//                                        NetworkMinerFactory.getInstance().
+//                                                showPathMinersDis(MiningObject.MiningObject_Traffic, pathTraffic);
+//                                        count += 1;
+//                                    }
+//                                }
+//                                if (count == tempList.size()) {
+//                                    pathResultMaps.put(MiningObject.MiningObject_Traffic.toString(), pathTraffic);//存结果
+//                                    awakePath();
+//                                    isSuspend = true;
+//                                    continue;
+//                                }
+//                            }
+//                            break;
+//
+//                        case MiningTypes_WholeNetwork:
+//                            if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Cluster.toString())) {
+//                                int count = 0;
+//                                for (int i = 0; i < tempList.size(); i++) {
+//                                    MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+//                                    MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+//                                    if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+//                                        MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+//                                        networkCluster.put(tempList.get(i), resultNode);
+//                                        NetworkMinerFactory.getInstance().
+//                                                showNetWorkMinersDis(MiningObject.MiningObject_Cluster, networkCluster);
+//                                        count += 1;
+//                                    }
+//                                }
+//                                if (count == tempList.size()) {
+//                                    networkResultMaps.put(MiningObject.MiningObject_Cluster.toString(), networkCluster);//存结果
+//                                    awakeNet();
+//                                    isSuspend = true;
+//                                    continue;
+//                                }
+//                            }
+//
+//                            if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Diameter.toString())) {
+//                                int count = 0;
+//                                for (int i = 0; i < tempList.size(); i++) {
+//                                    MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+//                                    MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+//                                    if(resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+//                                        MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
+//                                        networkDiameter.put(tempList.get(i), resultNode);
+//                                        NetworkMinerFactory.getInstance().
+//                                                showNetWorkMinersDis(MiningObject.MiningObject_Diameter, networkDiameter);
+//                                        count += 1;
+//                                    }
+//                                }
+//                                if (count == tempList.size()) {
+//                                    networkResultMaps.put(MiningObject.MiningObject_Diameter.toString(), networkDiameter);//存结果
+//                                    awakeNet();
+//                                    isSuspend = true;
+//                                    continue;
+//                                }
+//                            }
+//                            break;
+//
+//                    }
 
 
                     dataFromClient = userClient.receiveReady();//接收Ready,@Deprecated在完成后的第二次循环阻塞
@@ -868,23 +1098,19 @@ public class Server {
                         /*for(Map.Entry<TaskCombination, String> entry : allCombinationTasks.entrySet()){
                             userClientObject.sendObject(entry.getKey());
                         }*/
+                        countLock.lock();
+                        try {
+                            if (taskCount < tempList.size()) {
+//                                isSuspend = true;
 
-                        int tempCount;
-                        if ((tempCount = taskCount.getAndIncrement()) < tempList.size()) {
-                            System.out.println("第" + taskCount.get() + "次发送" + tempList.size());
-
-                            countLock.lock();
-                            try {
-                                userClientObject.sendObject(tempList.get(tempCount));
-                            } finally {
-                                countLock.unlock();
-                            }
-
-//                            taskCount += 1;
-                            System.out.println("第" + taskCount.get() + "次即将开始");
-                        } else {
-                            countLock.lock();
-                            try {
+                                long a = System.currentTimeMillis();
+                                System.out.println("第" + taskCount + "次发送" + tempList.size());
+                                userClientObject.sendObject(tempList.get(taskCount));
+                                long b = System.currentTimeMillis();
+                                System.out.println("发送时间：" + (b - a));
+                                taskCount += 1;
+                                System.out.println("第" + taskCount + "次即将开始");
+                            } else {
                                 int temp = 0;//中途最后一个结果发回来，强行再发一次最后一个任务，防止客户端没有ready卡死
                                 //线程加锁，防止其他线程调用Map
 //                                isSuspend = true;
@@ -913,9 +1139,9 @@ public class Server {
                                 //                            } finally {
                                 //                                mapLock.readLock().unlock();
                                 //                            }
-                            } finally {
-                                countLock.unlock();
                             }
+                        } finally {
+                            countLock.unlock();
                         }
                     }
                     System.out.println("执行完毕");
@@ -929,8 +1155,7 @@ public class Server {
                             case MiningType_SinglenodeOrNodePair:
                                 //单节点
                                 if (taskCombinationResult.getTaskRange().equals(TaskRange.SingleNodeRange)) {
-                                    if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Times)
-                                            && singleNodeTimeFlag) {
+                                    if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Times)) {
                                         if (singleNodeTimes.size() < allCombinationTasks.size()) {
                                             singleNodeTimeFlag = true;
                                             for (int i = 0; i < tempList.size(); i++) {
@@ -960,11 +1185,12 @@ public class Server {
 //                                            else {
 //                                                awakeSingleThread();
 //                                            }
+                                        } else {
+                                            isSuspend = true;
                                         }
                                     }
 
-                                    if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)
-                                            && singleNodeTrafficFlag) {
+                                    if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)) {
                                         if (singleNodeTraffic.size() < allCombinationTasks.size()) {
                                             singleNodeTrafficFlag = true;
                                             for (int i = 0; i < tempList.size(); i++) {
@@ -994,12 +1220,13 @@ public class Server {
 //                                            else {
 //                                                awakeSingleThread();
 //                                            }
+                                        } else {
+                                            isSuspend = true;
                                         }
                                     }
 
                                     //节点出现消失
-                                    if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge)
-                                            && singleNodeDisapearEmergeFlag) {
+                                    if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge)) {
                                         if (singleNodeDisapearEmerge.size() < allCombinationTasks.size()) {
                                             singleNodeDisapearEmergeFlag = true;
                                             for (int i = 0; i < tempList.size(); i++) {
@@ -1029,6 +1256,8 @@ public class Server {
 //                                            else {
 //                                                awakeSingleThread();
 //                                            }
+                                        }  else {
+                                            isSuspend = true;
                                         }
                                     }
                                 }
