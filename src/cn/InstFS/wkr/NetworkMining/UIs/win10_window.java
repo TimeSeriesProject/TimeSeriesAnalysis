@@ -205,7 +205,7 @@ public class win10_window extends JFrame {
             }
         });
 
-        JDialog dialog = new JDialog(this, "任务挖掘进度", true);
+        JDialog dialog = new JDialog(this, "节点任务挖掘进度", true);
         dialog.setContentPane(newContentPane);
         dialog.pack();
         dialog.setVisible(true);
@@ -337,7 +337,7 @@ public class win10_window extends JFrame {
             }
         });
 
-        JDialog dialog = new JDialog(this, "路径任务挖掘进度", true);
+        JDialog dialog = new JDialog(this, "多业务任务挖掘进度", true);
         dialog.setContentPane(newContentPane);
         dialog.pack();
         dialog.setVisible(true);
@@ -472,6 +472,165 @@ public class win10_window extends JFrame {
         }
 
         isDisPathMined = true;
+    }
+
+    public void mineAll() {
+        final JComponent newContentPane = new TaskProgressBar();
+        newContentPane.setOpaque(true);
+
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        List<MiningObject> miningObjectList;
+                        TaskProgressBar bar = (TaskProgressBar) newContentPane;
+                        /* 网络结构任务 */
+                        if (!isNetworkStructureMined) {
+                            bar.clearBar();
+                            bar.setBarString("网络结构：读取数据...");
+                            networkStructureresultMaps.clear();
+                            NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+
+                            final NetworkFactory networkFactory = NetworkFactory.getInstance();
+                            miningObjectList = networkFactory.getMiningObjectsChecked();
+
+                            for (MiningObject ob: miningObjectList) {
+                                networkFactory.reset();
+                                networkFactory.setMiningObject(ob);
+                                networkFactory.detect();
+                            }
+                            bar.startTask();
+
+                            for (MiningObject ob: miningObjectList) {
+                                TaskProgress.getInstance().setPhase("网络结构： "+ob.toString());
+                                HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
+                                objectMap = NetworkMinerFactory.getInstance().startAllNetworkStructrueMiners(ob);
+                                networkStructureresultMaps.put(ob.toString(), objectMap);
+                            }
+                            TaskProgress.getInstance().clear();
+                            isNetworkStructureMined=true;
+                        }
+
+                        /* 路径任务 */
+                        if (!isPathMined) {
+                            bar.clearBar();
+                            bar.setBarString("承载路径：读取数据...");
+                            pathResultsMaps.clear();
+                            NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+                            final PathMinerFactory pathMinerFactory = PathMinerFactory.getInstance();
+                            miningObjectList = pathMinerFactory.getMiningObjectsChecked();
+
+                            for (MiningObject ob: miningObjectList) {
+                                pathMinerFactory.reset();
+                                pathMinerFactory.setMiningObject(ob);
+                                pathMinerFactory.detect();
+                            }
+                            bar.startTask();
+
+                            for (MiningObject ob: miningObjectList) {
+                                TaskProgress.getInstance().setPhase("路径： "+ob.toString());
+                                HashMap<TaskCombination, MinerResultsPath> objectMap = new HashMap<>();;
+                                objectMap = NetworkMinerFactory.getInstance().startAllPathMiners(ob);
+                                pathResultsMaps.put(ob.toString(), objectMap);
+                            }
+                            TaskProgress.getInstance().clear();
+                            isPathMined = true;
+                        }
+
+                        /* 节点任务挖掘 */
+                        if (!isSingleNodeMined) {
+                            bar.clearBar();
+                            bar.setBarString("节点：读取数据...");
+                            singleNoderesultMaps.clear();
+                            NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+
+                            final SingleNodeOrNodePairMinerFactory singleNodeMinerFactory = SingleNodeOrNodePairMinerFactory.getInstance();
+                            miningObjectList = singleNodeMinerFactory.getMiningObjectsChecked();
+
+                            for (MiningObject ob: miningObjectList) {
+                                singleNodeMinerFactory.reset();
+                                singleNodeMinerFactory.setMiningObject(ob);
+                                singleNodeMinerFactory.detect();
+                            }
+                            bar.startTask();
+
+                            for (MiningObject ob: miningObjectList) {
+                                TaskProgress.getInstance().setPhase("节点： "+ob.toString());
+                                HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
+                                objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
+                                singleNoderesultMaps.put(ob.toString(), objectMap);
+                            }
+                            TaskProgress.getInstance().clear();
+                            isSingleNodeMined = true;
+                        }
+
+                        /* 链路任务 */
+                        if (!isNodePairMined) {
+                            bar.clearBar();
+                            bar.setBarString("链路：读取数据...");
+                            nodePairresultMaps.clear();
+                            NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+                            final SingleNodeOrNodePairMinerFactory nodePairMinerFactory = SingleNodeOrNodePairMinerFactory.getPairInstance();
+                            miningObjectList = nodePairMinerFactory.getMiningObjectsChecked();
+
+                            for (MiningObject ob: miningObjectList) {
+                                nodePairMinerFactory.reset();
+                                nodePairMinerFactory.setMiningObject(ob);
+                                nodePairMinerFactory.detect();
+                            }
+                            bar.startTask();
+
+                            for (MiningObject ob: miningObjectList) {
+                                TaskProgress.getInstance().setPhase("链路： "+ob.toString());
+                                HashMap<TaskCombination, MinerNodeResults> objectMap = new HashMap<>();
+                                objectMap = NetworkMinerFactory.getInstance().startAllNodeMiners(ob);
+                                nodePairresultMaps.put(ob.toString(), objectMap);
+                            }
+                            TaskProgress.getInstance().clear();
+                            isNodePairMined = true;
+                        }
+
+                        /* 多业务 */
+                        if (!isProtocolAssMined) {
+                            bar.clearBar();
+                            bar.setBarString("多业务：读取数据...");
+                            protocolResultsMaps.clear();
+                            NetworkMinerFactory.getInstance().allCombinationMiners.clear();
+                            final ProtocolAssMinerFactory protocolAssMinerFactory = ProtocolAssMinerFactory.getInstance();
+                            miningObjectList = protocolAssMinerFactory.getMiningObjectsChecked();
+
+                            for (MiningObject ob: miningObjectList) {
+                                protocolAssMinerFactory.reset();
+                                protocolAssMinerFactory.setMiningObject(ob);
+                                protocolAssMinerFactory.detect();
+                            }
+                            bar.startTask();
+
+                            for (MiningObject ob: miningObjectList) {
+                                TaskProgress.getInstance().setPhase("多业务： "+ob.toString());
+                                HashMap<TaskCombination, MinerProtocolResults> objectMap = new HashMap<>();
+                                objectMap = NetworkMinerFactory.getInstance().startAllProtocolMiners(ob);
+                                protocolResultsMaps = objectMap;
+                            }
+                            TaskProgress.getInstance().clear();
+                            isProtocolAssMined = true;
+                        }
+                    }
+                };
+                new Thread(runnable).start();
+            }
+        });
+
+        if (isNetworkStructureMined && isPathMined && isSingleNodeMined && isNodePairMined && isProtocolAssMined) {
+            JOptionPane.showMessageDialog(null,"全部挖掘完毕","提示", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JDialog dialog = new JDialog(this, "全部任务挖掘进度", true);
+            dialog.setContentPane(newContentPane);
+            dialog.pack();
+            dialog.setVisible(true);
+        }
+
     }
 
     public static void main(String[] args) {
@@ -770,18 +929,16 @@ public class win10_window extends JFrame {
         });
         //全部挖掘按钮响应
         bAll.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO Auto-generated method stub
-                if(isSingleNodeMined==false)
+                mineAll();
+                /*if(isSingleNodeMined==false)
                     mineSingleNode();
                 if(isNodePairMined==false)
                     mineNodePair();
                 if(isNetworkStructureMined==false)
-                    mineNetworkStructor();
-
-
+                    mineNetworkStructor();*/
             }
         });
         //显示链路规律按钮设置
