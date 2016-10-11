@@ -1,6 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
 import Distributed.PcapFrame;
+import Distributed.PcapPanel;
 import Distributed.Server;
 import Distributed.TaskPanel;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
@@ -768,10 +769,15 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isDistributed) {
-                    ProcessBarShow processBarShow = new ProcessBarShow(null);
+                    ProcessBarShow processBarShow = new ProcessBarShow(win10_window.this);
                 } else if (isDistributed) {
-                    PcapFrame pcapFrame = new PcapFrame();
-                    pcapFrame.init();
+//                    PcapFrame pcapFrame = new PcapFrame();
+//                    pcapFrame.init();
+                    final PcapPanel pcapPanel = new PcapPanel();
+                    JDialog jDialog = new JDialog(win10_window.this, "pcap解析",true);
+                    jDialog.setContentPane(pcapPanel);
+                    jDialog.setSize(new Dimension(500, 400));
+                    jDialog.setVisible(true);
                 }
             }
         });
