@@ -4,10 +4,7 @@ package cn.InstFS.wkr.NetworkMining.Miner.Factory;
  * Created by zsc on 2016/8/31.
  */
 import java.io.File;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 
 import Distributed.TaskCombinationList;
@@ -178,5 +175,23 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
         }
         protocolItems.clear();
         return pretreatmentMap;
+    }
+
+    public int getCount(ArrayList<String> list){
+        File dataDirectory=new File(dataPath);
+        nodePairReader reader=new nodePairReader();
+        int granularity= Integer.parseInt(getGranularity());
+        if(dataDirectory.isFile()){
+//			addTask(dataDirectory,granularity,reader);
+        }else{
+            File[] dataDirs=dataDirectory.listFiles();
+            for(int i=0;i<dataDirs.length;i++){
+                //由于数据都存在ip文件夹下，所以应以文件夹目录作为参数进行传递
+                //按天读取文件，所以只接受目录
+                if(dataDirs[i].isDirectory())
+                    list.add("");
+            }
+        }
+        return list.size();
     }
 }

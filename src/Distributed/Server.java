@@ -36,9 +36,8 @@ public class Server {
     private static Server server;
     private static ServerStart serverStart;
     private int taskCount = 0;//发送次数
-    private int totalCount = 18;
-
-    //    private AtomicInteger taskCount = new AtomicInteger(0);
+    private int totalCount = 0;
+//    private AtomicInteger taskCount = new AtomicInteger(0);
     private boolean singleNodeTimeFlag = true;//判断是否生成result界面
     private boolean singleNodeTrafficFlag = true;//判断是否生成result界面
     private boolean singleNodeDisapearEmergeFlag = true;//判断是否生成result界面
@@ -160,6 +159,195 @@ public class Server {
         return serverStart;
     }
 
+    public void clearResult() {
+        System.out.println("清空结果");
+        singleNodeTimes.clear();
+        singleNodeTraffic.clear();
+        singleNodeDisapearEmerge.clear();
+        nodePairTimes.clear();
+        nodePairTraffic.clear();
+        pathTimes.clear();
+        pathTraffic.clear();
+        networkCluster.clear();
+        networkDiameter.clear();
+        protocolTraffic.clear();
+
+        singleNodeResultMaps.clear();
+        nodePairResultMaps.clear();
+        pathResultMaps.clear();
+        networkResultMaps.clear();
+        protocolResultMaps.clear();
+    }
+
+    //判断是否存在以保存的结果
+    public boolean isExistedResult() {
+        System.out.println("进入isexisted");
+        boolean isExisted = false;
+        //判断是否有已存储的结果
+        switch (tempList.get(0).getMinerType()) {
+
+            case MiningType_SinglenodeOrNodePair:
+                if (tempList.get(0).getTaskRange().equals(TaskRange.SingleNodeRange)) {
+                    if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
+                        int count = 0;
+                        for (int i = 0; i < tempList.size(); i++) {
+                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                            MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                            if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                                count += 1;
+                            }
+                        }
+                        if (count == tempList.size()) {
+                            System.out.println("singlenode1存在结果");
+                            isExisted = true;
+                        }
+                    }
+
+                    if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
+                        int count = 0;
+                        for (int i = 0; i < tempList.size(); i++) {
+                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                            MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                            if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                                count += 1;
+                            }
+                        }
+                        if (count == tempList.size()) {
+                            System.out.println("singlenode2存在结果");
+                            isExisted = true;
+                        }
+                    }
+
+                    if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())) {
+                        int count = 0;
+                        for (int i = 0; i < tempList.size(); i++) {
+                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                            MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                            if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                                count += 1;
+                            }
+                        }
+                        if (count == tempList.size()) {
+                            System.out.println("singlenode3存在结果");
+                            isExisted = true;
+                        }
+                    }
+                }
+
+                //nodePair
+                if (tempList.get(0).getTaskRange().equals(TaskRange.NodePairRange)) {
+                    if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
+                        int count = 0;
+                        for (int i = 0; i < tempList.size(); i++) {
+                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                            MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                            if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                                count += 1;
+                            }
+                        }
+                        if (count == tempList.size()) {
+                            isExisted = true;
+                        }
+                    }
+
+                    if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
+                        int count = 0;
+                        for (int i = 0; i < tempList.size(); i++) {
+                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                            MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                            if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                                count += 1;
+                            }
+                        }
+                        if (count == tempList.size()) {
+                            System.out.println("nodepair存在结果");
+                            isExisted = true;
+                        }
+                    }
+                }
+                break;
+
+            case MiningType_ProtocolAssociation:
+                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
+                    int count = 0;
+                    for (int i = 0; i < tempList.size(); i++) {
+                        MinerFactorySettings settings = ProtocolAssMinerFactory.getInstance();
+                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                        if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                            count += 1;
+                        }
+                    }
+                    if (count == tempList.size()) {
+                        System.out.println("protocol存在结果");
+                        isExisted = true;
+                    }
+                }
+
+                break;
+
+            case MiningType_Path:
+                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
+                    int count = 0;
+                    for (int i = 0; i < tempList.size(); i++) {
+                        MinerFactorySettings settings = PathMinerFactory.getInstance();
+                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                        if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                            count += 1;
+                        }
+                    }
+                    if (count == tempList.size()) {
+                        isExisted = true;
+                    }
+                }
+
+                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())) {
+                    int count = 0;
+                    for (int i = 0; i < tempList.size(); i++) {
+                        MinerFactorySettings settings = PathMinerFactory.getInstance();
+                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                        if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                            count += 1;
+                        }
+                    }
+                    if (count == tempList.size()) {
+                        isExisted = true;
+                    }
+                }
+                break;
+
+            case MiningTypes_WholeNetwork:
+                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Cluster.toString())) {
+                    int count = 0;
+                    for (int i = 0; i < tempList.size(); i++) {
+                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                        if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                            count += 1;
+                        }
+                    }
+                    if (count == tempList.size()) {
+                        isExisted = true;
+                    }
+                }
+
+                if (tempList.get(0).getMiningObject().equals(MiningObject.MiningObject_Diameter.toString())) {
+                    int count = 0;
+                    for (int i = 0; i < tempList.size(); i++) {
+                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettings(tempList.get(i));
+                        MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                        if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
+                            count += 1;
+                        }
+                    }
+                    if (count == tempList.size()) {
+                        isExisted = true;
+                    }
+                }
+                break;
+        }
+        return isExisted;
+    }
+
     public boolean getExistedResult() {
         System.out.println("进入existed");
         boolean isExisted = false;
@@ -176,6 +364,13 @@ public class Server {
                             if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
                                 MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
                                 singleNodeTimes.put(tempList.get(i), resultNode);
+                                //进度条
+                                taskPanel.getBar().setValue(singleNodeTimes.size());
+                                taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                        String.format("%d%%", 100 * singleNodeTimes.size() / totalCount));
+                                taskPanel.getLog().append(String.format(
+                                        "Completed %d/%d of task.\n", singleNodeTimes.size(), totalCount));
+                                taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                                 NetworkMinerFactory.getInstance().
                                         showNodeMinersDis(MiningObject.MiningObject_Times, singleNodeTimes);
                                 count += 1;
@@ -197,6 +392,13 @@ public class Server {
                             if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
                                 MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
                                 singleNodeTraffic.put(tempList.get(i), resultNode);
+                                //进度条
+                                taskPanel.getBar().setValue(singleNodeTimes.size() + singleNodeTraffic.size());
+                                taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                                        String.format("%d%%", 100 * (singleNodeTimes.size() + singleNodeTraffic.size()) / totalCount));
+                                taskPanel.getLog().append(String.format(
+                                        "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size()), totalCount));
+                                taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());
                                 NetworkMinerFactory.getInstance().
                                         showNodeMinersDis(MiningObject.MiningObject_Traffic, singleNodeTraffic);
                                 count += 1;
@@ -218,6 +420,12 @@ public class Server {
                             if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
                                 MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
                                 singleNodeDisapearEmerge.put(tempList.get(i), resultNode);
+                                taskPanel.getBar().setValue(singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size());
+                                taskPanel.getBar().setString(MiningObject.MiningObject_NodeDisapearEmerge +" " +
+                                        String.format("%d%%", 100 * (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()) / totalCount));
+                                taskPanel.getLog().append(String.format(
+                                        "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()), totalCount));
+                                taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());
                                 NetworkMinerFactory.getInstance().
                                         showNodeMinersDis(MiningObject.MiningObject_NodeDisapearEmerge, singleNodeDisapearEmerge);
                                 count += 1;
@@ -242,6 +450,13 @@ public class Server {
                             if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
                                 MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
                                 nodePairTimes.put(tempList.get(i), resultNode);
+                                //进度条
+                                taskPanel.getBar().setValue(nodePairTimes.size());
+                                taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                        String.format("%d%%", 100 * nodePairTimes.size() / totalCount));
+                                taskPanel.getLog().append(String.format(
+                                        "Completed %d/%d of task.\n", nodePairTimes.size(), totalCount));
+                                taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                                 NetworkMinerFactory.getInstance().
                                         showNodeMinersDis(MiningObject.MiningObject_Times, nodePairTimes);
                                 count += 1;
@@ -262,6 +477,13 @@ public class Server {
                             if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
                                 MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
                                 nodePairTraffic.put(tempList.get(i), resultNode);
+                                //进度条
+                                taskPanel.getBar().setValue(nodePairTimes.size() + nodePairTraffic.size());
+                                taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                        String.format("%d%%", 100 * (nodePairTimes.size() + nodePairTraffic.size()) / totalCount));
+                                taskPanel.getLog().append(String.format(
+                                        "Completed %d/%d of task.\n", (nodePairTimes.size() + nodePairTraffic.size()), totalCount));
+                                taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                                 NetworkMinerFactory.getInstance().
                                         showNodeMinersDis(MiningObject.MiningObject_Traffic, nodePairTraffic);
                                 count += 1;
@@ -286,6 +508,13 @@ public class Server {
                         if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
                             MinerProtocolResults resultNode = (MinerProtocolResults) resultsFile.file2Result();
                             protocolTraffic.put(tempList.get(i), resultNode);
+                            //进度条
+                            taskPanel.getBar().setValue(protocolTraffic.size());
+                            taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                                    String.format("%d%%", 100 * protocolTraffic.size() / totalCount));
+                            taskPanel.getLog().append(String.format(
+                                    "Completed %d/%d of task.\n", protocolTraffic.size(), totalCount));
+                            taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                             NetworkMinerFactory.getInstance().
                                     showProtocolMinersDis(MiningObject.MiningObject_Traffic, protocolTraffic);
                             count += 1;
@@ -310,6 +539,13 @@ public class Server {
                         if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
                             MinerResultsPath resultPath = (MinerResultsPath) resultsFile.file2Result();
                             pathTimes.put(tempList.get(i), resultPath);
+                            //进度条
+                            taskPanel.getBar().setValue(pathTimes.size());
+                            taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                    String.format("%d%%", 100 * pathTimes.size() / totalCount));
+                            taskPanel.getLog().append(String.format(
+                                    "Completed %d/%d of task.\n", pathTimes.size(), totalCount));
+                            taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                             NetworkMinerFactory.getInstance().
                                     showPathMinersDis(MiningObject.MiningObject_Times, pathTimes);
                             count += 1;
@@ -330,6 +566,13 @@ public class Server {
                         if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
                             MinerResultsPath resultPath = (MinerResultsPath) resultsFile.file2Result();
                             pathTraffic.put(tempList.get(i), resultPath);
+                            //进度条
+                            taskPanel.getBar().setValue(pathTimes.size() + pathTraffic.size());
+                            taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                                    String.format("%d%%", 100 * (pathTimes.size() + pathTraffic.size()) / totalCount));
+                            taskPanel.getLog().append(String.format(
+                                    "Completed %d/%d of task.\n", (pathTimes.size() + pathTraffic.size()), totalCount));
+                            taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                             NetworkMinerFactory.getInstance().
                                     showPathMinersDis(MiningObject.MiningObject_Traffic, pathTraffic);
                             count += 1;
@@ -352,6 +595,13 @@ public class Server {
                         if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
                             MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
                             networkCluster.put(tempList.get(i), resultNode);
+                            //进度条
+                            taskPanel.getBar().setValue(networkCluster.size());
+                            taskPanel.getBar().setString(MiningObject.MiningObject_Cluster +" " +
+                                    String.format("%d%%", 100 * networkCluster.size() / totalCount));
+                            taskPanel.getLog().append(String.format(
+                                    "Completed %d/%d of task.\n", networkCluster.size(), totalCount));
+                            taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                             NetworkMinerFactory.getInstance().
                                     showNetWorkMinersDis(MiningObject.MiningObject_Cluster, networkCluster);
                             count += 1;
@@ -372,6 +622,13 @@ public class Server {
                         if (resultsFile.hasFile(settings, tempList.get(i))) { // 已有挖掘结果存储，则不重新启动miner
                             MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
                             networkDiameter.put(tempList.get(i), resultNode);
+                            //进度条
+                            taskPanel.getBar().setValue(networkCluster.size() + networkDiameter.size());
+                            taskPanel.getBar().setString(MiningObject.MiningObject_Cluster +" " +
+                                    String.format("%d%%", 100 * (networkCluster.size() + networkDiameter.size()) / totalCount));
+                            taskPanel.getLog().append(String.format(
+                                    "Completed %d/%d of task.\n", (networkCluster.size() + networkDiameter.size()), totalCount));
+                            taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                             NetworkMinerFactory.getInstance().
                                     showNetWorkMinersDis(MiningObject.MiningObject_Diameter, networkDiameter);
                             count += 1;
@@ -388,50 +645,84 @@ public class Server {
         return isExisted;
     }
 
-        public void getSingleCount(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject) {
+    public void getSingleOrPairCount(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject, ArrayList<String> list) {
         singleNodeOrNodePairMinerFactoryDis.reset();
         singleNodeOrNodePairMinerFactoryDis.setMiningObject(miningObject);
-        totalCount = singleNodeOrNodePairMinerFactoryDis.getCount();
+        totalCount = singleNodeOrNodePairMinerFactoryDis.getCount(list);
+    }
+
+    public void getPathCount(PathMinerFactoryDis pathMinerFactoryDis, MiningObject miningObject, ArrayList<String> list) {
+        pathMinerFactoryDis.reset();
+        pathMinerFactoryDis.setMiningObject(miningObject);
+        totalCount = pathMinerFactoryDis.getCount(list);
+    }
+
+    public void getNetCount(NetworkFactoryDis networkFactoryDis, MiningObject miningObject, ArrayList<String> list) {
+        networkFactoryDis.reset();
+        networkFactoryDis.setMiningObject(miningObject);
+        totalCount = networkFactoryDis.getCount(list);
+    }
+
+    public void getProCount(ProtocolAssMinerFactoryDis protocolAssMinerFactoryDis, MiningObject miningObject, ArrayList<String> list) {
+        protocolAssMinerFactoryDis.reset();
+        protocolAssMinerFactoryDis.setMiningObject(miningObject);
+        totalCount = protocolAssMinerFactoryDis.getCount(list);
     }
 
     public void SingleNodeOrNodePair(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject) {
         genSingleNodeTask(singleNodeOrNodePairMinerFactoryDis, miningObject);
         initMap(MinerType.MiningType_SinglenodeOrNodePair);
+        initBar();
         //判断是否存在结果，不必启动客户端
-        if (!getExistedResult()) {
+        if (!isExistedResult()) {
             awakeThread();
             setIsRunning(true);
             isSingleNodeOver(miningObject);
+        } else {
+            System.out.println("存在结果");
+            getExistedResult();
         }
     }
 
     public void path(PathMinerFactoryDis pathMinerFactoryDis, MiningObject miningObject) {
         genPathTask(pathMinerFactoryDis, miningObject);
         initMap(MinerType.MiningType_Path);
-        if (!getExistedResult()) {
+        initBar();
+        if (!isExistedResult()) {
             awakeThread();
             setIsRunning(true);
             isPathOver(miningObject);
+        } else {
+            System.out.println("存在结果");
+            getExistedResult();
         }
     }
 
     public void network(NetworkFactoryDis networkFactoryDis, MiningObject miningObject) {
         genNetworkTask(networkFactoryDis, miningObject);
         initMap(MinerType.MiningTypes_WholeNetwork);
-        if (!getExistedResult()) {
+        initBar();
+        if (!isExistedResult()) {
             awakeThread();
             setIsRunning(true);
             isNetworkOver(miningObject);
+        } else {
+            System.out.println("存在结果");
+            getExistedResult();
         }
     }
 
     public void protocol(ProtocolAssMinerFactoryDis protocolAssMinerFactoryDis, MiningObject miningObject) {
         genProtocoTask(protocolAssMinerFactoryDis, miningObject);
         initMap(MinerType.MiningType_ProtocolAssociation);
-        if (!getExistedResult()) {
+        initBar();
+        if (!isExistedResult()) {
             awakeThread();
             setIsRunning(true);
             isProtocolOver(miningObject);
+        } else {
+            System.out.println("存在结果");
+            getExistedResult();
         }
     }
 
@@ -603,7 +894,7 @@ public class Server {
     //将所有TaskCombination放到map中
     private void initMap(MinerType minerType) {
         allCombinationTasks.clear();//先清空,每次任务只发送要执行的任务
-        System.out.println("CombinationList 长度: " + combinationList.getTaskCombinationList().size());
+        System.out.println("totalcount 长度: " + totalCount);
         tempList = new ArrayList<TaskCombination>();
         for (int i = 0; i < combinationList.getTaskCombinationList().size(); i++) {
             if (combinationList.getTaskCombinationList().get(i).getMinerType().equals(minerType)) {
@@ -708,7 +999,6 @@ public class Server {
 
     public void initBar() {
         taskPanel.getBar().setMaximum(totalCount);
-        taskPanel.getBar().setString("读取数据中...");
     }
 
     public void genTasks(String filePath, String type) {
@@ -1197,6 +1487,13 @@ public class Server {
                                                     updateMap(tempList.get(i));//更新状态
                                                 }
                                             }
+                                            //进度条
+                                            taskPanel.getBar().setValue(singleNodeTimes.size());
+                                            taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                                    String.format("%d%%", 100 * singleNodeTimes.size() / totalCount));
+                                            taskPanel.getLog().append(String.format(
+                                                    "Completed %d/%d of task.\n", singleNodeTimes.size(), totalCount));
+                                            taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());
                                             NetworkMinerFactory.getInstance().
                                                     showNodeMinersDis(MiningObject.MiningObject_Times, singleNodeTimes);
                                             if (singleNodeTimes.size() == allCombinationTasks.size() && singleNodeTimeFlag) {
@@ -1232,6 +1529,13 @@ public class Server {
                                                     updateMap(tempList.get(i));//更新状态
                                                 }
                                             }
+                                            //进度条
+                                            taskPanel.getBar().setValue(singleNodeTimes.size() + singleNodeTraffic.size());
+                                            taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                                                    String.format("%d%%", 100 * (singleNodeTimes.size() + singleNodeTraffic.size()) / totalCount));
+                                            taskPanel.getLog().append(String.format(
+                                                    "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size()), totalCount));
+                                            taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());
                                             NetworkMinerFactory.getInstance().
                                                     showNodeMinersDis(MiningObject.MiningObject_Traffic, singleNodeTraffic);
                                             if (singleNodeTraffic.size() == allCombinationTasks.size() && singleNodeTrafficFlag) {
@@ -1268,6 +1572,13 @@ public class Server {
                                                     updateMap(tempList.get(i));//更新状态
                                                 }
                                             }
+                                            //进度条
+                                            taskPanel.getBar().setValue(singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size());
+                                            taskPanel.getBar().setString(MiningObject.MiningObject_NodeDisapearEmerge +" " +
+                                                    String.format("%d%%", 100 * (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()) / totalCount));
+                                            taskPanel.getLog().append(String.format(
+                                                    "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()), totalCount));
+                                            taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());
                                             NetworkMinerFactory.getInstance().
                                                     showNodeMinersDis(MiningObject.MiningObject_NodeDisapearEmerge, singleNodeDisapearEmerge);
                                             if (singleNodeDisapearEmerge.size() == allCombinationTasks.size() && singleNodeDisapearEmergeFlag) {
@@ -1306,6 +1617,13 @@ public class Server {
                                                     updateMap(tempList.get(i));//更新状态
                                                 }
                                             }
+                                            //进度条
+                                            taskPanel.getBar().setValue(nodePairTimes.size());
+                                            taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                                    String.format("%d%%", 100 * nodePairTimes.size() / totalCount));
+                                            taskPanel.getLog().append(String.format(
+                                                    "Completed %d/%d of task.\n", nodePairTimes.size(), totalCount));
+                                            taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                                             NetworkMinerFactory.getInstance().
                                                     showNodeMinersDis(MiningObject.MiningObject_Times, nodePairTimes);
                                             if (nodePairTimes.size() == allCombinationTasks.size() && nodePairTimeFlag) {
@@ -1341,6 +1659,13 @@ public class Server {
                                                     updateMap(tempList.get(i));//更新状态
                                                 }
                                             }
+                                            //进度条
+                                            taskPanel.getBar().setValue(nodePairTimes.size() + nodePairTraffic.size());
+                                            taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                                                    String.format("%d%%", 100 * (nodePairTimes.size() + nodePairTraffic.size()) / totalCount));
+                                            taskPanel.getLog().append(String.format(
+                                                    "Completed %d/%d of task.\n", (nodePairTimes.size() + nodePairTraffic.size()), totalCount));
+                                            taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                                             NetworkMinerFactory.getInstance().
                                                     showNodeMinersDis(MiningObject.MiningObject_Traffic, nodePairTraffic);
                                             if (nodePairTraffic.size() == allCombinationTasks.size() && nodePairTrafficFlag) {
@@ -1380,6 +1705,13 @@ public class Server {
                                                 updateMap(tempList.get(i));//更新状态
                                             }
                                         }
+                                        //进度条
+                                        taskPanel.getBar().setValue(protocolTraffic.size());
+                                        taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                                                String.format("%d%%", 100 * protocolTraffic.size() / totalCount));
+                                        taskPanel.getLog().append(String.format(
+                                                "Completed %d/%d of task.\n", protocolTraffic.size(), totalCount));
+                                        taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                                         NetworkMinerFactory.getInstance().
                                                 showProtocolMinersDis(MiningObject.MiningObject_Traffic, protocolTraffic);
                                         if (protocolTraffic.size() == allCombinationTasks.size() && protocolTrafficFlag) {
@@ -1418,6 +1750,13 @@ public class Server {
                                                 updateMap(tempList.get(i));//更新状态
                                             }
                                         }
+                                        //进度条
+                                        taskPanel.getBar().setValue(pathTimes.size());
+                                        taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                                String.format("%d%%", 100 * pathTimes.size() / totalCount));
+                                        taskPanel.getLog().append(String.format(
+                                                "Completed %d/%d of task.\n", pathTimes.size(), totalCount));
+                                        taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                                         NetworkMinerFactory.getInstance().
                                                 showPathMinersDis(MiningObject.MiningObject_Times, pathTimes);
                                         if (pathTimes.size() == allCombinationTasks.size() && pathTimeFlag) {
@@ -1454,6 +1793,13 @@ public class Server {
                                                 updateMap(tempList.get(i));//更新状态
                                             }
                                         }
+                                        //进度条
+                                        taskPanel.getBar().setValue(pathTimes.size() + pathTraffic.size());
+                                        taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                                                String.format("%d%%", 100 * (pathTimes.size() + pathTraffic.size()) / totalCount));
+                                        taskPanel.getLog().append(String.format(
+                                                "Completed %d/%d of task.\n", (pathTimes.size() + pathTraffic.size()), totalCount));
+                                        taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                                         NetworkMinerFactory.getInstance().
                                                 showPathMinersDis(MiningObject.MiningObject_Traffic, pathTraffic);
                                         if (pathTraffic.size() == allCombinationTasks.size() && pathTrafficFlag) {
@@ -1493,6 +1839,13 @@ public class Server {
                                                 updateMap(tempList.get(i));//更新状态
                                             }
                                         }
+                                        //进度条
+                                        taskPanel.getBar().setValue(networkCluster.size());
+                                        taskPanel.getBar().setString(MiningObject.MiningObject_Cluster +" " +
+                                                String.format("%d%%", 100 * networkCluster.size() / totalCount));
+                                        taskPanel.getLog().append(String.format(
+                                                "Completed %d/%d of task.\n", networkCluster.size(), totalCount));
+                                        taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                                         NetworkMinerFactory.getInstance().
                                                 showNetWorkMinersDis(MiningObject.MiningObject_Cluster, networkCluster);
                                         if (networkCluster.size() == allCombinationTasks.size() && networkClusterFlag) {
@@ -1528,6 +1881,13 @@ public class Server {
                                                 updateMap(tempList.get(i));//更新状态
                                             }
                                         }
+                                        //进度条
+                                        taskPanel.getBar().setValue(networkCluster.size() + networkDiameter.size());
+                                        taskPanel.getBar().setString(MiningObject.MiningObject_Cluster +" " +
+                                                String.format("%d%%", 100 * (networkCluster.size() + networkDiameter.size()) / totalCount));
+                                        taskPanel.getLog().append(String.format(
+                                                "Completed %d/%d of task.\n", (networkCluster.size() + networkDiameter.size()), totalCount));
+                                        taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
                                         NetworkMinerFactory.getInstance().
                                                 showNetWorkMinersDis(MiningObject.MiningObject_Diameter, networkDiameter);
                                         if (networkDiameter.size() == allCombinationTasks.size() && networkDiameterFlag) {

@@ -268,7 +268,7 @@ public class CWNetworkReader  implements IReader{
 				TextReader textReader = new TextReader(path+"/"+srcFiles.list()[i]);
 				String curLine="";
 				String header =textReader.readLine(); //读取文件
-				System.out.println("读取文件"+srcFiles.list()[i]);
+//				System.out.println("读取文件"+srcFiles.list()[i]);
 				while((curLine=textReader.readLine())!=null)
 				{
 					//if(textReader.readLine())
@@ -347,7 +347,7 @@ public class CWNetworkReader  implements IReader{
 						continue;
 					String curLine="";
 					String header =textReader.readLine(); //读取文件
-					System.out.println("读取文件"+srcFiles.list()[i]);
+//					System.out.println("读取文件"+srcFiles.list()[i]);
 					while((curLine=textReader.readLine())!=null)
 					{
 						//if(textReader.readLine())

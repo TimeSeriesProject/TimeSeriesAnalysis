@@ -24,6 +24,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 
@@ -134,12 +135,19 @@ public class win10_window extends JFrame {
 
     public void mineNetworkStructorDis()
     {
+        ArrayList<String> list = new ArrayList<String>();//统计任务总个数
         networkStructureresultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
         NetworkFactoryDis networkFactoryDis = NetworkFactoryDis.getInstance();
         List<MiningObject> miningObjectList = networkFactoryDis.getMiningObjectsChecked();
 
+        //得到任务总数
+        for (MiningObject ob : miningObjectList) {
+            server.getNetCount(networkFactoryDis, ob, list);
+        }
+        //先清空结果文件
+        server.clearResult();
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             server.network(networkFactoryDis, ob);
@@ -218,16 +226,18 @@ public class win10_window extends JFrame {
 
     public void mineSingleNodeDis()
     {
-        singleNoderesultMaps.clear();
+        ArrayList<String> list = new ArrayList<String>();//统计任务总个数singleNoderesultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
         SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis = SingleNodeOrNodePairMinerFactoryDis.getInstance();
         List<MiningObject> miningObjectList = singleNodeOrNodePairMinerFactoryDis.getMiningObjectsChecked();
 
-//        for (MiningObject ob : miningObjectList) {
-//            server.getSingleCount(singleNodeOrNodePairMinerFactoryDis, ob);
-//        }
-
+        //得到任务总数
+        for (MiningObject ob : miningObjectList) {
+            server.getSingleOrPairCount(singleNodeOrNodePairMinerFactoryDis, ob, list);
+        }
+        //先清空结果文件
+        server.clearResult();
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             System.out.println("obj: " + ob.toString());
@@ -285,6 +295,7 @@ public class win10_window extends JFrame {
 
     public void mineNodePairDis()
     {
+        ArrayList<String> list = new ArrayList<String>();//统计任务总个数
         nodePairresultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
@@ -292,6 +303,12 @@ public class win10_window extends JFrame {
         singleNodeOrNodePairMinerFactoryDis.setTaskRange(TaskRange.NodePairRange);
         List<MiningObject> miningObjectList = singleNodeOrNodePairMinerFactoryDis.getMiningObjectsChecked();
 
+        //得到任务总数
+        for (MiningObject ob : miningObjectList) {
+            server.getSingleOrPairCount(singleNodeOrNodePairMinerFactoryDis, ob, list);
+        }
+        //先清空结果文件
+        server.clearResult();
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             server.SingleNodeOrNodePair(singleNodeOrNodePairMinerFactoryDis, ob);
@@ -346,12 +363,18 @@ public class win10_window extends JFrame {
     }
 
     public void mineProtocolAssDis() {
+        ArrayList<String> list = new ArrayList<String>();//统计任务总个数
         protocolResultsMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
         ProtocolAssMinerFactoryDis protocolAssMinerFactoryDis = ProtocolAssMinerFactoryDis.getInstance();
         List<MiningObject> miningObjectList = protocolAssMinerFactoryDis.getMiningObjectsChecked();
-
+        //得到任务总数
+        for (MiningObject ob : miningObjectList) {
+            server.getProCount(protocolAssMinerFactoryDis, ob, list);
+        }
+        //先清空结果文件
+        server.clearResult();
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             server.protocol(protocolAssMinerFactoryDis, ob);
@@ -485,12 +508,18 @@ public class win10_window extends JFrame {
     }
 
     public void minePathDis() {
+        ArrayList<String> list = new ArrayList<String>();//统计任务总个数
         pathResultsMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
         PathMinerFactoryDis pathMinerFactoryDis = PathMinerFactoryDis.getInstance();
         List<MiningObject> miningObjectList = pathMinerFactoryDis.getMiningObjectsChecked();
-
+        //得到任务总数
+        for (MiningObject ob : miningObjectList) {
+            server.getPathCount(pathMinerFactoryDis, ob, list);
+        }
+        //先清空结果文件
+        server.clearResult();
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             server.path(pathMinerFactoryDis, ob);
@@ -843,8 +872,21 @@ public class win10_window extends JFrame {
                     }
                 } else if (isDistributed) {
                     if (!isDisNetworkStructureMined) {
-                        mineNetworkStructorDis();
-                        server.showNetworkResult();//分布式结果显示
+                        TaskFrame taskFrame = new TaskFrame();
+                        taskFrame.init();
+                        EventQueue.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Runnable runnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mineNetworkStructorDis();
+                                        server.showNetworkResult();//分布式结果显示
+                                    }
+                                };
+                                new Thread(runnable).start();
+                            }
+                        });
                     } else {
                         server.showNetworkResult();//分布式结果显示
                     }
@@ -865,23 +907,23 @@ public class win10_window extends JFrame {
                     }
                 } else if (isDistributed) {
                     if (!isDisSingleNodeMined) {
-//                        TaskFrame taskFrame = new TaskFrame();
-//                        taskFrame.init();
-//                        EventQueue.invokeLater(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Runnable runnable = new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        mineSingleNodeDis();
-//                                        server.showSingleNodeResult();//分布式结果显示
-//                                    }
-//                                };
-//                                new Thread(runnable).start();
-//                            }
-//                        });
-                        mineSingleNodeDis();
-                        server.showSingleNodeResult();//分布式结果显示
+                        TaskFrame taskFrame = new TaskFrame();
+                        taskFrame.init();
+                        EventQueue.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Runnable runnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mineSingleNodeDis();
+                                        server.showSingleNodeResult();//分布式结果显示
+                                    }
+                                };
+                                new Thread(runnable).start();
+                            }
+                        });
+//                        mineSingleNodeDis();
+//                        server.showSingleNodeResult();//分布式结果显示
                     } else {
                         server.showSingleNodeResult();//分布式结果显示
                     }
@@ -903,8 +945,22 @@ public class win10_window extends JFrame {
                     }
                 } else if (isDistributed) {
                     if (!isDisNodePairMined) {
-                        mineNodePairDis();
-                        server.showNodePairResult();
+                        TaskFrame taskFrame = new TaskFrame();
+                        taskFrame.init();
+                        EventQueue.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Runnable runnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mineNodePairDis();
+                                        server.showNodePairResult();
+                                    }
+                                };
+                                new Thread(runnable).start();
+                            }
+                        });
+
                     } else {
                         server.showNodePairResult();
                     }
@@ -926,8 +982,22 @@ public class win10_window extends JFrame {
                 } else if (isDistributed) {
                     // TODO Auto-generated method stub
                     if (!isDisPathMined) {
-                        minePathDis();
-                        server.showPathResult();//分布式结果显示
+                        TaskFrame taskFrame = new TaskFrame();
+                        taskFrame.init();
+                        EventQueue.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Runnable runnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        minePathDis();
+                                        server.showPathResult();//分布式结果显示
+                                    }
+                                };
+                                new Thread(runnable).start();
+                            }
+                        });
+
                     } else {
                         server.showPathResult();//分布式结果显示
                     }
@@ -950,7 +1020,21 @@ public class win10_window extends JFrame {
                 } else if (isDistributed) {
                     // TODO Auto-generated method stub
                     if (!isDisProtocolAssMined) {
-                        mineProtocolAssDis();
+                        TaskFrame taskFrame = new TaskFrame();
+                        taskFrame.init();
+                        EventQueue.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Runnable runnable = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mineProtocolAssDis();
+                                        server.showProtocolResult();
+                                    }
+                                };
+                                new Thread(runnable).start();
+                            }
+                        });
                     } else {
                         server.showProtocolResult();
                     }
