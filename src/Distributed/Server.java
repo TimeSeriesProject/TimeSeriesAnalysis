@@ -140,7 +140,9 @@ public class Server {
 
 
     public static void closeServer() {
-        server = null;
+        if (serverStart != null) {
+            serverStart.stop();
+        }
     }
 
     public static Server getInstance() {
@@ -1109,7 +1111,7 @@ public class Server {
                 }
             } catch (IOException e) {
                 System.out.println("服务端错误位置");
-                e.printStackTrace();
+//                e.printStackTrace();
             } finally {
                 try {
                     serverSocket.close();
@@ -1117,6 +1119,26 @@ public class Server {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+        }
+
+        public void stop() {
+            try {
+                if (serverSocket != null) {
+                    serverSocket.close();
+                }
+                if (dataClient != null) {
+                    dataClient.close();
+                }
+                if (resultClient != null) {
+                    resultClient.close();
+                }
+                if (pcapClient != null) {
+                    pcapClient.close();
+                }
+                start = false;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

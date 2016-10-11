@@ -2,7 +2,7 @@ package cn.InstFS.wkr.NetworkMining.UIs;
 
 import Distributed.PcapFrame;
 import Distributed.Server;
-import Distributed.TaskFrame;
+import Distributed.TaskPanel;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
@@ -75,16 +75,28 @@ public class win10_window extends JFrame {
     }
 
     public void distribute() {
-        System.out.println("启动分布式");
-        server = Server.getInstance();
-        new Thread(Server.getStartInstance()).start();
-        isDistributed = true;
+        if (!isDistributed) {
+            System.out.println("启动分布式");
+            server = Server.getInstance();
+            new Thread(Server.getStartInstance()).start();
+            isDistributed = true;
+        } else {
+            System.out.println("分布式已启动");
+        }
     }
 
     public void single() {
         System.out.println("启动单机版");
-        Server.closeServer();
+        Server.closeServer();//服务关闭
         isDistributed = false;
+    }
+
+    public void genDialog(TaskPanel taskPanel) {
+        JDialog jDialog = new JDialog(this, "任务挖掘进度",true);
+        jDialog.setContentPane(taskPanel);
+        jDialog.setSize(new Dimension(500, 400));
+        jDialog.setVisible(true);
+
     }
 
     public void mineNetworkStructor()
@@ -647,7 +659,7 @@ public class win10_window extends JFrame {
 
         final JButton bSingle = new JButton("单机版");
         bSingle.setBounds(310,540, 200, 200);
-        setIcon("img\\standalone_version_Icon.png", bSingle);
+        setIcon("img\\standalone_version_IconG.png", bSingle);
 
         final JButton bDis = new JButton("分布式");
         bDis.setBounds(520, 540, 200, 200);
@@ -718,6 +730,8 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 single();
+                setIcon("img\\standalone_version_IconG.png", bSingle);
+                setIcon("img\\distributed_version_Icon.png", bDis);
             }
         });
 
@@ -726,6 +740,8 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 distribute();
+                setIcon("img\\standalone_version_Icon.png", bSingle);
+                setIcon("img\\distributed_version_IconG.png", bDis);
             }
         });
 
@@ -872,8 +888,8 @@ public class win10_window extends JFrame {
                     }
                 } else if (isDistributed) {
                     if (!isDisNetworkStructureMined) {
-                        TaskFrame taskFrame = new TaskFrame();
-                        taskFrame.init();
+                        final TaskPanel taskPanel = new TaskPanel();
+                        taskPanel.setOpaque(true);
                         EventQueue.invokeLater(new Runnable() {
                             @Override
                             public void run() {
@@ -887,6 +903,7 @@ public class win10_window extends JFrame {
                                 new Thread(runnable).start();
                             }
                         });
+                        genDialog(taskPanel);
                     } else {
                         server.showNetworkResult();//分布式结果显示
                     }
@@ -907,8 +924,8 @@ public class win10_window extends JFrame {
                     }
                 } else if (isDistributed) {
                     if (!isDisSingleNodeMined) {
-                        TaskFrame taskFrame = new TaskFrame();
-                        taskFrame.init();
+                        final TaskPanel taskPanel = new TaskPanel();
+                        taskPanel.setOpaque(true);
                         EventQueue.invokeLater(new Runnable() {
                             @Override
                             public void run() {
@@ -922,6 +939,7 @@ public class win10_window extends JFrame {
                                 new Thread(runnable).start();
                             }
                         });
+                        genDialog(taskPanel);
 //                        mineSingleNodeDis();
 //                        server.showSingleNodeResult();//分布式结果显示
                     } else {
@@ -945,8 +963,8 @@ public class win10_window extends JFrame {
                     }
                 } else if (isDistributed) {
                     if (!isDisNodePairMined) {
-                        TaskFrame taskFrame = new TaskFrame();
-                        taskFrame.init();
+                        final TaskPanel taskPanel = new TaskPanel();
+                        taskPanel.setOpaque(true);
                         EventQueue.invokeLater(new Runnable() {
                             @Override
                             public void run() {
@@ -960,7 +978,7 @@ public class win10_window extends JFrame {
                                 new Thread(runnable).start();
                             }
                         });
-
+                        genDialog(taskPanel);
                     } else {
                         server.showNodePairResult();
                     }
@@ -982,8 +1000,8 @@ public class win10_window extends JFrame {
                 } else if (isDistributed) {
                     // TODO Auto-generated method stub
                     if (!isDisPathMined) {
-                        TaskFrame taskFrame = new TaskFrame();
-                        taskFrame.init();
+                        final TaskPanel taskPanel = new TaskPanel();
+                        taskPanel.setOpaque(true);
                         EventQueue.invokeLater(new Runnable() {
                             @Override
                             public void run() {
@@ -997,7 +1015,7 @@ public class win10_window extends JFrame {
                                 new Thread(runnable).start();
                             }
                         });
-
+                        genDialog(taskPanel);
                     } else {
                         server.showPathResult();//分布式结果显示
                     }
@@ -1020,8 +1038,8 @@ public class win10_window extends JFrame {
                 } else if (isDistributed) {
                     // TODO Auto-generated method stub
                     if (!isDisProtocolAssMined) {
-                        TaskFrame taskFrame = new TaskFrame();
-                        taskFrame.init();
+                        final TaskPanel taskPanel = new TaskPanel();
+                        taskPanel.setOpaque(true);
                         EventQueue.invokeLater(new Runnable() {
                             @Override
                             public void run() {
@@ -1035,6 +1053,7 @@ public class win10_window extends JFrame {
                                 new Thread(runnable).start();
                             }
                         });
+                        genDialog(taskPanel);
                     } else {
                         server.showProtocolResult();
                     }
