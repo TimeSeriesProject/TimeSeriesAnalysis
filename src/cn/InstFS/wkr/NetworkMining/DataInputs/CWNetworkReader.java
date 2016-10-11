@@ -343,7 +343,7 @@ public class CWNetworkReader  implements IReader{
 					String str[]=fileName.split("\\.");
 					long fileTime = Long.valueOf(str[0]);
 					//只读取时间段内的文件
-					if(isReadBetween&&(fileTime<startTime||fileTime>endTime))
+					if(isReadBetween&&(fileTime+86400000<startTime||fileTime>endTime))
 						continue;
 					String curLine="";
 					String header =textReader.readLine(); //读取文件
@@ -463,7 +463,9 @@ public class CWNetworkReader  implements IReader{
 			else
 				result += 2.0*edgenum/(k*(k-1));
 		}
-		result/=neighbourMap.size();   //平均簇系数
+		if(neighbourMap.size()>0){		
+			result/=neighbourMap.size(); 
+		}  //平均簇系数
 //		System.out.println("neighbourMap"+neighbourMap.size());
 		return result;
 		
