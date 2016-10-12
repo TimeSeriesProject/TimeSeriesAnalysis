@@ -8,10 +8,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 public class PathMinerFactoryDis extends MinerFactorySettings{
@@ -95,7 +92,7 @@ public class PathMinerFactoryDis extends MinerFactorySettings{
             case MiningObject_Traffic:
             case MiningObject_Times:
 //			dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString());
-                dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString(), false, getStartDate(), getEndDate());
+                dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString(), true, getStartDate(), getEndDate());
                 break;
             default:
                 break;
@@ -126,7 +123,7 @@ public class PathMinerFactoryDis extends MinerFactorySettings{
         TaskElement task = new TaskElement();
         task.setDataSource("File");
         task.setSourcePath(file.getAbsolutePath());
-        task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+        task.setAggregateMethod(AggregateMethod.Aggregate_MEAN);
         task.setDiscreteMethod(DiscreteMethod.None);
         task.setMiningMethod(method);
         task.setTaskRange(taskRange);
@@ -210,5 +207,29 @@ public class PathMinerFactoryDis extends MinerFactorySettings{
         pathFactory.setMiningObject(MiningObject.MiningObject_Traffic);
         pathFactory.detect();
         NetworkMinerFactory.getInstance().startAllPathMiners(MiningObject.MiningObject_Traffic);
+    }
+
+    public int getCount(ArrayList<String> list){
+        if(isMining)
+            return list.size();
+        isMining=true;
+
+        File dataDirectory=new File(dataPath);
+        nodePairReader reader=new nodePairReader();
+        if(dataDirectory.isFile()){
+            parseFile2(dataDirectory,reader,list);
+        }else{
+            File[] dataDirs=dataDirectory.listFiles();
+            for(int i=0;i<dataDirs.length;i++){
+                //按天必须是文件夹
+                if(dataDirs[i].isDirectory())
+                    parseFile2(dataDirs[i],reader,list);
+            }
+        }
+        return list.size();
+    }
+
+    private void parseFile2(File dataFile, nodePairReader reader, ArrayList<String> list){
+        list.add("");
     }
 }

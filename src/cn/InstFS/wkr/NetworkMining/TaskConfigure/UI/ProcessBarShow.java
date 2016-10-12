@@ -43,7 +43,7 @@ import cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt.PcapUtils;
 public class ProcessBarShow extends JDialog implements Callable {
 
 	JFrame frame = null;
-//	JDialog jdialog = null;
+	JDialog jdialog = null;
 	JProgressBar bar = new JProgressBar(JProgressBar.HORIZONTAL);
 
 	JButton jb_input = new JButton("选择pcap文件目录");
@@ -69,12 +69,12 @@ public class ProcessBarShow extends JDialog implements Callable {
 	public ProcessBarShow(JFrame jframe) {
 		
 //		super(jframe);
-		frame = new JFrame();
-		frame.setTitle("pcap包解析进度监控");
+		jdialog = new JDialog(jframe,"pcap包解析进度监控",true);
+//		jdialog.setTitle("pcap包解析进度监控");
 //		frame.setVisible(true);
 //		frame.setModal(true);
 //		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         //添加监听事件
         /**
 		frame.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
@@ -91,8 +91,8 @@ public class ProcessBarShow extends JDialog implements Callable {
 //		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
 		// 创建一条垂直进度条
-		initLayout();
 		addButtonActionLister();
+		initLayout();
 //		try {
 //			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 ////			SwingUtilities.updateComponentTreeUI(frame);
@@ -151,13 +151,13 @@ public class ProcessBarShow extends JDialog implements Callable {
 
 //		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //		panelContainer.setOpaque(true);
-		frame.setSize(new Dimension(400, 300));
+		jdialog.setSize(new Dimension(400, 300));
 //		panelContainer.add(topPanel,BorderLayout.NORTH);
 //		panelContainer.add(midPanel,BorderLayout.CENTER);
 //		panelContainer.add(bottomPanel,BorderLayout.SOUTH);
-		frame.add(panelContainer);
-		frame.setLocationRelativeTo(null); //使对话框居中
-		frame.setVisible(true);
+		jdialog.setContentPane(panelContainer);
+		jdialog.setLocationRelativeTo(null); //使对话框居中
+		jdialog.setVisible(true);
 	}
 
 	private void beginParsePcap()

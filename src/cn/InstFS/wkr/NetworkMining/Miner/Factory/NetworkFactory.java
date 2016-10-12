@@ -119,7 +119,7 @@ public class NetworkFactory extends MinerFactorySettings {
 		
 		switch (method) {
 		case MiningMethods_OutliesMining:
-			task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
+			task.setMiningAlgo(MiningAlgo.MiningAlgo_Muitidimensional);
 			task.setTaskName(name);
 			task.setComments("挖掘  "+mingObj+" 的异常");
 			break;

@@ -8,6 +8,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -75,7 +76,7 @@ public class NetworkFactoryDis extends MinerFactorySettings {
         task.setGranularity(granularity);
         task.setMiningObject(miningObject.toString());
         CWNetworkReader reader = new CWNetworkReader(task);
-        DataItems dataItems = reader.readInputByText(false,getStartDate(),getEndDate());
+        DataItems dataItems = reader.readInputByText(true,getStartDate(),getEndDate());
 
 		/*用于测试*/
 		/*Calendar cal1 = Calendar.getInstance();
@@ -175,6 +176,15 @@ public class NetworkFactoryDis extends MinerFactorySettings {
             }
         }
         return dataItems;
+    }
+
+    public int getCount(ArrayList<String> list)
+    {
+        if(isMining)
+            return list.size();
+        isMining=true;
+        list.add("");
+        return list.size();
     }
 
 }
