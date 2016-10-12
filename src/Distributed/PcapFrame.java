@@ -5,6 +5,7 @@ import java.awt.*;
 
 /**
  * Created by zsc on 2016/8/24.
+ * @Deprecated
  */
 public class PcapFrame extends JFrame{
     private final PcapPanel pcapPanel = new PcapPanel();

@@ -37,6 +37,7 @@ public class Server {
     private static ServerStart serverStart;
     private int taskCount = 0;//发送次数
     private int totalCount = 0;
+    private String port = "";
 //    private AtomicInteger taskCount = new AtomicInteger(0);
     private boolean singleNodeTimeFlag = true;//判断是否生成result界面
     private boolean singleNodeTrafficFlag = true;//判断是否生成result界面
@@ -161,23 +162,40 @@ public class Server {
         return serverStart;
     }
 
-    public void clearResult() {
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public void clearSingleResult() {
         System.out.println("清空结果");
         singleNodeTimes.clear();
         singleNodeTraffic.clear();
         singleNodeDisapearEmerge.clear();
+        singleNodeResultMaps.clear();
+    }
+    public void clearPairResult() {
+        System.out.println("清空结果");
         nodePairTimes.clear();
         nodePairTraffic.clear();
+        nodePairResultMaps.clear();
+
+    }
+    public void clearPathResult() {
+        System.out.println("清空结果");
         pathTimes.clear();
         pathTraffic.clear();
+        pathResultMaps.clear();
+
+    }
+    public void clearNetResult() {
+        System.out.println("清空结果");
         networkCluster.clear();
         networkDiameter.clear();
-        protocolTraffic.clear();
-
-        singleNodeResultMaps.clear();
-        nodePairResultMaps.clear();
-        pathResultMaps.clear();
         networkResultMaps.clear();
+    }
+    public void clearProResult() {
+        System.out.println("清空结果");
+        protocolTraffic.clear();
         protocolResultMaps.clear();
     }
 
@@ -1068,7 +1086,7 @@ public class Server {
 
         public void run() {
             try {
-                serverSocket = new ServerSocket(7777);
+                serverSocket = new ServerSocket(Integer.valueOf(port));
                 start = true;
             } catch (BindException e) {
                 System.out.println("端口使用中...");

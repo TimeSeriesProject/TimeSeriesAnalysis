@@ -1,9 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
-import Distributed.PcapFrame;
-import Distributed.PcapPanel;
-import Distributed.Server;
-import Distributed.TaskPanel;
+import Distributed.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
@@ -54,7 +51,7 @@ public class win10_window extends JFrame {
     boolean isDisPathMined = false;
     boolean isDisProtocolAssMined = false;
     boolean isDistributed = false;
-    Server server;
+    static Server server = Server.getInstance();
 
     public boolean isNetworkStructureMined() {
         return isNetworkStructureMined;
@@ -76,14 +73,18 @@ public class win10_window extends JFrame {
     }
 
     public void distribute() {
-        if (!isDistributed) {
-            System.out.println("启动分布式");
-            server = Server.getInstance();
-            new Thread(Server.getStartInstance()).start();
-            isDistributed = true;
-        } else {
-            System.out.println("分布式已启动");
-        }
+//        if (!isDistributed) {
+//            System.out.println("启动分布式");
+//            server = Server.getInstance();
+//            new Thread(Server.getStartInstance()).start();
+//            isDistributed = true;
+//        } else {
+//            System.out.println("分布式已启动");
+//        }
+        System.out.println("dis: " + isDistributed);
+        DisPanel disPanel = new DisPanel(this,"分布式设置", isDistributed);
+        disPanel.setVisible(true);
+        isDistributed = disPanel.getIsDis();
     }
 
     public void single() {
@@ -160,7 +161,7 @@ public class win10_window extends JFrame {
             server.getNetCount(networkFactoryDis, ob, list);
         }
         //先清空结果文件
-        server.clearResult();
+        server.clearNetResult();
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             server.network(networkFactoryDis, ob);
@@ -250,7 +251,7 @@ public class win10_window extends JFrame {
             server.getSingleOrPairCount(singleNodeOrNodePairMinerFactoryDis, ob, list);
         }
         //先清空结果文件
-        server.clearResult();
+        server.clearSingleResult();
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             System.out.println("obj: " + ob.toString());
@@ -321,7 +322,7 @@ public class win10_window extends JFrame {
             server.getSingleOrPairCount(singleNodeOrNodePairMinerFactoryDis, ob, list);
         }
         //先清空结果文件
-        server.clearResult();
+        server.clearPairResult();
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             server.SingleNodeOrNodePair(singleNodeOrNodePairMinerFactoryDis, ob);
@@ -387,7 +388,7 @@ public class win10_window extends JFrame {
             server.getProCount(protocolAssMinerFactoryDis, ob, list);
         }
         //先清空结果文件
-        server.clearResult();
+        server.clearProResult();
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             server.protocol(protocolAssMinerFactoryDis, ob);
@@ -532,7 +533,7 @@ public class win10_window extends JFrame {
             server.getPathCount(pathMinerFactoryDis, ob, list);
         }
         //先清空结果文件
-        server.clearResult();
+        server.clearPathResult();
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             server.path(pathMinerFactoryDis, ob);
@@ -900,8 +901,10 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 distribute();
-                setIcon("img\\standalone_version_Icon.png", bSingle);
-                setIcon("img\\distributed_version_IconG.png", bDis);
+                if (isDistributed) {
+                    setIcon("img\\standalone_version_Icon.png", bSingle);
+                    setIcon("img\\distributed_version_IconG.png", bDis);
+                }
             }
         });
 

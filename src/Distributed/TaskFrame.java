@@ -5,6 +5,7 @@ import java.awt.*;
 
 /**
  * Created by zsc on 2016/10/9.
+ * @Deprecated
  */
 public class TaskFrame extends JFrame {
     private final TaskPanel taskPanel = new TaskPanel();
