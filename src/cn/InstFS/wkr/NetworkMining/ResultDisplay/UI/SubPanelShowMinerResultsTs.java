@@ -11,6 +11,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 import java.awt.GridBagLayout;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
@@ -24,6 +25,7 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 	MinerResults rslts;
 
 	JLabel lblGranularity;
+	JLabel lblStartTime;
 	JTextArea txtDiscreteNodes;
 	ChartPanelShowTs chartTs;
 	public String xName;
@@ -36,6 +38,7 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 	 * Create the panel.
 	 */
 	public SubPanelShowMinerResultsTs(String obName) {
+		JPanel panel = new JPanel();
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0};
@@ -44,14 +47,16 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 		setLayout(gridBagLayout);
 		
 		lblGranularity = new JLabel("时间粒度：");
+		lblStartTime = new JLabel("起始时间");
 		GridBagConstraints gbc_lblGranularity = new GridBagConstraints();
 		gbc_lblGranularity.anchor = GridBagConstraints.WEST;
 		gbc_lblGranularity.gridwidth = 2;
 		gbc_lblGranularity.insets = new Insets(0, 0, 0, 5);
-		gbc_lblGranularity.gridx = 0;
-		gbc_lblGranularity.gridy = 0;
-		add(lblGranularity, gbc_lblGranularity);//添加时间粒度标签
-		
+		//gbc_lblGranularity.gridx = 0;
+		//gbc_lblGranularity.gridy = 0;
+		panel.add(lblStartTime);
+		panel.add(lblGranularity);//添加时间粒度标签		
+		add(panel, gbc_lblGranularity);
 //		chckShowOrigDataItems = new JCheckBox("显示原始数据（慢）");
 		//GridBagConstraints gbc_chckShowOrigDataItems = new GridBagConstraints();
 		//gbc_chckShowOrigDataItems.anchor = GridBagConstraints.WEST;
@@ -137,17 +142,19 @@ public class SubPanelShowMinerResultsTs extends JPanel {
 		this.rslts = rets;
 		TaskElement task = rets.getMiner().getTask();
 		int granularity = task.getGranularity();
-		lblGranularity.setText("时间粒度：" + granularity + "(s)");
-		
+		lblGranularity.setText("时间粒度：" + granularity + "(s)");		
 		DataItems di = null;		
 //		if (chckShowOrigDataItems.isSelected()){
 //			DataInputUtils diu = new DataInputUtils(task);
 //			di = diu.readInput();
 //		}else
 			di = rets.getInputData();		
-		if (di == null)
+		if (di == null){
 			di = new DataItems();
-		
+		}else{
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH时");
+			lblStartTime.setText("起始时间:"+ sdf.format(di.getTime().get(0)) +"    ");
+		}
 //		if (di.isDiscretized()){
 //			StringBuilder sb = new StringBuilder();
 //			Double []nodes = di.getDiscreteNodes();

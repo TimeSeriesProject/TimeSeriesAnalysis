@@ -1,9 +1,11 @@
 package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.text.SimpleDateFormat;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -36,13 +38,25 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 	PanelShowResultsStatistics(TaskElement task)
 	{
 		InitMiner(task);
+		setLayout(new BorderLayout());
+		JPanel jp1 = new JPanel();
+        //jp1.setPreferredSize(new Dimension(500,100));
+        JLabel lblGranularity = new JLabel();
+    	JLabel lblStartTime = new JLabel();    	
+        int granularity = task.getGranularity();
+		lblGranularity.setText("时间粒度：" + granularity + "(s)");	
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH时");
+		lblStartTime.setText("起始时间:"+ sdf.format(miner.getResults().getInputData().getTime().get(0)) +"    ");       
+		jp1.add(lblStartTime);
+        jp1.add(lblGranularity);        
+        add(jp1,BorderLayout.NORTH);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{450, 0};
 //		gridBagLayout.rowHeights = new int[] {0, 1, 0};
 		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{1.0, 0.0};
-		setLayout(gridBagLayout);
+		//setLayout(gridBagLayout);
 		
 		ts= new ChartPanelShowStatistics("时间序列","序列编号",task.getMiningObject(),null);
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
@@ -50,7 +64,7 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 		gbc_panel_1.fill = GridBagConstraints.BOTH;
 		gbc_panel_1.gridx = 0;
 		gbc_panel_1.gridy = 0;
-		add(ts, gbc_panel_1);
+		add(ts, BorderLayout.CENTER);
 		
 		JPanel panel = new JPanel(new FlowLayout());
 		avg = new JLabel("平均值:");
@@ -68,7 +82,7 @@ public class PanelShowResultsStatistics extends JPanel implements IPanelShowResu
 		gbc_panel.insets = new Insets(0, 0, 5, 0);
 		gbc_panel.gridx = 0;
 		gbc_panel.gridy = 1;
-		add(panel, gbc_panel);
+		add(panel, BorderLayout.SOUTH);
 	}
 	public XYDataset createDataSet(TaskElement task)
 	{

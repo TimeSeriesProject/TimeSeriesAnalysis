@@ -1,9 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
 import Distributed.PcapFrame;
-import Distributed.PcapPanel;
 import Distributed.Server;
-import Distributed.TaskPanel;
+import Distributed.TaskFrame;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
@@ -25,7 +24,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 
@@ -76,28 +74,16 @@ public class win10_window extends JFrame {
     }
 
     public void distribute() {
-        if (!isDistributed) {
-            System.out.println("启动分布式");
-            server = Server.getInstance();
-            new Thread(Server.getStartInstance()).start();
-            isDistributed = true;
-        } else {
-            System.out.println("分布式已启动");
-        }
+        System.out.println("启动分布式");
+        server = Server.getInstance();
+        new Thread(Server.getStartInstance()).start();
+        isDistributed = true;
     }
 
     public void single() {
         System.out.println("启动单机版");
-        Server.closeServer();//服务关闭
+        Server.closeServer();
         isDistributed = false;
-    }
-
-    public void genDialog(TaskPanel taskPanel) {
-        JDialog jDialog = new JDialog(this, "任务挖掘进度",true);
-        jDialog.setContentPane(taskPanel);
-        jDialog.setSize(new Dimension(500, 400));
-        jDialog.setVisible(true);
-
     }
 
     public void mineNetworkStructor()
@@ -148,19 +134,12 @@ public class win10_window extends JFrame {
 
     public void mineNetworkStructorDis()
     {
-        ArrayList<String> list = new ArrayList<String>();//统计任务总个数
         networkStructureresultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
         NetworkFactoryDis networkFactoryDis = NetworkFactoryDis.getInstance();
         List<MiningObject> miningObjectList = networkFactoryDis.getMiningObjectsChecked();
 
-        //得到任务总数
-        for (MiningObject ob : miningObjectList) {
-            server.getNetCount(networkFactoryDis, ob, list);
-        }
-        //先清空结果文件
-        server.clearResult();
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             server.network(networkFactoryDis, ob);
@@ -239,18 +218,16 @@ public class win10_window extends JFrame {
 
     public void mineSingleNodeDis()
     {
-        ArrayList<String> list = new ArrayList<String>();//统计任务总个数singleNoderesultMaps.clear();
+        singleNoderesultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
         SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis = SingleNodeOrNodePairMinerFactoryDis.getInstance();
         List<MiningObject> miningObjectList = singleNodeOrNodePairMinerFactoryDis.getMiningObjectsChecked();
 
-        //得到任务总数
-        for (MiningObject ob : miningObjectList) {
-            server.getSingleOrPairCount(singleNodeOrNodePairMinerFactoryDis, ob, list);
-        }
-        //先清空结果文件
-        server.clearResult();
+//        for (MiningObject ob : miningObjectList) {
+//            server.getSingleCount(singleNodeOrNodePairMinerFactoryDis, ob);
+//        }
+
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             System.out.println("obj: " + ob.toString());
@@ -308,7 +285,6 @@ public class win10_window extends JFrame {
 
     public void mineNodePairDis()
     {
-        ArrayList<String> list = new ArrayList<String>();//统计任务总个数
         nodePairresultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
@@ -316,12 +292,6 @@ public class win10_window extends JFrame {
         singleNodeOrNodePairMinerFactoryDis.setTaskRange(TaskRange.NodePairRange);
         List<MiningObject> miningObjectList = singleNodeOrNodePairMinerFactoryDis.getMiningObjectsChecked();
 
-        //得到任务总数
-        for (MiningObject ob : miningObjectList) {
-            server.getSingleOrPairCount(singleNodeOrNodePairMinerFactoryDis, ob, list);
-        }
-        //先清空结果文件
-        server.clearResult();
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             server.SingleNodeOrNodePair(singleNodeOrNodePairMinerFactoryDis, ob);
@@ -376,18 +346,12 @@ public class win10_window extends JFrame {
     }
 
     public void mineProtocolAssDis() {
-        ArrayList<String> list = new ArrayList<String>();//统计任务总个数
         protocolResultsMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
         ProtocolAssMinerFactoryDis protocolAssMinerFactoryDis = ProtocolAssMinerFactoryDis.getInstance();
         List<MiningObject> miningObjectList = protocolAssMinerFactoryDis.getMiningObjectsChecked();
-        //得到任务总数
-        for (MiningObject ob : miningObjectList) {
-            server.getProCount(protocolAssMinerFactoryDis, ob, list);
-        }
-        //先清空结果文件
-        server.clearResult();
+
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             server.protocol(protocolAssMinerFactoryDis, ob);
@@ -521,18 +485,12 @@ public class win10_window extends JFrame {
     }
 
     public void minePathDis() {
-        ArrayList<String> list = new ArrayList<String>();//统计任务总个数
         pathResultsMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
         PathMinerFactoryDis pathMinerFactoryDis = PathMinerFactoryDis.getInstance();
         List<MiningObject> miningObjectList = pathMinerFactoryDis.getMiningObjectsChecked();
-        //得到任务总数
-        for (MiningObject ob : miningObjectList) {
-            server.getPathCount(pathMinerFactoryDis, ob, list);
-        }
-        //先清空结果文件
-        server.clearResult();
+
         // 判断是否含有该挖掘对象结果文件
         for (MiningObject ob: miningObjectList) {
             server.path(pathMinerFactoryDis, ob);
@@ -660,7 +618,7 @@ public class win10_window extends JFrame {
 
         final JButton bSingle = new JButton("单机版");
         bSingle.setBounds(310,540, 200, 200);
-        setIcon("img\\standalone_version_IconG.png", bSingle);
+        setIcon("img\\standalone_version_Icon.png", bSingle);
 
         final JButton bDis = new JButton("分布式");
         bDis.setBounds(520, 540, 200, 200);
@@ -731,8 +689,6 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 single();
-                setIcon("img\\standalone_version_IconG.png", bSingle);
-                setIcon("img\\distributed_version_Icon.png", bDis);
             }
         });
 
@@ -741,8 +697,6 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 distribute();
-                setIcon("img\\standalone_version_Icon.png", bSingle);
-                setIcon("img\\distributed_version_IconG.png", bDis);
             }
         });
 
@@ -769,15 +723,10 @@ public class win10_window extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!isDistributed) {
-                    ProcessBarShow processBarShow = new ProcessBarShow(win10_window.this);
+                    ProcessBarShow processBarShow = new ProcessBarShow(null);
                 } else if (isDistributed) {
-//                    PcapFrame pcapFrame = new PcapFrame();
-//                    pcapFrame.init();
-                    final PcapPanel pcapPanel = new PcapPanel();
-                    JDialog jDialog = new JDialog(win10_window.this, "pcap解析",true);
-                    jDialog.setContentPane(pcapPanel);
-                    jDialog.setSize(new Dimension(500, 400));
-                    jDialog.setVisible(true);
+                    PcapFrame pcapFrame = new PcapFrame();
+                    pcapFrame.init();
                 }
             }
         });
@@ -894,22 +843,8 @@ public class win10_window extends JFrame {
                     }
                 } else if (isDistributed) {
                     if (!isDisNetworkStructureMined) {
-                        final TaskPanel taskPanel = new TaskPanel();
-                        taskPanel.setOpaque(true);
-                        EventQueue.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                Runnable runnable = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mineNetworkStructorDis();
-                                        server.showNetworkResult();//分布式结果显示
-                                    }
-                                };
-                                new Thread(runnable).start();
-                            }
-                        });
-                        genDialog(taskPanel);
+                        mineNetworkStructorDis();
+                        server.showNetworkResult();//分布式结果显示
                     } else {
                         server.showNetworkResult();//分布式结果显示
                     }
@@ -930,24 +865,23 @@ public class win10_window extends JFrame {
                     }
                 } else if (isDistributed) {
                     if (!isDisSingleNodeMined) {
-                        final TaskPanel taskPanel = new TaskPanel();
-                        taskPanel.setOpaque(true);
-                        EventQueue.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                Runnable runnable = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mineSingleNodeDis();
-                                        server.showSingleNodeResult();//分布式结果显示
-                                    }
-                                };
-                                new Thread(runnable).start();
-                            }
-                        });
-                        genDialog(taskPanel);
-//                        mineSingleNodeDis();
-//                        server.showSingleNodeResult();//分布式结果显示
+//                        TaskFrame taskFrame = new TaskFrame();
+//                        taskFrame.init();
+//                        EventQueue.invokeLater(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Runnable runnable = new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        mineSingleNodeDis();
+//                                        server.showSingleNodeResult();//分布式结果显示
+//                                    }
+//                                };
+//                                new Thread(runnable).start();
+//                            }
+//                        });
+                        mineSingleNodeDis();
+                        server.showSingleNodeResult();//分布式结果显示
                     } else {
                         server.showSingleNodeResult();//分布式结果显示
                     }
@@ -969,22 +903,8 @@ public class win10_window extends JFrame {
                     }
                 } else if (isDistributed) {
                     if (!isDisNodePairMined) {
-                        final TaskPanel taskPanel = new TaskPanel();
-                        taskPanel.setOpaque(true);
-                        EventQueue.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                Runnable runnable = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mineNodePairDis();
-                                        server.showNodePairResult();
-                                    }
-                                };
-                                new Thread(runnable).start();
-                            }
-                        });
-                        genDialog(taskPanel);
+                        mineNodePairDis();
+                        server.showNodePairResult();
                     } else {
                         server.showNodePairResult();
                     }
@@ -1006,22 +926,8 @@ public class win10_window extends JFrame {
                 } else if (isDistributed) {
                     // TODO Auto-generated method stub
                     if (!isDisPathMined) {
-                        final TaskPanel taskPanel = new TaskPanel();
-                        taskPanel.setOpaque(true);
-                        EventQueue.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                Runnable runnable = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        minePathDis();
-                                        server.showPathResult();//分布式结果显示
-                                    }
-                                };
-                                new Thread(runnable).start();
-                            }
-                        });
-                        genDialog(taskPanel);
+                        minePathDis();
+                        server.showPathResult();//分布式结果显示
                     } else {
                         server.showPathResult();//分布式结果显示
                     }
@@ -1044,22 +950,7 @@ public class win10_window extends JFrame {
                 } else if (isDistributed) {
                     // TODO Auto-generated method stub
                     if (!isDisProtocolAssMined) {
-                        final TaskPanel taskPanel = new TaskPanel();
-                        taskPanel.setOpaque(true);
-                        EventQueue.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                Runnable runnable = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mineProtocolAssDis();
-                                        server.showProtocolResult();
-                                    }
-                                };
-                                new Thread(runnable).start();
-                            }
-                        });
-                        genDialog(taskPanel);
+                        mineProtocolAssDis();
                     } else {
                         server.showProtocolResult();
                     }

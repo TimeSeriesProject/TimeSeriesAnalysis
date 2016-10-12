@@ -39,7 +39,7 @@ public class ChartPanelShowAbc extends JPanel{
     Shape itemShape; // = new Ellipse2D.Double(-2,-2, 4, 4);
     public static int timeGranunity = 3600;
     public ChartPanelShowAbc(TaskElement task) {
-    	timeGranunity = task.getGranularity();
+    	timeGranunity = task.getGranularity();    	
     }
     ChartPanelShowAbc(String title, String timeAxisLabel, String valueAxisLabel,
                       XYDataset dataset/*, boolean legend, boolean tooltips, boolean urls*/){
@@ -54,7 +54,7 @@ public class ChartPanelShowAbc extends JPanel{
         // 应用主题样式
         ChartFactory.setChartTheme(standardChartTheme);
 
-        setLayout(new BorderLayout());
+        //setLayout(new BorderLayout());
     }
 
 
