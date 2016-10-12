@@ -7,7 +7,7 @@ import java.awt.*;
  * Created by zsc on 2016/10/8.
  */
 public class TaskPanel extends JPanel {
-    private Server server = Distributed.Server.getInstance();
+    private static Server server = Server.getInstance();
 
     private JProgressBar progressBar = null;
     private JTextArea taskOutput = null;

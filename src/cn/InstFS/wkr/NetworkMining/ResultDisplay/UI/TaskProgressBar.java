@@ -94,6 +94,14 @@ public class TaskProgressBar extends JPanel
         task.execute();
     }
 
+    public void clearBar() {
+        progressBar.setValue(0);
+    }
+
+    public void setBarString(String s) {
+        progressBar.setString(s);
+    }
+
     /**
      * Invoked when the user presses the start button.
      */

@@ -4,6 +4,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Factory.*;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.NetworkMinerNode;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
 import cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt.ParseByDay;
+import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgress;
 import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
@@ -37,6 +38,7 @@ public class Server {
     private static ServerStart serverStart;
     private int taskCount = 0;//发送次数
     private int totalCount = 0;
+    private String port = "";
 //    private AtomicInteger taskCount = new AtomicInteger(0);
     private boolean singleNodeTimeFlag = true;//判断是否生成result界面
     private boolean singleNodeTrafficFlag = true;//判断是否生成result界面
@@ -95,6 +97,7 @@ public class Server {
     //PcapServer
     private PcapPanel pcapPanel;
     private TaskPanel taskPanel;
+    private TaskProgress taskProgress = TaskProgress.getInstance();
     private ArrayList<String> allTasks = new ArrayList<String>();
     private ArrayList<String> allTasks2 = new ArrayList<String>();//第二步任务
     private ConcurrentHashMap<String, String> allTasksTags = new ConcurrentHashMap<String, String>();//带标签，所有不同类型任务
@@ -161,23 +164,40 @@ public class Server {
         return serverStart;
     }
 
-    public void clearResult() {
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public void clearSingleResult() {
         System.out.println("清空结果");
         singleNodeTimes.clear();
         singleNodeTraffic.clear();
         singleNodeDisapearEmerge.clear();
+        singleNodeResultMaps.clear();
+    }
+    public void clearPairResult() {
+        System.out.println("清空结果");
         nodePairTimes.clear();
         nodePairTraffic.clear();
+        nodePairResultMaps.clear();
+
+    }
+    public void clearPathResult() {
+        System.out.println("清空结果");
         pathTimes.clear();
         pathTraffic.clear();
+        pathResultMaps.clear();
+
+    }
+    public void clearNetResult() {
+        System.out.println("清空结果");
         networkCluster.clear();
         networkDiameter.clear();
-        protocolTraffic.clear();
-
-        singleNodeResultMaps.clear();
-        nodePairResultMaps.clear();
-        pathResultMaps.clear();
         networkResultMaps.clear();
+    }
+    public void clearProResult() {
+        System.out.println("清空结果");
+        protocolTraffic.clear();
         protocolResultMaps.clear();
     }
 
@@ -368,7 +388,7 @@ public class Server {
                                 singleNodeTimes.put(tempList.get(i), resultNode);
                                 //进度条
                                 taskPanel.getBar().setValue(singleNodeTimes.size());
-                                taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                         String.format("%d%%", 100 * singleNodeTimes.size() / totalCount));
                                 taskPanel.getLog().append(String.format(
                                         "Completed %d/%d of task.\n", singleNodeTimes.size(), totalCount));
@@ -396,7 +416,7 @@ public class Server {
                                 singleNodeTraffic.put(tempList.get(i), resultNode);
                                 //进度条
                                 taskPanel.getBar().setValue(singleNodeTimes.size() + singleNodeTraffic.size());
-                                taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                                taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                         String.format("%d%%", 100 * (singleNodeTimes.size() + singleNodeTraffic.size()) / totalCount));
                                 taskPanel.getLog().append(String.format(
                                         "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size()), totalCount));
@@ -423,7 +443,7 @@ public class Server {
                                 MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
                                 singleNodeDisapearEmerge.put(tempList.get(i), resultNode);
                                 taskPanel.getBar().setValue(singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size());
-                                taskPanel.getBar().setString(MiningObject.MiningObject_NodeDisapearEmerge +" " +
+                                taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                         String.format("%d%%", 100 * (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()) / totalCount));
                                 taskPanel.getLog().append(String.format(
                                         "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()), totalCount));
@@ -454,7 +474,7 @@ public class Server {
                                 nodePairTimes.put(tempList.get(i), resultNode);
                                 //进度条
                                 taskPanel.getBar().setValue(nodePairTimes.size());
-                                taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                         String.format("%d%%", 100 * nodePairTimes.size() / totalCount));
                                 taskPanel.getLog().append(String.format(
                                         "Completed %d/%d of task.\n", nodePairTimes.size(), totalCount));
@@ -481,7 +501,7 @@ public class Server {
                                 nodePairTraffic.put(tempList.get(i), resultNode);
                                 //进度条
                                 taskPanel.getBar().setValue(nodePairTimes.size() + nodePairTraffic.size());
-                                taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                         String.format("%d%%", 100 * (nodePairTimes.size() + nodePairTraffic.size()) / totalCount));
                                 taskPanel.getLog().append(String.format(
                                         "Completed %d/%d of task.\n", (nodePairTimes.size() + nodePairTraffic.size()), totalCount));
@@ -512,7 +532,7 @@ public class Server {
                             protocolTraffic.put(tempList.get(i), resultNode);
                             //进度条
                             taskPanel.getBar().setValue(protocolTraffic.size());
-                            taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                     String.format("%d%%", 100 * protocolTraffic.size() / totalCount));
                             taskPanel.getLog().append(String.format(
                                     "Completed %d/%d of task.\n", protocolTraffic.size(), totalCount));
@@ -543,7 +563,7 @@ public class Server {
                             pathTimes.put(tempList.get(i), resultPath);
                             //进度条
                             taskPanel.getBar().setValue(pathTimes.size());
-                            taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                     String.format("%d%%", 100 * pathTimes.size() / totalCount));
                             taskPanel.getLog().append(String.format(
                                     "Completed %d/%d of task.\n", pathTimes.size(), totalCount));
@@ -570,7 +590,7 @@ public class Server {
                             pathTraffic.put(tempList.get(i), resultPath);
                             //进度条
                             taskPanel.getBar().setValue(pathTimes.size() + pathTraffic.size());
-                            taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                     String.format("%d%%", 100 * (pathTimes.size() + pathTraffic.size()) / totalCount));
                             taskPanel.getLog().append(String.format(
                                     "Completed %d/%d of task.\n", (pathTimes.size() + pathTraffic.size()), totalCount));
@@ -599,7 +619,7 @@ public class Server {
                             networkCluster.put(tempList.get(i), resultNode);
                             //进度条
                             taskPanel.getBar().setValue(networkCluster.size());
-                            taskPanel.getBar().setString(MiningObject.MiningObject_Cluster +" " +
+                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                     String.format("%d%%", 100 * networkCluster.size() / totalCount));
                             taskPanel.getLog().append(String.format(
                                     "Completed %d/%d of task.\n", networkCluster.size(), totalCount));
@@ -626,7 +646,7 @@ public class Server {
                             networkDiameter.put(tempList.get(i), resultNode);
                             //进度条
                             taskPanel.getBar().setValue(networkCluster.size() + networkDiameter.size());
-                            taskPanel.getBar().setString(MiningObject.MiningObject_Cluster +" " +
+                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                     String.format("%d%%", 100 * (networkCluster.size() + networkDiameter.size()) / totalCount));
                             taskPanel.getLog().append(String.format(
                                     "Completed %d/%d of task.\n", (networkCluster.size() + networkDiameter.size()), totalCount));
@@ -674,7 +694,7 @@ public class Server {
     public void SingleNodeOrNodePair(SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis, MiningObject miningObject) {
         genSingleNodeTask(singleNodeOrNodePairMinerFactoryDis, miningObject);
         initMap(MinerType.MiningType_SinglenodeOrNodePair);
-        initBar();
+//        initBar();
         //判断是否存在结果，不必启动客户端
         if (!isExistedResult()) {
             awakeThread();
@@ -689,7 +709,7 @@ public class Server {
     public void path(PathMinerFactoryDis pathMinerFactoryDis, MiningObject miningObject) {
         genPathTask(pathMinerFactoryDis, miningObject);
         initMap(MinerType.MiningType_Path);
-        initBar();
+//        initBar();
         if (!isExistedResult()) {
             awakeThread();
             setIsRunning(true);
@@ -703,7 +723,7 @@ public class Server {
     public void network(NetworkFactoryDis networkFactoryDis, MiningObject miningObject) {
         genNetworkTask(networkFactoryDis, miningObject);
         initMap(MinerType.MiningTypes_WholeNetwork);
-        initBar();
+//        initBar();
         if (!isExistedResult()) {
             awakeThread();
             setIsRunning(true);
@@ -717,7 +737,7 @@ public class Server {
     public void protocol(ProtocolAssMinerFactoryDis protocolAssMinerFactoryDis, MiningObject miningObject) {
         genProtocoTask(protocolAssMinerFactoryDis, miningObject);
         initMap(MinerType.MiningType_ProtocolAssociation);
-        initBar();
+//        initBar();
         if (!isExistedResult()) {
             awakeThread();
             setIsRunning(true);
@@ -1000,6 +1020,8 @@ public class Server {
     }
 
     public void initBar() {
+        taskPanel.getBar().setValue(0);
+        taskPanel.getBar().setString("读取数据中...");
         taskPanel.getBar().setMaximum(totalCount);
     }
 
@@ -1068,7 +1090,7 @@ public class Server {
 
         public void run() {
             try {
-                serverSocket = new ServerSocket(7777);
+                serverSocket = new ServerSocket(Integer.valueOf(port));
                 start = true;
             } catch (BindException e) {
                 System.out.println("端口使用中...");
@@ -1511,7 +1533,7 @@ public class Server {
                                             }
                                             //进度条
                                             taskPanel.getBar().setValue(singleNodeTimes.size());
-                                            taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                                     String.format("%d%%", 100 * singleNodeTimes.size() / totalCount));
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", singleNodeTimes.size(), totalCount));
@@ -1553,7 +1575,7 @@ public class Server {
                                             }
                                             //进度条
                                             taskPanel.getBar().setValue(singleNodeTimes.size() + singleNodeTraffic.size());
-                                            taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                                     String.format("%d%%", 100 * (singleNodeTimes.size() + singleNodeTraffic.size()) / totalCount));
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size()), totalCount));
@@ -1596,7 +1618,7 @@ public class Server {
                                             }
                                             //进度条
                                             taskPanel.getBar().setValue(singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size());
-                                            taskPanel.getBar().setString(MiningObject.MiningObject_NodeDisapearEmerge +" " +
+                                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                                     String.format("%d%%", 100 * (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()) / totalCount));
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()), totalCount));
@@ -1641,7 +1663,7 @@ public class Server {
                                             }
                                             //进度条
                                             taskPanel.getBar().setValue(nodePairTimes.size());
-                                            taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                                     String.format("%d%%", 100 * nodePairTimes.size() / totalCount));
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", nodePairTimes.size(), totalCount));
@@ -1683,7 +1705,7 @@ public class Server {
                                             }
                                             //进度条
                                             taskPanel.getBar().setValue(nodePairTimes.size() + nodePairTraffic.size());
-                                            taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                                     String.format("%d%%", 100 * (nodePairTimes.size() + nodePairTraffic.size()) / totalCount));
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", (nodePairTimes.size() + nodePairTraffic.size()), totalCount));
@@ -1729,7 +1751,7 @@ public class Server {
                                         }
                                         //进度条
                                         taskPanel.getBar().setValue(protocolTraffic.size());
-                                        taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                                        taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                                 String.format("%d%%", 100 * protocolTraffic.size() / totalCount));
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", protocolTraffic.size(), totalCount));
@@ -1774,7 +1796,7 @@ public class Server {
                                         }
                                         //进度条
                                         taskPanel.getBar().setValue(pathTimes.size());
-                                        taskPanel.getBar().setString(MiningObject.MiningObject_Times +" " +
+                                        taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                                 String.format("%d%%", 100 * pathTimes.size() / totalCount));
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", pathTimes.size(), totalCount));
@@ -1817,7 +1839,7 @@ public class Server {
                                         }
                                         //进度条
                                         taskPanel.getBar().setValue(pathTimes.size() + pathTraffic.size());
-                                        taskPanel.getBar().setString(MiningObject.MiningObject_Traffic +" " +
+                                        taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                                 String.format("%d%%", 100 * (pathTimes.size() + pathTraffic.size()) / totalCount));
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", (pathTimes.size() + pathTraffic.size()), totalCount));
@@ -1863,7 +1885,7 @@ public class Server {
                                         }
                                         //进度条
                                         taskPanel.getBar().setValue(networkCluster.size());
-                                        taskPanel.getBar().setString(MiningObject.MiningObject_Cluster +" " +
+                                        taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                                 String.format("%d%%", 100 * networkCluster.size() / totalCount));
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", networkCluster.size(), totalCount));
@@ -1905,7 +1927,7 @@ public class Server {
                                         }
                                         //进度条
                                         taskPanel.getBar().setValue(networkCluster.size() + networkDiameter.size());
-                                        taskPanel.getBar().setString(MiningObject.MiningObject_Cluster +" " +
+                                        taskPanel.getBar().setString(taskProgress.getPhase() +" " +
                                                 String.format("%d%%", 100 * (networkCluster.size() + networkDiameter.size()) / totalCount));
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", (networkCluster.size() + networkDiameter.size()), totalCount));
