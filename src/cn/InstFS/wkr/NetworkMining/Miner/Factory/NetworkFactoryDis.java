@@ -8,6 +8,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -175,6 +176,15 @@ public class NetworkFactoryDis extends MinerFactorySettings {
             }
         }
         return dataItems;
+    }
+
+    public int getCount(ArrayList<String> list)
+    {
+        if(isMining)
+            return list.size();
+        isMining=true;
+        list.add("");
+        return list.size();
     }
 
 }

@@ -19,10 +19,10 @@ public class TaskPanel extends JPanel {
 
     private void initialize() {
         server.initTask(TaskPanel.this);
-        this.setBorder(BorderFactory.createTitledBorder("任务挖掘进度"));
+//        this.setBorder(BorderFactory.createTitledBorder("任务挖掘进度"));
 
         this.setLayout(new GridBagLayout());
-        getText().setEditable(false);
+        getLog().setEditable(false);
 
 
         //进度条，设置高度ipad
@@ -45,7 +45,7 @@ public class TaskPanel extends JPanel {
         return progressBar;
     }
 
-    public JTextArea getText() {
+    public JTextArea getLog() {
         if (taskOutput == null) {
             taskOutput = new JTextArea();
         }
@@ -53,7 +53,7 @@ public class TaskPanel extends JPanel {
     }
 
     public JScrollPane getJScrollPane() {
-        textJScrollPane = new JScrollPane(getText());
+        textJScrollPane = new JScrollPane(getLog());
         return textJScrollPane;
     }
 }
