@@ -51,8 +51,8 @@ public class ProcessBarShow extends JDialog implements Callable {
 
 	JButton beginDig = new JButton("开始解析");
 
-	JTextField inputTxtfile = new JTextField();
-	JTextField outputTxtfile = new JTextField();
+	JTextField inputTxtfile = new JTextField("D:\\pppp");
+	JTextField outputTxtfile = new JTextField("D:\\out");
 	String inputPath = "";
 	String outputPath = "";
 //	JPanel jpanel = new JPanel();
@@ -333,9 +333,9 @@ public class ProcessBarShow extends JDialog implements Callable {
 //					phrase = 0;
 					if(phrase == 0)
 					{
-						bar.setMaximum(pp.pu.getParseSum() * 2);
+						bar.setMaximum(pp.pu.getParseSum());
 						System.out.println("任务总数："+pp.pu.getParseSum());
-						currentPhrase = "阶段 1/2";
+						currentPhrase = "阶段 1/3";
 						phrase = 1;
 					}
 					
@@ -347,21 +347,34 @@ public class ProcessBarShow extends JDialog implements Callable {
 					
 					if(phrase == 0 || phrase == 1)
 					{
-						bar.setMaximum(pp.pu.getGenRouteSum() * 2);
-						bar.setValue(pp.pu.getGenRouteSum());
-						currentPhrase = "阶段 2/2";
+						bar.setMaximum(pp.pu.getGenRouteSum());
+//						bar.setValue(0);
+						currentPhrase = "阶段 2/3";
+						phrase = 2;
 						System.out.println("任务总数："+pp.pu.getGenRouteSum());
 					}
 					
 //					int num = (int) Math.round(pp.pu.getGenedRouteNum()*1.0/pp.pu.getGenRouteSum()*100);
 					int num = pp.pu.getGenedRouteNum();
-					bar.setValue(num + pp.pu.getGenRouteSum());
+					bar.setValue(num);
 					jlable.setText(currentPhrase);
-				}
-				else if(pp.pu.getStatus().name().compareTo("END") == 0) {
-				
+				} else if (pp.pu.getStatus().name().compareTo("PARSEBYDAY") == 0) {
+					if(phrase == 0 || phrase == 1 || phrase == 2)
+					{
+						bar.setValue(0);
+						bar.setMaximum(pp.pu.getParsebydaySum());
+						currentPhrase = "阶段 3/3";
+						System.out.println("任务总数阶段3："+pp.pu.getParsebydaySum());
+					}
+
+//					int num = (int) Math.round(pp.pu.getGenedRouteNum()*1.0/pp.pu.getGenRouteSum()*100);
+					int num = pp.pu.getParsebydayNum();
+					bar.setValue(num);
+					jlable.setText(currentPhrase);
+				} else if (pp.pu.getStatus().name().compareTo("END") == 0) {
+
 					haseBegin = false;
-					bar.setValue(pp.pu.getGenRouteSum() * 2);
+					bar.setValue(pp.pu.getParsebydaySum());
 					currentPhrase = "解析结束";
 					jlable.setText(currentPhrase);
 //					timer.stop();

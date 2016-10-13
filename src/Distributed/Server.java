@@ -4,7 +4,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Factory.*;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.NetworkMinerNode;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
 import cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt.ParseByDay;
-import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgress;
+import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgressDis;
 import cn.InstFS.wkr.NetworkMining.Results.MiningResultsFile;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MinerType;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
@@ -26,7 +26,6 @@ import java.util.*;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.*;
 
 
@@ -97,7 +96,7 @@ public class Server {
     //PcapServer
     private PcapPanel pcapPanel;
     private TaskPanel taskPanel;
-    private TaskProgress taskProgress = TaskProgress.getInstance();
+    private TaskProgressDis taskProgressDis = TaskProgressDis.getInstance();
     private ArrayList<String> allTasks = new ArrayList<String>();
     private ArrayList<String> allTasks2 = new ArrayList<String>();//第二步任务
     private ConcurrentHashMap<String, String> allTasksTags = new ConcurrentHashMap<String, String>();//带标签，所有不同类型任务
@@ -388,7 +387,7 @@ public class Server {
                                 singleNodeTimes.put(tempList.get(i), resultNode);
                                 //进度条
                                 taskPanel.getBar().setValue(singleNodeTimes.size());
-                                taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                         String.format("%d%%", 100 * singleNodeTimes.size() / totalCount));
                                 taskPanel.getLog().append(String.format(
                                         "Completed %d/%d of task.\n", singleNodeTimes.size(), totalCount));
@@ -416,7 +415,7 @@ public class Server {
                                 singleNodeTraffic.put(tempList.get(i), resultNode);
                                 //进度条
                                 taskPanel.getBar().setValue(singleNodeTimes.size() + singleNodeTraffic.size());
-                                taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                         String.format("%d%%", 100 * (singleNodeTimes.size() + singleNodeTraffic.size()) / totalCount));
                                 taskPanel.getLog().append(String.format(
                                         "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size()), totalCount));
@@ -443,7 +442,7 @@ public class Server {
                                 MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
                                 singleNodeDisapearEmerge.put(tempList.get(i), resultNode);
                                 taskPanel.getBar().setValue(singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size());
-                                taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                         String.format("%d%%", 100 * (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()) / totalCount));
                                 taskPanel.getLog().append(String.format(
                                         "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()), totalCount));
@@ -474,7 +473,7 @@ public class Server {
                                 nodePairTimes.put(tempList.get(i), resultNode);
                                 //进度条
                                 taskPanel.getBar().setValue(nodePairTimes.size());
-                                taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                         String.format("%d%%", 100 * nodePairTimes.size() / totalCount));
                                 taskPanel.getLog().append(String.format(
                                         "Completed %d/%d of task.\n", nodePairTimes.size(), totalCount));
@@ -501,7 +500,7 @@ public class Server {
                                 nodePairTraffic.put(tempList.get(i), resultNode);
                                 //进度条
                                 taskPanel.getBar().setValue(nodePairTimes.size() + nodePairTraffic.size());
-                                taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                         String.format("%d%%", 100 * (nodePairTimes.size() + nodePairTraffic.size()) / totalCount));
                                 taskPanel.getLog().append(String.format(
                                         "Completed %d/%d of task.\n", (nodePairTimes.size() + nodePairTraffic.size()), totalCount));
@@ -532,7 +531,7 @@ public class Server {
                             protocolTraffic.put(tempList.get(i), resultNode);
                             //进度条
                             taskPanel.getBar().setValue(protocolTraffic.size());
-                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                            taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                     String.format("%d%%", 100 * protocolTraffic.size() / totalCount));
                             taskPanel.getLog().append(String.format(
                                     "Completed %d/%d of task.\n", protocolTraffic.size(), totalCount));
@@ -563,7 +562,7 @@ public class Server {
                             pathTimes.put(tempList.get(i), resultPath);
                             //进度条
                             taskPanel.getBar().setValue(pathTimes.size());
-                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                            taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                     String.format("%d%%", 100 * pathTimes.size() / totalCount));
                             taskPanel.getLog().append(String.format(
                                     "Completed %d/%d of task.\n", pathTimes.size(), totalCount));
@@ -590,7 +589,7 @@ public class Server {
                             pathTraffic.put(tempList.get(i), resultPath);
                             //进度条
                             taskPanel.getBar().setValue(pathTimes.size() + pathTraffic.size());
-                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                            taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                     String.format("%d%%", 100 * (pathTimes.size() + pathTraffic.size()) / totalCount));
                             taskPanel.getLog().append(String.format(
                                     "Completed %d/%d of task.\n", (pathTimes.size() + pathTraffic.size()), totalCount));
@@ -619,7 +618,7 @@ public class Server {
                             networkCluster.put(tempList.get(i), resultNode);
                             //进度条
                             taskPanel.getBar().setValue(networkCluster.size());
-                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                            taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                     String.format("%d%%", 100 * networkCluster.size() / totalCount));
                             taskPanel.getLog().append(String.format(
                                     "Completed %d/%d of task.\n", networkCluster.size(), totalCount));
@@ -646,7 +645,7 @@ public class Server {
                             networkDiameter.put(tempList.get(i), resultNode);
                             //进度条
                             taskPanel.getBar().setValue(networkCluster.size() + networkDiameter.size());
-                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                            taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                     String.format("%d%%", 100 * (networkCluster.size() + networkDiameter.size()) / totalCount));
                             taskPanel.getLog().append(String.format(
                                     "Completed %d/%d of task.\n", (networkCluster.size() + networkDiameter.size()), totalCount));
@@ -1533,7 +1532,7 @@ public class Server {
                                             }
                                             //进度条
                                             taskPanel.getBar().setValue(singleNodeTimes.size());
-                                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                            taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                                     String.format("%d%%", 100 * singleNodeTimes.size() / totalCount));
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", singleNodeTimes.size(), totalCount));
@@ -1582,7 +1581,7 @@ public class Server {
                                             }
                                             //进度条
                                             taskPanel.getBar().setValue(singleNodeTimes.size() + singleNodeTraffic.size());
-                                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                            taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                                     String.format("%d%%", 100 * (singleNodeTimes.size() + singleNodeTraffic.size()) / totalCount));
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size()), totalCount));
@@ -1632,7 +1631,7 @@ public class Server {
                                             }
                                             //进度条
                                             taskPanel.getBar().setValue(singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size());
-                                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                            taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                                     String.format("%d%%", 100 * (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()) / totalCount));
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()), totalCount));
@@ -1683,7 +1682,7 @@ public class Server {
                                             }
                                             //进度条
                                             taskPanel.getBar().setValue(nodePairTimes.size());
-                                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                            taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                                     String.format("%d%%", 100 * nodePairTimes.size() / totalCount));
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", nodePairTimes.size(), totalCount));
@@ -1731,7 +1730,7 @@ public class Server {
                                             }
                                             //进度条
                                             taskPanel.getBar().setValue(nodePairTimes.size() + nodePairTraffic.size());
-                                            taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                            taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                                     String.format("%d%%", 100 * (nodePairTimes.size() + nodePairTraffic.size()) / totalCount));
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", (nodePairTimes.size() + nodePairTraffic.size()), totalCount));
@@ -1783,7 +1782,7 @@ public class Server {
                                         }
                                         //进度条
                                         taskPanel.getBar().setValue(protocolTraffic.size());
-                                        taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                        taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                                 String.format("%d%%", 100 * protocolTraffic.size() / totalCount));
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", protocolTraffic.size(), totalCount));
@@ -1834,7 +1833,7 @@ public class Server {
                                         }
                                         //进度条
                                         taskPanel.getBar().setValue(pathTimes.size());
-                                        taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                        taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                                 String.format("%d%%", 100 * pathTimes.size() / totalCount));
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", pathTimes.size(), totalCount));
@@ -1883,7 +1882,7 @@ public class Server {
                                         }
                                         //进度条
                                         taskPanel.getBar().setValue(pathTimes.size() + pathTraffic.size());
-                                        taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                        taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                                 String.format("%d%%", 100 * (pathTimes.size() + pathTraffic.size()) / totalCount));
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", (pathTimes.size() + pathTraffic.size()), totalCount));
@@ -1935,7 +1934,7 @@ public class Server {
                                         }
                                         //进度条
                                         taskPanel.getBar().setValue(networkCluster.size());
-                                        taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                        taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                                 String.format("%d%%", 100 * networkCluster.size() / totalCount));
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", networkCluster.size(), totalCount));
@@ -1983,7 +1982,7 @@ public class Server {
                                         }
                                         //进度条
                                         taskPanel.getBar().setValue(networkCluster.size() + networkDiameter.size());
-                                        taskPanel.getBar().setString(taskProgress.getPhase() +" " +
+                                        taskPanel.getBar().setString(taskProgressDis.getPhase() +" " +
                                                 String.format("%d%%", 100 * (networkCluster.size() + networkDiameter.size()) / totalCount));
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", (networkCluster.size() + networkDiameter.size()), totalCount));
@@ -2477,7 +2476,6 @@ public class Server {
         private String status;
         private boolean isEmpty = false;
         private boolean isEmpty2 = false;
-        private boolean flag = true;
         private boolean isPcapSuspend = true;
         private boolean isConnected = true;
 
@@ -2506,19 +2504,12 @@ public class Server {
                             pcapLock.unlock();
                         }
                     }
-//                pcapPanel.getBar().setMaximum(allTasks.size());//进度条最大
-//                pcapPanel.getBar().setValue(recCount);
-//                pcapPanel.getjLabel().setText("阶段 1/2");
+                    pcapPanel.getBar().setValue(recCount);
+                    pcapPanel.getBar().setMaximum(allTasks.size());//进度条最大
+                    pcapPanel.getjLabel().setText("阶段 1/3");
                     long a = System.currentTimeMillis();
                     while (firstConnected) {
                         dataFromClient = userClient.receiveMsg();
-                        //设置初始的进度条，只设置一次
-                        if (flag) {
-                            pcapPanel.getBar().setMaximum(tasksCount * 2);//进度条最大
-                            pcapPanel.getBar().setValue(recCount);
-                            pcapPanel.getjLabel().setText("阶段 1/2");
-                            flag = false;
-                        }
                         System.out.println("First接收到ready");
                         userClient.sendMsg("First");
                         if (dataFromClient.equals("Ready")) {
@@ -2576,7 +2567,7 @@ public class Server {
                                         updateMap(task);
                                         recCount += 1;
                                         pcapPanel.getBar().setValue(recCount);
-                                        pcapPanel.getjLabel().setText("阶段 1/2");
+                                        pcapPanel.getjLabel().setText("阶段 1/3");
                                         if (recCount == tasksCount) {
 //                                    userClient.close();
                                             System.out.println("运行结束");
@@ -2612,9 +2603,9 @@ public class Server {
                     }
 
                     tasksCount = allTasks2.size();
-                    pcapPanel.getBar().setMaximum(tasksCount * 2);//进度条最大
-                    pcapPanel.getBar().setValue(recCount2 + tasksCount);
-                    pcapPanel.getjLabel().setText("阶段 2/2");
+                    pcapPanel.getBar().setValue(recCount2);
+                    pcapPanel.getBar().setMaximum(tasksCount);//进度条最大
+                    pcapPanel.getjLabel().setText("阶段 2/3");
                     //执行后2步
                     while (lastConnected) {
                         dataFromClient = userClient.receiveMsg();
@@ -2679,24 +2670,34 @@ public class Server {
                                         receiveResult2(finalFolderPath);
                                         updateMap2(task2);
                                         recCount2 += 1;
-                                        pcapPanel.getBar().setValue(recCount2 + tasksCount);
-                                        pcapPanel.getjLabel().setText("阶段 2/2");
+                                        pcapPanel.getBar().setValue(recCount2);
+                                        pcapPanel.getjLabel().setText("阶段 2/3");
                                         if (recCount2 == tasksCount) {
                                             System.out.println("运行结束2.1");
                                             combineFiles2(combineFile2);
                                             System.out.println("文件已合并");
                                             deleteFile(delFile2);
                                             System.out.println("文件已删除");
-                                            pcapPanel.getjLabel().setText("已完成");
                                             lastConnected = false;
                                             firstConnected = true;
-                                            flag = true;
+                                            isEmpty = isEmpty2 = false;
                                             isPcapSuspend = true;
                                             setIsPcapRunning(false);
                                             setIsRunning(false);
                                             getModifiedTime(inPath, "pcap");
+                                            pcapPanel.getBar().setValue(0);
+                                            pcapPanel.getBar().setMaximum(3);
+                                            pcapPanel.getjLabel().setText("阶段 3/3");
                                             parseByDay = new ParseByDay(outPath, outPath, date);
-                                            parseByDay.genDataByDay();
+                                            parseByDay.initDataByDay();
+                                            parseByDay.parseNode();
+                                            pcapPanel.getBar().setValue(1);
+                                            parseByDay.parseRoute();
+                                            pcapPanel.getBar().setValue(2);
+                                            parseByDay.parseTraffic();
+                                            pcapPanel.getBar().setValue(3);
+                                            pcapPanel.getjLabel().setText("全部完成");
+                                            pcapPanel.getBeginDig().setEnabled(true);
                                             long b = System.currentTimeMillis();
                                             System.out.println("time.... " + (b - a));
                                         }
@@ -2709,7 +2710,7 @@ public class Server {
                                         System.out.println("运行结束2.2");
                                         lastConnected = false;
                                         firstConnected = true;
-                                        flag = true;
+                                        isEmpty = isEmpty2 = false;
                                         isPcapSuspend = true;
                                         setIsPcapRunning(false);
                                         setIsRunning(false);
@@ -2721,7 +2722,7 @@ public class Server {
                                 System.out.println("运行结束2.3");
                                 lastConnected = false;
                                 firstConnected = true;
-                                flag = true;
+                                isEmpty = isEmpty2 = false;
                                 isPcapSuspend = true;
                                 setIsPcapRunning(false);
                                 setIsRunning(false);
