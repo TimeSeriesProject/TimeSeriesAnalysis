@@ -46,7 +46,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	
 	private List<Pattern> patterns = new ArrayList<Pattern>();   //线段模式
 	private static int dataDimen = 4; //线段属性个数
-	private static int GuassK = 4; //混合高斯中高斯个数
+	private static int GuassK = 6; //混合高斯中高斯个数
 	private static double diff = 0.2; //判断是否为异常的异常度差值,如果阈值一侧的数据与前一个数据的差值小于diff,则阈值向前移,直到差值大于diff
 	private int piontK = 3; //滑动平均参数，滑动窗口大小	
 	private static int densityK = 2; //PointSegment线段化参数，找极值点的参数
@@ -237,26 +237,26 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		int len = degree.size();
 		Collections.sort(list);
 		Collections.reverse(list);
-		threshold = list.get((int)(len*0.02));		
+		double cut = list.get((int)(len*0.02));		
 		for(int i=(int)(len*0.02);i>0;i--){
-			if(list.get(i)<0.5){				
+			if(list.get(i)<0.6){				
 				continue;
 			}
-			if((list.get(i)-threshold)/threshold<diff){
-				threshold = list.get(i);
+			if((list.get(i)-cut)/cut<diff){
+				continue;
 			}else{
 				threshold = list.get(i);
 				break;
 			}
 		}
-		threshold = threshold>0.4 ? threshold : 0.4;
+		threshold = threshold>0.6 ? threshold : 0.6;
 		System.out.println("基于混合高斯模型，异常度阈值是："+threshold);
 		for(int i=0;i<len;i++){
 			if(degree.get(i)>=threshold){
 				outline.add1Data(dataItems.getElementAt(i));
 			}
 		}
-		threshold = threshold>0.6 ? 0.6 : threshold;
+		threshold = threshold>0.8 ? 0.8 : threshold;
 		return outline;
 	}
 	/**

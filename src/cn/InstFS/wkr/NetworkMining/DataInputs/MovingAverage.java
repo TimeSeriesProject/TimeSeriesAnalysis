@@ -15,6 +15,7 @@ public class MovingAverage {
 	private int dataNum;
 	private DataItems dataItems = new DataItems();
 	private DataItems newItems = new DataItems();
+	private double price = 0.1;
 	public MovingAverage(DataItems di){
 		this.dataItems = di;
 		dataNum = di.getLength();
@@ -29,8 +30,22 @@ public class MovingAverage {
 	public void run(){
 		for(int i=0;i<dataNum-piontK;i++){
 			ArrayList<Double> subData = new ArrayList<Double>();
+			if(Double.parseDouble(dataItems.getData().get(i))==0){
+				Date time = dataItems.getTime().get(i);
+				String data = String.valueOf(0);
+				newItems.add1Data(time,data);
+				continue;
+			}
+			double preData = Double.parseDouble(dataItems.getData().get(i));
 			for(int j=i;j<i+piontK;j++){
-				subData.add(Double.parseDouble(dataItems.getData().get(j)));
+				double data = Double.parseDouble(dataItems.getData().get(j));
+				if(data == 0 ){
+					break;
+				}
+				else if(Math.abs(data-preData)>data*0.1){
+					break;
+				}
+				subData.add(data);
 			}
 			double mean = genMean(subData);
 			Date time = dataItems.getTime().get(i);

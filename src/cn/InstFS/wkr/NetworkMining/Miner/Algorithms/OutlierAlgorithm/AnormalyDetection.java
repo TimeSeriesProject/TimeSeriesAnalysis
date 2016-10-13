@@ -237,9 +237,9 @@ public class AnormalyDetection implements IMinerOM {
 		Collections.sort(list);
 		Collections.reverse(list);
 		threshold = list.get((int)(len*0.02));
-		threshold = threshold>0.4 ? threshold : 0.4;
+		threshold = threshold>0.45 ? threshold : 0.45;
 		for(int i=(int)(len*0.02);i>0;i--){
-			if(list.get(i)<0.4){				
+			if(list.get(i)<0.45){				
 				continue;
 			}
 			if((list.get(i)-threshold)/threshold<diff){
@@ -249,7 +249,7 @@ public class AnormalyDetection implements IMinerOM {
 				break;
 			}
 		}
-		threshold = threshold>0.6 ? 0.6 : threshold;
+		threshold = threshold>0.7 ? 0.7 : threshold;
 		
 		System.out.println("异常度阈值是："+threshold);
 		for(int i=0;i<len;i++){

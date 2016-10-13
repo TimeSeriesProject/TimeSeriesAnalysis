@@ -13,7 +13,7 @@ public class LinePattern {
 	private TreeMap<Integer,Double> datas = new TreeMap<Integer, Double>();//原始数据
     private TreeMap<Integer, Pattern> linesMap = new TreeMap<Integer, Pattern>();  //拟合后的线段
 	private List<Pattern> patterns = new ArrayList<Pattern>();       // 线段模式	
-	private double mergerPrice = 0.05;      //合并代价阈值
+	private double mergerPrice = 0.1;      //合并代价阈值
 	private double compressionRatio = 0.65;//压缩率
 	public LinePattern(DataItems di,double mergerPrice){
 		dataItems = di;
@@ -107,8 +107,9 @@ public class LinePattern {
         double slope = (endValue-startValue)/(end-start);
         double cost = 0;
         for(int i = start;i <= end;i++){
-            cost+=Math.sqrt((startValue+slope*(i-start)-datas.get(i))*(startValue+slope*(i-start)-datas.get(i)));
+            cost+=Math.abs(startValue+slope*(i-start)-datas.get(i));
         }
+        cost = cost/(end-start);
         return cost;
     }
 
@@ -210,7 +211,7 @@ public class LinePattern {
         while(now.after!=null){
             now=now.after;
             int len = now.first.getLen()+now.second.getLen();
-            if(len < 4)
+            if(len < 2)
             	return now;
         }
         return null;
