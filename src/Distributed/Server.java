@@ -1538,8 +1538,13 @@ public class Server {
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", singleNodeTimes.size(), totalCount));
                                             taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());
-                                            NetworkMinerFactory.getInstance().
-                                                    showNodeMinersDis(MiningObject.MiningObject_Times, singleNodeTimes);
+                                            resultLock.lock();
+                                            try {
+                                                NetworkMinerFactory.getInstance().
+                                                        showNodeMinersDis(MiningObject.MiningObject_Times, singleNodeTimes);
+                                            } finally {
+                                                resultLock.unlock();
+                                            }
                                             if (singleNodeTimes.size() == allCombinationTasks.size() && singleNodeTimeFlag) {
                                                 singleNodeResultMaps.put(MiningObject.MiningObject_Times.toString(), singleNodeTimes);
                                                 singleNodeTimeFlag = false;//完成，后面未执行完的抛弃
@@ -1552,7 +1557,9 @@ public class Server {
 //                                                awakeSingleThread();
 //                                            }
                                         } else {
-                                            isSuspend = true;
+                                            if (!isRunning) {
+                                                isSuspend = true;
+                                            }
                                         }
                                     }
 
@@ -1580,8 +1587,13 @@ public class Server {
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size()), totalCount));
                                             taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());
-                                            NetworkMinerFactory.getInstance().
-                                                    showNodeMinersDis(MiningObject.MiningObject_Traffic, singleNodeTraffic);
+                                            resultLock.lock();
+                                            try {
+                                                NetworkMinerFactory.getInstance().
+                                                        showNodeMinersDis(MiningObject.MiningObject_Traffic, singleNodeTraffic);
+                                            } finally {
+                                                resultLock.unlock();
+                                            }
                                             if (singleNodeTraffic.size() == allCombinationTasks.size() && singleNodeTrafficFlag) {
                                                 singleNodeResultMaps.put(MiningObject.MiningObject_Traffic.toString(), singleNodeTraffic);
                                                 singleNodeTrafficFlag = false;
@@ -1594,7 +1606,9 @@ public class Server {
 //                                                awakeSingleThread();
 //                                            }
                                         } else {
-                                            isSuspend = true;
+                                            if (!isRunning) {
+                                                isSuspend = true;
+                                            }
                                         }
                                     }
 
@@ -1623,8 +1637,13 @@ public class Server {
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", (singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size()), totalCount));
                                             taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());
-                                            NetworkMinerFactory.getInstance().
-                                                    showNodeMinersDis(MiningObject.MiningObject_NodeDisapearEmerge, singleNodeDisapearEmerge);
+                                            resultLock.lock();
+                                            try {
+                                                NetworkMinerFactory.getInstance().
+                                                        showNodeMinersDis(MiningObject.MiningObject_NodeDisapearEmerge, singleNodeDisapearEmerge);
+                                            } finally {
+                                                resultLock.unlock();
+                                            }
                                             if (singleNodeDisapearEmerge.size() == allCombinationTasks.size() && singleNodeDisapearEmergeFlag) {
                                                 singleNodeResultMaps.put(MiningObject.MiningObject_NodeDisapearEmerge.toString(), singleNodeDisapearEmerge);
                                                 singleNodeDisapearEmergeFlag = false;
@@ -1637,8 +1656,9 @@ public class Server {
 //                                                awakeSingleThread();
 //                                            }
                                         }  else {
-                                            isSuspend = true;
-                                        }
+                                            if (!isRunning) {
+                                                isSuspend = true;
+                                            }                                        }
                                     }
                                 }
 
@@ -1668,8 +1688,13 @@ public class Server {
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", nodePairTimes.size(), totalCount));
                                             taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
-                                            NetworkMinerFactory.getInstance().
-                                                    showNodeMinersDis(MiningObject.MiningObject_Times, nodePairTimes);
+                                            resultLock.lock();
+                                            try {
+                                                NetworkMinerFactory.getInstance().
+                                                        showNodeMinersDis(MiningObject.MiningObject_Times, nodePairTimes);
+                                            } finally {
+                                                resultLock.unlock();
+                                            }
                                             if (nodePairTimes.size() == allCombinationTasks.size() && nodePairTimeFlag) {
                                                 nodePairResultMaps.put(MiningObject.MiningObject_Times.toString(), nodePairTimes);
                                                 nodePairTimeFlag = false;//完成，后面未执行完的抛弃
@@ -1682,8 +1707,9 @@ public class Server {
 //                                                awakeSingleThread();
 //                                            }
                                         } else {
-                                            isSuspend = true;
-                                        }
+                                            if (!isRunning) {
+                                                isSuspend = true;
+                                            }                                        }
                                     }
 
                                     if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)) {
@@ -1710,8 +1736,13 @@ public class Server {
                                             taskPanel.getLog().append(String.format(
                                                     "Completed %d/%d of task.\n", (nodePairTimes.size() + nodePairTraffic.size()), totalCount));
                                             taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
-                                            NetworkMinerFactory.getInstance().
-                                                    showNodeMinersDis(MiningObject.MiningObject_Traffic, nodePairTraffic);
+                                            resultLock.lock();
+                                            try {
+                                                NetworkMinerFactory.getInstance().
+                                                        showNodeMinersDis(MiningObject.MiningObject_Traffic, nodePairTraffic);
+                                            } finally {
+                                                resultLock.unlock();
+                                            }
                                             if (nodePairTraffic.size() == allCombinationTasks.size() && nodePairTrafficFlag) {
                                                 nodePairResultMaps.put(MiningObject.MiningObject_Traffic.toString(), nodePairTraffic);
                                                 nodePairTrafficFlag = false;
@@ -1724,8 +1755,9 @@ public class Server {
 //                                                awakeSingleThread();
 //                                            }
                                         } else {
-                                            isSuspend = true;
-                                        }
+                                            if (!isRunning) {
+                                                isSuspend = true;
+                                            }                                        }
                                     }
                                 }
                                 break;
@@ -1756,8 +1788,13 @@ public class Server {
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", protocolTraffic.size(), totalCount));
                                         taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
-                                        NetworkMinerFactory.getInstance().
-                                                showProtocolMinersDis(MiningObject.MiningObject_Traffic, protocolTraffic);
+                                        resultLock.lock();
+                                        try {
+                                            NetworkMinerFactory.getInstance().
+                                                    showProtocolMinersDis(MiningObject.MiningObject_Traffic, protocolTraffic);
+                                        } finally {
+                                            resultLock.unlock();
+                                        }
                                         if (protocolTraffic.size() == allCombinationTasks.size() && protocolTrafficFlag) {
                                             protocolResultMaps = protocolTraffic;
                                             protocolTrafficFlag = false;
@@ -1770,8 +1807,9 @@ public class Server {
 //                                            awakeSingleThread();
 //                                        }
                                     } else {
-                                        isSuspend = true;
-                                    }
+                                        if (!isRunning) {
+                                            isSuspend = true;
+                                        }                                    }
                                 }
                                 break;
 
@@ -1801,8 +1839,13 @@ public class Server {
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", pathTimes.size(), totalCount));
                                         taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
-                                        NetworkMinerFactory.getInstance().
-                                                showPathMinersDis(MiningObject.MiningObject_Times, pathTimes);
+                                        resultLock.lock();
+                                        try {
+                                            NetworkMinerFactory.getInstance().
+                                                    showPathMinersDis(MiningObject.MiningObject_Times, pathTimes);
+                                        } finally {
+                                            resultLock.unlock();
+                                        }
                                         if (pathTimes.size() == allCombinationTasks.size() && pathTimeFlag) {
                                             pathResultMaps.put(MiningObject.MiningObject_Times.toString(), pathTimes);//通信次数结果
                                             pathTimeFlag = false;//完成，后面未执行完的抛弃
@@ -1815,8 +1858,9 @@ public class Server {
 //                                            awakeSingleThread();
 //                                        }
                                     } else {
-                                        isSuspend = true;
-                                    }
+                                        if (!isRunning) {
+                                            isSuspend = true;
+                                        }                                    }
                                 }
 
                                 if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)) {
@@ -1844,8 +1888,13 @@ public class Server {
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", (pathTimes.size() + pathTraffic.size()), totalCount));
                                         taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
-                                        NetworkMinerFactory.getInstance().
-                                                showPathMinersDis(MiningObject.MiningObject_Traffic, pathTraffic);
+                                        resultLock.lock();
+                                        try {
+                                            NetworkMinerFactory.getInstance().
+                                                    showPathMinersDis(MiningObject.MiningObject_Traffic, pathTraffic);
+                                        } finally {
+                                            resultLock.unlock();
+                                        }
                                         if (pathTraffic.size() == allCombinationTasks.size() && pathTrafficFlag) {
                                             pathResultMaps.put(MiningObject.MiningObject_Traffic.toString(), pathTraffic);
                                             pathTrafficFlag = false;
@@ -1858,8 +1907,9 @@ public class Server {
 //                                            awakeSingleThread();
 //                                        }
                                     } else {
-                                        isSuspend = true;
-                                    }
+                                        if (!isRunning) {
+                                            isSuspend = true;
+                                        }                                    }
                                 }
                                 System.out.println("跳出switch");
                                 break;
@@ -1890,8 +1940,13 @@ public class Server {
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", networkCluster.size(), totalCount));
                                         taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
-                                        NetworkMinerFactory.getInstance().
-                                                showNetWorkMinersDis(MiningObject.MiningObject_Cluster, networkCluster);
+                                        resultLock.lock();
+                                        try {
+                                            NetworkMinerFactory.getInstance().
+                                                    showNetWorkMinersDis(MiningObject.MiningObject_Cluster, networkCluster);
+                                        } finally {
+                                            resultLock.unlock();
+                                        }
                                         if (networkCluster.size() == allCombinationTasks.size() && networkClusterFlag) {
                                             networkResultMaps.put(MiningObject.MiningObject_Cluster.toString(), networkCluster);//通信次数结果
                                             networkClusterFlag = false;//完成，后面未执行完的抛弃
@@ -1904,8 +1959,9 @@ public class Server {
 //                                            awakeSingleThread();
 //                                        }
                                     } else {
-                                        isSuspend = true;
-                                    }
+                                        if (!isRunning) {
+                                            isSuspend = true;
+                                        }                                    }
                                 }
 
                                 if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Diameter)) {
@@ -1932,8 +1988,13 @@ public class Server {
                                         taskPanel.getLog().append(String.format(
                                                 "Completed %d/%d of task.\n", (networkCluster.size() + networkDiameter.size()), totalCount));
                                         taskPanel.getLog().setCaretPosition( taskPanel.getLog().getText().length());//滚动条自动滚动
-                                        NetworkMinerFactory.getInstance().
-                                                showNetWorkMinersDis(MiningObject.MiningObject_Diameter, networkDiameter);
+                                        resultLock.lock();
+                                        try {
+                                            NetworkMinerFactory.getInstance().
+                                                    showNetWorkMinersDis(MiningObject.MiningObject_Diameter, networkDiameter);
+                                        } finally {
+                                            resultLock.unlock();
+                                        }
                                         if (networkDiameter.size() == allCombinationTasks.size() && networkDiameterFlag) {
                                             networkResultMaps.put(MiningObject.MiningObject_Diameter.toString(), networkDiameter);
                                             networkDiameterFlag = false;
@@ -1946,8 +2007,9 @@ public class Server {
 //                                            awakeSingleThread();
 //                                        }
                                     } else {
-                                        isSuspend = true;
-                                    }
+                                        if (!isRunning) {
+                                            isSuspend = true;
+                                        }                                    }
                                 }
                                 System.out.println("跳出nnnnnswitch");
 
