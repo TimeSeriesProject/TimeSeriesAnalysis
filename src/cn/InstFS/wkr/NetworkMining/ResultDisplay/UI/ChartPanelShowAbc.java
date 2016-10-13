@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
@@ -30,7 +31,6 @@ import org.jfree.data.xy.XYSeriesCollection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-
 /**
  * @author LYH
  * 显示异常点和异常度*/
@@ -159,6 +159,18 @@ public class ChartPanelShowAbc extends JPanel{
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
+    public static XYDataset createOnePiont()
+    {
+        
+        XYSeries xyseries = new XYSeries("正常点");
+        XYSeriesCollection xyseriescollection = new XYSeriesCollection();
+      
+        xyseries.add(0,5.0);
+        
+        xyseriescollection.addSeries(xyseries);
+        return xyseriescollection;
+    }
+    
     public static JFreeChart createChart(DataItems oriItems,DataItems outdegree,DataItems outItems,String yName)
     {
 
@@ -168,11 +180,18 @@ public class ChartPanelShowAbc extends JPanel{
         XYDataset xydataset = createNormalDataset(oriItems);//原始值
         XYDataset xydataset1 = createAbnormalDataset(outdegree);//异常度
         XYDataset xyDataset2 = createAbnormalDataset1(oriItems,outItems);//异常点
-        
+        XYDataset xyDataset3 = createOnePiont();//生成一个额外点用来调整格式
         JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "序列编号", yName, xydataset);
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         xyplot.setOrientation(PlotOrientation.VERTICAL);
         xyplot.setDomainPannable(true);
+        xyplot.setRangePannable(false);
+       
+        
+        /*ChartPanel chart = new ChartPanel(jfreechart);
+        chart.setPopupMenu(null);// 不显示弹出菜单  
+        chart.restoreAutoRangeBounds();
+        chart.setDomainZoomable(true);*/
         //设置原始坐标轴
         double max = getMaxPiont(oriItems);
         double min = getMinPiont(oriItems);
@@ -189,22 +208,23 @@ public class ChartPanelShowAbc extends JPanel{
         NumberAxis numberaxis1 = new NumberAxis("异常度");
         xyplot.setRangeAxis(1, numberaxis1);
         numberaxis1.setAutoTickUnitSelection(false);//数据轴的数据标签是否自动确定
-        //numberaxis1.setTickUnit(new NumberTickUnit(1D));  //y轴单位间隔为1
+        numberaxis1.setFixedDimension(10.0D); 
         numberaxis1.setRange(0,10);
         numberaxis1.setUpperMargin(1);
         numberaxis1.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
         NumberAxis xAxis=(NumberAxis)xyplot.getDomainAxis();
         xAxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
         xyplot.setRangeAxisLocation(0, AxisLocation.BOTTOM_OR_LEFT);
-
         xyplot.setRangeAxisLocation(1, AxisLocation.BOTTOM_OR_RIGHT);
 //        xyplot.setDataset(0, xydataset);
         xyplot.setDataset(1, xydataset1);
         xyplot.setDataset(2, xyDataset2);
-        
+        xyplot.setDataset(3, xyDataset3);
         //设置同一个横轴显示两组数据。
         xyplot.mapDatasetToRangeAxis(0, 0);
         xyplot.mapDatasetToRangeAxis(1, 1);
+        xyplot.mapDatasetToRangeAxis(2, 0);
+        xyplot.mapDatasetToRangeAxis(3, 1);
         xyplot.setRenderer(1, new XYLineAndShapeRenderer(true, false));
 //        ChartUtilities.applyCurrentTheme(jfreechart);
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
@@ -224,7 +244,7 @@ public class ChartPanelShowAbc extends JPanel{
 
 
         //设置异常度显示方法
-        XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();//绑定xydataset2,异常度显示        
+        XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();//绑定xydataset1,异常度显示        
         xyplot.setRenderer(1, xylineandshaperenderer1);
         xylineandshaperenderer1.setSeriesShapesVisible(0,false);
         xylineandshaperenderer1.setSeriesLinesVisible(0, true);
@@ -234,7 +254,7 @@ public class ChartPanelShowAbc extends JPanel{
         xylineandshaperenderer1.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0}:({1} , {2})", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), new DecimalFormat("#.00")));
         
         //设置异常点显示方式
-        XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();//绑定xydataset1,异常点显示
+        XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();//绑定xydataset2,异常点显示
         xyplot.setRenderer(2, xylineandshaperenderer2);
         xylineandshaperenderer2.setSeriesLinesVisible(0, false);
         xylineandshaperenderer2.setSeriesShape(0, double1);
@@ -244,6 +264,8 @@ public class ChartPanelShowAbc extends JPanel{
         xylineandshaperenderer2.setUseFillPaint(true);
         xylineandshaperenderer2.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
         xylineandshaperenderer2.setBaseItemLabelsVisible(true);
+        
+        
         return jfreechart;
     }
     private static double getMaxPiont(DataItems items){
