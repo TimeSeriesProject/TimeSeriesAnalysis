@@ -33,12 +33,10 @@ import java.util.concurrent.locks.*;
  * Created by zsc on 2016/5/20.
  */
 public class Server {
-    private static Server server;
     private static ServerStart serverStart;
     private int taskCount = 0;//发送次数
     private int totalCount = 0;
     private String port = "";
-//    private AtomicInteger taskCount = new AtomicInteger(0);
     private boolean singleNodeTimeFlag = true;//判断是否生成result界面
     private boolean singleNodeTrafficFlag = true;//判断是否生成result界面
     private boolean singleNodeDisapearEmergeFlag = true;//判断是否生成result界面
@@ -135,6 +133,9 @@ public class Server {
 
     private ReadWriteLock isPcapRunningLock = new ReentrantReadWriteLock();
 
+    private static class Holder {
+        private static Server server = new Server();
+    }
 
     private Server() {
 
@@ -148,11 +149,7 @@ public class Server {
     }
 
     public static Server getInstance() {
-        if (server != null) {
-            return server;
-        }
-        server = new Server();
-        return server;
+        return Holder.server;
     }
 
     public static ServerStart getStartInstance() {

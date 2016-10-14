@@ -19,7 +19,6 @@ public class DisPanel extends JDialog {
     private JTextField portFiled = null;
     private JButton login = null;
     private boolean isDistributed;
-    private static Server server;
 
     public DisPanel(JFrame parentFrame, String title, boolean isDistributed) {
         super(parentFrame, title, true);
@@ -117,8 +116,7 @@ public class DisPanel extends JDialog {
                             Runnable runnable = new Runnable() {
                                 @Override
                                 public void run() {
-                                    server = Server.getInstance();
-                                    server.setPort(portFiled.getText().trim());
+                                    Server.getInstance().setPort(portFiled.getText().trim());
                                     new Thread(Server.getStartInstance()).start();
                                 }
                             };

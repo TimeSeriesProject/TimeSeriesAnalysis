@@ -1,7 +1,5 @@
 package Distributed;
 
-import cn.InstFS.wkr.NetworkMining.PcapDistributed.PcapServer;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,8 +11,6 @@ import java.awt.event.ActionListener;
  */
 
 public class PcapPanel extends JPanel {
-    private Server Server = Distributed.Server.getInstance();
-
     private JButton inJB = null;
     private JButton outJB = null;
     private JTextField inText = null;
@@ -141,11 +137,10 @@ public class PcapPanel extends JPanel {
                                     @Override
                                     public void run() {
                                         System.out.println("进入......");
-                                        Server.initPcap(PcapPanel.this, inText.getText().trim(), outText.getText().trim());
-                                        Server.genTasks(inText.getText().trim(), "pcap");
-                                        Server.awakePcap();
-                                        Server.setIsPcapRunning(true);
-//                                        new Thread(pcapServer.new PcapServerStart()).start();
+                                        Server.getInstance().initPcap(PcapPanel.this, inText.getText().trim(), outText.getText().trim());
+                                        Server.getInstance().genTasks(inText.getText().trim(), "pcap");
+                                        Server.getInstance().awakePcap();
+                                        Server.getInstance().setIsPcapRunning(true);
                                     }
                                 };
                                 new Thread(runnable).start();
