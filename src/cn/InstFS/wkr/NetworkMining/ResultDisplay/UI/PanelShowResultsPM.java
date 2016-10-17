@@ -20,6 +20,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 
 import javax.swing.JCheckBox;
 
@@ -41,7 +42,8 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 	private JCheckBox chckShowFeatureVal;
 	
 	
-	public PanelShowResultsPM(TaskElement task){
+	public PanelShowResultsPM(TaskElement task){		
+		
 		obName=task.getMiningObject();
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{450, 0};
@@ -102,6 +104,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 	 * Create the panel.
 	 */
 	private PanelShowResultsPM() {
+				
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{450, 0};
 //		gridBagLayout.rowHeights = new int[] {0, 1, 0};

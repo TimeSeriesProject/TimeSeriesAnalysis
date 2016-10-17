@@ -633,7 +633,7 @@ public class PcapUtils {
     private ParseByDay parseByDay;
 
     public enum Status {
-        PREPARE("prepare"), PARSE("parse"), GENROUTE("genroute"), END("end");
+        PREPARE("prepare"), PARSE("parse"), GENROUTE("genroute"), PARSEBYDAY("parsebyday"), END("end");
         private String comment;
 
         Status(String str) {
@@ -653,6 +653,8 @@ public class PcapUtils {
     private int genedRouteNum = 0;
     private int genTrafficSum = 0;
     private int gentedTrafficNum = 0;
+    private int parsebydaySum = 0;
+    private int parsebydayNum = 0;
 
     public Status getStatus() {
         return status;
@@ -708,6 +710,22 @@ public class PcapUtils {
 
     public synchronized void setGenTrafficSum(int genTrafficSum) {
         this.genTrafficSum = genTrafficSum;
+    }
+
+    public synchronized int getParsebydaySum() {
+        return parsebydaySum;
+    }
+
+    public synchronized void setParsebydaySum(int parsebydaySum) {
+        this.parsebydaySum = parsebydaySum;
+    }
+
+    public synchronized int getParsebydayNum() {
+        return parsebydayNum;
+    }
+
+    public synchronized void setParsebydayNum(int parsebydayNum) {
+        this.parsebydayNum = parsebydayNum;
     }
 
     public static void main(String[] args) throws IOException, FileNotFoundException {
@@ -1025,9 +1043,16 @@ public class PcapUtils {
         long e = System.currentTimeMillis();
         System.out.println("时间3：" + (e - d) / 1000);
 
+        status = Status.PARSEBYDAY;
+        setParsebydaySum(3);
         parseByDay = new ParseByDay(outpath, outpath, date);
-        parseByDay.genDataByDay();
-
+        parseByDay.initDataByDay();
+        parseByDay.parseNode();
+        setParsebydayNum(1);
+        parseByDay.parseRoute();
+        setParsebydayNum(2);
+        parseByDay.parseTraffic();
+        setParsebydayNum(3);
         status = Status.END;
         System.out.println("解析结束");
 

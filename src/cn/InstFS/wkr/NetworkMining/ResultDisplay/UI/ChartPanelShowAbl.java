@@ -24,6 +24,9 @@ import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.DomainOrder;
+import org.jfree.data.general.DatasetChangeListener;
+import org.jfree.data.general.DatasetGroup;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -158,6 +161,17 @@ public class ChartPanelShowAbl extends JPanel{
     	}
     	return xyDatasetList;
     }
+    public static XYDataset createOnePiont(double d)
+    {
+        
+        XYSeries xyseries = new XYSeries("正常点");
+        XYSeriesCollection xyseriescollection = new XYSeriesCollection();
+      
+        xyseries.add(0,d);
+        
+        xyseriescollection.addSeries(xyseries);
+        return xyseriescollection;
+    }
     public static JFreeChart createChart(DataItems oriItems,DataItems outdegree,List<DataItems> outSet,String yName)
     {
 
@@ -166,7 +180,8 @@ public class ChartPanelShowAbl extends JPanel{
 
         XYDataset xydataset = createNormalDataset(oriItems);//原始值
         XYDataset xydataset1 = createAbnormalDataset(outdegree);//异常度
-        List<XYDataset> xyDatasetlist = createAbLineDataset(oriItems,outSet);//异常点
+        XYDataset xyDataset2 = createOnePiont(5.0);//附加点（不显示），用来调整异常度轴的格式       
+        List<XYDataset> xyDatasetlist = createAbLineDataset(oriItems,outSet);//异常线段
         
         JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "序列编号", yName, xydataset);
         jfreechart.removeLegend();
@@ -181,8 +196,9 @@ public class ChartPanelShowAbl extends JPanel{
         xyplot.setRangeAxis(0,numberAxis0);
         if(diff>0){        
         	numberAxis0.setLowerBound(min - diff*0.1);
-        	numberAxis0.setUpperBound(max + diff*0.1);
+        	numberAxis0.setUpperBound(max + diff*0.1);        	
         }
+               
         numberAxis0.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
 
         //设置异常度坐标轴 
@@ -196,18 +212,23 @@ public class ChartPanelShowAbl extends JPanel{
         numberaxis1.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
         NumberAxis xAxis=(NumberAxis)xyplot.getDomainAxis();
         xAxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
+      
+        
+      
         xyplot.setDataset(0, xydataset);
-        xyplot.setDataset(1, xydataset1);        
+        xyplot.setDataset(1, xydataset1); 
+        xyplot.setDataset(2,xyDataset2);
+        
         //设置同一个横轴显示两组数据。
         xyplot.mapDatasetToDomainAxis(0, 0);
         xyplot.mapDatasetToRangeAxis(1, 1);
+        xyplot.mapDatasetToRangeAxis(2, 1);
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setLowerMargin(1);
         numberaxis.setAutoRangeIncludesZero(false);
         
         //设置原始数据显示方式
-        XYLineAndShapeRenderer xylineandshaperenderer0 = new XYLineAndShapeRenderer(); //绑定xydataset,原始数据
-        xyplot.setDataset(0, xydataset);
+        XYLineAndShapeRenderer xylineandshaperenderer0 = new XYLineAndShapeRenderer(); //绑定xydataset,原始数据       
         xyplot.setRenderer(0, xylineandshaperenderer0);
         xylineandshaperenderer0.setSeriesShapesVisible(0,false);
         xylineandshaperenderer0.setSeriesLinesVisible(0, true);
@@ -227,6 +248,7 @@ public class ChartPanelShowAbl extends JPanel{
         xylineandshaperenderer1.setSeriesFillPaint(0, new Color(65,105,225));
         xylineandshaperenderer1.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0}:({1} , {2})", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), new DecimalFormat("#.00")));
         
+        
         //设置异常线段显示方式
         XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();//绑定xydatasetlist,异常点显示
         Shape itemShape = ShapeUtilities.createDiamond((float) 0);
@@ -240,8 +262,9 @@ public class ChartPanelShowAbl extends JPanel{
         xylineandshaperenderer2.setSeriesShapesVisible(0, true);
         xylineandshaperenderer2.setBaseItemLabelsVisible(false);
         for(int i=0;i<outSet.size();i++){
-        	xyplot.setDataset(i+2,xyDatasetlist.get(i));
-        	xyplot.setRenderer(i+2, xylineandshaperenderer2);
+        	xyplot.setDataset(i+3,xyDatasetlist.get(i));
+        	xyplot.setRenderer(i+3, xylineandshaperenderer2);
+        	xyplot.mapDatasetToDomainAxis(i+3, 0);
         }       
         return jfreechart;
     }

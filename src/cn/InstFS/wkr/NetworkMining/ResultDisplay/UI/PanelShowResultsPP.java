@@ -20,6 +20,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -103,7 +104,8 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
         {
             JScrollPane jsp = new JScrollPane();
             JPanel jp=new JPanel();
-
+            JPanel label = new JPanel();
+            JPanel panel = new JPanel(new BorderLayout());
             remove(chart1);
             HashMap<String, MinerResultsPM> resultPM = rslt.getRetPath().getRetPM();
 
@@ -151,9 +153,15 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 sortPeriod.put(min,periodName);
                 min=1000000000;
             }
-
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH时");
+            JLabel startTime = new JLabel("开始时间:"+sdf.format(rslt.getInputData().getTime().get(0))+"      ");
+            JLabel granularity = new JLabel("时间粒度:"+task.getGranularity()+"(s)");
+            label.add(startTime);
+            label.add(granularity);
             jp.setLayout(new GridLayout(0,1));
-            jsp.setViewportView(jp);
+            panel.add(label,BorderLayout.NORTH);
+            panel.add(jp,BorderLayout.SOUTH);
+            jsp.setViewportView(panel);
             add(jsp);
 
             HashMap<String, DataItems> pathOriDataItems = rslt.getRetPath().getPathOriDataItems();
@@ -226,6 +234,8 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
         }else if (count==0 && miningMethod.equals(MiningMethod.MiningMethods_OutliesMining)) {
             JScrollPane jsp = new JScrollPane();
             JPanel jp=new JPanel();
+            JPanel label = new JPanel();
+            JPanel panel = new JPanel(new BorderLayout());
             remove(chart1);
 
 
@@ -280,8 +290,15 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 jp.add(chartpanel);
 
             }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH时");
+            JLabel startTime = new JLabel("开始时间:"+sdf.format(rslt.getInputData().getTime().get(0))+"      ");
+            JLabel granularity = new JLabel("时间粒度:"+task.getGranularity()+"(s)");
+            label.add(startTime);
+            label.add(granularity);
             jp.setLayout(new GridLayout(0,2));
-            jsp.setViewportView(jp);
+            panel.add(label,BorderLayout.NORTH);
+            panel.add(jp,BorderLayout.SOUTH);
+            jsp.setViewportView(panel);            
             add(jsp);
             repaint();
             validate();

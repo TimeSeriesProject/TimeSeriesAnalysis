@@ -241,7 +241,7 @@ class NodeTimerTask extends TimerTask{
 					tsaMethod = new GaussianOutlierDetection(dataItems);
 					results.getRetNode().getRetOM().setIslinkDegree(true);
 				}else {
-					if(results.getRetNode().getRetPM().getHasPeriod()){
+					if(results.getRetNode().getRetStatistics().getComplex() < 1.9){
 						tsaMethod = new MultidimensionalOutlineDetection(dataItems);
 						results.getRetNode().getRetOM().setIslinkDegree(true);
 					}else{

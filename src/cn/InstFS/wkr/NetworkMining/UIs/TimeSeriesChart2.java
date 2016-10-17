@@ -77,94 +77,94 @@ public class TimeSeriesChart2 extends Composite {
 		// 传入
 		String protocol1 = pp.getProtocol1();
 		String protocol2 = pp.getProtocol2();
-		JFreeChart chart = createChart(pp.getDataItems1(), pp.getDataItems2(),
-				chartname, protocol1, protocol2);
+//		JFreeChart chart = createChart(pp.getDataItems1(), pp.getDataItems2(),
+//				chartname, protocol1, protocol2);
 		// JFreeChart chart =
 		// createChart(createDataset(ip1,ip2,ip1data,ip2data));
 
-		ChartComposite frame = new ChartComposite(this, SWT.NONE, chart, true);
-		frame.setDisplayToolTips(true);
-		frame.setHorizontalAxisTrace(false);
-		frame.setVerticalAxisTrace(false);
-		this.setLayout(new FillLayout());
+//		ChartComposite frame = new ChartComposite(this, SWT.NONE, chart, true);
+//		frame.setDisplayToolTips(true);
+//		frame.setHorizontalAxisTrace(false);
+//		frame.setVerticalAxisTrace(false);
+//		this.setLayout(new FillLayout());
 
 		// TODO Auto-generated constructor stub
 	}
 
 	
 
-	public static JFreeChart createChart(DataItems nor, DataItems abnor,
-			String title, String protocol1, String protocol2) {
-		// 第一条线
-		XYDataset xydataset1 = TimeSeriesChart1.createNormalDataset(nor,
-				protocol1);
-		JFreeChart jfreechart = ChartFactory.createScatterPlot(title, "时间",
-				"值", xydataset1);
-		XYPlot xyplot = (XYPlot) jfreechart.getPlot();
-
-		XYLineAndShapeRenderer xylineandshaperenderer1 = (XYLineAndShapeRenderer) xyplot
-				.getRenderer();
-		// 设置数据集线条1，设置线条1的渲染器
-
-		NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
-		numberaxis.setAutoRangeIncludesZero(false);
-		java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(
-				-4D, -4D, 6D, 6D);
-		// 设置异常点提示红点大小
-
-		// 设置不可看到点。
-		xylineandshaperenderer1.setSeriesLinesVisible(0, true);
-		xylineandshaperenderer1.setBaseShapesVisible(false);
-		xylineandshaperenderer1.setSeriesShape(0, double1);
-		xylineandshaperenderer1.setSeriesPaint(0, Color.blue);
-		xylineandshaperenderer1.setSeriesFillPaint(0, Color.blue);
-		xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.blue);
-		xylineandshaperenderer1.setSeriesStroke(0, new BasicStroke(0.5F));
-	
-		// 创造数据集，
-		XYDataset xydataset2 = TimeSeriesChart1.createNormalDataset(abnor,
-				protocol2);
-/*		XYTextAnnotation localXYTextAnnotation = new XYTextAnnotation("aa",10,
-				Double.parseDouble(abnor.getElementAt(10).getData()));
-		xyplot.addAnnotation(localXYTextAnnotation);*/
-		XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
-		int datasetcount=xyplot.getDatasetCount();
-		xyplot.setDataset(datasetcount, xydataset2);
-		xyplot.setRenderer(datasetcount ,xylineandshaperenderer2);
-/*		System.out.println("DatasetCount="+xyplot.getDatasetCount());
-		
-		for(int c=0;c<xyplot.getDatasetCount();c++){
-			System.out.println("DatasetSeriesCount="+xyplot.getDataset(c).getSeriesCount());
-			System.out.println("Dataset["+c+"]="+xyplot.getDataset(c).getSeriesKey(0));
-		}*/
-		
-	/*	// 设置不可见到点。 。
-		xylineandshaperenderer2.setBaseShapesVisible(false);
-		// 设置可以看见线。
-		xylineandshaperenderer2.setSeriesLinesVisible(0, true);
-		xylineandshaperenderer2.setSeriesShape(0, double1);
-		// 设置线和点的颜色。
-		xylineandshaperenderer2.setSeriesPaint(0, Color.green);
-		xylineandshaperenderer2.setSeriesFillPaint(0, Color.green);
-		xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.green);
-
-		xylineandshaperenderer2.setUseFillPaint(true);
-		xylineandshaperenderer2
-				.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
-		xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(0.5F));
-		
-*/
-		xylineandshaperenderer2.setSeriesLinesVisible(0, true);
-		xylineandshaperenderer2.setBaseShapesVisible(false);
-		xylineandshaperenderer2.setSeriesShape(0, double1);
-		xylineandshaperenderer2.setSeriesPaint(0, Color.GREEN);
-		xylineandshaperenderer2.setSeriesFillPaint(0, Color.GREEN);
-		xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.green);
-		xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(0.5F));
-		jfreechart.getLegend().setVisible(true);
-		return jfreechart;
-
-	}
+//	public static JFreeChart createChart(DataItems nor, DataItems abnor,
+//			String title, String protocol1, String protocol2) {
+////		// 第一条线
+//////		XYDataset xydataset1 = TimeSeriesChart1.createNormalDataset(nor,
+//////				protocol1);
+//////		JFreeChart jfreechart = ChartFactory.createScatterPlot(title, "时间",
+//////				"值", xydataset1);
+//////		XYPlot xyplot = (XYPlot) jfreechart.getPlot();
+////
+//////		XYLineAndShapeRenderer xylineandshaperenderer1 = (XYLineAndShapeRenderer) xyplot
+////				.getRenderer();
+////		// 设置数据集线条1，设置线条1的渲染器
+////
+//////		NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
+////		numberaxis.setAutoRangeIncludesZero(false);
+////		java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(
+////				-4D, -4D, 6D, 6D);
+////		// 设置异常点提示红点大小
+////
+////		// 设置不可看到点。
+////		xylineandshaperenderer1.setSeriesLinesVisible(0, true);
+////		xylineandshaperenderer1.setBaseShapesVisible(false);
+////		xylineandshaperenderer1.setSeriesShape(0, double1);
+////		xylineandshaperenderer1.setSeriesPaint(0, Color.blue);
+////		xylineandshaperenderer1.setSeriesFillPaint(0, Color.blue);
+////		xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.blue);
+////		xylineandshaperenderer1.setSeriesStroke(0, new BasicStroke(0.5F));
+////
+////		// 创造数据集，
+////		XYDataset xydataset2 = TimeSeriesChart1.createNormalDataset(abnor,
+////				protocol2);
+/////*		XYTextAnnotation localXYTextAnnotation = new XYTextAnnotation("aa",10,
+////				Double.parseDouble(abnor.getElementAt(10).getData()));
+////		xyplot.addAnnotation(localXYTextAnnotation);*/
+////		XYLineAndShapeRenderer xylineandshaperenderer2 = new XYLineAndShapeRenderer();
+////		int datasetcount=xyplot.getDatasetCount();
+////		xyplot.setDataset(datasetcount, xydataset2);
+////		xyplot.setRenderer(datasetcount ,xylineandshaperenderer2);
+/////*		System.out.println("DatasetCount="+xyplot.getDatasetCount());
+////
+////		for(int c=0;c<xyplot.getDatasetCount();c++){
+////			System.out.println("DatasetSeriesCount="+xyplot.getDataset(c).getSeriesCount());
+////			System.out.println("Dataset["+c+"]="+xyplot.getDataset(c).getSeriesKey(0));
+////		}*/
+////
+////	/*	// 设置不可见到点。 。
+////		xylineandshaperenderer2.setBaseShapesVisible(false);
+////		// 设置可以看见线。
+////		xylineandshaperenderer2.setSeriesLinesVisible(0, true);
+////		xylineandshaperenderer2.setSeriesShape(0, double1);
+////		// 设置线和点的颜色。
+////		xylineandshaperenderer2.setSeriesPaint(0, Color.green);
+////		xylineandshaperenderer2.setSeriesFillPaint(0, Color.green);
+////		xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.green);
+////
+////		xylineandshaperenderer2.setUseFillPaint(true);
+////		xylineandshaperenderer2
+////				.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
+////		xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(0.5F));
+////
+////*/
+////		xylineandshaperenderer2.setSeriesLinesVisible(0, true);
+////		xylineandshaperenderer2.setBaseShapesVisible(false);
+////		xylineandshaperenderer2.setSeriesShape(0, double1);
+////		xylineandshaperenderer2.setSeriesPaint(0, Color.GREEN);
+////		xylineandshaperenderer2.setSeriesFillPaint(0, Color.GREEN);
+////		xylineandshaperenderer2.setSeriesOutlinePaint(0, Color.green);
+////		xylineandshaperenderer2.setSeriesStroke(0, new BasicStroke(0.5F));
+////		jfreechart.getLegend().setVisible(true);
+//		return jfreechart;
+//
+//	}
 
 
 

@@ -7,8 +7,6 @@ import java.awt.*;
  * Created by zsc on 2016/10/8.
  */
 public class TaskPanel extends JPanel {
-    private Server server = Distributed.Server.getInstance();
-
     private JProgressBar progressBar = null;
     private JTextArea taskOutput = null;
     private JScrollPane textJScrollPane = null;
@@ -18,7 +16,7 @@ public class TaskPanel extends JPanel {
     }
 
     private void initialize() {
-        server.initTask(TaskPanel.this);
+        Server.getInstance().initTask(TaskPanel.this);
 //        this.setBorder(BorderFactory.createTitledBorder("任务挖掘进度"));
 
         this.setLayout(new GridBagLayout());

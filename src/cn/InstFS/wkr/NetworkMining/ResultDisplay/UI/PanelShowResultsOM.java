@@ -1,6 +1,12 @@
 package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 import javax.swing.*;
 
@@ -29,37 +35,56 @@ import java.awt.GridLayout;
 import java.util.Timer;
 
 public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
-    private Date now;    // 指示现在序列编号，但有可能不是真正的现在序列编号
+    TaskElement task;
+	private Date now;    // 指示现在序列编号，但有可能不是真正的现在序列编号
     private INetworkMiner miner;
     private Timer timer;
     JDesktopPane desktopPane;
     int count = 0;
     ChartPanelShowTs chart1;
-    ChartPanelShowTs chart3;
-    ChartPanelShowAb chart2;
-    ChartPanelShowPre chart4;
+    //ChartPanelShowTs chart3;
+    //ChartPanelShowAb chart2;
+    //ChartPanelShowPre chart4;
     private String obName;
     private String xName;
     private String yName;
+    //JScrollPane jsp = new JScrollPane();
+    //JPanel panel = new JPanel(new BorderLayout());
     public PanelShowResultsOM(TaskElement task) {
-        InitChartScheme();
+        this.task = task;
+    	InitChartScheme();
         obName=task.getMiningObject();
-        setLayout(new GridLayout(0, 1, 0, 0));
+        setLayout(new BorderLayout());
 //		chart1 = new ChartPanelShowTs("原始值", "序列编号", "值", null);
 //		chart2 = new ChartPanelShowTs("预测值", "序列编号", "", null);
 //
 //		add(chart1);
 //		add(chart2);
         chart1 = new ChartPanelShowTs("原始值", "序列编号", obName, null);
-        chart2 = new ChartPanelShowAb("异常值", "序列编号", obName, null);
-        ChartPanelShowAbc jf1 = new ChartPanelShowAbc(task);
-        ChartPanelShowAbl jf2 = new ChartPanelShowAbl(task);
+        //chart2 = new ChartPanelShowAb("异常值", "序列编号", obName, null);
+        /*ChartPanelShowAbc jf1 = new ChartPanelShowAbc(task);
+        ChartPanelShowAbl jf2 = new ChartPanelShowAbl(task);*/
+        
         InitMiner(task);
     }
 
     private void InitMiner(TaskElement task) {
         this.miner = NetworkMinerFactory.getInstance().createMiner(task);
         miner.setResultsDisplayer(this);
+        
+        JPanel jp1 = new JPanel();
+        //jp1.setPreferredSize(new Dimension(500,100));
+        JLabel lblGranularity = new JLabel();
+    	JLabel lblStartTime = new JLabel();    	
+        int granularity = task.getGranularity();
+		lblGranularity.setText("时间粒度：" + granularity + "(s)");	
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH时");
+		lblStartTime.setText("起始时间:"+ sdf.format(miner.getResults().getInputData().getTime().get(0)) +"    ");       
+		jp1.add(lblStartTime);
+        jp1.add(lblGranularity);
+        
+        add(jp1,BorderLayout.NORTH);
+      
     }
 
     /**
@@ -67,14 +92,14 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
      */
     private PanelShowResultsOM() {
         InitChartScheme();
-        setLayout(new GridLayout(0, 1, 0, 0));
+        //setLayout(new GridLayout(0, 1, 0, 0));
 //		chart1 = new ChartPanelShowTs("原始值", "序列编号", "值", null);
 //		chart2 = new ChartPanelShowTs("预测值", "序列编号", "", null);
 //
 //		add(chart1);
 //		add(chart2);
-        chart1 = new ChartPanelShowTs("原始值", "序列编号", obName, null);
-        chart2 = new ChartPanelShowAb("异常值", "序列编号", obName, null);
+        //chart1 = new ChartPanelShowTs("原始值", "序列编号", obName, null);
+        //chart2 = new ChartPanelShowAb("异常值", "序列编号", obName, null);
 //        chart3= new ChartPanelShowTs("预测值", "序列编号", "", null);
 //        add(chart1);
 //        add(chart2);
@@ -172,8 +197,9 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
         if (rslts == null || rslts.getRetOM() == null ||
                 !rslts.getMiner().getClass().equals(NetworkMinerOM.class))
             return;
-
-        if (count == 0) {
+        
+        
+		if (count == 0) {
 
             yName=obName;
 
@@ -193,38 +219,42 @@ public class PanelShowResultsOM extends JPanel implements IPanelShowResults {
                     if (islinkPic) {
                         JFreeChart jf = ChartPanelShowAbl.createChart(oriItems,outDegree,outSet,yName);
                         ChartPanel chartpanel = new ChartPanel(jf);
-                        chart1.displayDataItems(oriItems);
+                        //chart1.displayDataItems(oriItems);
                         chartpanel.setMouseWheelEnabled(true);
-                        remove(chart1);
+                        //remove(chart1);
 //                        remove(chart2);
 //                        add(chart1);
-                        add(chartpanel);
+                        //chartpanel.setPreferredSize(new Dimension(500,700));
+                        add(chartpanel,BorderLayout.CENTER);
                         count++;
 
                     } else {
                         JFreeChart jf = ChartPanelShowAbc.createChart(oriItems,outDegree,outliesItems,yName);
                         ChartPanel chartpanel = new ChartPanel(jf);
-                        chart1.displayDataItems(oriItems);
-                        remove(chart1);
-                        remove(chart2);
+                        //chart1.displayDataItems(oriItems);
+                        //remove(chart1);
+                        //remove(chart2);
                         //add(chart1);
-                        add(chartpanel);
+                        //chartpanel.setPreferredSize(new Dimension(500,700));
+                        add(chartpanel,BorderLayout.CENTER);
                         count++;
                     }
 
                 }else{
                 	JFreeChart jf = ChartPanelShowAb.createChart(oriItems,outDegree,yName);
                     ChartPanel chartpanel = new ChartPanel(jf);
-                    chart1.displayDataItems(oriItems);
-                    remove(chart1);
-                    remove(chart2);
-                    add(chart1);
-                    add(chartpanel);
+                    //chart1.displayDataItems(oriItems);
+                    //remove(chart1);
+                    //remove(chart2);
+                    //add(chart1);
+                    add(chartpanel,BorderLayout.CENTER);
                     count++;
                 }
-
+                
             }
+            
         }
+		
         repaint();
         revalidate();
     }

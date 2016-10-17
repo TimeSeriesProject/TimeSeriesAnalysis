@@ -15,6 +15,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.NetworkMinerSM;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
+
 import org.junit.Assert;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
@@ -65,51 +66,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 	 * Create the panel.
 	 */
 	public PanelShowResultsSM(TaskElement task) {
-//		GridBagLayout gridBagLayout = new GridBagLayout();
-//		gridBagLayout.columnWidths = new int[]{0, 0, 0};
-//		gridBagLayout.rowHeights = new int[]{75, 75, 75, 75, 0};
-//		gridBagLayout.columnWeights = new double[]{1.0, 0.4, Double.MIN_VALUE};
-//		gridBagLayout.rowWeights = new double[]{1.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
-//		setLayout(gridBagLayout);
-//		tblCurData = new TablePanelShowDataItems("当前值");
-//		GridBagConstraints gbc_tblCurData = new GridBagConstraints();
-//		gbc_tblCurData.fill = GridBagConstraints.BOTH;
-//		gbc_tblCurData.insets = new Insets(0, 0, 5, 5);
-//		gbc_tblCurData.gridx = 0;
-//		gbc_tblCurData.gridy = 0;
-////		add(tblCurData, gbc_tblCurData);
-//
-//		tblShowAccuracy = new TablePanelShowPrecisionRecall("预测结果");
-//		GridBagConstraints gbc_panel = new GridBagConstraints();
-//		gbc_panel.gridheight = 4;
-//		gbc_panel.insets = new Insets(0, 0, 5, 0);
-//		gbc_panel.fill = GridBagConstraints.BOTH;
-//		gbc_panel.gridx = 1;
-//		gbc_panel.gridy = 0;
-////		add(tblShowAccuracy, gbc_panel);
-//
-//		tblForcasts_curTime = new TablePanelShowDataItems("当前预测值");
-//		GridBagConstraints gbc_tblForcasts_curTime = new GridBagConstraints();
-//		gbc_tblForcasts_curTime.fill = GridBagConstraints.BOTH;
-//		gbc_tblForcasts_curTime.insets = new Insets(0, 0, 5, 5);
-//		gbc_tblForcasts_curTime.gridx = 0;
-//		gbc_tblForcasts_curTime.gridy = 1;
-////		add(tblForcasts_curTime, gbc_tblForcasts_curTime);
-//		tblForcasts_futureTime = new TablePanelShowDataItems("未来预测值");
-//		GridBagConstraints gbc_tblForcasts_futureTime = new GridBagConstraints();
-//		gbc_tblForcasts_futureTime.fill = GridBagConstraints.BOTH;
-//		gbc_tblForcasts_futureTime.insets = new Insets(0, 0, 5, 5);
-//		gbc_tblForcasts_futureTime.gridx = 0;
-//		gbc_tblForcasts_futureTime.gridy = 2;
-////		add(tblForcasts_futureTime, gbc_tblForcasts_futureTime);
-//		tblPatterns = new TablePanelShowDataItems("序列模式");
-//		GridBagConstraints gbc_tblPatterns = new GridBagConstraints();
-//		gbc_tblPatterns.insets = new Insets(0, 0, 0, 5);
-//		gbc_tblPatterns.fill = GridBagConstraints.BOTH;
-//		gbc_tblPatterns.gridx = 0;
-//		gbc_tblPatterns.gridy = 3;
-////		add(tblPatterns, gbc_tblPatterns);
-////		InitChartScheme();
+
 		ObName=task.getMiningObject();
 		setLayout(new BorderLayout());
 //		chart1 = new ChartPanelShowTs("原始值", "序列编号", "值", null);
@@ -127,6 +84,19 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 	private void InitMiner(TaskElement task) {
 		this.miner = NetworkMinerFactory.getInstance().createMiner(task);
 		miner.setResultsDisplayer(this);
+		
+		JPanel jp1 = new JPanel();
+        //jp1.setPreferredSize(new Dimension(500,100));
+        JLabel lblGranularity = new JLabel();
+    	JLabel lblStartTime = new JLabel();    	
+        int granularity = task.getGranularity();
+		lblGranularity.setText("时间粒度：" + granularity + "(s)");	
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH时");
+		lblStartTime.setText("起始时间:"+ sdf.format(miner.getResults().getInputData().getTime().get(0)) +"    ");       
+		jp1.add(lblStartTime);
+        jp1.add(lblGranularity);
+        
+        add(jp1,BorderLayout.NORTH);
 	}
 
 	public void showResults() {
@@ -146,8 +116,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 
 	@Override
 	public void setData(DataItems data) {
-
-
+		
 	}
 
 
@@ -166,7 +135,6 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 	public void displayMinerResults() {
 		MinerResults rets = miner.getResults();
 		displayMinerResults(rets);
-
 	}
 
 	@Override

@@ -33,11 +33,8 @@ public class ParseByDay {
 //        System.out.println("执行完毕");
 //    }
 
-    public void genDataByDay() {
+    public void initDataByDay() {
         setInitTime(date);
-        parseNode();
-        parseRoute();
-        parseTraffic();
     }
 
     private void setInitTime(String date) {
@@ -48,7 +45,7 @@ public class ParseByDay {
         System.out.println("ini:" + initTime);
     }
 
-    private void parseNode() {
+    public void parseNode() {
         String inPath = inputPath + "\\node";
         fileList.clear();
         fileNameList.clear();
@@ -81,7 +78,7 @@ public class ParseByDay {
 
     }
 
-    private void parseRoute() {
+    public void parseRoute() {
         String inPath = inputPath + "\\route";
         fileList.clear();
         fileNameList.clear();
@@ -114,7 +111,7 @@ public class ParseByDay {
 
     }
 
-    private void parseTraffic() {
+    public void parseTraffic() {
         String inPath = inputPath + "\\traffic";
         fileList.clear();
         fileNameList.clear();
@@ -188,7 +185,7 @@ class NodeGen implements Callable {
 
     @Override
     public Boolean call() throws Exception {
-        System.out.println("进入执行");
+        System.out.println("进入执行node");
         InputStreamReader in = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bin = new BufferedReader(in);
         String curLine = null;
@@ -245,7 +242,7 @@ class RouteGenerate implements Callable {
 
     @Override
     public Boolean call() throws Exception {
-        System.out.println("进入执行");
+        System.out.println("进入执行route");
         InputStreamReader in = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bin = new BufferedReader(in);
         String headLine = bin.readLine();
@@ -305,7 +302,7 @@ class TrafficGen implements Callable {
 
     @Override
     public Boolean call() throws Exception {
-        System.out.println("进入执行");
+        System.out.println("进入执行traffic");
         InputStreamReader in = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bin = new BufferedReader(in);
         String curLine = null;
