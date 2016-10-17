@@ -1,7 +1,10 @@
 package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -11,7 +14,8 @@ public class LocalPeriodDetectionWitnDTW {
 	protected double[] seq;// 序列2的开始位置索引
 	protected double[][] d;
 	// protected int[] localp;//当前检测周期的周期预期值
-
+	public Map<Integer,ArrayList<NodeSection>> map=null;
+ 
 	protected int[][] warpingPath;
 
 	protected int K;
@@ -50,11 +54,7 @@ public class LocalPeriodDetectionWitnDTW {
 				 5f, 5f, 5f,4f, 5f, 5f, 5f,4f, 5f, 5f, 5f,4f, 5f, 5f, 5f,4f, 5f, 5f,
 				5f,4f, 5f, 5f, 5f,4f, 5f, 5f, 5f,4f, 5f, 5f, 5f,4f, 5f, 5f, 5f,4f,
 				 5f, 5f, 5f,4f, 5f, 5f, 5f,4f, 5f, 5f, 5f,4f};*/
-		double[] da={ 2,1,12,112,12,
-				1,1,1,13,1,
-				1,4,3,4,5,
-				6,7,8.1,9,6,7,8.4,9.3,0,
-				1,2,8,6};
+		double[] da={ 3,4,5,6,1,2,3,4,5,5,5,5,5,5,4,4,4,3,2,1, 2,3,4,5,5,5,5,5,4,4,4,4,1,2,3, 1,7,8,9,0,33,44,55,6,7,66,8,2,3,4,5,6,7};
 		for(int i=0;i<da.length;i++){
 			DataItem d=new DataItem();
 			d.setData(""+da[i]);
@@ -86,6 +86,7 @@ public class LocalPeriodDetectionWitnDTW {
 	public LocalPeriodDetectionWitnDTW(DataItems data, double pointThreshold, double seqThreshold) {
 		int begin = 0;
 		this.setData(data);
+		map=new HashMap<Integer,ArrayList<NodeSection>>();
 		//初始化距离矩阵
 				//d=new double[seq.length][seq.length];
 				//System.out.println("开始计算矩阵");
@@ -148,7 +149,7 @@ public class LocalPeriodDetectionWitnDTW {
 	 * @param end
 	 */
 	public void compute(double[] seq, int seq1begin, int end) {
-		if ((end - seq1begin) < 4) {
+		if ((seq.length-seq1begin) < 4) {
 			return;
 		}
 		int maxp = (end - seq1begin +1) / 2;
@@ -167,7 +168,7 @@ public class LocalPeriodDetectionWitnDTW {
 			
 			
 			
-			if(p<10){
+			if(p<20){
 				////////
 				double[][] D = new double[p][p]; // global distances
 				d=new double[p][p];
@@ -418,9 +419,13 @@ public class LocalPeriodDetectionWitnDTW {
 			if (this.getSimilarity() > this.seqThreshold) {
 			/*	System.out.println("**********************************周期" + p
 						+ "begin:" + begin + " end:" + end);*/
+				
 				System.out.println("********");
 				// System.out.println(this);
 				System.out.println("begin:" + seq1begin + " end:" + (seq1begin + p + p));
+		
+				
+				
 				
 				System.out.println("周期" + p+" 相似度：" + this.getSimilarity());
 				System.out.print("seq1=");
@@ -434,6 +439,16 @@ public class LocalPeriodDetectionWitnDTW {
 				}
 				
 				System.out.println();
+				
+				NodeSection nodesection=new NodeSection(seq1begin,seq1begin+2*p);
+				if(map.containsKey(p)){
+					
+					map.get(p).add(nodesection);
+				}else{
+					ArrayList<NodeSection> list=new ArrayList<NodeSection>();
+					list.add(nodesection);
+					map.put(p, list);
+				}
 				
 				
 				//System.out.println(this);
@@ -571,3 +586,10 @@ public class LocalPeriodDetectionWitnDTW {
 	 */
 
 }
+
+
+
+
+
+
+
