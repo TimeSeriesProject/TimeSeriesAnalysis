@@ -156,15 +156,13 @@ public class ParseByDay {
         }
     }
 
-    private boolean deleteFile(HashSet<String> fileNameList) {
-        boolean flag = false;
+    private void deleteFile(HashSet<String> fileNameList) {
         for (String fileName : fileNameList) {
             File file = new File(fileName);
             if (file.isFile()) {
                 file.delete();
             }
         }
-        return flag;
     }
 }
 
