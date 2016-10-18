@@ -99,9 +99,6 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
 
         int pathIdCount = 1;
         for (String s : pathList){
-            s = s.replaceAll("10,","*,");
-            s = s.replaceAll("13,","*,");
-            s = s.replaceAll(",4,",",*,");
             String[] vertice =  s.split(",");
             vertice[0] = ip2Vertice.get(vertice[0])+"";
             vertice[vertice.length-1] = ip2Vertice.get(vertice[vertice.length-1])+"";
