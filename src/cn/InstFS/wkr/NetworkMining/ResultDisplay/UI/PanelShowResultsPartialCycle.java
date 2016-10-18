@@ -96,7 +96,7 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 		initData();
 		
 		//初始化控制器
-		LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(data,0.9,0.9);
+		LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(data,0.9,0.9,3);
 		int modelnum=dtw.map.keySet().size();
 		 map=dtw.map;
 		 
