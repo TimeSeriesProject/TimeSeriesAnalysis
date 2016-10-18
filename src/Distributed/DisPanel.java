@@ -19,7 +19,6 @@ public class DisPanel extends JDialog {
     private JTextField portFiled = null;
     private JButton login = null;
     private boolean isDistributed;
-    private static Server server;
 
     public DisPanel(JFrame parentFrame, String title, boolean isDistributed) {
         super(parentFrame, title, true);
@@ -48,23 +47,27 @@ public class DisPanel extends JDialog {
 
         //IP
         panel.add(getIP(), new PropertiesGBC(0, 0, 1, 1).
-                setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 0));
+                setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 5));
 
         //IP框
         panel.add(getIPFiled(), new PropertiesGBC(1, 0, 2, 1).
-                setFill(PropertiesGBC.BOTH).setWeight(1, 0).setInsets(5, 5, 5, 0));
+                setFill(PropertiesGBC.BOTH).setWeight(1, 0).setInsets(5, 5, 5, 5));
 
         //port
         panel.add(getPort(), new PropertiesGBC(0, 1, 1, 1).
-                setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 0));
+                setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 5));
 
         //port框
         panel.add(getPortFiled(), new PropertiesGBC(1, 1, 2, 1).
-                setFill(PropertiesGBC.BOTH).setWeight(1, 0).setInsets(5, 5, 5, 0));
+                setFill(PropertiesGBC.BOTH).setWeight(1, 0).setInsets(5, 5, 5, 5));
+
+        //中间空一个面板
+        panel.add(new JPanel(), new PropertiesGBC(1, 2, 1, 1).
+                setFill(PropertiesGBC.BOTH).setWeight(1, 0).setInsets(5, 5, 5, 5));
 
         //login
         panel.add(getLogin(), new PropertiesGBC(2, 2, 1, 1).
-                setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 0));
+                setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 5));
     }
 
     public JLabel getIP() {
@@ -113,8 +116,7 @@ public class DisPanel extends JDialog {
                             Runnable runnable = new Runnable() {
                                 @Override
                                 public void run() {
-                                    server = Server.getInstance();
-                                    server.setPort(portFiled.getText().trim());
+                                    Server.getInstance().setPort(portFiled.getText().trim());
                                     new Thread(Server.getStartInstance()).start();
                                 }
                             };
