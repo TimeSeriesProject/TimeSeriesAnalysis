@@ -23,6 +23,7 @@ public class LocalPeriodDetectionWitnDTW {
 
 	protected double pointThreshold;// 点的相似度阈值
 	protected double seqThreshold;// 点的相似度阈值
+	protected int limit;// 扭曲路径限制
 	protected double simPointCount;// 统计相似点数
 	protected int len;// 序列最大长度
 
@@ -54,13 +55,13 @@ public class LocalPeriodDetectionWitnDTW {
 				 5f, 5f, 5f,4f, 5f, 5f, 5f,4f, 5f, 5f, 5f,4f, 5f, 5f, 5f,4f, 5f, 5f,
 				5f,4f, 5f, 5f, 5f,4f, 5f, 5f, 5f,4f, 5f, 5f, 5f,4f, 5f, 5f, 5f,4f,
 				 5f, 5f, 5f,4f, 5f, 5f, 5f,4f, 5f, 5f, 5f,4f};*/
-		double[] da={ 3,4,5,6,1,2,3,4,5,5,5,5,5,5,4,4,4,3,2,1, 2,3,4,5,5,5,5,5,4,4,4,4,1,2,3, 1,7,8,9,0,33,44,55,6,7,66,8,2,3,4,5,6,7};
+		double[] da={ 3,4,5,6,1,2,3,4,5,5,5,5,5,5,4,4,4,3,2,1, 2,3,4,5,5,5,5,4,4,4,4,1,2,3, 1,7,8,9,0,33,44,55,6,7,66,8,2,3,4,5,6,7};
 		for(int i=0;i<da.length;i++){
 			DataItem d=new DataItem();
 			d.setData(""+da[i]);
 			data.add1Data(d);
 		}
-		LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(data,pointThreshold,seqthreshold);
+		LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(data,pointThreshold,seqthreshold,3);
 		
 		/*
 		 * dtw = new DTW(n1, n2,threshold); System.out.println(dtw);
@@ -83,7 +84,8 @@ public class LocalPeriodDetectionWitnDTW {
 	 * @功能 阈值 判断两段序列的相似度阈值
 	 * 
 	 */
-	public LocalPeriodDetectionWitnDTW(DataItems data, double pointThreshold, double seqThreshold) {
+	public LocalPeriodDetectionWitnDTW(DataItems data, double pointThreshold, double seqThreshold,int limit) {
+		this.limit=limit;
 		int begin = 0;
 		this.setData(data);
 		map=new HashMap<Integer,ArrayList<NodeSection>>();
@@ -152,6 +154,7 @@ public class LocalPeriodDetectionWitnDTW {
 		if ((seq.length-seq1begin) < 4) {
 			return;
 		}
+		
 		int maxp = (end - seq1begin +1) / 2;
 		int p;
 		for (p = maxp; p > 2; p--) {
@@ -168,7 +171,7 @@ public class LocalPeriodDetectionWitnDTW {
 			
 			
 			
-			if(p<20){
+			if(p<(20+limit)||((limit*2+2)<p)){
 				////////
 				double[][] D = new double[p][p]; // global distances
 				d=new double[p][p];
@@ -228,27 +231,27 @@ public class LocalPeriodDetectionWitnDTW {
 				} // end while
 				
 			}else{
-				double[][] D = new double[p][7]; // global distances
-				d=new double[p][7];
+				double[][] D = new double[p][limit*2+1]; // global distances
+				d=new double[p][limit*2+1];
 				//初始化d[][]
 				//先计算左边特殊的那一块d[][]
-				for(int i=0;i<4;i++){
-					for (int j = 0; j < i+4;j++){
+				for(int i=0;i<(limit+1);i++){
+					for (int j = 0; j < i+(limit+1);j++){
 						d[i][j] = distanceBetween(seq[i + seq1begin],
 								seq[j + seq1begin + p]);
 					}
 				}
 				//中间常规的d[][]
-				for (int i = 4; i < p-4; i++) {			
-					for (int j = i-3; j < i+4; j++) {
-						d[i][j-i+3] = distanceBetween(seq[i + seq1begin],
+				for (int i = limit+1; i < p-(limit+1); i++) {			
+					for (int j = i-limit; j < i+(limit+1); j++) {
+						d[i][j-i+limit] = distanceBetween(seq[i + seq1begin],
 								seq[j + seq1begin + p]);
 					}
 				}
 				//右边的d[][]
-				for (int i =  p-4; i < p; i++) {
-					int m=6;
-					for (int j = p-1; j > i-4; j--) {
+				for (int i =  p-(limit+1); i < p; i++) {
+					int m=2*limit;
+					for (int j = p-1; j > i-(limit+1); j--) {
 						d[i][m] = distanceBetween(seq[i + seq1begin],
 								seq[j + seq1begin + p]);
 						m--;
@@ -265,35 +268,35 @@ public class LocalPeriodDetectionWitnDTW {
 				// 计算一遍 global distances全局距离：从左下到右上路径的距离--此处只是计算左边与下边的边缘距离
 				D[0][0] = d[0][0];
 
-				for (int i = 1; i < 4; i++) {
+				for (int i = 1; i < (limit+1); i++) {
 					D[i][0] = d[i][0] + D[i - 1][0];// 右边
 					D[0][i] = d[0][i] + D[0][i - 1];// 上面
 				}
 				
-				for (int i = 1; i < 4; i++) {
-					for (int j = 1; j <i+3; j++) {		
+				for (int i = 1; i < (limit+1); i++) {
+					for (int j = 1; j <i+limit; j++) {		
 						D[i][j] = Math.min(Math.min(D[i - 1][j], D[i - 1][j-1]),D[i][j-1 ])+ d[i][j];
 					}
-					D[i][i+3] = Math.min(  D[i - 1][i+2],D[i][i+2])+ d[i][i+3];
-					for(int j=i+4;j<7;j++){
+					D[i][i+limit] = Math.min(  D[i - 1][i+(limit-1)],D[i][i+(limit-1)])+ d[i][i+limit];
+					for(int j=i+(limit+1);j<(limit*2+1);j++){
 						D[i][j] = Double.MAX_VALUE;
 						}	
 					}
 
-				for(int i=4;i<=p-4;i++){
+				for(int i=(limit+1);i<=p-(limit+1);i++){
 					//D[i][i-3] = Math.min(  D[i - 1][i-4],D[i-1][i-3]);
 					D[i][0] = Math.min(  D[i - 1][0],D[i-1][1])+ d[i][0];
-					for(int j=i-2;j<i+3;j++){
-						D[i][j-i+3] = Math.min(Math.min(D[i - 1][j-i+3], D[i - 1][j-i+4]),D[i][j-i+2])+ d[i][j-i+3];
+					for(int j=i-(limit-1);j<i+limit;j++){
+						D[i][j-i+limit] = Math.min(Math.min(D[i - 1][j-i+limit], D[i - 1][j-i+(limit+1)]),D[i][j-i+(limit-1)])+ d[i][j-i+limit];
 					}
-					D[i][6] = Math.min(  D[i - 1][6],D[i][5])+ d[i][6];
+					D[i][limit*2] = Math.min(  D[i - 1][limit*2],D[i][limit*2-1])+ d[i][limit*2];
 				}
-				for(int i=p-3;i<p;i++){
+				for(int i=p-limit;i<p;i++){
 					//int m=6;
-					for(int k=0;k<(i-p+4);k++){
+					for(int k=0;k<(i-p+(limit+1));k++){
 						D[i][k]=Double.MAX_VALUE;
 					}
-					for(int m=(i-p+4);m<7;m++){
+					for(int m=(i-p+(limit+1));m<(limit*2+1);m++){
 						D[i][m]=Math.min(Math.min(D[i - 1][m-1], D[i - 1][m]),D[i][m-1])+ d[i][m];
 					}
 	
@@ -304,14 +307,14 @@ public class LocalPeriodDetectionWitnDTW {
 				
 				//寻找扭曲路径
 				int i = p - 1;
-				int j = 6;
+				int j = (limit*2);
 				int minIndex = 1;
 
 				warpingPath[K - 1][0] = i + seq1begin;
-				warpingPath[K - 1][1] = j +(p-7)+ seq1begin + p;
+				warpingPath[K - 1][1] = j +(p-(limit*2+1))+ seq1begin + p;
 				warpinglength++;
 				//
-				while(i>p-4){
+				while(i>p-(limit+1)){
 					if (j == 0) {
 						i -= 1;
 					} else { // i != 0 && j != 0
@@ -330,12 +333,12 @@ public class LocalPeriodDetectionWitnDTW {
 					} // end else
 					K++;
 					warpingPath[K - 1][0] = i + seq1begin;
-					warpingPath[K - 1][1] = j +(p-7)+ seq1begin + p;	
+					warpingPath[K - 1][1] = j +(p-(limit*2+1))+ seq1begin + p;	
 					warpinglength++;
 					}
 				
-				while (i>3) {
-					if (j== 6) {
+				while (i>limit) {
+					if (j== limit*2) {
 						double[] array = { D[i - 1][j], D[i][j - 1]};
 						minIndex = this.getIndexOfMinimum(array);
 
@@ -373,7 +376,7 @@ public class LocalPeriodDetectionWitnDTW {
 					} // end else
 					K++;
 					warpingPath[K - 1][0] = i + seq1begin;
-					warpingPath[K - 1][1] = i-3+j + seq1begin + p;
+					warpingPath[K - 1][1] = i-limit+j + seq1begin + p;
 					warpinglength++;
 				} // end while
 				
@@ -451,7 +454,7 @@ public class LocalPeriodDetectionWitnDTW {
 				}
 				
 				
-				//System.out.println(this);
+				System.out.println(this);
 				break;
 
 				// this.compute(seq, begin,begin+p);
