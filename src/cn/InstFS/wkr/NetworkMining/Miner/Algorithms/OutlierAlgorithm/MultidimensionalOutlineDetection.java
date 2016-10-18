@@ -239,7 +239,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		Collections.reverse(list);
 		double cut = list.get((int)(len*0.02));		
 		for(int i=(int)(len*0.02);i>0;i--){
-			if(list.get(i)<0.6){				
+			if(list.get(i)<0.5){				
 				continue;
 			}
 			if((list.get(i)-cut)/cut<diff){
@@ -249,14 +249,14 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 				break;
 			}
 		}
-		threshold = threshold>0.6 ? threshold : 0.6;
+		threshold = threshold<0.5 ? 0.5 : threshold;
 		System.out.println("基于混合高斯模型，异常度阈值是："+threshold);
 		for(int i=0;i<len;i++){
 			if(degree.get(i)>=threshold){
 				outline.add1Data(dataItems.getElementAt(i));
 			}
 		}
-		threshold = threshold>0.8 ? 0.8 : threshold;
+		
 		return outline;
 	}
 	/**

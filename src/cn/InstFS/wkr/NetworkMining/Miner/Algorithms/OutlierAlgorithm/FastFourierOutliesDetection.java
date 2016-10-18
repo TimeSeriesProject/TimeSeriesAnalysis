@@ -260,20 +260,20 @@ public class FastFourierOutliesDetection implements IMinerOM {
 				
         Collections.sort(list);
         Collections.reverse(list);
-        threshold = list.get((int)(list.size()*0.02));
-        threshold = threshold>0.4 ? threshold : 0.4;
+        double d = list.get((int)(list.size()*0.02));
+        //threshold = threshold>0.4 ? threshold : 0.4;
         for(int i=(int)(list.size()*0.02);i>0;i--){
-			if(list.get(i)<0.4){				
+			if(list.get(i)<0.5){				
 				continue;
 			}
-			if((list.get(i)-threshold)<diff){
-				threshold = list.get(i);
+			else if((list.get(i)-d)/d<diff){
+				continue;
 			}else{
 				threshold = list.get(i);
 				break;
 			}
 		}
-        threshold = threshold>0.6 ? 0.6 : threshold;
+        threshold = threshold<0.6 ? 0.6 : threshold;
 		System.out.println("应用快速法里叶算法，异常度阈值是："+threshold);
 		for(int i=0;i<list.size();i++){
 			if(Double.parseDouble(outDegree.getData().get(i))>=threshold){

@@ -241,12 +241,24 @@ class NodeTimerTask extends TimerTask{
 					tsaMethod = new GaussianOutlierDetection(dataItems);
 					results.getRetNode().getRetOM().setIslinkDegree(true);
 				}else {
-					if(results.getRetNode().getRetStatistics().getComplex() < 1.9){
-						tsaMethod = new MultidimensionalOutlineDetection(dataItems);
-						results.getRetNode().getRetOM().setIslinkDegree(true);
-					}else{
-						tsaMethod = new AnormalyDetection(dataItems);
-						results.getRetNode().getRetOM().setIslinkDegree(false);
+					if(task.getMiningObject().equals("流量")){
+						if(results.getRetNode().getRetStatistics().getMean() < 3500){
+							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(true);
+						}else{
+							tsaMethod = new AnormalyDetection(dataItems);
+							//tsaMethod = new FastFourierOutliesDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(false);
+						}
+					}else if(task.getMiningObject().equals("通信次数")){
+						if(results.getRetNode().getRetStatistics().getMean() < 100){
+							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(true);
+						}else{
+							tsaMethod = new AnormalyDetection(dataItems);
+							//tsaMethod = new FastFourierOutliesDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(false);
+						}
 					}
 				}
 				tsaMethod.TimeSeriesAnalysis();

@@ -236,21 +236,20 @@ public class AnormalyDetection implements IMinerOM {
 		int len = degree.size();
 		Collections.sort(list);
 		Collections.reverse(list);
-		threshold = list.get((int)(len*0.02));
-		threshold = threshold>0.45 ? threshold : 0.45;
+		double d = list.get((int)(len*0.02));
+		//threshold = threshold>0.45 ? threshold : 0.45;
 		for(int i=(int)(len*0.02);i>0;i--){
-			if(list.get(i)<0.45){				
+			if(list.get(i)<0.5){				
 				continue;
 			}
-			if((list.get(i)-threshold)/threshold<diff){
-				threshold = list.get(i);
+			else if((list.get(i)-d)/d<diff){
+				continue;
 			}else{
 				threshold = list.get(i);
 				break;
 			}
 		}
-		threshold = threshold>0.7 ? 0.7 : threshold;
-		
+		threshold = threshold<0.5 ? 0.5 : threshold;		
 		System.out.println("异常度阈值是："+threshold);
 		for(int i=0;i<len;i++){
 			if(degree.get(i)>threshold){
