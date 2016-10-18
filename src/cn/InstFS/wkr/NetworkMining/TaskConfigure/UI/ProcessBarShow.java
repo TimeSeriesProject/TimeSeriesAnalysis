@@ -51,7 +51,7 @@ public class ProcessBarShow extends JDialog implements Callable {
 
 	JButton beginDig = new JButton("开始解析");
 
-	JTextField inputTxtfile = new JTextField("D:\\pppp");
+	JTextField inputTxtfile = new JTextField("D:\\pcap");
 	JTextField outputTxtfile = new JTextField("D:\\out");
 	String inputPath = "";
 	String outputPath = "";

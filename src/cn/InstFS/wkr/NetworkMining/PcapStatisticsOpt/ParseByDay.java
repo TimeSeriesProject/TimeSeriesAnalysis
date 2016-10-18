@@ -143,19 +143,34 @@ public class ParseByDay {
         deleteFile(fileNameList);
     }
 
+//    private void getFileList(String fPath, String type) {
+//        File ff = new File(fPath);
+//        if (ff.isFile() && fPath.endsWith(type)) {
+//            fileList.add(ff);
+//            fileNameList.add(ff.getAbsolutePath());
+//        } else if (ff.isDirectory()) {
+//            File[] files = ff.listFiles();
+//            for (File f : files) {
+//                getFileList(f.getAbsolutePath(), type);
+//            }
+//        }
+//    }
+
+    //得到单个文件list
     private void getFileList(String fPath, String type) {
         File ff = new File(fPath);
-        if (ff.isFile() && fPath.endsWith(type)) {
-            fileList.add(ff);
-            fileNameList.add(ff.getAbsolutePath());
-        } else if (ff.isDirectory()) {
+        if (ff.isDirectory()) {
             File[] files = ff.listFiles();
             for (File f : files) {
-                getFileList(f.getAbsolutePath(), type);
+                if (f.isFile() && f.getAbsolutePath().endsWith(type)) {
+                    fileList.add(f);
+                    fileNameList.add(f.getAbsolutePath());
+                }
             }
         }
     }
 
+    //删除单个文件
     private void deleteFile(HashSet<String> fileNameList) {
         for (String fileName : fileNameList) {
             File file = new File(fileName);
