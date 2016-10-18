@@ -65,6 +65,9 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			miner=new NetwokerMinerPathProb(task, reader);
 		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_Statistics)){
 			miner=new NetworkMinerStatistics(task, reader);
+		}
+		else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_PartialCycle)){
+			miner=new NetworkMinerLocalPeriod(task, reader);
 		}else{
 			
 		}

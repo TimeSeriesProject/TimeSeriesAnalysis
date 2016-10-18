@@ -36,6 +36,7 @@ import org.jvnet.substance.painter.StandardGradientPainter;
 import org.jvnet.substance.skin.SubstanceBusinessBlackSteelLookAndFeel;
 import org.jvnet.substance.title.MatteHeaderPainter;
 
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.SingleNodeOrNodePairMinerFactory;
@@ -226,7 +227,7 @@ public class NodePairListFrame extends JFrame {
     
 	private void createTable()
 	{
-		String data[][]=new String[resultList.size()][10];
+		String data[][]=new String[resultList.size()][11];
 		for(int i=0;i<resultList.size();i++)
 		{
 			TaskCombination taskCom =resultList.get(i).getKey();
@@ -241,12 +242,13 @@ public class NodePairListFrame extends JFrame {
 				data[i][5]="无";
 			data[i][6]=String.format("%5.3f",results.getRetPM().getConfidence());
 			data[i][7]=String.valueOf(results.getRetOM().isHasOutlies()==true?"是":"否");
-			data[i][8]=String.format("%5d",results.getRetOM().getConfidence());
-			data[i][9]=String.valueOf(results.getRetSM().isHasFreItems()==true?"是":"否");
+			data[i][8]=String.format("%5.3f",getMax(results.getRetOM().getOutDegree()));
+			data[i][9]=String.format("%5.3f",getMin(results.getRetOM().getOutDegree()));
+			data[i][10]=String.valueOf(results.getRetSM().isHasFreItems()==true?"是":"否");
 			
 			
 		}
-	    String colNames[]={"时间序列","平均值","标准差","样本熵","复杂度","周期","周期置信度","是否有异常","异常度","是否存在频繁项"};
+	    String colNames[]={"时间序列","平均值","标准差","样本熵","复杂度","周期","周期置信度","是否有异常","最大异常度","最大异常度","是否存在频繁项"};
 	   
 	 
 	    DefaultTableModel model=new DefaultTableModel(data,colNames){
@@ -422,4 +424,24 @@ public class NodePairListFrame extends JFrame {
 			});
 
 		}
+	 public double getMax(DataItems di){
+		 double max = 0;
+		 for(int i=0;i<di.getData().size();i++){
+			 double data = Double.parseDouble(di.getData().get(i));
+			 if(data>max){
+				 max = data;
+			 }
+		 }
+		 return max;
+	 }
+	 public double getMin(DataItems di){
+		 double min = 1;
+		 for(int i=0;i<di.getData().size();i++){
+			 double data = Double.parseDouble(di.getData().get(i));
+			 if(data<min){
+				 min = data;
+			 }
+		 }
+		 return min;
+	 }
 }

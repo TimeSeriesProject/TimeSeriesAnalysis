@@ -160,7 +160,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             label.add(granularity);
             jp.setLayout(new GridLayout(0,1));
             panel.add(label,BorderLayout.NORTH);
-            panel.add(jp,BorderLayout.SOUTH);
+            panel.add(jp,BorderLayout.CENTER);
             jsp.setViewportView(panel);
             add(jsp);
 
@@ -297,7 +297,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             label.add(granularity);
             jp.setLayout(new GridLayout(0,2));
             panel.add(label,BorderLayout.NORTH);
-            panel.add(jp,BorderLayout.SOUTH);
+            panel.add(jp,BorderLayout.CENTER);
             jsp.setViewportView(panel);            
             add(jsp);
             repaint();

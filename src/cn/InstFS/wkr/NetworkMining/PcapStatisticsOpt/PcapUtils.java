@@ -1013,6 +1013,10 @@ public class PcapUtils {
         File folder = new File(outpath + "\\routesrc");
         boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
 
+        //删除routesrc中的文件，新建空文件夹
+        deleteFile(outpath + "\\routesrc");
+        folder.mkdirs();
+
         folder = new File(outpath + "\\route");
         suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
 
@@ -1086,6 +1090,23 @@ public class PcapUtils {
         }
     }
 
+    public void deleteFile(String fileName) {
+        File file = new File(fileName);
+        if (file.exists()) {
+            if (file.isFile()){
+                file.delete();
+            } else if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                for (int i = 0; i < files.length; i++) {
+                    //删除子文件
+                    deleteFile(files[i].getAbsolutePath());
+                }
+                file.delete();
+            }
+        } else {
+            System.out.println("文件不存在");
+        }
+    }
     public PcapUtils() {
     }
 }

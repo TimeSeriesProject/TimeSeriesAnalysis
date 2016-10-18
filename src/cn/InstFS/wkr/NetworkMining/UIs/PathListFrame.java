@@ -1,11 +1,14 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.PathMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsOM;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPath;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
+
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.border.StandardBorderPainter;
 import org.jvnet.substance.painter.StandardGradientPainter;
@@ -16,9 +19,12 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.text.DecimalFormat;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author Arbor
@@ -262,14 +268,12 @@ public class PathListFrame extends JFrame{
                 data[i][2] = String.format("%d",retPath.getMaxPeriod());
                 data[i][3] = String.format("%d",retPath.getMinPeriod());
             }
-            data[i][4] = String.valueOf(retPath.getHasOutlies()?"是":"否");
-            if (!retPath.getHasOutlies()) {
-                data[i][5] = "无";
-                data[i][6] = "无";
-            } else {
-                data[i][5] = String.format("%5d",retPath.getMaxOutliesConfidence());
-                data[i][6] = String.format("%5d",retPath.getMinOutliesConfidence());
-            }
+            data[i][4] = String.valueOf(retPath.getHasOutlies()?"是":"否");  
+            double max = getMax(retPath.getRetOM());
+            double min = getMin(retPath.getRetOM());
+            data[i][5] = String.valueOf(max);
+            data[i][6] = String.valueOf(min);
+            
 
             i++;
         }
@@ -435,6 +439,40 @@ public class PathListFrame extends JFrame{
         }
         getContentPane().add(selectPanel,BorderLayout.NORTH);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
+    }
+    public double getMax(HashMap<String, MinerResultsOM> map){
+    	double max = 0;
+    	Iterator iter = map.entrySet().iterator();
+    	while(iter.hasNext()){
+    		Map.Entry entry = (Map.Entry) iter.next();
+    		String key = (String) entry.getKey();
+    		MinerResultsOM val = (MinerResultsOM) entry.getValue();
+    		DataItems outDegree = val.getOutDegree();
+    		for(int i=0;i<outDegree.getData().size();i++){
+    			if(Double.parseDouble(outDegree.getData().get(i))>max){
+    				max = Double.parseDouble(outDegree.getData().get(i));
+    			}
+    		}
+    	}
+    	max = Double.parseDouble(String.format("%.4f",max));
+    	return max;
+    }
+    public double getMin(HashMap<String, MinerResultsOM> map){
+    	double min = 1;
+    	Iterator iter = map.entrySet().iterator();
+    	while(iter.hasNext()){
+    		Map.Entry entry = (Map.Entry) iter.next();
+    		String key = (String) entry.getKey();
+    		MinerResultsOM val = (MinerResultsOM) entry.getValue();
+    		DataItems outDegree = val.getOutDegree();
+    		for(int i=0;i<outDegree.getData().size();i++){
+    			if(Double.parseDouble(outDegree.getData().get(i))<min){
+    				min = Double.parseDouble(outDegree.getData().get(i));
+    			}
+    		}
+    	}
+    	min = Double.parseDouble(String.format("%.4f",min));
+    	return min;
     }
 
 }

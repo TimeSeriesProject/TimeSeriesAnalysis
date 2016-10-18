@@ -102,7 +102,7 @@ public class PcapPanel extends JPanel {
     public JTextField getInText() {
         if (inText == null) {
             inText = new JTextField();
-            inText.setText("D:\\pppp");
+            inText.setText("D:\\pcap");
         }
         return inText;
     }
