@@ -42,6 +42,8 @@ import org.apache.commons.math3.util.Pair;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.XYLineAnnotation;
+import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
@@ -63,6 +65,7 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 	DataItems data=null;
 	XYSeriesCollection XYSeriesCollection=null;
 	XYSeriesCollection selectionSeries=null;
+	JFreeChart jfreechart;
 	Map<Integer,ArrayList<NodeSection>> map;
 	XYPlot plot=null;
 	//
@@ -100,23 +103,32 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 		int modelnum=dtw.map.keySet().size();
 		 map=dtw.map;
 		 
-		 initModel();
+		// initModel();
 		
 
 
 		
 		
 		
-		JFreeChart jfreechart = createChart(createDataset(data));
+		 jfreechart = createChart(createDataset(data,map));
 		plot=jfreechart.getXYPlot();
+		//plot.getRenderer().setBaseShape(null);
+		
+		//initModel();
+		PaintPeriodLine();
+		
+		
+		
 		ChartPanel chartpanel = new ChartPanel(jfreechart);
-		JPanel controlPanel=new JPanel();
-		controlPanel.setLayout(new FlowLayout());
+		//1
+/*		JPanel controlPanel=new JPanel();
+		controlPanel.setLayout(new FlowLayout());*/
 
 		
 		setLayout(Layout);
 				this.add(chartpanel);
-		this.add(controlPanel,BorderLayout.SOUTH);
+				//2
+	//	this.add(controlPanel,BorderLayout.SOUTH);
 		Object[] s = map.keySet().toArray();
 		
 		for(int i=0;i<modelnum;i++){
@@ -127,8 +139,9 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 				NodeSection section=it.next();
 				str=str+"("+section.begin+","+section.end+")";
 			}
-			JLabel jlabel=new JLabel("周期："+s[i]+" 区间："+str+".");
-			controlPanel.add(jlabel);
+			//3
+/*			JLabel jlabel=new JLabel("周期："+s[i]+" 区间："+str+".");
+			controlPanel.add(jlabel);*/
 		}
 		 
 /*				//读取模式生成int[]
@@ -168,9 +181,41 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 		
 	}
 	
+	private void PaintPeriodLine() {
+		// TODO Auto-generated method stub
+		 //selectionSeries=new XYSeriesCollection();
+		 XYLineAndShapeRenderer xylineandshaperenderer=(XYLineAndShapeRenderer)plot.getRenderer();
+			xylineandshaperenderer.setBaseShapesVisible(false);
+			xylineandshaperenderer.setBaseShapesFilled(true);
+			xylineandshaperenderer.setDrawOutlines(true);
+		 Object[] key=map.keySet().toArray();
+		 for(int i=0;i<map.size();i++){
+/*				xylineandshaperenderer.setSeriesLinesVisible(i, true);
+				xylineandshaperenderer.setSeriesShapesVisible(i, false);*/
+			 ArrayList<NodeSection> list=map.get(key[i]);
+			 java.util.Iterator<NodeSection> it=list.iterator();
+			 while(it.hasNext()){
+				 NodeSection nodesection=it.next();
+				 int k=(nodesection.begin+nodesection.end)/2;
+				 String str="("+nodesection.begin+","+nodesection.end+")";
+				 XYPointerAnnotation xypointerannotation1 = new XYPointerAnnotation(("周期："+key[i]+" 区间："+str), k, Double.parseDouble(data.getElementAt(k).getData()), -3.14/2 );
+				 plot.addAnnotation(xypointerannotation1);
+				 
+			 }
+
+
+		 }
+		 
+		 
+		 //XYLineAndShapeRenderer xylineandshaperenderer=(XYLineAndShapeRenderer)plot.getRenderer();
+		 //xylineandshaperenderer.setShapesVisible()
+		
+			
+		 
+	}
 	public void initData(){
 		data=new DataItems();
-		double[] da={ 3,4,5,6,1,2,3,4,5,5,5,5,5,5,4,4,4,3,2,1, 2,3,4,5,5,5,5,5,4,4,4,4,1,2,3, 1,7,8,9,0,33,44,55,6,7,66,8,2,3,4,5,6,7};
+		double[] da={ 3,4,5,6,1,2,3,4,5,5,5,5,5,5,4,4,4,3,2,1, 2,3,4,5,5,5,5,5,4,4,4,4,1,2,3, 1,7,8,9,0,33,44,55,6,7,66,8,2,3,4,5,6,7,1,1,1,1,1,2,2,2,2,2,2,1,1,1,1,1,2,2,2,2,2,2};
 		for(int i=0;i<da.length;i++){
 			DataItem d=new DataItem();
 			d.setData(""+da[i]);
@@ -180,9 +225,9 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 	
 	}
 	
-	public void initModel(){
-		 XYSeriesCollection=new XYSeriesCollection();
-		 selectionSeries=new XYSeriesCollection();
+/*	public void initModel(){
+		 XYSeriesCollection=(XYSeriesCollection)plot.getDataset();
+		 //selectionSeries=new XYSeriesCollection();
 		 Object[] key=map.keySet().toArray();
 		 for(int i=0;i<map.size();i++){
 			 XYSeries x=new XYSeries(key[i]+"");
@@ -190,17 +235,23 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 			 java.util.Iterator<NodeSection> it=list.iterator();
 			 while(it.hasNext()){
 				 NodeSection nodesection=it.next();
+				
 				 for(int j=nodesection.begin;j<nodesection.end;j++){
 					 x.add(i,Double.parseDouble(data.getElementAt(i).getData()));
 			      }
 			 }
 			 XYSeriesCollection.addSeries(x); 
+			
 
 		 }
-	}
+		 System.out.println("&&&&"+plot.getDatasetCount());
+		 //plot.setDataset(plot.getDatasetCount(),XYSeriesCollection);
+		
+		 
+	}*/
 	
-	private static XYDataset createDataset(DataItems data){
-		XYSeries xyseries = new XYSeries("Series 1");
+	private static XYDataset createDataset(DataItems data,Map<Integer,ArrayList<NodeSection>> map){
+		XYSeries xyseries = new XYSeries("原序列");
 		XYSeriesCollection XYSeriesCollection=new XYSeriesCollection();
 			
 			
@@ -209,6 +260,30 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 				// 获取正常数据的长度、
 				int length = data.getLength();
 				int time[] = new int[length];
+				
+				
+				
+				 Object[] key=map.keySet().toArray();
+				 for(int i=0;i<map.size();i++){
+					 XYSeries x=new XYSeries("周期："+key[i]+"");
+					 ArrayList<NodeSection> list=map.get(key[i]);
+					 java.util.Iterator<NodeSection> it=list.iterator();
+					 while(it.hasNext()){
+						 NodeSection nodesection=it.next();
+						/* int k=(nodesection.begin+nodesection.end)/2;
+						 XYPointerAnnotation xypointerannotation1 = new XYPointerAnnotation("wqe", k, Double.parseDouble(data.getElementAt(k).getData()), 3.9269908169872414D );
+						 plot.addAnnotation(xypointerannotation1);*/
+						 for(int j=nodesection.begin;j<nodesection.end;j++){
+							 x.add(j,Double.parseDouble(data.getElementAt(j).getData()));
+							 
+					      }
+					 }
+					 XYSeriesCollection.addSeries(x); 
+					
+
+				 }
+			
+				
 
 
 				for (int i = 0; i < length; i++) {
@@ -224,7 +299,7 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 
 				XYSeriesCollection.addSeries(xyseries);
 			
-			
+	
 			
 	
 		
@@ -240,14 +315,14 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 		xyplot.setDomainPannable(true);
 		xyplot.setRangePannable(true);
 		XYLineAndShapeRenderer xylineandshaperenderer = new XYLineAndShapeRenderer();
-		xylineandshaperenderer.setSeriesLinesVisible(0, true);
-		xylineandshaperenderer.setSeriesShapesVisible(0, false);
-		xylineandshaperenderer.setSeriesLinesVisible(1, false);
-		xylineandshaperenderer.setSeriesShapesVisible(1, true);
+/*		xylineandshaperenderer.setSeriesLinesVisible(0, true);
+		xylineandshaperenderer.setSeriesShapesVisible(0, false);*/
+/*		xylineandshaperenderer.setSeriesLinesVisible(1, true);
+		xylineandshaperenderer.setSeriesShapesVisible(1, false);*/
 		xylineandshaperenderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
 		xylineandshaperenderer.setDefaultEntityRadius(6);
 		xyplot.setRenderer(xylineandshaperenderer);
-		jfreechart.getLegend().setVisible(false);
+		jfreechart.getLegend().setVisible(true);
 		return jfreechart;
 	}
 	
