@@ -74,6 +74,9 @@ public class MinerResultsPath implements Serializable {
 		for (MinerResultsPM ret : retPM.values()) {
 			int temp = (int)ret.getPeriod();
 
+			if (temp < 0) {
+				continue;
+			}
 			if (flag * temp > flag * period || i == 1) {
 				period = temp;
 				i = 2;

@@ -64,7 +64,9 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
         g = new SparseMultigraph<>();
 
         // add vertex
-        NetworkVertex[] nodes = new NetworkVertex[20];
+        NetworkVertex[] nodes = new NetworkVertex[100]; // 节点数
+
+        NetworkVertex[] nullNodes = new NetworkVertex[100]; //未检测的节点数
 
 
         /*pathList = new ArrayList<String>(){{
@@ -97,29 +99,70 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
 
         int pathIdCount = 1;
         for (String s : pathList){
+            s = s.replaceAll("10,","*,");
+            s = s.replaceAll("13,","*,");
+            s = s.replaceAll(",4,",",*,");
             String[] vertice =  s.split(",");
             vertice[0] = ip2Vertice.get(vertice[0])+"";
             vertice[vertice.length-1] = ip2Vertice.get(vertice[vertice.length-1])+"";
 
+            int countNullNodes = 0;
+            boolean flag = false;
             for (int i = 0; i < vertice.length - 1; i++) {
-                int startId = Integer.parseInt(vertice[i]);
-                int endId = Integer.parseInt(vertice[i+1]);
+                int startId;
+                int endId;
+                NetworkVertex startNode;
+                NetworkVertex endNode;
 
-                if (nodes[startId]==null) {
-                    NetworkVertex n;
-                    n = new NetworkVertex(startId);
-                    nodes[startId] = n;
-                    g.addVertex(n);
+                if (vertice[i].equals("*")) {
+                    if (flag) {
+                        flag = false;
+                    } else
+                        countNullNodes++;
+                    if (nullNodes[countNullNodes]==null) {
+                        NetworkVertex n;
+                        n = new NetworkVertex(-1 * countNullNodes);
+                        nullNodes[countNullNodes] = n;
+                        g.addVertex(n);
+                    }
+                    startNode = nullNodes[countNullNodes];
+                } else {
+                    startId = Integer.parseInt(vertice[i]);
+                    if (nodes[startId]==null) {
+                        NetworkVertex n;
+                        n = new NetworkVertex(startId);
+                        nodes[startId] = n;
+                        g.addVertex(n);
+                    }
+                    startNode = nodes[startId];
                 }
-                if (nodes[endId]==null) {
-                    NetworkVertex n;
-                    n = new NetworkVertex(endId);
-                    nodes[endId] = n;
-                    g.addVertex(n);
+
+                if (vertice[i+1].equals("*")) {
+                    if (!flag) {
+                        flag = true;
+                        countNullNodes++;
+                    }
+                    if (nullNodes[countNullNodes]==null) {
+                        NetworkVertex n;
+                        n = new NetworkVertex(-1 * countNullNodes);
+                        nullNodes[countNullNodes] = n;
+                        g.addVertex(n);
+                    }
+                    endNode = nullNodes[countNullNodes];
+                } else {
+                    endId = Integer.parseInt(vertice[i+1]);
+                    if (nodes[endId]==null) {
+                        NetworkVertex n;
+                        n = new NetworkVertex(endId);
+                        nodes[endId] = n;
+                        g.addVertex(n);
+                    }
+                    endNode = nodes[endId];
                 }
-                if (g.findEdge(nodes[startId], nodes[endId]) == null)
-                    g.addEdge(new NetworkEdge(0, nodes[startId], nodes[endId]), nodes[startId], nodes[endId], EdgeType.UNDIRECTED);
-                g.addEdge(new NetworkEdge(pathIdCount, nodes[startId], nodes[endId]), nodes[startId], nodes[endId], EdgeType.DIRECTED);
+
+                if (g.findEdge(startNode, endNode) == null)
+                    g.addEdge(new NetworkEdge(0, startNode, endNode), startNode, endNode, EdgeType.UNDIRECTED);
+                g.addEdge(new NetworkEdge(pathIdCount, startNode, endNode), startNode, endNode, EdgeType.DIRECTED);
             }
             pathIdCount ++;
         }
@@ -379,6 +422,8 @@ class NetworkVertex {
 
     @Override
     public String toString() {
+        /*if (id < 0)
+            return "*";*/
         return id+"";
     }
 
