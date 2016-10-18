@@ -171,7 +171,7 @@ public class GaussianOutlierDetection implements IMinerOM{
      * */
     public void genOutlies(DataItems degree){
     	for(int i=0;i<degree.getLength();i++){
-    		if(Double.parseDouble(degree.getData().get(i))>threshold*5){
+    		if(Double.parseDouble(degree.getData().get(i))>threshold){
     			outlies.add1Data(dataItems.getElementAt(i));
     		}
     	}
