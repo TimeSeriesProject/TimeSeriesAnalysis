@@ -20,6 +20,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.*;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.ARIMATSA;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm.SequencePatternsDontSplit;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
@@ -271,6 +272,11 @@ class NodeTimerTask extends TimerTask{
 				seriesStatistics.statistics();
 				setStatisticResults(results,seriesStatistics);
 				break;
+			case MiningMethods_PredictionMining:
+				ARIMATSA forecast=new ARIMATSA(task, dataItems,
+						ParamsAPI.getInstance().getParamsPrediction().getAp());
+				forecast.TimeSeriesAnalysis();
+				setForecastResult(results, forecast);
 			case MiningMethods_SequenceMining:
 				
 				ParamsSM paramsSM = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
@@ -379,6 +385,9 @@ class NodeTimerTask extends TimerTask{
 		}else{
 			results.getRetNode().getRetSM().setHasFreItems(false);
 		}
+	}
+	private void setForecastResult(MinerResults result,IMinerFM fm){
+		result.getRetNode().getRetFM().setPredictItems(fm.getPredictItems());
 	}
 	private DataItems NodeDisapearData(DataItems items){
 		DataItems di = new DataItems();

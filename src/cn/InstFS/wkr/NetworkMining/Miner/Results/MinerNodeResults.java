@@ -55,5 +55,13 @@ public class MinerNodeResults implements Serializable{
 	public void setRetPartialCycle(MinerResultsPartialCycle retPartialCycle) {
 		this.retPartialCycle = retPartialCycle;
 	}
+	private MinerResultsFM retFM;
+	public MinerResultsFM getRetFM() {
+		return retFM;
+	}
+
+	public void setRetFM(MinerResultsFM retFM) {
+		this.retFM = retFM;
+	}
 	
 }
