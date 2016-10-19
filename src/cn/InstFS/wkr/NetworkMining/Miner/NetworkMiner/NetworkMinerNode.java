@@ -273,8 +273,9 @@ class NodeTimerTask extends TimerTask{
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_PredictionMining:
-				ARIMATSA forecast=new ARIMATSA(task, dataItems,
-						ParamsAPI.getInstance().getParamsPrediction().getAp());
+				/*ARIMATSA forecast=new ARIMATSA(task, dataItems,
+						ParamsAPI.getInstance().getParamsPrediction().getAp());*/
+				ARIMATSA forecast=new ARIMATSA(task, dataItems,5);
 				forecast.TimeSeriesAnalysis();
 				setForecastResult(results, forecast);
 			case MiningMethods_SequenceMining:
@@ -387,7 +388,8 @@ class NodeTimerTask extends TimerTask{
 		}
 	}
 	private void setForecastResult(MinerResults result,IMinerFM fm){
-		result.getRetNode().getRetFM().setPredictItems(fm.getPredictItems());
+		result.getRetNode().getRetFM().setPredictItems(
+				fm.getPredictItems());
 	}
 	private DataItems NodeDisapearData(DataItems items){
 		DataItems di = new DataItems();

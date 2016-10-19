@@ -14,6 +14,7 @@ public class MinerNodeResults implements Serializable{
 		retOM=new MinerResultsOM();
 		retSM=new MinerResultsSM();
 		retPartialCycle = new MinerResultsPartialCycle();
+		retFM=new MinerResultsFM();
 	}
 
 	public MinerResultsStatistics getRetStatistics() {
