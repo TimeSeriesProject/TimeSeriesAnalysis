@@ -287,6 +287,7 @@ class NodeTimerTask extends TimerTask{
 				ARIMATSA forecast=new ARIMATSA(task, dataItems,5);
 				forecast.TimeSeriesAnalysis();
 				setForecastResult(results, forecast);
+				break;
 			case MiningMethods_SequenceMining:
 				
 				ParamsSM paramsSM = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数

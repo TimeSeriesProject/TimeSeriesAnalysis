@@ -986,6 +986,12 @@ public class PcapUtils {
     }
 
     public void First2Step(ArrayList<File> fileList, String outpath) throws IOException{
+        //删除已存在的所有文件
+        File ff = new File(outpath);
+        if (ff.exists() && ff.isDirectory()) {
+            System.out.println("删除文件first");
+            deleteFile(outpath);
+        }
         File folder = new File(outpath + "\\routesrc");
         boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
 
@@ -1090,6 +1096,7 @@ public class PcapUtils {
         }
     }
 
+    //递归删除文件夹下所有文件
     public void deleteFile(String fileName) {
         File file = new File(fileName);
         if (file.exists()) {
