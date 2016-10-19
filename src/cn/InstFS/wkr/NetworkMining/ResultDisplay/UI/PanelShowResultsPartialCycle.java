@@ -100,8 +100,9 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 		
 		//初始化控制器
 		LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(data,0.9,0.9,3);
-		int modelnum=dtw.map.keySet().size();
-		 map=dtw.map;
+		 map=dtw.getResult().getPartialCyclePos();
+		int modelnum=map.keySet().size();
+		
 		 
 		// initModel();
 		
@@ -352,12 +353,12 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 	}
 	@Override
 	public void displayMinerResults(MinerResults rets) {
-		if (rets == null)
+	/*	if (rets == null)
 			return;
 		if(displayed==true)
 			return;
 		int count=0;
-		for(Map.Entry<Integer,ArrayList<Pair<Integer,Integer>>> entry:rets.getRetPartialCycle().getPartialCyclePos().entrySet())
+		for(Map.Entry<Integer,ArrayList<NodeSection>> entry:rets.getRetPartialCycle().getPartialCyclePos().entrySet())
 		{
 			String title ="周期长度"+entry.getKey()+"部分周期序列";
 			
@@ -373,46 +374,7 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 		
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		displayed =true;
-		
-		//System.out.println(rets.getRetPM().get(i).getFirst()+" "cyclePos.get(index).)	
-//		List<String> data =dataItems.getData();
-//		int oldSize =data.size();
-//		//oldSize =3200;
-////			if(data.size()==0)
-////				return;
-//		int newSize = (int)Math.pow(2,(int) (Math.log(oldSize)/Math.log(2)));
-//		if(newSize<oldSize)
-//			newSize*=2;
-//		System.out.println(oldSize+" "+newSize);
-//		
-//		double original[] = new double[newSize];
-//		for(int i=0;i<newSize;i++)
-//		{
-//			if(i<oldSize)
-//			{
-//				original[i]=Double.parseDouble(data.get(i));
-//			}
-//			else
-//				original[i]=0;
-//		}
-//		 FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
-//		 Complex[] result = fft.transform(original, TransformType.FORWARD);
-//		 for(int i=(int)(result.length*0.2);i<result.length;i++)
-//		 {
-//			 result[i]=new Complex(0,0);
-//			// result[i+result.length/2]=new Complex(0,0);
-//		 }
-//		 System.out.println("result "+result.length);
-//		 Complex [] denoised = fft.transform(result, TransformType.INVERSE);
-//		 List<String> newData =new ArrayList<String>();
-//		 for(int i=0;i<oldSize;i++)
-//		 {
-//			 newData.add(String.valueOf(denoised[i].getReal()));
-//		 }
-//		 dataItems.setData(newData);
-		
-//		rets.setInputData(dataItems);
-	
+*/
 	}
 	@Override
 	public void displayMinerResults() {

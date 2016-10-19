@@ -8,13 +8,16 @@ import java.util.Map;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPartialCycle;
 
 public class LocalPeriodDetectionWitnDTW {
 
 	protected double[] seq;// 序列2的开始位置索引
 	protected double[][] d;
 	// protected int[] localp;//当前检测周期的周期预期值
-	public Map<Integer,ArrayList<NodeSection>> map=null;
+	
+	private MinerResultsPartialCycle result=null;
+	private HashMap<Integer,ArrayList<NodeSection>> map=null;
  
 	protected int[][] warpingPath;
 
@@ -61,7 +64,7 @@ public class LocalPeriodDetectionWitnDTW {
 			d.setData(""+da[i]);
 			data.add1Data(d);
 		}
-		LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(data,pointThreshold,seqthreshold,3);
+		LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(data,pointThreshold,seqthreshold,5);
 		
 		/*
 		 * dtw = new DTW(n1, n2,threshold); System.out.println(dtw);
@@ -78,9 +81,10 @@ public class LocalPeriodDetectionWitnDTW {
 
 	/**
 	 * Constructor
-	 * 
-	 * @param query
-	 * @param threshold
+	 * @param data 待测时间序列
+	 * @param pointThreshold 对应点相似度阈值
+	 * @param seqThreshold   对应序列相似度阈值
+	 * @param limit 限制区域大小，一般是limit=5
 	 * @功能 阈值 判断两段序列的相似度阈值
 	 * 
 	 */
@@ -126,6 +130,13 @@ public class LocalPeriodDetectionWitnDTW {
 		//	System.out.println("seq["+(index-1)+"]"+seq[index-1]);
 		}
 		
+		
+	}
+	
+	public MinerResultsPartialCycle getResult(){
+		result =new MinerResultsPartialCycle();
+		result.setPartialCyclePos(map);
+		return result;
 		
 	}
 
