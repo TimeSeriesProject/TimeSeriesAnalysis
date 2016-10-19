@@ -1063,8 +1063,31 @@ public class Server {
         }
         tasksCount = allTasks.size();
 
+        //删除outpath下的routsrc
+        File folder = new File(outPath + File.separator + "routesrc");
+        if (folder.exists() && folder.isDirectory()) {
+            deleteFile(folder.getAbsolutePath());
+        }
+
     }
 
+    public void deleteFile(String fileName) {
+        File file = new File(fileName);
+        if (file.exists()) {
+            if (file.isFile()){
+                file.delete();
+            } else if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                for (int i = 0; i < files.length; i++) {
+                    //删除子文件
+                    deleteFile(files[i].getAbsolutePath());
+                }
+                file.delete();
+            }
+        } else {
+            System.out.println("文件不存在");
+        }
+    }
 
     private int getFileList(ArrayList<String> fileNames, String filePath, String type) {
         int num = 0;
@@ -2941,7 +2964,7 @@ public class Server {
 
                 File key = new File(entry.getKey());//D:/57data/traffic/10.0.0.1.txt
                 String name = key.getName();//10.0.0.1.txt
-                File comFile = new File(entry.getValue() + File.separator + name);//合并后暂存为D:/57data/traffic/10.0.0.1/10.0.0.1.txt
+                File comFile = new File(entry.getValue() + File.separator + name);//合并后暂存为D:/57data/traffic/10.0.0.1/10.0.0.1.txt,未排序，从0-1942 0-1942 0-1942
                 if (!comFile.exists()) {
                     comFile.createNewFile();
                 }
@@ -3080,6 +3103,7 @@ public class Server {
             long passedlen = 0;
             String fileName;
             String name;
+            String tempName;
             String extension;
             String finalFilePath;
             String filePath;
@@ -3090,17 +3114,18 @@ public class Server {
             try {
                 fileName = userClient.receiveMsg();//得到 文件名.扩展名 10.0.1.1_10.0.1.2.bin
                 name = getName(fileName);//得到文件名10.0.1.1_10.0.1.2
+                tempName = name + "_temp";
                 extension = getExtension(fileName);//得到扩展名bin
                 genPart(fileName, extension);//得到路由器号作为part
                 //创建文件夹/routesrc/10.0.1.1_10.0.1.2/...
                 //生成合并文件map、删除文件list
                 if (extension.equals(".bin")) {
-                    File folder = new File(outPath + File.separator + name);
+                    File folder = new File(outPath + File.separator + tempName);
                     boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
-                    finalFilePath = outPath + File.separator + name + File.separator + name + "_part_" + nameMap.get(fileName) + extension;
+                    finalFilePath = outPath + File.separator + tempName + File.separator + name + "_part_" + nameMap.get(fileName) + extension;
 //                    System.out.println("part: " + nameMap.get(fileName));
-                    filePath = outPath + File.separator + fileName;//D:/57data/routesrc/10.0.0.1_10.0.0.2.bin
-                    folderPath = outPath + File.separator + name;//D:/57data/routesrc/10.0.0.1_10.0.0.2/
+                    filePath = outPath + File.separator + fileName;//D:/57data/routesrc/10.0.0.1_10.0.0.2.bin,用于合并文件
+                    folderPath = outPath + File.separator + tempName;//D:/57data/routesrc/10.0.0.1_10.0.0.2_temp/文件夹后面加temp
                     //生成第二步的task
                     subFolder = outPath.substring(index) + File.separator + fileName;//routesrc/10.0.0.1_10.0.0.2.bin
                     task2 = subFolder + DELIMITER + name;
@@ -3163,6 +3188,7 @@ public class Server {
             long passedlen = 0;
             String fileName;
             String name;
+            String tempName;
             String extension;
             String finalFilePath;
             String filePath;
@@ -3172,17 +3198,18 @@ public class Server {
                 fileName = userClient.receiveMsg();
 //                finalFilePath = outPath + File.separator + fileName;
                 name = getName(fileName);//得到文件名
+                tempName = name + "_temp";
                 extension = getExtension(fileName);//得到扩展名
                 genPart2(fileName, extension);//得到part
 
 
                 if (extension.equals(".txt")) {
-                    File folder = new File(outPath + File.separator + name);
+                    File folder = new File(outPath + File.separator + tempName);
                     boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
-                    finalFilePath = outPath + File.separator + name + File.separator + name + "_part_" + nameMap2.get(fileName) + extension;
+                    finalFilePath = outPath + File.separator + tempName + File.separator + name + "_part_" + nameMap2.get(fileName) + extension;
 //                    System.out.println("part: " + nameMap.get(fileName));
                     filePath = outPath + File.separator + fileName;//D:/57data/traffic/10.0.0.1.txt
-                    folderPath = outPath + File.separator + name;//D:/57data/traffic/10.0.0.1/
+                    folderPath = outPath + File.separator + tempName;//D:/57data/traffic/10.0.0.1/
                     if (!combineFile2.containsKey(filePath)) {
                         combineFile2.put(filePath, folderPath);
                         delFile2.add(folderPath);//待删除的10.0.0.1-10.0.0.2文件夹们

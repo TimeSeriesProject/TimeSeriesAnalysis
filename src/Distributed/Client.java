@@ -293,6 +293,12 @@ public class Client {
                             continue;//所有结果已发送，返回
                         }
                         part2 = getPart2(tasks2);//得到10.0.0.1_10.0.0.2
+                        //删除已存在的所有文件
+                        File ff = new File(outPath + part2);
+                        if (ff.exists() && ff.isDirectory()) {
+                            System.out.println("删除文件last");
+                            deleteFile(outPath + part2);
+                        }
                         receiveResult(outPath + part2);//得到E:/57data/10.0.0.1_10.0.0.2
                         System.out.println("结束接收");
                         fileList.clear();
@@ -322,6 +328,25 @@ public class Client {
                 e.printStackTrace();
             } finally {
                 clientInit.close();
+            }
+        }
+
+        //递归删除文件夹下所有文件
+        public void deleteFile(String fileName) {
+            File file = new File(fileName);
+            if (file.exists()) {
+                if (file.isFile()){
+                    file.delete();
+                } else if (file.isDirectory()) {
+                    File[] files = file.listFiles();
+                    for (int i = 0; i < files.length; i++) {
+                        //删除子文件
+                        deleteFile(files[i].getAbsolutePath());
+                    }
+                    file.delete();
+                }
+            } else {
+                System.out.println("文件不存在");
             }
         }
 
