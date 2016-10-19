@@ -269,16 +269,24 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 					 XYSeries x=new XYSeries("周期："+key[i]+"");
 					 ArrayList<NodeSection> list=map.get(key[i]);
 					 java.util.Iterator<NodeSection> it=list.iterator();
+					 int b;
+					 int e=0;
 					 while(it.hasNext()){
 						 NodeSection nodesection=it.next();
 						/* int k=(nodesection.begin+nodesection.end)/2;
 						 XYPointerAnnotation xypointerannotation1 = new XYPointerAnnotation("wqe", k, Double.parseDouble(data.getElementAt(k).getData()), 3.9269908169872414D );
 						 plot.addAnnotation(xypointerannotation1);*/
-						 for(int j=nodesection.begin;j<nodesection.end;j++){
+						 if((nodesection.begin-e)>1){
+							 x.add(e+1,null);
+						 }
+						 b=nodesection.begin;
+						 e=nodesection.end;
+						 for(int j=b;j<e;j++){
 							 x.add(j,Double.parseDouble(data.getElementAt(j).getData()));
 							 
 					      }
 					 }
+					 x.add(e+1,null);
 					 XYSeriesCollection.addSeries(x); 
 					
 
