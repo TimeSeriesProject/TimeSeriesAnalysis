@@ -322,6 +322,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				JFreeChart jf = ChartPanelShowFI.createChart(temp_f_model_nor, nor, temp_f_model_nor_mode, temp, yName);
 				ChartPanel chartpanel = new ChartPanel(jf);
 				remove(chart1);
+				chartpanel.setMouseWheelEnabled(true);
 				add(chartpanel, BorderLayout.CENTER);
 				repaint();
 				validate();
@@ -344,6 +345,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 							JFreeChart jf1 = ChartPanelShowFI.createChart(modeList, nor, modelindex, yName);
 							ChartPanel chartpanel1 = new ChartPanel(jf1);
 							add(granulartiyPanel, BorderLayout.NORTH);
+							chartpanel1.setMouseWheelEnabled(true);
 							add(chartpanel1, BorderLayout.CENTER);
 							add(checkboxPanel, BorderLayout.SOUTH);
 							repaint();
