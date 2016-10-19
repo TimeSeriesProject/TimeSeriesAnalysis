@@ -168,34 +168,9 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
             DataItems oriItems = rslts.getInputData();
             chart1.displayDataItems(oriItems);
 
-//			remove(chart1);
-//			remove(chart2);
-
-//			repaint();
-//			validate();
-//            if(outliesItems!=null)
-//            {
-////			HashMap<String,ArrayList<DataItems>> nor_data=new HashMap<>();
-////			JFreeChart jf = ChartPanelShowFI.createChart(nor_data,oriItems);
-////			ChartPanel chartpanel = new ChartPanel(jf);
-////			XYDataset nor=ChartPanelShowAb.createNormalDataset(oriItems);
-////			XYDataset abnor=ChartPanelShowAb.createAbnormalDataset(outliesItems);
-//                JFreeChart jf=ChartPanelShowAbd.createChart(outliesItems);
-//                ChartPanel chartpanel = new ChartPanel(jf);
-//                remove(chart1);
-//                remove(chart3);
-//                add(chartpanel);
-//                add(chart1);
-//
-//
-////			add(chart1);
-////			add(chartpanel);
-//                count++;
-//            }
 			if(predictItems!=null)
 			{
-//				XYDataset nor=ChartPanelShowPre.createNormalDataset(oriItems);
-//				XYDataset abnor=ChartPanelShowPre.createAbnormalDataset();
+				
 				JFreeChart jf=ChartPanelShowPre.createChart(oriItems,predictItems,yName);
 				ChartPanel chartpanel = new ChartPanel(jf);
 				chart1.displayDataItems(oriItems);
@@ -206,18 +181,7 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
 				count++;
 
 			}
-//			异常度检测结果
-//			if(XXXX!=null)
-//			{
-//				JFreeChart jf=ChartPanelShowAbd.createChart(oriItems,XXXX);
-//				ChartPanel chartpanel = new ChartPanel(jf);
-//				chart1.displayDataItems(oriItems);
-//				remove(chart1);
-//				remove(chart3);
-//				add(chart1);
-//				add(chartpanel);
-//			count++;
-//			}
+
             repaint();
             revalidate();
 

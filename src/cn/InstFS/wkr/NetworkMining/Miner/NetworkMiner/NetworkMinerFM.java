@@ -35,7 +35,7 @@ public class NetworkMinerFM implements INetworkMiner {
 	IResultsDisplayer displayer;
 	
 	boolean isRunning=false;
-	IsOver isOver=new IsOver();
+	public IsOver isOver=new IsOver();
 	TaskElement task;
 	IReader reader;
 	
