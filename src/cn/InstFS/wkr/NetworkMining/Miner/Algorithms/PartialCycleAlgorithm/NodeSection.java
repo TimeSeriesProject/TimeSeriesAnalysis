@@ -1,6 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm;
 
-public class NodeSection {
+import java.io.Serializable;
+
+public class NodeSection implements Serializable {
 	public int begin;
 	public int end;
 	public NodeSection(int begin,int end){

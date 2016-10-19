@@ -25,6 +25,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDet
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.GaussianOutlierDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalPeriodDetectionWitnDTW;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.PartialCycle;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.averageEntropyPM;
@@ -259,6 +260,14 @@ class NodeTimerTask extends TimerTask{
 							//tsaMethod = new FastFourierOutliesDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(false);
 						}
+					} else {
+						if(results.getRetNode().getRetStatistics().getComplex() < 1.9){
+							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(true);
+						}else{
+							tsaMethod = new AnormalyDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(false);
+						}
 					}
 				}
 				tsaMethod.TimeSeriesAnalysis();
@@ -295,12 +304,14 @@ class NodeTimerTask extends TimerTask{
 				setFrequentResults(results, sequencePattern,frequentItem, lineElements);
 				break;
 			case MiningMethods_PartialCycle:
-				if(task.getRange().equals("10.0.7.2"))
+				LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
+				results.getRetNode().setRetPartialCycle(dtw.getResult());
+				/*if(task.getRange().equals("10.0.7.2"))
 				{
 					PartialCycle partialCycle = new PartialCycle(results);
 					partialCycle.setDataItems(dataItems);
 					partialCycle.run();
-				}
+				}*/
 				break;
 			default:
 				break;
