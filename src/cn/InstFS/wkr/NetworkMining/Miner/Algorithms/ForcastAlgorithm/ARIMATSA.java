@@ -29,6 +29,14 @@ public class ARIMATSA implements IMinerFM{
 		endDate=di.getLastTime();
 		
 	}
+	public ARIMATSA(TaskElement task,DataItems dataItems,int predictPeriod){
+		this.task=task;
+		this.di=dataItems;
+		this.predictPeriod=predictPeriod;
+		predictItems=new DataItems();
+		endDate=di.getLastTime();
+		
+	}
 	
 	@Override
 	public void TimeSeriesAnalysis() {

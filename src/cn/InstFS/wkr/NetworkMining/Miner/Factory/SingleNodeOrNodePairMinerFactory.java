@@ -177,6 +177,8 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 							dataFile, protocol, ip, MiningMethod.MiningMethods_OutliesMining));
 					taskCombination.getTasks().add(generateTask(taskRange, granularity,
 							dataFile, protocol, ip, MiningMethod.MiningMethods_SequenceMining));
+					taskCombination.getTasks().add(generateTask(taskRange, granularity,
+							dataFile, protocol, ip, MiningMethod.MiningMethods_PredictionMining));
 					taskCombination.setMiningObject(miningObject.toString());
 					taskCombination.setDataItems(dataItems);
 					taskCombination.setProtocol(protocol);
@@ -274,7 +276,11 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 			task.setTaskName(name);
 			task.setComments("挖掘  "+ipOrPair+" 上,协议为"+protocol+"的部分周期");
 			break;
-			
+		case MiningMethods_PredictionMining:
+			name=ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_预测_auto";
+			task.setTaskName(name);
+			task.setComments("预测  "+ipOrPair+" 上,协议为"+protocol+"的未来趋势");
+			break;
 		default:
 			break;
 		}

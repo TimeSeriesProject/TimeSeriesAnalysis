@@ -41,11 +41,23 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
     private String obName;
     private String xName;
     private String yName;
+    /**
+     * Create the panel.
+     */
+    private PanelShowResultsFM() {
+        InitChartScheme();
+        setLayout(new GridLayout(0, 1, 0, 0));
+        chart1 = new ChartPanelShowTs("原始值", "序列编号", obName, null);
+//        chart2 = new ChartPanelShowAb("预测值", "序列编号", "", null);
+        chart3= new ChartPanelShowTs("预测值", "序列编号", obName, null);
+        add(chart1);
+        add(chart3);
+
+    }
     public PanelShowResultsFM(TaskElement task) {
         this();
         obName=task.getMiningObject();
         InitMiner(task);
-
 
     }
 
@@ -54,23 +66,7 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
         miner.setResultsDisplayer(this);
     }
 
-    /**
-     * Create the panel.
-     */
-    private PanelShowResultsFM() {
-        InitChartScheme();
-        setLayout(new GridLayout(0, 1, 0, 0));
-//		chart1 = new ChartPanelShowTs("原始值", "序列编号", "值", null);
-//		chart2 = new ChartPanelShowTs("预测值", "序列编号", "", null);
-//		add(chart1);
-//		add(chart2);
-        chart1 = new ChartPanelShowTs("原始值", "序列编号", obName, null);
-//        chart2 = new ChartPanelShowAb("预测值", "序列编号", "", null);
-        chart3= new ChartPanelShowTs("预测值", "序列编号", obName, null);
-        add(chart1);
-        add(chart3);
 
-    }
 
     private void InitChartScheme() {
         StandardChartTheme sct = new StandardChartTheme("");
