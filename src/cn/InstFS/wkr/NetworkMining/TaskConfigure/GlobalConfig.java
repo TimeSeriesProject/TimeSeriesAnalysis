@@ -70,6 +70,7 @@ public class GlobalConfig {
         seriesStatisticParamPath = config.getChildText("statisticsParamPath");
         sequencePatternParamPath = config.getChildText("sequencePatternParamPath");
         loggerPath = config.getChildText("loggerPath");
+        forecastParamPath=config.getChildText("forecastParamsPath");
     }
 
     public String getConfigPath() {

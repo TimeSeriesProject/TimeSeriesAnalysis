@@ -73,7 +73,7 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 	boolean displayed=false;
 	
 	public PanelShowResultsPartialCycle(TaskElement task){
-		this();		
+//		this();
 		InitMiner(task);
 	}
 	private void InitMiner(TaskElement task){
@@ -353,6 +353,64 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 	}
 	@Override
 	public void displayMinerResults(MinerResults rets) {
+		data = rets.getInputData();
+		rets.getRetPartialCycle();
+
+		BorderLayout Layout=new BorderLayout();
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{450, 0};
+//		gridBagLayout.rowHeights = new int[] {0, 1, 0};
+		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
+/*		Button b=new Button();
+		b.setLabel("a Buttom");
+		this.add(b);*/
+
+		//初始化控制器
+		map=rets.getRetPartialCycle().getPartialCyclePos();
+		int modelnum=map.keySet().size();
+
+
+		// initModel();
+
+
+
+
+
+
+		jfreechart = createChart(createDataset(data,map));
+		plot=jfreechart.getXYPlot();
+		//plot.getRenderer().setBaseShape(null);
+
+		//initModel();
+		PaintPeriodLine();
+
+
+
+		ChartPanel chartpanel = new ChartPanel(jfreechart);
+		//1
+/*		JPanel controlPanel=new JPanel();
+		controlPanel.setLayout(new FlowLayout());*/
+
+
+		setLayout(Layout);
+		this.add(chartpanel);
+		//2
+		//	this.add(controlPanel,BorderLayout.SOUTH);
+		Object[] s = map.keySet().toArray();
+
+		for(int i=0;i<modelnum;i++){
+			ArrayList<NodeSection> list=map.get(s[i]);
+			java.util.Iterator<NodeSection> it=list.iterator();
+			String str = new String();
+			while(it.hasNext()){
+				NodeSection section=it.next();
+				str=str+"("+section.begin+","+section.end+")";
+			}
+			//3
+/*			JLabel jlabel=new JLabel("周期："+s[i]+" 区间："+str+".");
+			controlPanel.add(jlabel);*/
+		}
 	/*	if (rets == null)
 			return;
 		if(displayed==true)
