@@ -103,10 +103,19 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 //		}else{
 		
 		File[] dataDirs=dataDirectory.listFiles();
+		boolean flag = false; // 标记选择的路径是否已到具体节点目录
 		for(int i=0;i<dataDirs.length;i++){
 			//按天必须是文件夹
 			if(dataDirs[i].isDirectory())
 				parseFile(dataDirs[i],reader);
+			else { // 路径下为文件，而非目录
+				flag = true;
+				break;
+			}
+		}
+
+		if (flag) {
+			parseFile(dataDirectory, reader);
 		}
 
 	}
