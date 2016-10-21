@@ -86,7 +86,7 @@ public class ProtocolAssociationLine {
 //				System.out.println("***"+sourceData_i);
 		        BottomUpLinear bottomUpLinear_i = new BottomUpLinear(sourceData_i,arp);
 		        bottomUpLinear_i.run();
-		        TreeMap<Integer, Linear> linears = bottomUpLinear_i.getLinears();  //linears的格式为:key:线段其实位置，Linear：span表示该线段的长度
+		        TreeMap<Integer, Linear> linears = bottomUpLinear_i.getLinears();  //linears的格式为:key:线段起始位置，Linear：span表示该线段的长度
 		        linesPosList.add(linears);  
 		        System.out.println("**"+linears);
 		        System.out.println("开始运行DPCluster聚类算法！");

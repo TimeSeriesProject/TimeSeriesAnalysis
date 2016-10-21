@@ -294,6 +294,7 @@ class NodeTimerTask extends TimerTask{
 				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
 				DataItems clusterItems=null;
 				List<SegPattern> segPatterns=segment.getPatterns();
+				
 				if(task.getPatternNum()==0){
 					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
 							paramsSM.getSMparam().getClusterNum(),task.getTaskName());
@@ -309,7 +310,7 @@ class NodeTimerTask extends TimerTask{
 						printClusterLabelTOLines(clusterItems, dataItems);
 				List<LineElement> lineElements = sequencePattern.getLineElement(frequentItem);
 				sequencePattern.patternMining();
-				setFrequentResults(results, sequencePattern,frequentItem, lineElements);
+				setFrequentResults(results, sequencePattern,frequentItem, lineElements,segPatterns);
 				break;
 			case MiningMethods_PartialCycle:
 				LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
@@ -387,8 +388,9 @@ class NodeTimerTask extends TimerTask{
 	}
 	
 	private void setFrequentResults(MinerResults results,SequencePatternsDontSplit sequencePattern,
-			Map<Integer, List<String>>frequentItem, List<LineElement> lineElements){
+			Map<Integer, List<String>>frequentItem, List<LineElement> lineElements,List<SegPattern> segPatterns){		
 		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
+		results.getRetNode().getRetSM().setSegPatterns(segPatterns);
 		if(sequencePattern.isHasFreItems()){
 			results.getRetNode().getRetSM().setPatters(patterns);
 			results.getRetNode().getRetSM().setHasFreItems(true);
