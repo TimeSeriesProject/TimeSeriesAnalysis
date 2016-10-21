@@ -21,6 +21,7 @@ import org.junit.Assert;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.Miner.*;
 import cn.InstFS.wkr.NetworkMining.Params.IParamsNetworkMining;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
@@ -156,7 +157,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		Map<Integer, List<String>> freq = rslt.getRetSM().getFrequentItem(); //Integer对应线段类标签，List为该类所有线段的起始点
 		DataItems freqPatterns = rslt.getRetSM().getPatterns();	// 频繁模式
 		List<LineElement> lineElements = rslt.getRetSM().getLineElements();
-
+		List<SegPattern> segPatterns = rslt.getRetSM().getSegPatterns();
 		final HashMap<Integer, List<List<LineElement>>> modeList = new HashMap<>();
 		DataItems freqPatternsTemp=new DataItems();
 		DataItems freqResult=new DataItems();
@@ -319,7 +320,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				HashMap<String, ArrayList<DataItems>> temp_f_model_nor = new HashMap<>();
 				HashMap<String, ArrayList<DataItems>> temp_f_model_nor_mode = new HashMap<>();
 
-				JFreeChart jf = ChartPanelShowFI.createChart(temp_f_model_nor, nor, temp_f_model_nor_mode, temp, yName);
+				JFreeChart jf = ChartPanelShowFI.createChart(temp_f_model_nor, nor, temp_f_model_nor_mode, temp, yName,segPatterns);
 				ChartPanel chartpanel = new ChartPanel(jf);
 				remove(chart1);
 				chartpanel.setMouseWheelEnabled(true);

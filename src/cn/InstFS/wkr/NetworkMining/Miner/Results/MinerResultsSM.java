@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
+
 import org.apache.poi.ss.formula.functions.Choose;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 
 public class MinerResultsSM implements Serializable {
@@ -24,7 +26,7 @@ public class MinerResultsSM implements Serializable {
 	private Map<Integer, List<String>> frequentItem=new HashMap<Integer, List<String>>();
 	List<LineElement> lineElements;
 	private boolean hasFreItems=false;
-
+	List<SegPattern> segPatterns = new ArrayList<SegPattern>();
 	public Map<Integer, List<String>> getFrequentItem() {
 		return frequentItem;
 	}
@@ -119,4 +121,13 @@ public class MinerResultsSM implements Serializable {
 	public void setLineElements(List<LineElement> lineElements) {
 		this.lineElements = lineElements;
 	}
+
+	public List<SegPattern> getSegPatterns() {
+		return segPatterns;
+	}
+
+	public void setSegPatterns(List<SegPattern> segPatterns) {
+		this.segPatterns = segPatterns;
+	}
+	
 }

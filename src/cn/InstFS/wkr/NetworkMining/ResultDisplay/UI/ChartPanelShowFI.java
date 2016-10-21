@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.text.SimpleAttributeSet;
 
 import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -41,6 +42,7 @@ import org.jfree.util.ShapeUtilities;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.parseDateToHour;
 public class ChartPanelShowFI extends JPanel {
     JFreeChart chart;
@@ -232,13 +234,37 @@ public class ChartPanelShowFI extends JPanel {
         return xyseriescollection;
     }
 
+    public static XYDataset createLineDataset(DataItems di,List<SegPattern> segPatterns) {
+        XYSeries xyseries = new XYSeries("线段模式");
 
-    public static JFreeChart createChart(HashMap<String, ArrayList<DataItems>> nor_model, DataItems nor, HashMap<String, ArrayList<DataItems>> nor_model_mode,int []modelindex,String yName) {
+        XYSeriesCollection xyseriescollection = new XYSeriesCollection();
+//        int start = mode.get(0).getStart();
+//        int end = mode.get(mode.size()-1).getEnd();
+//        for (int i = start; i <= end; i++) {
+//            DataItem temp = nor.getElementAt(i);
+//            xyseries.add(i, Double.parseDouble(temp.getData()));
+//        }
+        for(int i=0;i<segPatterns.size();i++)
+        {
+            int start = segPatterns.get(i).getStart();           
+            xyseries.add(start, Double.parseDouble(di.getData().get(start)));
+            //xyseries.add(end, Double.parseDouble(tempEnd.getData()));
+
+        } 
+        int len = di.getLength();
+        xyseries.add(len-1, Double.parseDouble(di.getData().get(len-1)));
+        xyseriescollection.addSeries(xyseries);
+        return xyseriescollection;
+    }
+    public static JFreeChart createChart(HashMap<String, ArrayList<DataItems>> nor_model, DataItems nor, HashMap<String, ArrayList<DataItems>> nor_model_mode,int []modelindex,String yName,List<SegPattern> segPatterns) {
         Date startDate = nor.getTime().get(0);
         XYDataset xydataset = createNormalDataset(nor, startDate);
+        XYDataset xydataset1 = createLineDataset(nor, segPatterns);
 //        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 频繁项集挖掘结果", "序列编号", "值", xydataset);
         JFreeChart jfreechart = ChartFactory.createScatterPlot(" 频繁模式挖掘结果", "序列编号", yName, xydataset);
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
+        xyplot.setDataset(0, xydataset);
+        xyplot.setDataset(1, xydataset1);
         NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
         numberaxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
@@ -257,7 +283,17 @@ public class ChartPanelShowFI extends JPanel {
         xylineandshaperenderer.setSeriesFillPaint(0, Color.black);
         xylineandshaperenderer.setSeriesOutlinePaint(0, Color.black);
         xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
-
+        xyplot.setRenderer(0,xylineandshaperenderer);
+        
+        XYLineAndShapeRenderer xylineandshaperenderer1 =new XYLineAndShapeRenderer();        
+        xylineandshaperenderer1.setSeriesLinesVisible(0, true);
+        xylineandshaperenderer1.setBaseShapesVisible(false);
+        xylineandshaperenderer1.setSeriesShape(0, new java.awt.geom.Ellipse2D.Double(-2D, -2D, 4D, 4D));
+        xylineandshaperenderer1.setSeriesPaint(0, Color.BLUE);
+        xylineandshaperenderer1.setSeriesFillPaint(0, Color.BLUE);
+        xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.BLUE);
+        xylineandshaperenderer1.setSeriesStroke(0, new BasicStroke(0.5F));
+        xyplot.setRenderer(1,xylineandshaperenderer1);
         ArrayList<DataItems> one = new ArrayList<DataItems>();
         ArrayList<DataItems> second = new ArrayList<DataItems>();
         ArrayList<DataItems> third = new ArrayList<DataItems>();
