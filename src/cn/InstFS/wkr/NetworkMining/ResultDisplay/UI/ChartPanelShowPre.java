@@ -126,8 +126,8 @@ public class ChartPanelShowPre extends JPanel{
         for (int i = 0; i <length; i++) {
             DataItem temp=new DataItem();
             temp=normal.getElementAt(i);
-            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData())); // 对应的横轴
-
+//            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData())); // 对应的横轴
+            xyseries.add(i,Double.parseDouble(temp.getData()));
         }
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
@@ -144,22 +144,46 @@ public class ChartPanelShowPre extends JPanel{
 
         //添加数据值
 
-        for (int i = 0; i < length; i++) {
+        xyseries.add(0, Double.parseDouble(abnor.getElementAt(abnor.getLength() - 1).getData()));
+        for (int i = 1; i < length; i++) {
 
             DataItem temp=new DataItem();
             temp=abnor.getElementAt(i);
-            xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
-            xyseries.add((double)temp.getTime().getTime(),Double.parseDouble(temp.getData()));
-
+           /* xyseries.add((double) temp.getTime().getTime(),Double.parseDouble(temp.getData()));
+            xyseries.add((double)temp.getTime().getTime(),Double.parseDouble(temp.getData()));*/
+            xyseries.add(i,Double.parseDouble(temp.getData()));
         }
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
+
+    public static XYDataset createAbnormalDataset(DataItems abnor, int norDataLength)
+    {  // 统计异常点的长度
+        int length=abnor.getLength();
+        XYSeries xyseries = new XYSeries("abnormal");
+
+        XYSeriesCollection xyseriescollection = new XYSeriesCollection();
+
+
+
+        //添加数据值
+
+        xyseries.add(norDataLength-1, Double.parseDouble(abnor.getElementAt(abnor.getLength() - 1).getData()));
+        for (int i = 0; i < length - 1; i++) {
+
+            DataItem temp=new DataItem();
+            temp=abnor.getElementAt(i);
+            xyseries.add(i+norDataLength,Double.parseDouble(temp.getData()));
+        }
+        xyseriescollection.addSeries(xyseries);
+        return xyseriescollection;
+    }
+
     public static JFreeChart createChart(DataItems nor,DataItems abnor,String yname)
     {
 
         XYDataset xydataset = createNormalDataset(nor);
-        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 预测", "序列编号", yname, xydataset);
+        JFreeChart jfreechart = ChartFactory.createScatterPlot(" 预测", "序列编号", yname, xydataset);
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
@@ -173,7 +197,10 @@ public class ChartPanelShowPre extends JPanel{
         xylineandshaperenderer.setSeriesFillPaint(0, Color.yellow);
         xylineandshaperenderer.setSeriesOutlinePaint(0, Color.gray);
         xylineandshaperenderer.setSeriesStroke(0, new BasicStroke(0.5F));
-        XYDataset xydataset1 = createAbnormalDataset(abnor);
+        xylineandshaperenderer.setSeriesLinesVisible(0, true);
+        xyplot.setRenderer(0, xylineandshaperenderer);
+
+        XYDataset xydataset1 = createAbnormalDataset(abnor, nor.getLength());
         XYLineAndShapeRenderer xylineandshaperenderer1 = new XYLineAndShapeRenderer();
         xyplot.setDataset(1, xydataset1);
         xyplot.setRenderer(1, xylineandshaperenderer1);
@@ -188,6 +215,7 @@ public class ChartPanelShowPre extends JPanel{
         xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.gray);
         xylineandshaperenderer1.setUseFillPaint(true);
         //设置数据点可见
+        xylineandshaperenderer1.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
         //xylineandshaperenderer1.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
         //xylineandshaperenderer1.setBaseItemLabelsVisible(true);
         return jfreechart;

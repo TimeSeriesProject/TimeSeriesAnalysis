@@ -1,9 +1,10 @@
 package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
-import java.awt.Font;
+import java.awt.*;
 
 import javax.swing.*;
 
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataInputUtils;
 //import cn.InstFS.wkr.NetworkMining.Miner.NetworkMinerTSA;
@@ -25,7 +26,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import java.awt.GridLayout;
+import java.util.List;
 import java.util.Timer;
 
 public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
@@ -46,12 +47,12 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
      */
     private PanelShowResultsFM() {
         InitChartScheme();
-        setLayout(new GridLayout(0, 1, 0, 0));
+        setLayout(new BorderLayout());
         chart1 = new ChartPanelShowTs("原始值", "序列编号", obName, null);
 //        chart2 = new ChartPanelShowAb("预测值", "序列编号", "", null);
         chart3= new ChartPanelShowTs("预测值", "序列编号", obName, null);
-        add(chart1);
-        add(chart3);
+        add(chart1,BorderLayout.CENTER);
+//        add(chart3);
 
     }
     public PanelShowResultsFM(TaskElement task) {
@@ -64,6 +65,19 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
     private void InitMiner(TaskElement task) {
         this.miner = NetworkMinerFactory.getInstance().createMiner(task);
         miner.setResultsDisplayer(this);
+
+        JPanel jp1 = new JPanel();
+        //jp1.setPreferredSize(new Dimension(500,100));
+        JLabel lblGranularity = new JLabel();
+        JLabel lblStartTime = new JLabel();
+        int granularity = task.getGranularity();
+        lblGranularity.setText("时间粒度：" + granularity + "(s)");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH时");
+        lblStartTime.setText("起始时间:"+ sdf.format(miner.getResults().getInputData().getTime().get(0)) +"    ");
+        jp1.add(lblStartTime);
+        jp1.add(lblGranularity);
+
+        add(jp1, BorderLayout.NORTH);
     }
 
 
@@ -166,21 +180,22 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
 //            DataItems  = rslts.getRetOM().getOutlies();
 			DataItems predictItems = rslts.getRetFM().getPredictItems();
             DataItems oriItems = rslts.getInputData();
-            chart1.displayDataItems(oriItems);
+            if (predictItems == null) {
+                chart1.displayDataItems(oriItems);
+            } else {
+                DataItem lastOriItem = oriItems.getElementAt(oriItems.getLength()-1);
+                predictItems.add1Data(lastOriItem);
 
-			if(predictItems!=null)
-			{
-				
-				JFreeChart jf=ChartPanelShowPre.createChart(oriItems,predictItems,yName);
-				ChartPanel chartpanel = new ChartPanel(jf);
-				chart1.displayDataItems(oriItems);
-				remove(chart1);
-				remove(chart3);
-				add(chart1);
-				add(chartpanel);
-				count++;
+                JFreeChart jf=ChartPanelShowPre.createChart(oriItems,predictItems,yName);
+                ChartPanel chartpanel = new ChartPanel(jf);
+//				chart1.displayDataItems(oriItems);
+                remove(chart1);
+//				remove(chart3);
+//				add(chart1);
+                add(chartpanel,BorderLayout.CENTER);
+                count++;
 
-			}
+            }
 
             repaint();
             revalidate();
