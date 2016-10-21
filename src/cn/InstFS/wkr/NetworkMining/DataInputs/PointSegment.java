@@ -111,10 +111,26 @@ public class PointSegment {
 	
 	private void splitByPointsInDistnce(){
 		pointsIndex.add(0);
-		int index=1;
-		while(index<length-1){
-			index=findMaxinum(index, ratio);
-			index=findMininum(index, ratio);
+		int minIndex=1;
+		int maxIndex=1;
+		minIndex=findMaxinum(1, ratio);
+		maxIndex=findMininum(1, ratio);
+		if(minIndex<maxIndex){
+			pointsIndex.add(minIndex);
+			while(minIndex<length-1){
+				maxIndex=findMaxinum(minIndex, ratio);
+				minIndex=findMininum(maxIndex, ratio);
+				if(minIndex==maxIndex)
+					break;
+			}
+		}else{
+			pointsIndex.add(maxIndex);
+			while(maxIndex<length-1){
+				minIndex=findMininum(maxIndex, ratio);
+				maxIndex=findMaxinum(minIndex, ratio);
+				if(minIndex==maxIndex)
+					break;
+			}
 		}
 		pointsIndex.add(length-1);
 	}
@@ -190,7 +206,7 @@ public class PointSegment {
 				}
 			}
 		}
-		return i;
+		return iMin;
 	}
 	
 	private int findMaxinum(int index){
@@ -225,7 +241,7 @@ public class PointSegment {
 			}
 			
 		}
-		return i;
+		return iMax;
 	}
 	
 	private int findFirstTwo(){

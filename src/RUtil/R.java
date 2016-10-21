@@ -49,6 +49,7 @@ public class R {
     				 interpreteR.eval("diffSeq<-diff(diffSeq)");
     			 }
     			 for(int lag=1;lag<=2;lag++){
+    				 System.out.println("unitRootTestNC<-unitrootTest(diffSeq,lag="+lag+",type='nc',title='none constant none trend',description='lag "+lag+"')");
     				 interpreteR.eval("unitRootTestNC<-unitrootTest(diffSeq,lag="+lag+",type='nc',title='none constant none trend',description='lag "+lag+"')");
 //    				 interpreteR.eval("unitRootTestC<-unitrootTest(seq,lag="+lag+",type='c',title='constant',description='lag "+lag+"')");
 //    				 interpreteR.eval("unitRootTestCT<-unitrootTest(seq,lag="+lag+",type='ct',title='constant and trend',description='lag "+lag+"')");
