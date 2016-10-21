@@ -35,6 +35,7 @@ public class ProtocolAssociationLine {
 	}
 	*/
 	HashMap<String,ArrayList<ProtocolDataItems>> ip_proData ;
+	List<TreeMap<Integer,Linear>> linesPosList = new ArrayList<TreeMap<Integer,Linear>>();
 	public ProtocolAssociationLine(HashMap<String,ArrayList<ProtocolDataItems>> pdi,AssociationRuleLineParams arp){
 		
 		ip_proData = new HashMap<String,ArrayList<ProtocolDataItems>>();
@@ -78,7 +79,7 @@ public class ProtocolAssociationLine {
 			List<ProtocolDataItems> proDataList = compressData(proDataList2);
 			
 			List<TreeMap<Integer,SymbolNode>> linesList = new ArrayList<TreeMap<Integer,SymbolNode>>();
-			List<TreeMap<Integer,Linear>> linesPosList = new ArrayList<TreeMap<Integer,Linear>>();
+			linesPosList = new ArrayList<TreeMap<Integer,Linear>>();
 			for(int i = 0;i < proDataList.size();i++)
 			{
 				TreeMap<Integer,Double> sourceData_i = convertDataToTreeMap(proDataList.get(i));
@@ -186,6 +187,7 @@ public class ProtocolAssociationLine {
 			}
 			mr_fp_l.setConfidence(max_confidence);
 			mr_fp_l.protocolPairList = resultList;
+			mr_fp_l.setLinesList(linesPosList);
 			//找序列的关联信息
 	        //计算两个符号化序列的关联度
 		}

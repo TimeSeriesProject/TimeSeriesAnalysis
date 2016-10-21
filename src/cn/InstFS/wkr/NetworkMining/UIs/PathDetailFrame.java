@@ -76,7 +76,7 @@ public class PathDetailFrame extends JFrame{
             button.setBounds(38, 51+i*100, 134, 27);
             leftPanel.add(button);
         }
-        splitPane.setRightComponent(panelShow);;
+        splitPane.setRightComponent(panelShow);
         getContentPane().add(splitPane);
         if(buttons.size()>0)
             buttons.get(0).doClick();
