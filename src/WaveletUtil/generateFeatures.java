@@ -88,6 +88,7 @@ public class generateFeatures {
 		for(int i=0;i<correlationIndex.size();i++){
 			correlationIndexArray[i]=correlationIndex.get(i);
 		}
+		connection.close();
 		return correlationIndexArray;
 	}
 	
