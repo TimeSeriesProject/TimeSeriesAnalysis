@@ -23,6 +23,7 @@ public class FindRules {
     public FindRules(){}
     public FindRules(HashMap<Integer,TreeMap<Integer,SymbolNode>> symbolSeries){
        
+    	//HashMap<Integer,TreeMap<Integer,SymbolNode>> 代表的含义：<key1,<key2,value>> key1代表第几条序列，key2代表序列的点编号，value代表点所属的类别
     	this.symbolSeries = symbolSeries;
         for(int i : symbolSeries.keySet()){
             SymbolNode headSymbol = new SymbolNode(-1,i);
@@ -34,9 +35,9 @@ public class FindRules {
         for(int key:symbolSeries.keySet()){
         	sum += symbolSeries.get(key).size();
         }
-        tnum = (int) Math.ceil(sum/symbolSeries.size());
-        minsupnum = (int) Math.ceil(tnum*0.05);
-        minsup = minsupnum*1.0/tnum;
+        tnum = (int) Math.ceil(sum/symbolSeries.size());   //评分序列长度
+        minsupnum = (int) Math.ceil(tnum*0.05);            //支持度计数阈值
+        minsup = minsupnum*1.0/tnum;                    //支持度阈值
         
     }
 
@@ -56,7 +57,7 @@ public class FindRules {
         for(int i : symbolSeries.keySet()) {
             TreeMap<Integer, SymbolNode> isymbol = symbolSeries.get(i);
             TreeNode itree = treeSeries.get(i);
-            for(int k : isymbol.keySet()){
+            for(int k : isymbol.keySet()){   //K代表第几个数据点
                 SymbolNode symbolNode = isymbol.get(k);
                 if(itree.children_list.containsKey(symbolNode)){
                     TreeNode childtree = itree.children_list.get(symbolNode);
@@ -76,7 +77,7 @@ public class FindRules {
             Set<SymbolNode> delete = new HashSet<SymbolNode>();
             for(SymbolNode symbolNode : itree.children_list.keySet()){
                 TreeNode childtree = itree.children_list.get(symbolNode);
-                if((childtree.support_num*1.0/tnum) < minsup){   //若不满足要求，则去掉该节点
+                if((childtree.support_num*1.0/tnum) < minsup){   //若不满足要求，则去掉该节点，这里没有考虑到符号的类别数，应该综合类别数来确定阈值
                     for(int j : childtree.node_time_list){
                         isymbol.remove(j);
                     }
@@ -146,7 +147,7 @@ public class FindRules {
                 Set<SymbolNode> delete = new HashSet<SymbolNode>();
                 for(SymbolNode jsymbolNode : ichildTree.children_list.keySet()){
                     TreeNode jchTree = ichildTree.children_list.get(jsymbolNode);
-                    if((jchTree.support_num*1.0/tnum)<minsup){
+                    if((jchTree.support_num*1.0/tnum)<minsup){   //针对不同的频繁项，应该利用不同的计算公式
                         delete.add(jsymbolNode);
                     }else{
                         double con = jchTree.support_num*1.0/ichildTree.support_num;

@@ -164,8 +164,14 @@ public class BottomUpLinear {
             }*/
             
             double cost = computeCost(first,last);
-            
-            costList.add(cost);//用于测试
+            if(first.startTime>=235 && first.startTime<247){
+            	System.out.println("startTime at"+first.startTime);
+            	for(int j = first.startTime;j<last.startTime+last.span;j++){
+            		System.out.println("("+j+","+datas.get(j)+")");           		
+            	}
+//            	System.out.println("cost:"+minNode.cost);
+            }
+//            costList.add(cost);//用于测试
             System.out.println("线段"+first.startTime+"和线段"+last.startTime+"的合并代价:"+cost);
             Node node = new Node(cost);
             node.first = first;
@@ -177,6 +183,7 @@ public class BottomUpLinear {
             last = null;
         }
 
+        int a = 0;
         Node minNode = findMinNode(head);
         while(minNode!=null){
         	if(minNode.first.startTime>=235 && minNode.first.startTime<247){
@@ -187,8 +194,12 @@ public class BottomUpLinear {
             	System.out.println("cost:"+minNode.cost);
             }
             mergeNode(minNode);
-            double cost = computeCost(minNode.first,minNode.second);
-            minNode.cost = cost;
+           a++;
+           if(a == 135){
+        	   System.out.println("a:"+a);
+           }
+           System.out.println("a:"+a);
+            
             minNode = findMinNode(head);
         }
         //合并线段长度很小的node
@@ -259,12 +270,24 @@ public class BottomUpLinear {
     private void mergeNode(Node minNode) {
         Node before = minNode.before,after = minNode.after;
         Linear first = minNode.first,second = minNode.second;
+        
+        
         double newSlope = (datas.get(second.span+second.startTime)-first.startValue)/(second.span+second.startTime-first.startTime);
         Linear newLinear = new Linear(Math.atan(newSlope),first.startTime,second.span+second.startTime-first.startTime,first.startValue);
         newLinear.hspan = datas.get(second.span+second.startTime)-first.startValue;
         before.second=newLinear;
         before.after=after;
+        if(minNode.before.first != null)
+        {
+        	 double cost = computeCost(minNode.before.first,minNode.before.second);
+             minNode.before.cost = cost;
+        }
+       
         if (after != null) {
+        	 
+             double cost = computeCost(minNode.after.first,minNode.after.second);
+             minNode.after.cost = cost;
+             minNode.cost = cost;
             after.first = newLinear;
             after.before = before;
         }
