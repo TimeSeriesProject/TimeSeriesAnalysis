@@ -1,6 +1,8 @@
 package lineAssociation;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 
 import org.jnetpcap.util.Length;
@@ -51,17 +53,25 @@ public class BottomUpLinear {
      */
     private double computeCost(Linear first, Linear last) {
         int startTime = first.startTime;
-        int endTime = last.startTime+last.span;
+        int endTime = last.startTime+last.span;        
         double startValue = datas.get(startTime);
-        double endValue = datas.get(endTime);
+        double endValue = datas.get(endTime);        
         double slope = (endValue-startValue)/(endTime-startTime);
+        double b = startValue - slope*startTime;
         double cost = 0;
+        double dis = (endValue-startValue)*(endValue-startValue)+(endTime-startTime)*(endTime-startTime);
         for(int i = startTime;i <= endTime;i++){
-            cost+=Math.sqrt((startValue+slope*(i-startTime)-datas.get(i))*(startValue+slope*(i-startTime)-datas.get(i)));
+        	//int midle = startTime+first.span;
+        	
+        	double midleValue  = datas.get(i);
+            //cost+=Math.abs(startValue+slope*(i-startTime)-datas.get(i));//点到直线的距离
+            cost+=Math.abs(slope*i+b-midleValue)/Math.sqrt(slope*slope+1);//点到直线的垂直距离
 //            cost+=(startValue+slope*(i-startTime)-datas.get(i))*(startValue+slope*(i-startTime)-datas.get(i));
         }
+//        return cost;
+        cost = cost/Math.sqrt(dis);
+//        return cost/(endTime-startTime-1);
         return cost;
-//        return cost/(endTime-startTime+1);
     }
 
 
@@ -84,8 +94,8 @@ public class BottomUpLinear {
             }
         }
         nowLength++;
-        if((nowLength*1.0)/datas.size() < compressionRatio)
-            minNode = null;
+        /*if((nowLength*1.0)/datas.size() < compressionRatio)
+            minNode = null;*/
         return minNode;
     }
 
@@ -141,6 +151,7 @@ public class BottomUpLinear {
         Node head = new Node(-1.0);
         Node now = head;
         Linear first=null,last=null;
+        List<Double> costList = new ArrayList<Double>(); //用于测试
         for(int i : linears.keySet()){
             Linear lin = linears.get(i);
             if(first==null){
@@ -148,7 +159,14 @@ public class BottomUpLinear {
                 continue;
             }
             last = lin;
+            /*if(first.startTime>=105 && first.startTime<120){
+            	System.out.println("startTime at"+first.startTime);
+            }*/
+            
             double cost = computeCost(first,last);
+            
+            costList.add(cost);//用于测试
+            System.out.println("线段"+first.startTime+"和线段"+last.startTime+"的合并代价:"+cost);
             Node node = new Node(cost);
             node.first = first;
             node.second = last;
@@ -161,11 +179,20 @@ public class BottomUpLinear {
 
         Node minNode = findMinNode(head);
         while(minNode!=null){
+        	if(minNode.first.startTime>=235 && minNode.first.startTime<247){
+            	System.out.println("startTime at"+minNode.first.startTime);
+            	for(int i=minNode.first.startTime;i<minNode.second.startTime+minNode.second.span;i++){
+            		System.out.println("("+i+","+datas.get(i)+")");           		
+            	}
+            	System.out.println("cost:"+minNode.cost);
+            }
             mergeNode(minNode);
+            double cost = computeCost(minNode.first,minNode.second);
+            minNode.cost = cost;
             minNode = findMinNode(head);
         }
         //合并线段长度很小的node
-        mergeAtLeastNum(head);
+        //mergeAtLeastNum(head);
         
         linears = new TreeMap<Integer, Linear>();
         now =head.after;

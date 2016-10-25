@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- 算法参数 -->
 <algorithmsParams>
     <!-- 周期检测相关算法参数 -->
@@ -28,7 +28,7 @@
         <!-- 线段模式异常检测 -->
         <pointPatternParams>
             <densityK>2</densityK>
-            <patternThreshold>0.1</patternThreshold>
+            <patternThreshold>0.2</patternThreshold>
             <neighborK>10</neighborK>
         </pointPatternParams>
         <TEOParams>
@@ -89,7 +89,7 @@
         <!-- 线段 -->
         <associationRuleLineParams>
             <!-- 线段数合并代价参数 -->
-            <mergerPrice>0.025</mergerPrice>
+            <mergerPrice>0.03</mergerPrice>
             <compressionRatio>0.65</compressionRatio>
             <!-- 线段聚类参数 -->
             <t>0.1</t>
