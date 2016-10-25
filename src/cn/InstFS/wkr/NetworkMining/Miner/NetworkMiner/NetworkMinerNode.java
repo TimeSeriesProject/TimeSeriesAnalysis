@@ -1,11 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -21,6 +16,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.ARIMATSA;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.NeuralNetwork;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm.SequencePatternsDontSplit;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
@@ -40,6 +36,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
@@ -282,11 +279,41 @@ class NodeTimerTask extends TimerTask{
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_PredictionMining:
-				/*ARIMATSA forecast=new ARIMATSA(task, dataItems,
-						ParamsAPI.getInstance().getParamsPrediction().getAp());*/
-				ARIMATSA forecast=new ARIMATSA(task, dataItems,5);
-				forecast.TimeSeriesAnalysis();
-				setForecastResult(results, forecast);
+				MinerResultsPM resultsPM = results.getRetNode().getRetPM();
+				if (resultsPM.getHasPeriod()) { // 若有周期性
+					DataItems predictItems = new DataItems();
+					DataItems periodDi = resultsPM.getDistributePeriod();
+
+					Calendar calendar=Calendar.getInstance();
+					calendar.setTime(dataItems.getLastTime());
+					int len = dataItems.getLength();
+					for(int i = 0; i< periodDi.getLength()/2; i++){
+						int index = (int) ((i+len) % resultsPM.getPeriod());
+						calendar.add(Calendar.SECOND, task.getGranularity());
+						predictItems.add1Data(calendar.getTime(), periodDi.getData().get(index)+"");
+					}
+
+					results.getRetNode().getRetFM().setPredictItems(predictItems);
+				} /*else if (task.getMiningObject().equals("结点出现消失")){	// 无周期的结点出现消失规律应用神经网络挖掘
+					NeuralNetwork forecast=new NeuralNetwork(dataItems, task,
+							ParamsAPI.getInstance().getParamsPrediction().getNnp());
+					System.out.println(task.getTaskName()+" forecast start");
+					forecast.TimeSeriesAnalysis();
+					System.out.println(task.getTaskName()+" forecast over");
+					setForecastResult(results, forecast);
+				} */else {
+					NeuralNetwork forecast=new NeuralNetwork(dataItems, task,
+							ParamsAPI.getInstance().getParamsPrediction().getNnp());
+					System.out.println(task.getTaskName()+" forecast start");
+					forecast.TimeSeriesAnalysis();
+					System.out.println(task.getTaskName()+" forecast over");
+					setForecastResult(results, forecast);
+					/*ARIMATSA forecast=new ARIMATSA(task, dataItems,
+							ParamsAPI.getInstance().getParamsPrediction().getAp());
+					forecast.TimeSeriesAnalysis();
+					setForecastResult(results, forecast);*/
+				}
+
 				break;
 			case MiningMethods_SequenceMining:
 				

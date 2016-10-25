@@ -21,7 +21,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 @SuppressWarnings("deprecation")
 public class NeuralNetwork implements IMinerFM{
-	private String inputFilePath;
+	private DataItems dataItems;
 	private DataItems predictItems;
 
 	private Date originDataEndTime;
@@ -32,20 +32,11 @@ public class NeuralNetwork implements IMinerFM{
 	double learnRate; //学习速率
 	int seed;	//Seed用于初始化随机数的生成。随机数被用于设定节点之间连接的初始weights，并且用于shuffling训练集 
 	int trianTime;	//训练的迭代次数。
-
 	
-	
-/*	public NeuralNetwork(String inputFilePath,int predictPeriod,Date originDataEndTime,TaskElement task){
-		this.predictPeriod=predictPeriod;
-		this.inputFilePath=inputFilePath;
+	public NeuralNetwork(DataItems dataItems,TaskElement task,NeuralNetworkParams p){
+		this.dataItems=dataItems;
 		this.task=task;
-		this.originDataEndTime=originDataEndTime;
-	}*/
-	
-	public NeuralNetwork(String inputFilePath,Date originDataEndTime,TaskElement task,NeuralNetworkParams p){
-		this.inputFilePath=inputFilePath;
-		this.task=task;
-		this.originDataEndTime=originDataEndTime;
+		this.originDataEndTime=dataItems.getLastTime();
 		//初始化参数
 		 this.predictPeriod=p.getPredictPeriod();	//预测周期
 		 this.momentum=p.getMomentum(); //当更新weights时设置的动量 
@@ -59,8 +50,7 @@ public class NeuralNetwork implements IMinerFM{
 	
 	public void TimeSeriesAnalysis(){
 		try {
-			File inputFile=new File(inputFilePath);
-			generateFeatures features=new generateFeatures(inputFilePath,inputFile.getName().split("\\.")[0],task.getMiningObject());
+			generateFeatures features=new generateFeatures(dataItems,task.getName());
 			features.generateItems();
 			MultilayerPerceptron classifier=new MultilayerPerceptron();
 			File trainFile=new File(features.getTrainOutputFilePath());
@@ -77,38 +67,31 @@ public class NeuralNetwork implements IMinerFM{
 			Instances testInstances=loader.getDataSet();
 			testInstances.setClassIndex(testInstances.numAttributes()-1);
 			int testInstanceNum=testInstances.numInstances();
-/*			double momentum=0.1;
-			double learnRate=0.2;
-			int seed=0;
-			int trianTime=500;
-			*/
 			double minDistance=Double.MAX_VALUE;
 			double distance=0.0;
-			for(double learnRateIndex=learnRate;learnRateIndex<=0.4;learnRateIndex+=0.1){
-				for(double momentumIndex=momentum;momentumIndex<=0.3;momentumIndex+=0.1){
+			for(double learnRateIndex=learnRate;learnRateIndex<=0.3;learnRateIndex+=0.1){
+				for(double momentumIndex=momentum;momentumIndex<=0.2;momentumIndex+=0.1){
 					for(int seedIndex=seed;seedIndex<=1;seedIndex++){
-						for(int timeIndex=trianTime;timeIndex<=1000;timeIndex+=500){
-							classifier.setHiddenLayers("a");
-							classifier.setLearningRate(learnRateIndex);
-							classifier.setMomentum(momentumIndex);
-							classifier.setSeed(seedIndex);
-							classifier.setTrainingTime(timeIndex);
-							classifier.buildClassifier(trainInstances);
-							for(int i=0;i<testInstanceNum;i++){
-								double forecastValue=classifier.classifyInstance(testInstances.get(i));
-								double originValue=testInstances.instance(i).classValue();
-								distance+=Math.abs(forecastValue-originValue);
-							}
-							System.out.println(" distance "+distance);
-							if(distance<minDistance){
-								minDistance=distance;
-								seed=seedIndex;
-								momentum=momentumIndex;
-								learnRate=learnRateIndex;
-								trianTime=timeIndex;
-							}
-							distance=0;
+						classifier.setHiddenLayers("a");
+						classifier.setLearningRate(learnRateIndex);
+						classifier.setMomentum(momentumIndex);
+						classifier.setSeed(seedIndex);
+						classifier.setTrainingTime(800);
+						classifier.buildClassifier(trainInstances);
+						for(int i=0;i<testInstanceNum;i++){
+							double forecastValue=classifier.classifyInstance(testInstances.get(i));
+							double originValue=testInstances.instance(i).classValue();
+							distance+=Math.abs(forecastValue-originValue);
 						}
+						System.out.println(" distance "+distance);
+						if(distance<minDistance){
+							minDistance=distance;
+							seed=seedIndex;
+							momentum=momentumIndex;
+							learnRate=learnRateIndex;
+							trianTime=1000;
+						}
+						distance=0;
 					}
 				}
 			}
@@ -152,7 +135,7 @@ public class NeuralNetwork implements IMinerFM{
 			}
 			System.out.println(trianInstancesNum+testInstanceNum+lastIndex);
 			List<String> data=new ArrayList<String>();
-			for(int i=(trianInstancesNum+testInstanceNum);i<(trianInstancesNum+testInstanceNum+predictPeriod);i++){
+			for(int i=(trianInstancesNum+testInstanceNum+lastIndex);i<(trianInstancesNum+testInstanceNum+lastIndex+predictPeriod);i++){
 				data.add(items[i]+"");
 			}
 			DataItems dataItems=new DataItems();
@@ -180,21 +163,13 @@ public class NeuralNetwork implements IMinerFM{
 		return instances;
 	}
 	
-	public String getInputFilePath() {
-		return inputFilePath;
-	}
-
-	public void setInputFilePath(String inputFilePath) {
-		this.inputFilePath = inputFilePath;
-	}
-
-	
 	public DataItems getPredictItems() {
 		return predictItems;
 	}
 
 	public void setPredictItems(DataItems predictItems) {
 		this.predictItems = predictItems;
+		System.out.println(predictItems.data);
 	}
 
 	public int getPredictPeriod() {

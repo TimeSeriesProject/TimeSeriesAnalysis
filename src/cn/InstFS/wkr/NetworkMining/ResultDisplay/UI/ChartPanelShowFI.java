@@ -261,7 +261,7 @@ public class ChartPanelShowFI extends JPanel {
         XYDataset xydataset = createNormalDataset(nor, startDate);
         XYDataset xydataset1 = createLineDataset(nor, segPatterns);
 //        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 频繁项集挖掘结果", "序列编号", "值", xydataset);
-        JFreeChart jfreechart = ChartFactory.createScatterPlot(" 频繁项集挖掘结果", "序列编号", yName, xydataset);
+        JFreeChart jfreechart = ChartFactory.createScatterPlot(" 频繁模式挖掘结果", "序列编号", yName, xydataset);
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
         xyplot.setDataset(0, xydataset);
         xyplot.setDataset(1, xydataset1);
@@ -668,7 +668,7 @@ public class ChartPanelShowFI extends JPanel {
         Date startDate = nor.getTime().get(0);
         XYDataset xydataset = createNormalDataset(nor, startDate);
 //        JFreeChart jfreechart = ChartFactory.createTimeSeriesChart(" 频繁项集挖掘结果", "序列编号", "值", xydataset);
-        JFreeChart jfreechart = ChartFactory.createScatterPlot(" 频繁项集挖掘结果", "序列编号", yName, xydataset);
+        JFreeChart jfreechart = ChartFactory.createScatterPlot(" 频繁模式挖掘结果", "序列编号", yName, xydataset);
         XYPlot xyplot = (XYPlot) jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
@@ -744,7 +744,7 @@ public class ChartPanelShowFI extends JPanel {
 
                                 XYSeriesCollection xyseriescollection = new XYSeriesCollection();
                                 xySeries.add(_nor_model.get(_nor_model.size() - 1).getEnd(), Double.parseDouble(bottom.getData()));
-                                xySeries.add(one.get(j+1).get(0).getStart()+1,Double.parseDouble(top.getData()));
+                                xySeries.add(one.get(j+1).get(0).getStart(),Double.parseDouble(top.getData()));
                                 xyseriescollection.addSeries(xySeries);
                                 XYDataset xyDataset=xyseriescollection;
                                 XYLineAndShapeRenderer lineAndShapeRenderer0 = new XYLineAndShapeRenderer();
@@ -806,7 +806,7 @@ public class ChartPanelShowFI extends JPanel {
 
                                 XYSeriesCollection xyseriescollection = new XYSeriesCollection();
                                 xySeries.add(second.get(j).get(second.get(j).size() - 1).getEnd(), Double.parseDouble(bottom.getData()));
-                                xySeries.add(second.get(j+1).get(0).getStart()+1,Double.parseDouble(top.getData()));
+                                xySeries.add(second.get(j+1).get(0).getStart(),Double.parseDouble(top.getData()));
                                 xyseriescollection.addSeries(xySeries);
                                 XYDataset xyDataset=xyseriescollection;
                                 XYLineAndShapeRenderer lineAndShapeRenderer0 = new XYLineAndShapeRenderer();
@@ -873,7 +873,7 @@ public class ChartPanelShowFI extends JPanel {
 
                                 XYSeriesCollection xyseriescollection = new XYSeriesCollection();
                                 xySeries.add(third.get(j).get(third.get(j).size()-1).getEnd(), Double.parseDouble(bottom.getData()));
-                                xySeries.add(third.get(j+1).get(0).getStart()+1,Double.parseDouble(top.getData()));
+                                xySeries.add(third.get(j+1).get(0).getStart(),Double.parseDouble(top.getData()));
                                 xyseriescollection.addSeries(xySeries);
                                 XYDataset xyDataset=xyseriescollection;
                                 XYLineAndShapeRenderer lineAndShapeRenderer0 = new XYLineAndShapeRenderer();
@@ -940,7 +940,7 @@ public class ChartPanelShowFI extends JPanel {
 
                                 XYSeriesCollection xyseriescollection = new XYSeriesCollection();
                                 xySeries.add(fourth.get(j).get(fourth.get(j).size()-1).getEnd(), Double.parseDouble(bottom.getData()));
-                                xySeries.add(fourth.get(j+1).get(0).getStart()+1,Double.parseDouble(top.getData()));
+                                xySeries.add(fourth.get(j+1).get(0).getStart(),Double.parseDouble(top.getData()));
                                 xyseriescollection.addSeries(xySeries);
                                 XYDataset xyDataset=xyseriescollection;
                                 XYLineAndShapeRenderer lineAndShapeRenderer0 = new XYLineAndShapeRenderer();
@@ -1011,7 +1011,7 @@ public class ChartPanelShowFI extends JPanel {
 
                                 XYSeriesCollection xyseriescollection = new XYSeriesCollection();
                                 xySeries.add(fifth.get(j).get(fifth.get(j).size()-1).getEnd(), Double.parseDouble(bottom.getData()));
-                                xySeries.add(fifth.get(j+1).get(0).getStart()+1,Double.parseDouble(top.getData()));
+                                xySeries.add(fifth.get(j+1).get(0).getStart(),Double.parseDouble(top.getData()));
                                 xyseriescollection.addSeries(xySeries);
                                 XYDataset xyDataset=xyseriescollection;
                                 XYLineAndShapeRenderer lineAndShapeRenderer0 = new XYLineAndShapeRenderer();
@@ -1086,7 +1086,7 @@ public class ChartPanelShowFI extends JPanel {
 
                                 XYSeriesCollection xyseriescollection = new XYSeriesCollection();
                                 xySeries.add(sixth.get(j).get(sixth.get(j).size()-1).getEnd(), Double.parseDouble(bottom.getData()));
-                                xySeries.add(sixth.get(j+1).get(0).getStart()+1,Double.parseDouble(top.getData()));
+                                xySeries.add(sixth.get(j+1).get(0).getStart(),Double.parseDouble(top.getData()));
                                 xyseriescollection.addSeries(xySeries);
                                 XYDataset xyDataset=xyseriescollection;
                                 XYLineAndShapeRenderer lineAndShapeRenderer0 = new XYLineAndShapeRenderer();
@@ -1161,7 +1161,7 @@ public class ChartPanelShowFI extends JPanel {
 
                                 XYSeriesCollection xyseriescollection = new XYSeriesCollection();
                                 xySeries.add(seventh.get(j).get(seventh.get(j).size()-1).getEnd(), Double.parseDouble(bottom.getData()));
-                                xySeries.add(seventh.get(j+1).get(0).getStart()+1,Double.parseDouble(top.getData()));
+                                xySeries.add(seventh.get(j+1).get(0).getStart(),Double.parseDouble(top.getData()));
                                 xyseriescollection.addSeries(xySeries);
                                 XYDataset xyDataset=xyseriescollection;
                                 XYLineAndShapeRenderer lineAndShapeRenderer0 = new XYLineAndShapeRenderer();
@@ -1238,7 +1238,7 @@ public class ChartPanelShowFI extends JPanel {
 
                                 XYSeriesCollection xyseriescollection = new XYSeriesCollection();
                                 xySeries.add(eighth.get(j).get(eighth.get(j).size()-1).getEnd(), Double.parseDouble(bottom.getData()));
-                                xySeries.add(eighth.get(j+1).get(0).getStart()+1,Double.parseDouble(top.getData()));
+                                xySeries.add(eighth.get(j+1).get(0).getStart(),Double.parseDouble(top.getData()));
                                 xyseriescollection.addSeries(xySeries);
                                 XYDataset xyDataset=xyseriescollection;
                                 XYLineAndShapeRenderer lineAndShapeRenderer0 = new XYLineAndShapeRenderer();
@@ -1316,7 +1316,7 @@ public class ChartPanelShowFI extends JPanel {
 
                                 XYSeriesCollection xyseriescollection = new XYSeriesCollection();
                                 xySeries.add(ninth.get(j).get(ninth.get(j).size()-1).getEnd(), Double.parseDouble(bottom.getData()));
-                                xySeries.add(ninth.get(j+1).get(0).getStart()+1,Double.parseDouble(top.getData()));
+                                xySeries.add(ninth.get(j+1).get(0).getStart(),Double.parseDouble(top.getData()));
                                 xyseriescollection.addSeries(xySeries);
                                 XYDataset xyDataset=xyseriescollection;
                                 XYLineAndShapeRenderer lineAndShapeRenderer0 = new XYLineAndShapeRenderer();
@@ -1394,7 +1394,7 @@ public class ChartPanelShowFI extends JPanel {
 
                                 XYSeriesCollection xyseriescollection = new XYSeriesCollection();
                                 xySeries.add(tenth.get(j).get(tenth.get(j).size()-1).getEnd(), Double.parseDouble(bottom.getData()));
-                                xySeries.add(tenth.get(j+1).get(0).getStart()+1,Double.parseDouble(top.getData()));
+                                xySeries.add(tenth.get(j+1).get(0).getStart(),Double.parseDouble(top.getData()));
                                 xyseriescollection.addSeries(xySeries);
                                 XYDataset xyDataset=xyseriescollection;
                                 XYLineAndShapeRenderer lineAndShapeRenderer0 = new XYLineAndShapeRenderer();
