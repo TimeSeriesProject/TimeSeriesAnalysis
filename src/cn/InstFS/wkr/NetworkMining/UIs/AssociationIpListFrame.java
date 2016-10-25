@@ -269,9 +269,9 @@ public class AssociationIpListFrame extends JFrame {
 	{
 	  int row=listTable.getSelectedRow();    
 	  //得到所在行的第一个列的值，作为下面事件传递的参数
-	  /*SingleIpProtocolAssFrame singleIpProtocol = new SingleIpProtocolAssFrame(resultList.get(row).getKey(),resultMap);
+	  SingleIpProtocolAssFrame singleIpProtocol = new SingleIpProtocolAssFrame(resultList.get(row).getKey(),resultMap);
 	  singleIpProtocol.setTitle( "ip: "+resultList.get(row).getKey().getRange()+" protocol: "+resultList.get(row).getKey().getProtocol()+" "+resultList.get(row).getKey().getMiningObject()+"规律");
-	  singleIpProtocol.setVisible(true);*/
+	  singleIpProtocol.setVisible(true);
 	  /********以下用于测试线段化结果*******/
 	  SingleIpProtocolAssLineFrame singleIpProtocolAssLineFrame = new SingleIpProtocolAssLineFrame(resultList.get(row).getKey(),resultMap);
 	  singleIpProtocolAssLineFrame.setTitle("ip: "+resultList.get(row).getKey().getRange()+" protocol: "+resultList.get(row).getKey().getProtocol()+" "+resultList.get(row).getKey().getMiningObject()+"规律");
