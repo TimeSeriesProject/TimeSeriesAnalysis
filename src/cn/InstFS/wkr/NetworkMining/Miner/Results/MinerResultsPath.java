@@ -10,6 +10,7 @@ public class MinerResultsPath implements Serializable {
 	private int minPeriod = 0;
 	private int maxPeriod = 0;
 	private HashMap<String, MinerResultsOM> retOM;
+	private HashMap<String, MinerResultsFM> retFM;
 	private int minOutliesConfidence = 0;
 	private int maxOutliesConfidence = 0;
 	private HashMap<String, DataItems> pathOriDataItems;
@@ -19,6 +20,7 @@ public class MinerResultsPath implements Serializable {
 	public MinerResultsPath() {
 		retPM = new HashMap<String, MinerResultsPM>();
 		retOM = new HashMap<String, MinerResultsOM>();
+		retFM = new HashMap<>();
 		pathOriDataItems = new HashMap<>();
 		retStatistic = new HashMap<>();
 	}
@@ -37,6 +39,14 @@ public class MinerResultsPath implements Serializable {
 
 	public void setRetOM(HashMap<String, MinerResultsOM> retOM) {
 		this.retOM = retOM;
+	}
+
+	public HashMap<String, MinerResultsFM> getRetFM() {
+		return retFM;
+	}
+
+	public void setRetFM(HashMap<String, MinerResultsFM> retFM) {
+		this.retFM = retFM;
 	}
 
 	public HashMap<String, DataItems> getPathOriDataItems() {

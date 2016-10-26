@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import WaveletUtil.PointPatternDetection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.*;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.NeuralNetwork;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.GaussianOutlierDetection;
@@ -163,6 +164,7 @@ class PathTimerTask extends TimerTask{
 		//results.setInputData(oriDataItems);
 		HashMap<String, MinerResultsPM> retPathPM=new HashMap<String, MinerResultsPM>();
 		HashMap<String, MinerResultsOM> retPathOM=new HashMap<String, MinerResultsOM>();
+		HashMap<String, MinerResultsFM> retPathFM = new HashMap<>();
 		HashMap<String, DataItems> retPathOriDataItems = new HashMap<>();
 		HashMap<String, MinerResultsStatistics> retPathStatistic = new HashMap<>();
 		for(TaskElement task:tasks){
@@ -265,6 +267,17 @@ class PathTimerTask extends TimerTask{
 						setOMResults(retOM, omMethod);
 						retPathOM.put(name, retOM);
 						break;
+					case MiningMethods_PredictionMining:
+						IMinerFM forecast = null;
+						MinerResultsFM retFM = new MinerResultsFM();
+
+						forecast=new NeuralNetwork(newItem, task,
+								ParamsAPI.getInstance().getParamsPrediction().getNnp());
+						System.out.println(task.getTaskName()+" forecast start");
+						forecast.TimeSeriesAnalysis();
+						System.out.println(task.getTaskName()+" forecast over");
+						retFM.setPredictItems(forecast.getPredictItems());
+						retPathFM.put(name, retFM);
 					default:
 						break;
 				}
@@ -274,6 +287,7 @@ class PathTimerTask extends TimerTask{
 		results.getRetPath().setPathProb(pathProb);
 		results.getRetPath().setRetPM(retPathPM);
 		results.getRetPath().setRetOM(retPathOM);
+		results.getRetPath().setRetFM(retPathFM);
 		results.getRetPath().setRetStatistic(retPathStatistic);
 		results.getRetPath().setPathOriDataItems(retPathOriDataItems);
 		results.getRetPath().setMaxAndMinValue();

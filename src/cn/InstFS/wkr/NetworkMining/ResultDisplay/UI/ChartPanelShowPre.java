@@ -179,11 +179,10 @@ public class ChartPanelShowPre extends JPanel{
         return xyseriescollection;
     }
 
-    public static JFreeChart createChart(DataItems nor,DataItems abnor,String yname)
-    {
+    public static JFreeChart createChart(String title, DataItems nor,DataItems abnor,String yname) {
 
         XYDataset xydataset = createNormalDataset(nor);
-        JFreeChart jfreechart = ChartFactory.createScatterPlot(" 预测", "序列编号", yname, xydataset);
+        JFreeChart jfreechart = ChartFactory.createScatterPlot(title, "序列编号", yname, xydataset);
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
@@ -219,6 +218,11 @@ public class ChartPanelShowPre extends JPanel{
         //xylineandshaperenderer1.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
         //xylineandshaperenderer1.setBaseItemLabelsVisible(true);
         return jfreechart;
+    }
+
+    public static JFreeChart createChart(DataItems nor,DataItems abnor,String yname)
+    {
+        return createChart("时间序列预测", nor, abnor, yname);
     }
 }
 

@@ -643,6 +643,14 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						statistics.getResults().setInputData(taskCombination.getDataItems());
 						allMiners.put(task, statistics);
 						break;
+					case MiningMethods_PredictionMining:
+						NetworkMinerFM fm=new NetworkMinerFM(task, null);
+						fm.getResults().getRetPath().setRetFM(results.getRetFM());
+						fm.getResults().setInputData(taskCombination.getDataItems());
+						fm.getResults().getRetPath().setPathOriDataItems(results.getPathOriDataItems());
+						fm.isOver.setIsover(true);
+						allMiners.put(task, fm);
+						break;
 					default:
 						break;
 				}

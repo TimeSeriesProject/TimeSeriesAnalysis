@@ -172,7 +172,12 @@ public class ChartPanelShowAbl extends JPanel{
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
-    public static JFreeChart createChart(DataItems oriItems,DataItems outdegree,List<DataItems> outSet,String yName)
+
+    public static JFreeChart createChart(DataItems oriItems,DataItems outdegree,List<DataItems> outSet,String yName) {
+        return createChart("异常度检测", oriItems, outdegree, outSet, yName);
+    }
+
+    public static JFreeChart createChart(String title, DataItems oriItems,DataItems outdegree,List<DataItems> outSet,String yName)
     {
 
         //设置异常点提示红点大小
@@ -183,7 +188,7 @@ public class ChartPanelShowAbl extends JPanel{
         XYDataset xyDataset2 = createOnePiont(5.0);//附加点（不显示），用来调整异常度轴的格式       
         List<XYDataset> xyDatasetlist = createAbLineDataset(oriItems,outSet);//异常线段
         
-        JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "序列编号", yName, xydataset);
+        JFreeChart jfreechart = ChartFactory.createScatterPlot(title, "序列编号", yName, xydataset);
         jfreechart.removeLegend();
         XYPlot xyplot = (XYPlot)jfreechart.getPlot();
         xyplot.setDomainPannable(true);

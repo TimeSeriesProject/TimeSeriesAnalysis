@@ -35,6 +35,7 @@ public class PathMinerFactory extends MinerFactorySettings{
 		miningMethodsList.add(MiningMethod.MiningMethods_Statistics);
 		miningMethodsList.add(MiningMethod.MiningMethods_PeriodicityMining);
 		miningMethodsList.add(MiningMethod.MiningMethods_OutliesMining);
+		miningMethodsList.add(MiningMethod.MiningMethods_PredictionMining);
 
 		List<MiningMethod> miningMethodsCheck = this.getMiningMethodsChecked();
 		miningMethodsCheck.addAll(miningMethodsList);
@@ -149,6 +150,11 @@ public class PathMinerFactory extends MinerFactorySettings{
 			taskName = fileName + "路径" + miningObject.toString() + "_统计_auto";
 			task.setTaskName(taskName);
 			task.setComments("ip为"+file.getName()+"的路径"+ miningObject.toString()+"统计");
+			break;
+		case MiningMethods_PredictionMining:
+			taskName = fileName + "路径" + miningObject.toString() + "_预测_auto";
+			task.setTaskName(taskName);
+			task.setComments("ip为"+file.getName()+"的路径"+ miningObject.toString()+"预测");
 			break;
 		default:
 			break;

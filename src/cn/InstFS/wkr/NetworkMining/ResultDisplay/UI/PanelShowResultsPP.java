@@ -1,15 +1,13 @@
 package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.MovingAverage;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
-import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
-import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsOM;
-import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPM;
-import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsStatistics;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.*;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
@@ -42,6 +40,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
     public PanelShowResultsPP(TaskElement task) {
         this.task = task;
         obName=task.getMiningObject();
+        yName = obName;
         alltaskCombination = task.allCombinationTasks;
         setLayout(new GridLayout(0, 1, 0, 0));
         chart1 = new ChartPanelShowTs("路径挖掘", "时间", obName, null);
@@ -258,13 +257,13 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                     outsetItems.add(di);
                 }
 
-                ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", yName, null);
-                /*MovingAverage ma = new MovingAverage(oriData);
+                /*ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", yName, null);
+                *//*MovingAverage ma = new MovingAverage(oriData);
                 DataItems newItems = ma.getNewItems();
-                chart.displayDataItems(newItems);*/
+                chart.displayDataItems(newItems);*//*
                 chart.displayDataItems(oriData);
                 
-                jp.add(chart);
+                jp.add(chart);*/
                 JFreeChart jf;
                 /*if (!result.isHasOutlies()) {
                     jf = ChartPanelShowAb.createChart(new DataItems(),new DataItems());
@@ -277,13 +276,13 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 }*/
                 if (!result.isHasOutlies()) {
                    
-                	jf = ChartPanelShowAbl.createChart(oriData,outDegree,outsetItems,yName);
+                	jf = ChartPanelShowAbl.createChart("路径"+pathName+"异常度检测",oriData,outDegree,outsetItems,yName);
                 } else if (result.isIslinkDegree()) {                    
-                    jf = ChartPanelShowAbl.createChart(oriData,outDegree,outsetItems,yName);
+                    jf = ChartPanelShowAbl.createChart("路径"+pathName+"异常度检测",oriData,outDegree,outsetItems,yName);
                 } else if(!result.isIslinkDegree()){
-                    jf = ChartPanelShowAbc.createChart(oriData, outDegree,outliesItems,yName);
+                    jf = ChartPanelShowAbc.createChart("路径"+pathName+"异常度检测",oriData, outDegree,outliesItems,yName);
                 } else{
-                	jf = ChartPanelShowAbc.createChart(oriData, outDegree,outliesItems,yName);
+                	jf = ChartPanelShowAbc.createChart("路径"+pathName+"异常度检测",oriData, outDegree,outliesItems,yName);
                 }
                 
                 ChartPanel chartpanel = new ChartPanel(jf);
@@ -295,7 +294,7 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             JLabel granularity = new JLabel("时间粒度:"+task.getGranularity()+"(s)");
             label.add(startTime);
             label.add(granularity);
-            jp.setLayout(new GridLayout(0,2));
+            jp.setLayout(new GridLayout(0,1));
             panel.add(label,BorderLayout.NORTH);
             panel.add(jp,BorderLayout.CENTER);
             jsp.setViewportView(panel);            
@@ -391,6 +390,51 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             repaint();
             validate();
             count++;
+        } else if (count==0 && miningMethod.equals(MiningMethod.MiningMethods_PredictionMining)) {
+            JScrollPane jsp = new JScrollPane();
+            JPanel jp=new JPanel();
+            JPanel label = new JPanel();
+            JPanel panel = new JPanel(new BorderLayout());
+
+            HashMap<String, MinerResultsFM> resultFM = rslt.getRetPath().getRetFM();
+            HashMap<String, DataItems> oriItemsMap = rslt.getRetPath().getPathOriDataItems();
+            remove(chart1);
+            for (Map.Entry<String, MinerResultsFM> entry: resultFM.entrySet()) {
+                String pathName = entry.getKey();
+                DataItems predictItems = entry.getValue().getPredictItems();
+                DataItems oriItems = oriItemsMap.get(pathName);
+
+                predictItems = comItems(predictItems);
+                oriItems = comItems(oriItems);
+
+                if (predictItems == null) {
+                    chart1.displayDataItems(oriItems);
+                } else {
+                    DataItem lastOriItem = oriItems.getElementAt(oriItems.getLength() - 1);
+                    predictItems.add1Data(lastOriItem);
+
+                    JFreeChart jf = ChartPanelShowPre.createChart("路径"+pathName+"的序列预测",oriItems, predictItems, yName);
+                    ChartPanel chartpanel = new ChartPanel(jf);
+                    jp.add(chartpanel);
+                    count++;
+
+                }
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH时");
+            JLabel startTime = new JLabel("开始时间:"+sdf.format(rslt.getInputData().getTime().get(0))+"      ");
+            JLabel granularity = new JLabel("时间粒度:"+task.getGranularity()+"(s)");
+            label.add(startTime);
+            label.add(granularity);
+            jp.setLayout(new GridLayout(0,1));
+            panel.add(label,BorderLayout.NORTH);
+            panel.add(jp,BorderLayout.CENTER);
+            jsp.setViewportView(panel);
+            add(jsp);
+
+            repaint();
+            validate();
+            count++;
+
         }
     }
     /**@author LYH
