@@ -367,11 +367,13 @@ public class PcapByteParser {
     }
 
     private static String byteArrayToIP(byte[] b, StringBuilder sb) {
+        String str;
         for (int i = 0; i < 3; i++) {
             sb.append(b[i] + ".");
         }
         sb.append(b[3]);
-        return sb.toString();
+        str = new String(sb.toString()).intern();//指向常量池中的string
+        return str;
     }
 
     public static byte[] intToByte(int number) {

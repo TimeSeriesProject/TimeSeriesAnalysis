@@ -16,6 +16,7 @@ public class PcapRouteGen {
         byte[] buffer_1 = new byte[1];
         byte[] buffer_8 = new byte[8];
         byte[] name;
+        String strName;
         int length;
         while (is.hasRemaining()) {
             PcapData data = new PcapData();
@@ -54,8 +55,9 @@ public class PcapRouteGen {
             length = byteArrayToInt(buffer_4, 0);
 
             name = new byte[length];
+            strName = new String(name).intern();//指向常量池中的string
             is.get(name);
-            data.setPcapFile(new String(name));
+            data.setPcapFile(strName);
             datas.add(data);
 
 //            BufferedWriter bw;
