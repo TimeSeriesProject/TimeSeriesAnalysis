@@ -1213,7 +1213,7 @@ public class Server {
 //            mapLock.writeLock().lock();
 //            try {
             if (allCombinationTasks.get(task).equals("n")) {
-                allCombinationTasks.remove(task);
+                allCombinationTasks.remove(task);//可注释
                 allCombinationTasks.put(task, "y");//更新标记，表示完成
             }
 
@@ -3236,14 +3236,14 @@ public class Server {
 
         private void updateMap(String task) {
             if (allTasksTags.get(task).equals("n")) {
-                allTasksTags.remove(task);
+                allTasksTags.remove(task);//可注释
                 allTasksTags.put(task, "y");//更新标记，表示完成
             }
         }
 
         private void updateMap2(String task2) {
             if (allTasksTags2.get(task2).equals("n")) {
-                allTasksTags2.remove(task2);
+                allTasksTags2.remove(task2);//可注释
                 allTasksTags2.put(task2, "y");//更新标记，表示完成
             }
         }

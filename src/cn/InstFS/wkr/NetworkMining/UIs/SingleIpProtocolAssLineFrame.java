@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
@@ -107,11 +108,32 @@ public class SingleIpProtocolAssLineFrame extends JFrame{
             buttons.get(0).doClick();
     }
 	public void display(){
+		dataItems1 = normalize(dataItems1);
 		panelShowResultAssLine = new PanelShowResultAssLine(dataItems1, linesList);
     	chart = panelShowResultAssLine.createChart(dataItems1, linesList);
     	ChartPanel chartpanel = new ChartPanel(chart);
     	add(chartpanel);
     	this.setVisible(true);
+	}
+	private DataItems normalize(DataItems di){
+		DataItems dataItems = new DataItems();
+		double min = Double.MAX_VALUE;
+		double max = Double.MIN_VALUE;
+		for(int i=0;i<di.getLength();i++){
+			double data = Double.parseDouble(di.getData().get(i));
+			if(data>max){
+				max = data;
+			}else if(data<min){
+				min = data;
+			}
+		}
+		for(int i=0;i<di.getLength();i++){
+			double data = Double.parseDouble(di.getData().get(i));
+			data = (data-min)/(max-min);
+			Date time = di.getTime().get(i);
+			dataItems.add1Data(time,String.valueOf(data));
+		}
+		return dataItems;
 	}
 
 }

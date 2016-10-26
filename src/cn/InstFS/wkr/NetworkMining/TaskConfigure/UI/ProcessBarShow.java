@@ -364,6 +364,7 @@ public class ProcessBarShow extends JDialog implements Callable {
 						bar.setValue(0);
 						bar.setMaximum(pp.pu.getParsebydaySum());
 						currentPhrase = "阶段 3/3";
+						phrase = 3;
 						System.out.println("任务总数阶段3："+pp.pu.getParsebydaySum());
 					}
 

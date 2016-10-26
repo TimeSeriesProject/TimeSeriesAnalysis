@@ -357,8 +357,8 @@ class RouteGen implements Callable {
     public Boolean call() {
         FileChannel fc = null;
         try {
-            String srcIP = fileName.split("_")[0];
-            String dstIP = fileName.substring(srcIP.length() + 1, fileName.lastIndexOf("."));
+            String srcIP = new String(fileName.split("_")[0]).intern();
+            String dstIP = new String(fileName.substring(srcIP.length() + 1, fileName.lastIndexOf("."))).intern();
             fc = new FileInputStream(path).getChannel();
             length = fc.size();
             if (length <= Integer.MAX_VALUE) {
@@ -631,6 +631,7 @@ public class PcapUtils {
     private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap = new ConcurrentHashMap<String, ArrayList<PcapNode>>();
     private String date;
     private ParseByDay parseByDay;
+    private ConcurrentHashMap<String, String> strMap = new ConcurrentHashMap<String, String>();
 
     public enum Status {
         PREPARE("prepare"), PARSE("parse"), GENROUTE("genroute"), PARSEBYDAY("parsebyday"), END("end");
@@ -1051,7 +1052,7 @@ public class PcapUtils {
         System.out.println("route结束，traffic开始");
         generateTraffic(outpath);
         long e = System.currentTimeMillis();
-        System.out.println("时间3：" + (e - d) / 1000);
+        System.out.println("时间4：" + (e - d) / 1000);
 
         status = Status.PARSEBYDAY;
         setParsebydaySum(3);
@@ -1065,6 +1066,9 @@ public class PcapUtils {
         setParsebydayNum(3);
         status = Status.END;
         System.out.println("解析结束");
+        long f = System.currentTimeMillis();
+        System.out.println("时间5：" + (f - e) / 1000);
+        System.out.println("总时间：" + (f - a) / 1000);
 
     }
 

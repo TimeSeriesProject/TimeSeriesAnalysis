@@ -198,7 +198,7 @@ class NodeGen implements Callable {
 
     @Override
     public Boolean call() throws Exception {
-        System.out.println("进入执行node");
+//        System.out.println("进入执行node");
         InputStreamReader in = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bin = new BufferedReader(in);
         String curLine = null;
@@ -255,7 +255,7 @@ class RouteGenerate implements Callable {
 
     @Override
     public Boolean call() throws Exception {
-        System.out.println("进入执行route");
+//        System.out.println("进入执行route");
         InputStreamReader in = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bin = new BufferedReader(in);
         String headLine = bin.readLine();
@@ -315,7 +315,7 @@ class TrafficGen implements Callable {
 
     @Override
     public Boolean call() throws Exception {
-        System.out.println("进入执行traffic");
+//        System.out.println("进入执行traffic");
         InputStreamReader in = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bin = new BufferedReader(in);
         String curLine = null;
