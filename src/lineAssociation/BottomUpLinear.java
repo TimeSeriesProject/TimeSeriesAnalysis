@@ -59,7 +59,7 @@ public class BottomUpLinear {
         double slope = (endValue-startValue)/(endTime-startTime);
         double b = startValue - slope*startTime;
         double cost = 0;
-        double dis = (endValue-startValue)*(endValue-startValue)*100+(endTime-startTime)*(endTime-startTime);
+        double dis = (endValue-startValue)*(endValue-startValue)*100+Math.log((endTime-startTime+1))*Math.log((endTime-startTime+1));
         for(int i = startTime;i <= endTime;i++){
         	//int midle = startTime+first.span;
         	
@@ -160,12 +160,12 @@ public class BottomUpLinear {
             }
             last = lin;
             //用于测试
-            if(first.startTime>=20 && first.startTime<25){
+            if(first.startTime>=224 && first.startTime<=242){
             	System.out.println("startTime at"+first.startTime);
             }
             
             double cost = computeCost(first,last);
-            if(first.startTime>=235 && first.startTime<247){
+            if(first.startTime>=224 && first.startTime<=242){
             	System.out.println("startTime at"+first.startTime);
             	for(int j = first.startTime;j<last.startTime+last.span;j++){
             		System.out.println("("+j+","+datas.get(j)+")");           		
@@ -187,7 +187,7 @@ public class BottomUpLinear {
         int a = 0;
         Node minNode = findMinNode(head);
         while(minNode!=null){
-        	if(minNode.first.startTime>=178 && minNode.first.startTime<188){
+        	if(minNode.first.startTime>=224 && minNode.first.startTime<242){
             	System.out.println("startTime at"+minNode.first.startTime);
             	for(int i=minNode.first.startTime;i<minNode.second.startTime+minNode.second.span;i++){
             		System.out.println("("+i+","+datas.get(i)+")");           		
