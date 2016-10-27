@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class PcapRouteGen {
 
-    public static void genDatas(MappedByteBuffer is, ArrayList<PcapData> datas, String srcIP, String dstIP) throws IOException {
+    public static void genDatas(MappedByteBuffer is, ArrayList<PcapData> datas) throws IOException {
         byte[] buffer_4 = new byte[4];
         byte[] buffer_2 = new byte[2];
         byte[] buffer_1 = new byte[1];
@@ -18,6 +18,7 @@ public class PcapRouteGen {
         byte[] name;
         String strName;
         int length;
+        StringBuilder sb = new StringBuilder();
         while (is.hasRemaining()) {
             PcapData data = new PcapData();
 
@@ -33,17 +34,17 @@ public class PcapRouteGen {
             is.get(buffer_1);
             data.setTTL(64 - buffer_1[0]);
 
-//            is.get(buffer_4);
-//            data.setSrcIP(byteArrayToIP(buffer_4, sb));
-//            sb.delete(0, sb.length());
-//
-//            is.get(buffer_4);
-//            data.setDstIP(byteArrayToIP(buffer_4, sb));
-//            sb.delete(0, sb.length());
+            is.get(buffer_4);
+            data.setSrcIP(byteArrayToIP(buffer_4, sb));
+            sb.delete(0, sb.length());
 
-            is.get(buffer_8);
-            data.setSrcIP(srcIP);
-            data.setDstIP(dstIP);
+            is.get(buffer_4);
+            data.setDstIP(byteArrayToIP(buffer_4, sb));
+            sb.delete(0, sb.length());
+
+//            is.get(buffer_8);
+//            data.setSrcIP(srcIP);
+//            data.setDstIP(dstIP);
 
             is.get(buffer_2);
             data.setSrcPort(byteArrayToPort(buffer_2, 0));
@@ -84,7 +85,7 @@ public class PcapRouteGen {
         }
     }
 
-    public static long pGenDatas(long position, long part, long i, long pLength, MappedByteBuffer is, ArrayList<PcapData> datas, String srcIP, String dstIP) throws IOException {
+    public static long pGenDatas(long position, long part, long i, long pLength, MappedByteBuffer is, ArrayList<PcapData> datas) throws IOException {
         byte[] buffer_4 = new byte[4];
         byte[] buffer_2 = new byte[2];
         byte[] buffer_1 = new byte[1];
@@ -107,17 +108,17 @@ public class PcapRouteGen {
             is.get(buffer_1);
             data.setTTL(64 - buffer_1[0]);
 
-//            is.get(buffer_4);
-//            data.setSrcIP(byteArrayToIP(buffer_4, sb));
-//            sb.delete(0, sb.length());
-//
-//            is.get(buffer_4);
-//            data.setDstIP(byteArrayToIP(buffer_4, sb));
-//            sb.delete(0, sb.length());
+            is.get(buffer_4);
+            data.setSrcIP(byteArrayToIP(buffer_4, sb));
+            sb.delete(0, sb.length());
 
-            is.get(buffer_8);
-            data.setSrcIP(srcIP);
-            data.setDstIP(dstIP);
+            is.get(buffer_4);
+            data.setDstIP(byteArrayToIP(buffer_4, sb));
+            sb.delete(0, sb.length());
+
+//            is.get(buffer_8);
+//            data.setSrcIP(srcIP);
+//            data.setDstIP(dstIP);
 
             is.get(buffer_2);
             data.setSrcPort(byteArrayToPort(buffer_2, 0));
@@ -177,10 +178,12 @@ public class PcapRouteGen {
     }
 
     private static String byteArrayToIP(byte[] b, StringBuilder sb) {
+        String str;
         for (int i = 0; i < 3; i++) {
             sb.append(b[i] + ".");
         }
         sb.append(b[3]);
-        return sb.toString();
+        str = new String(sb.toString()).intern();//指向常量池中的string
+        return str;
     }
 }

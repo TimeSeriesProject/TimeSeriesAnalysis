@@ -1,9 +1,11 @@
 package lineAssociation;
 
+import java.io.Serializable;
+
 /**
  * Created by xzbang on 2015/12/21.
  */
-public class Linear {
+public class Linear implements Serializable{
 
     public double theta=0.0;//线段倾斜角度
     public int startTime=0;//线段起始时间点
