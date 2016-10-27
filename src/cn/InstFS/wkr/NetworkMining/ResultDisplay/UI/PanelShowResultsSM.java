@@ -203,12 +203,14 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 			for(int j=0;j<len;j++)
 			{
 				String tempStringDelete=freqPatternsListTemp.get(j);
-				if(tempString.contains(tempStringDelete))
-				{
-//					if(!freqResult.getData().contains(tempString)) {
-//
-//					}
-//					freqPatternsListTemp.remove(tempStringDelete);
+
+				// 判断是否包含在其他模式之中
+				if (tempString.contains(","+ tempStringDelete + ",")) { // 子串在中间位置
+					deletedPatterns.add(tempStringDelete);
+				} else if ( (tempString.indexOf(tempStringDelete)+tempStringDelete.length()) == tempString.length()  // 子串在末位
+						&& tempString.contains(","+ tempStringDelete)) {
+					deletedPatterns.add(tempStringDelete);
+				} else if (tempString.indexOf(tempStringDelete)==0 && tempString.contains(tempStringDelete+",") ) { // 子串在起始位
 					deletedPatterns.add(tempStringDelete);
 				}
 			}
