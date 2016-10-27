@@ -105,11 +105,15 @@ public class LinePattern {
         double startValue = datas.get(start);
         double endValue = datas.get(end);
         double slope = (endValue-startValue)/(end-start);
+        double b = startValue - slope*start;
+        double dis = (endValue-startValue)*(endValue-startValue)*100+Math.log((end-start+1))*Math.log((end-start+1));
         double cost = 0;
         for(int i = start;i <= end;i++){
-            cost+=Math.abs(startValue+slope*(i-start)-datas.get(i));
+        	double midleValue  = datas.get(i);
+//        	cost+=Math.abs(startValue+slope*(i-start)-datas.get(i));
+        	cost+=Math.abs(slope*i+b-midleValue)/Math.sqrt(slope*slope+1);//点到直线的垂直距离
         }
-        cost = cost/(end-start);
+        cost = cost/Math.sqrt(dis);
         return cost;
     }
 
@@ -175,7 +179,7 @@ public class LinePattern {
             minNode = findMinNode(head);
         }
         //合并线段长度很小的node
-        mergeAtLeastNum(head);
+        //mergeAtLeastNum(head);
         
         linesMap = new TreeMap<Integer, Pattern>();
         now =head.after;

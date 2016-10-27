@@ -357,13 +357,13 @@ class RouteGen implements Callable {
     public Boolean call() {
         FileChannel fc = null;
         try {
-            String srcIP = new String(fileName.split("_")[0]).intern();
-            String dstIP = new String(fileName.substring(srcIP.length() + 1, fileName.lastIndexOf("."))).intern();
+//            String srcIP = new String(fileName.split("_")[0]).intern();
+//            String dstIP = new String(fileName.substring(srcIP.length() + 1, fileName.lastIndexOf("."))).intern();
             fc = new FileInputStream(path).getChannel();
             length = fc.size();
             if (length <= Integer.MAX_VALUE) {
                 MappedByteBuffer is = fc.map(FileChannel.MapMode.READ_ONLY, 0, length);
-                PcapRouteGen.genDatas(is, datas, srcIP, dstIP);
+                PcapRouteGen.genDatas(is, datas);
                 unmap(is);
                 fc.close();
             }
@@ -379,7 +379,7 @@ class RouteGen implements Callable {
                     MappedByteBuffer is = fc.map(FileChannel.MapMode.READ_ONLY, position, pLength);
 
 //                    position = PcapParser.pUnpack(position, part, i, pLength, linkType, is, fileName, bws, nodeMap, path);
-                    position = PcapRouteGen.pGenDatas(position, part, i, pLength, is, datas, srcIP, dstIP);
+                    position = PcapRouteGen.pGenDatas(position, part, i, pLength, is, datas);
                     System.out.println("执行结束");
                     unmap(is);
                 }
@@ -800,7 +800,7 @@ public class PcapUtils {
         status = Status.PARSE;
         System.out.println(status);
         System.out.println("parseSum " + parseSum);
-        ExecutorService exec = Executors.newFixedThreadPool(16);
+        ExecutorService exec = Executors.newFixedThreadPool(4);
         ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
         for (int i = 0; i < fileList.size(); i++) {
             File file = fileList.get(i);
