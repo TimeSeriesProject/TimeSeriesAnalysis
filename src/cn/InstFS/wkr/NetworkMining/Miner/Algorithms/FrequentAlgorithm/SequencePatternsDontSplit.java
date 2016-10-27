@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import oracle.net.aso.a;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
@@ -145,6 +146,7 @@ public class SequencePatternsDontSplit {
 				
 				String first_item = newestSequence.get(i);
 				String last_item = basicSequence.get(j);
+				
 				if(isSatisfied(first_item,last_item,sliceSequence,position,thresh))
 				{
 					new_sequence.add(first_item+","+last_item);
@@ -223,6 +225,12 @@ public class SequencePatternsDontSplit {
 				int index = sliceSequence.indexOf(item, len);
 				if(index == -1)
 					break;
+				if( (index >=  1 && sliceSequence.charAt(index-1) != ',') || 
+						(index + item.length() < sliceSequence.length() && sliceSequence.charAt(index+item.length()) != ','))
+				{
+					len = index + 1;
+					continue;
+				}
 				len = index + item.length();
 				labelPosition.add(index);
 			}
