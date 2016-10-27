@@ -192,14 +192,14 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		List<LineElement> lineElements = rslt.getRetSM().getLineElements();
 		List<SegPattern> segPatterns = rslt.getRetSM().getSegPatterns();
 		final HashMap<Integer, List<List<LineElement>>> modeList = new HashMap<>();
-		DataItems freqPatternsTemp=new DataItems();
 		DataItems freqResult=new DataItems();
-		freqPatternsTemp=freqPatterns;
-		List<String>freqPatternsListTemp = freqPatternsTemp.getData();
+
+		List<String>freqPatternsListTemp = new ArrayList<>(freqPatterns.getData());
 		int len=freqPatternsListTemp.size()-1;
-		for(;len>0;len--)
+		for(;len>=0;len--)
 		{
 			String tempString=freqPatternsListTemp.get(len);
+			List<String> deletedPatterns = new ArrayList<>();
 			for(int j=0;j<len;j++)
 			{
 				String tempStringDelete=freqPatternsListTemp.get(j);
@@ -208,13 +208,17 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 //					if(!freqResult.getData().contains(tempString)) {
 //
 //					}
-					freqPatternsListTemp.remove(tempStringDelete);
-					len--;
+//					freqPatternsListTemp.remove(tempStringDelete);
+					deletedPatterns.add(tempStringDelete);
 				}
 			}
 			DataItem di = new DataItem();
 			di.setData(tempString);
 			freqResult.add1Data(di);
+
+			freqPatternsListTemp.removeAll(deletedPatterns);
+			freqPatternsListTemp.remove(tempString);
+			len = freqPatternsListTemp.size();
 
 		}
 		freqPatterns=freqResult;
@@ -234,7 +238,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 			if (freq != null && count == 0) {
 
 				List<String>freqPatternsList = freqPatterns.getData();
-				int key = 0;
+				int key = freqPatternsList.size() - 1;
 				for (String pattern: freqPatternsList) {
 					ArrayList<DataItems> nor_data = new ArrayList<DataItems>(); // 存储符合某一频繁模式的所有线段
 					ArrayList<List<LineElement>> nor_data_List = new ArrayList<>();
@@ -273,7 +277,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 					}
 
 					modeList.put(key, nor_data_List);
-					key++;
+					key--;
 				}
 
 				final JPanel checkboxPanel = new JPanel();
