@@ -48,27 +48,23 @@ public class DisPanel extends JDialog {
 
         //IP
         panel.add(getIP(), new PropertiesGBC(0, 0, 1, 1).
-                setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 5));
+                setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 0));
 
         //IP框
         panel.add(getIPFiled(), new PropertiesGBC(1, 0, 2, 1).
-                setFill(PropertiesGBC.BOTH).setWeight(1, 0).setInsets(5, 5, 5, 5));
+                setFill(PropertiesGBC.BOTH).setWeight(1, 0).setInsets(5, 5, 5, 0));
 
         //port
         panel.add(getPort(), new PropertiesGBC(0, 1, 1, 1).
-                setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 5));
+                setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 0));
 
         //port框
         panel.add(getPortFiled(), new PropertiesGBC(1, 1, 2, 1).
-                setFill(PropertiesGBC.BOTH).setWeight(1, 0).setInsets(5, 5, 5, 5));
-
-        //中间空一个面板
-        panel.add(new JPanel(), new PropertiesGBC(1, 2, 1, 1).
-                setFill(PropertiesGBC.BOTH).setWeight(1, 0).setInsets(5, 5, 5, 5));
+                setFill(PropertiesGBC.BOTH).setWeight(1, 0).setInsets(5, 5, 5, 0));
 
         //login
         panel.add(getLogin(), new PropertiesGBC(2, 2, 1, 1).
-                setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 5));
+                setFill(PropertiesGBC.BOTH).setWeight(0, 0).setInsets(5, 5, 5, 0));
     }
 
     public JLabel getIP() {
