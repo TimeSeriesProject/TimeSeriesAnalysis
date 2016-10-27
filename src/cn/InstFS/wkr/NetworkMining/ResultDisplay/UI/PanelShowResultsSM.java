@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.*;
+import javax.xml.crypto.Data;
 
 import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
@@ -20,6 +21,7 @@ import org.junit.Assert;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.Miner.*;
 import cn.InstFS.wkr.NetworkMining.Params.IParamsNetworkMining;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.ITaskElementEventListener;
@@ -59,6 +61,40 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 	public String xName;
 	public String yName;
 	public String ObName;
+	private JPanel granulartiyPanel;
+	//删除重复项
+	public static void delete(ArrayList<String> lists,int size){
+		if(lists == null || lists.size()<=1 || size<=1)
+			return;
+		for(int i= size - 1;i>=0;){
+			String b = lists.get(i);
+			ListIterator it = lists.listIterator(i);
+			int countdel = 0;
+			while(it.hasPrevious()){
+				String a = (String) it.previous();
+				if(b.contains(a)){
+					countdel++;
+					it.remove();
+				}
+			}
+//			System.out.println(lists+"\t"+i+"\t"+size);
+			if(countdel == 0){
+				i--;
+			}else{
+				i = i - countdel;
+			}
+
+//			if(i == size -1)
+//				i--;
+//			else{
+//				size = lists.size();
+//				i = size -1;
+//			}
+			if(i <= 0){
+				return;
+			}
+		}
+	}
 
 
 
@@ -84,23 +120,29 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 	private void InitMiner(TaskElement task) {
 		this.miner = NetworkMinerFactory.getInstance().createMiner(task);
 		miner.setResultsDisplayer(this);
-		
-		JPanel jp1 = new JPanel();
-        //jp1.setPreferredSize(new Dimension(500,100));
-        JLabel lblGranularity = new JLabel();
-    	JLabel lblStartTime = new JLabel();    	
-        int granularity = task.getGranularity();
-		lblGranularity.setText("时间粒度：" + granularity + "(s)");	
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH时");
-		lblStartTime.setText("起始时间:"+ sdf.format(miner.getResults().getInputData().getTime().get(0)) +"    ");       
-		jp1.add(lblStartTime);
-        jp1.add(lblGranularity);
-        
-        add(jp1,BorderLayout.NORTH);
+
+
+		granulartiyPanel = displayStartDate(task);
+		add(granulartiyPanel,BorderLayout.NORTH);
 	}
 
 	public void showResults() {
 		// TODO
+	}
+
+	private JPanel displayStartDate(TaskElement task) {
+		JPanel jp1 = new JPanel();
+		//jp1.setPreferredSize(new Dimension(500,100));
+		JLabel lblGranularity = new JLabel();
+		JLabel lblStartTime = new JLabel();
+		int granularity = task.getGranularity();
+		lblGranularity.setText("时间粒度：" + granularity + "(s)");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH时");
+		lblStartTime.setText("起始时间:"+ sdf.format(miner.getResults().getInputData().getTime().get(0)) +"    ");
+		jp1.add(lblStartTime);
+		jp1.add(lblGranularity);
+
+		return jp1;
 	}
 
 	@Override
@@ -116,7 +158,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 
 	@Override
 	public void setData(DataItems data) {
-		
+
 	}
 
 
@@ -148,9 +190,40 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		Map<Integer, List<String>> freq = rslt.getRetSM().getFrequentItem(); //Integer对应线段类标签，List为该类所有线段的起始点
 		DataItems freqPatterns = rslt.getRetSM().getPatterns();	// 频繁模式
 		List<LineElement> lineElements = rslt.getRetSM().getLineElements();
-
+		List<SegPattern> segPatterns = rslt.getRetSM().getSegPatterns();
 		final HashMap<Integer, List<List<LineElement>>> modeList = new HashMap<>();
+		DataItems freqPatternsTemp=new DataItems();
+		DataItems freqResult=new DataItems();
+		freqPatternsTemp=freqPatterns;
+		List<String>freqPatternsListTemp = freqPatternsTemp.getData();
+		int len=freqPatternsListTemp.size()-1;
+		for(;len>0;len--)
+		{
+			String tempString=freqPatternsListTemp.get(len);
+			for(int j=0;j<len;j++)
+			{
+				String tempStringDelete=freqPatternsListTemp.get(j);
+				if(tempString.contains(tempStringDelete))
+				{
+//					if(!freqResult.getData().contains(tempString)) {
+//
+//					}
+					freqPatternsListTemp.remove(tempStringDelete);
+					len--;
+				}
+			}
+			DataItem di = new DataItem();
+			di.setData(tempString);
+			freqResult.add1Data(di);
 
+		}
+		freqPatterns=freqResult;
+//		ArrayList<String> test=new ArrayList<>();
+//		for(int i=0;i<freqPatterns.getLength();i++)
+//		{
+//			test.add(freqPatterns.getData().get(i));
+//		}
+//		delete(test,test.size());
 		if (rslt == null || rslt.getRetSM() == null ||
 				!rslt.getMiner().getClass().equals(NetworkMinerSM.class))
 			return;
@@ -241,7 +314,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				l10 = new JLabel("—");
 				l1.setForeground(new Color(220, 87, 19));
 				l1.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
-				l2.setForeground(new Color(107, 194, 53));
+				l2.setForeground(new Color(3, 54,73));
 				l2.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
 				l3.setForeground(new Color(29, 131, 8));
 				l3.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
@@ -257,7 +330,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				l7.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
 				l8.setForeground(new Color(32, 90, 9));
 				l8.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
-				l9.setForeground(new Color(224, 208, 0));
+				l9.setForeground(new Color(90, 13, 67));
 				l9.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
 				l10.setForeground(new Color(55, 99, 53));
 				l10.setFont(new java.awt.Font("Dialog", Font.BOLD, 30));
@@ -287,9 +360,10 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				HashMap<String, ArrayList<DataItems>> temp_f_model_nor = new HashMap<>();
 				HashMap<String, ArrayList<DataItems>> temp_f_model_nor_mode = new HashMap<>();
 
-				JFreeChart jf = ChartPanelShowFI.createChart(temp_f_model_nor, nor, temp_f_model_nor_mode, temp, yName);
+				JFreeChart jf = ChartPanelShowFI.createChart(temp_f_model_nor, nor, temp_f_model_nor_mode, temp, yName,segPatterns);
 				ChartPanel chartpanel = new ChartPanel(jf);
 				remove(chart1);
+				chartpanel.setMouseWheelEnabled(true);
 				add(chartpanel, BorderLayout.CENTER);
 				repaint();
 				validate();
@@ -311,6 +385,8 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 //								JFreeChart jf1 = ChartPanelShowFI.createChart(f_model_nor, nor, f_model_nor_mode, modelindex,yName);
 							JFreeChart jf1 = ChartPanelShowFI.createChart(modeList, nor, modelindex, yName);
 							ChartPanel chartpanel1 = new ChartPanel(jf1);
+							add(granulartiyPanel, BorderLayout.NORTH);
+							chartpanel1.setMouseWheelEnabled(true);
 							add(chartpanel1, BorderLayout.CENTER);
 							add(checkboxPanel, BorderLayout.SOUTH);
 							repaint();
@@ -326,10 +402,3 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		}
 	}
 }
-
-
-
-
-
-
-

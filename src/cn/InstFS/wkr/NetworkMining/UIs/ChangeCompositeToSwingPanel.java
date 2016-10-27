@@ -12,12 +12,17 @@ import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
+
+import lineAssociation.Linear;
 
 public class ChangeCompositeToSwingPanel extends Panel {
 	DisplayThread displayThread;
 	private Canvas canvas;
 	int CompositeCreateSymbol;
 	MinerResultsFP_Line minerresults;
+	HashMap<String, List<TreeMap<Integer, Linear>>> allLiners = new HashMap<String, List<TreeMap<Integer,Linear>>>();
 
 	public ChangeCompositeToSwingPanel(TaskCombination taskCombination2,
 			HashMap<TaskCombination, MinerProtocolResults> resultMaps2) {
@@ -25,7 +30,7 @@ public class ChangeCompositeToSwingPanel extends Panel {
 		displayThread = new DisplayThread();
 		displayThread.start();
 		canvas = new Canvas();
-
+		//allLiners = minerresults.getAllLiners();
 		setLayout(new BorderLayout());
 		add(canvas, BorderLayout.CENTER);
 

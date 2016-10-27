@@ -35,7 +35,7 @@ public class NetworkMinerFM implements INetworkMiner {
 	IResultsDisplayer displayer;
 	
 	boolean isRunning=false;
-	IsOver isOver=new IsOver();
+	public IsOver isOver=new IsOver();
 	TaskElement task;
 	IReader reader;
 	
@@ -166,8 +166,8 @@ class FMTimerTask extends TimerTask{
 			textUtils.setTextPath(task.getSourcePath()+task.getMiningObject());
 			textUtils.writeOutput(dataItems);
 			
-			tsaMethod=new NeuralNetwork(task.getSourcePath()+task.getMiningObject(), dataItems.getLastTime(), 
-					task,ParamsAPI.getInstance().getParamsPrediction().getNnp());
+			tsaMethod=new NeuralNetwork(dataItems, task
+					,ParamsAPI.getInstance().getParamsPrediction().getNnp());
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ARIMATSA)){
 			
 			tsaMethod=new ARIMATSA(task, dataItems, ParamsAPI.getInstance().getParamsPrediction().getAp());

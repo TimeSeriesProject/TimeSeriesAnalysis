@@ -104,6 +104,8 @@ public class NetworkFactory extends MinerFactorySettings {
 				miningObject.toString(),  MiningMethod.MiningMethods_Statistics));
 		taskCombination.getTasks().add(generateTask(granularity,
 				miningObject.toString(), MiningMethod.MiningMethods_SequenceMining));
+		taskCombination.getTasks().add(generateTask(granularity,
+				miningObject.toString(), MiningMethod.MiningMethods_PredictionMining));
 		
 		TaskElement.add1Task(taskCombination, false);
 	}
@@ -131,9 +133,15 @@ public class NetworkFactory extends MinerFactorySettings {
 		case MiningMethods_SequenceMining:
 			task.setTaskName(name);
 			task.setComments("挖掘  "+mingObj+" 的频繁模式");
+			break;
 		case MiningMethods_Statistics:
 			task.setTaskName(name);
 			task.setComments("挖掘  "+mingObj+" 的统计量");
+			break;
+		case MiningMethods_PredictionMining:
+			task.setTaskName(name);
+			task.setComments("预测  " + mingObj+ "的未来趋势");
+			break;
 		default:
 			break;
 		}

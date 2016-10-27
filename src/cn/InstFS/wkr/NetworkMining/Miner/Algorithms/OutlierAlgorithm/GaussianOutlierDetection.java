@@ -149,20 +149,20 @@ public class GaussianOutlierDetection implements IMinerOM{
     	Collections.sort(list);
     	Collections.reverse(list);
     	int len = list.size();
-    	threshold = list.get((int)(len*2/100));
+    	double d = list.get((int)(len*2/100));
     	
     	threshold = threshold>0.4 ? threshold : 0.4;
     	for(int i=(int)(len*0.02);i>0;i--){
     		if(list.get(i)<0.4){				
     			continue;
-    		}else if((list.get(i)-threshold)/threshold<diff){
-    			threshold = list.get(i);
+    		}else if((list.get(i)-d)/d<diff){
+    			continue;
     		}else{
     			threshold = list.get(i);
     			break;
     		}    		    	
     	}
-    	threshold = threshold>0.6 ? 0.6 : threshold;
+    	//threshold = threshold>0.6 ? 0.6 : threshold;
     	System.out.println("基于高斯异常检测的异常阈值："+threshold);
     }
     /**
@@ -171,7 +171,7 @@ public class GaussianOutlierDetection implements IMinerOM{
      * */
     public void genOutlies(DataItems degree){
     	for(int i=0;i<degree.getLength();i++){
-    		if(Double.parseDouble(degree.getData().get(i))>threshold*5){
+    		if(Double.parseDouble(degree.getData().get(i))>threshold){
     			outlies.add1Data(dataItems.getElementAt(i));
     		}
     	}

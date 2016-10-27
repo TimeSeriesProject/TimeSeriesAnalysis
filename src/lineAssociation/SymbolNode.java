@@ -7,8 +7,8 @@ import java.util.HashSet;
  */
 public class SymbolNode {
 
-    public int node_name;
-    public int belong_series;
+    public int node_name;   //中心点（标签）
+    public int belong_series; //序列号
 
     public SymbolNode(){}
     public SymbolNode(int node_name,int belong_series){

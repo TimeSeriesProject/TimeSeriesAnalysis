@@ -54,7 +54,7 @@ public class TaskProgressBar extends JPanel
             setCursor(null); //turn off the wait cursor
             if (taskProgress.getErrTaskList().size()!=0) {
                 for (String errTask: taskProgress.getErrTaskList()) {
-                    taskOutput.append("ERROR TASK:"+ errTask);
+                    taskOutput.append("ERROR TASK:"+ errTask + "\n");
                 }
             }
 

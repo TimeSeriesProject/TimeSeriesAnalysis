@@ -1,11 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -20,11 +15,14 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.*;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.ARIMATSA;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.NeuralNetwork;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm.SequencePatternsDontSplit;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.GaussianOutlierDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalPeriodDetectionWitnDTW;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.PartialCycle;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.averageEntropyPM;
@@ -38,6 +36,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
@@ -198,7 +197,7 @@ class NodeTimerTask extends TimerTask{
 		for(TaskElement task:tasks){
 			dataItems=oriDataItems;
 			if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
-				if(task.getMiningObject().equals("结点出现消失")){
+				if(task.getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())){
 					DataItems items=DataPretreatment.aggregateData(oriDataItems, task.getGranularity(), task.getAggregateMethod(),
 							!dataItems.isAllDataIsDouble());
 					dataItems = NodeDisapearData(items);
@@ -237,16 +236,36 @@ class NodeTimerTask extends TimerTask{
 				setPMResults(results, pmMethod);
 				break;
 			case MiningMethods_OutliesMining:
-				if(task.getMiningObject().equals("结点出现消失")){
+				if(task.getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())){
 					tsaMethod = new GaussianOutlierDetection(dataItems);
 					results.getRetNode().getRetOM().setIslinkDegree(true);
 				}else {
-					if(results.getRetNode().getRetStatistics().getComplex() < 1.9){
-						tsaMethod = new MultidimensionalOutlineDetection(dataItems);
-						results.getRetNode().getRetOM().setIslinkDegree(true);
-					}else{
-						tsaMethod = new AnormalyDetection(dataItems);
-						results.getRetNode().getRetOM().setIslinkDegree(false);
+					if(task.getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())){
+						if(results.getRetNode().getRetStatistics().getMean() < 3500){
+							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(true);
+						}else{
+							tsaMethod = new AnormalyDetection(dataItems);
+							//tsaMethod = new FastFourierOutliesDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(false);
+						}
+					}else if(task.getMiningObject().equals(MiningObject.MiningObject_Times.toString())){
+						if(results.getRetNode().getRetStatistics().getMean() < 100){
+							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(true);
+						}else{
+							tsaMethod = new AnormalyDetection(dataItems);
+							//tsaMethod = new FastFourierOutliesDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(false);
+						}
+					} else {
+						if(results.getRetNode().getRetStatistics().getComplex() < 1.9){
+							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(true);
+						}else{
+							tsaMethod = new AnormalyDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(false);
+						}
 					}
 				}
 				tsaMethod.TimeSeriesAnalysis();
@@ -259,12 +278,50 @@ class NodeTimerTask extends TimerTask{
 				seriesStatistics.statistics();
 				setStatisticResults(results,seriesStatistics);
 				break;
+			case MiningMethods_PredictionMining:
+				MinerResultsPM resultsPM = results.getRetNode().getRetPM();
+				if (resultsPM.getHasPeriod()) { // 若有周期性
+					DataItems predictItems = new DataItems();
+					DataItems periodDi = resultsPM.getDistributePeriod();
+
+					Calendar calendar=Calendar.getInstance();
+					calendar.setTime(dataItems.getLastTime());
+					int len = dataItems.getLength();
+					for(int i = 0; i< periodDi.getLength()/2; i++){
+						int index = (int) ((i+len) % resultsPM.getPeriod());
+						calendar.add(Calendar.SECOND, task.getGranularity());
+						predictItems.add1Data(calendar.getTime(), periodDi.getData().get(index)+"");
+					}
+
+					results.getRetNode().getRetFM().setPredictItems(predictItems);
+				} /*else if (task.getMiningObject().equals("结点出现消失")){	// 无周期的结点出现消失规律应用神经网络挖掘
+					NeuralNetwork forecast=new NeuralNetwork(dataItems, task,
+							ParamsAPI.getInstance().getParamsPrediction().getNnp());
+					System.out.println(task.getTaskName()+" forecast start");
+					forecast.TimeSeriesAnalysis();
+					System.out.println(task.getTaskName()+" forecast over");
+					setForecastResult(results, forecast);
+				} */else {
+					NeuralNetwork forecast=new NeuralNetwork(dataItems, task,
+							ParamsAPI.getInstance().getParamsPrediction().getNnp());
+					System.out.println(task.getTaskName()+" forecast start");
+					forecast.TimeSeriesAnalysis();
+					System.out.println(task.getTaskName()+" forecast over");
+					setForecastResult(results, forecast);
+					/*ARIMATSA forecast=new ARIMATSA(task, dataItems,
+							ParamsAPI.getInstance().getParamsPrediction().getAp());
+					forecast.TimeSeriesAnalysis();
+					setForecastResult(results, forecast);*/
+				}
+
+				break;
 			case MiningMethods_SequenceMining:
 				
 				ParamsSM paramsSM = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
 				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
 				DataItems clusterItems=null;
 				List<SegPattern> segPatterns=segment.getPatterns();
+				
 				if(task.getPatternNum()==0){
 					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
 							paramsSM.getSMparam().getClusterNum(),task.getTaskName());
@@ -280,15 +337,17 @@ class NodeTimerTask extends TimerTask{
 						printClusterLabelTOLines(clusterItems, dataItems);
 				List<LineElement> lineElements = sequencePattern.getLineElement(frequentItem);
 				sequencePattern.patternMining();
-				setFrequentResults(results, sequencePattern,frequentItem, lineElements);
+				setFrequentResults(results, sequencePattern,frequentItem, lineElements,segPatterns);
 				break;
 			case MiningMethods_PartialCycle:
-				if(task.getRange().equals("10.0.7.2"))
+				LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
+				results.getRetNode().setRetPartialCycle(dtw.getResult());
+				/*if(task.getRange().equals("10.0.7.2"))
 				{
 					PartialCycle partialCycle = new PartialCycle(results);
 					partialCycle.setDataItems(dataItems);
 					partialCycle.run();
-				}
+				}*/
 				break;
 			default:
 				break;
@@ -356,8 +415,9 @@ class NodeTimerTask extends TimerTask{
 	}
 	
 	private void setFrequentResults(MinerResults results,SequencePatternsDontSplit sequencePattern,
-			Map<Integer, List<String>>frequentItem, List<LineElement> lineElements){
+			Map<Integer, List<String>>frequentItem, List<LineElement> lineElements,List<SegPattern> segPatterns){		
 		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
+		results.getRetNode().getRetSM().setSegPatterns(segPatterns);
 		if(sequencePattern.isHasFreItems()){
 			results.getRetNode().getRetSM().setPatters(patterns);
 			results.getRetNode().getRetSM().setHasFreItems(true);
@@ -367,6 +427,10 @@ class NodeTimerTask extends TimerTask{
 		}else{
 			results.getRetNode().getRetSM().setHasFreItems(false);
 		}
+	}
+	private void setForecastResult(MinerResults result,IMinerFM fm){
+		result.getRetNode().getRetFM().setPredictItems(
+				fm.getPredictItems());
 	}
 	private DataItems NodeDisapearData(DataItems items){
 		DataItems di = new DataItems();

@@ -8,44 +8,35 @@ import oracle.net.aso.i;
 
 import org.rosuda.REngine.Rserve.RConnection;
 
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.TextUtils;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 public class generateFeatures {
-	private String miningObject;
-	private String inputFile;
+	private DataItems dataItems;
 	private String outputFilePrefix;
 	private String trainOutputFilePath;
-	
-
 	private String testOutputFilePath;
 	private int[] autoCorrelation;
 	private double[] items;
 	public generateFeatures(){}
-	public generateFeatures(String inputFile,String outputPrefix,String miningObject){
-		this.inputFile=inputFile;
-		this.outputFilePrefix=outputPrefix;
-		this.miningObject=miningObject;
+	public generateFeatures(DataItems dataItems,String FileName){
+		this.dataItems=dataItems;
+		this.outputFilePrefix=FileName;
 	}
 	public void generateItems()throws Exception{
-		nodePairReader reader=new nodePairReader();
-		List<String> items=reader.directlyRead(miningObject, inputFile);
+		List<String> items=dataItems.getData();
 		setItems(items);
 		autoCorrelation=atuoCorrelation(items,100);
 		List<String> features=geneFeatures(items);
 		TextUtils utils=new TextUtils();
-		setTestOutputFilePath("./configs/test"+outputFilePrefix+".csv");
-		setTrainOutputFilePath("./configs/train"+outputFilePrefix+".csv");
+		setTestOutputFilePath("./configs/test_"+outputFilePrefix+".csv");
+		setTrainOutputFilePath("./configs/train_"+outputFilePrefix+".csv");
 		utils.writeOutput(features, testOutputFilePath, trainOutputFilePath);
 	}
-	public String getInputFile() {
-		return inputFile;
-	}
-	public void setInputFile(String inputFile) {
-		this.inputFile = inputFile;
-	}
+	
 	public String getOutputFilePrefix() {
 		return outputFilePrefix;
 	}
@@ -82,9 +73,13 @@ public class generateFeatures {
 		double[] acf=connection.eval("atuoCorrelation$acf").asDoubles();
 		List<Integer> correlationIndex=new ArrayList<Integer>();
 		for(int i=0;i<acf.length;i++){
-			if(acf[i]>0.40&&acf[i]<0.99999){
+			if(acf[i]>0.30&&acf[i]<0.99999){
 				correlationIndex.add(i);
 			}
+		}
+		if(correlationIndex.size()==0){
+			for(int i=1;i<=10;i++)
+				correlationIndex.add(i);
 		}
 		if(correlationIndex.size()>20){
 			correlationIndex=correlationIndex.subList(0, 20);
@@ -93,6 +88,7 @@ public class generateFeatures {
 		for(int i=0;i<correlationIndex.size();i++){
 			correlationIndexArray[i]=correlationIndex.get(i);
 		}
+		connection.close();
 		return correlationIndexArray;
 	}
 	

@@ -1,6 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
-public class SegPattern {
+import java.io.Serializable;
+
+public class SegPattern implements Serializable{
 	private double height;
 	private double length;
 	private double angle; //计算角度

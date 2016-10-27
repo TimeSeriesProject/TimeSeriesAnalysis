@@ -180,7 +180,7 @@ public class DataItems implements Serializable {
 		}else{
 			throw new RuntimeException("get element at index i,i超出dataite界限");
 		}
-		if (prob.size()!=0)
+		if (prob.size()>i)
 			ii.setProb(prob.get(i));
 		return ii;
 	}	

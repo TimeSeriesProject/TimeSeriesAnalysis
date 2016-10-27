@@ -357,13 +357,13 @@ class RouteGen implements Callable {
     public Boolean call() {
         FileChannel fc = null;
         try {
-            String srcIP = fileName.split("_")[0];
-            String dstIP = fileName.substring(srcIP.length() + 1, fileName.lastIndexOf("."));
+//            String srcIP = new String(fileName.split("_")[0]).intern();
+//            String dstIP = new String(fileName.substring(srcIP.length() + 1, fileName.lastIndexOf("."))).intern();
             fc = new FileInputStream(path).getChannel();
             length = fc.size();
             if (length <= Integer.MAX_VALUE) {
                 MappedByteBuffer is = fc.map(FileChannel.MapMode.READ_ONLY, 0, length);
-                PcapRouteGen.genDatas(is, datas, srcIP, dstIP);
+                PcapRouteGen.genDatas(is, datas);
                 unmap(is);
                 fc.close();
             }
@@ -379,7 +379,7 @@ class RouteGen implements Callable {
                     MappedByteBuffer is = fc.map(FileChannel.MapMode.READ_ONLY, position, pLength);
 
 //                    position = PcapParser.pUnpack(position, part, i, pLength, linkType, is, fileName, bws, nodeMap, path);
-                    position = PcapRouteGen.pGenDatas(position, part, i, pLength, is, datas, srcIP, dstIP);
+                    position = PcapRouteGen.pGenDatas(position, part, i, pLength, is, datas);
                     System.out.println("执行结束");
                     unmap(is);
                 }
@@ -631,6 +631,7 @@ public class PcapUtils {
     private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap = new ConcurrentHashMap<String, ArrayList<PcapNode>>();
     private String date;
     private ParseByDay parseByDay;
+    private ConcurrentHashMap<String, String> strMap = new ConcurrentHashMap<String, String>();
 
     public enum Status {
         PREPARE("prepare"), PARSE("parse"), GENROUTE("genroute"), PARSEBYDAY("parsebyday"), END("end");
@@ -799,7 +800,7 @@ public class PcapUtils {
         status = Status.PARSE;
         System.out.println(status);
         System.out.println("parseSum " + parseSum);
-        ExecutorService exec = Executors.newFixedThreadPool(16);
+        ExecutorService exec = Executors.newFixedThreadPool(4);
         ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
         for (int i = 0; i < fileList.size(); i++) {
             File file = fileList.get(i);
@@ -986,6 +987,12 @@ public class PcapUtils {
     }
 
     public void First2Step(ArrayList<File> fileList, String outpath) throws IOException{
+        //删除已存在的所有文件
+        File ff = new File(outpath);
+        if (ff.exists() && ff.isDirectory()) {
+            System.out.println("删除文件first");
+            deleteFile(outpath);
+        }
         File folder = new File(outpath + "\\routesrc");
         boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
 
@@ -1012,6 +1019,10 @@ public class PcapUtils {
 
         File folder = new File(outpath + "\\routesrc");
         boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
+
+        //删除routesrc中的文件，新建空文件夹
+        deleteFile(outpath + "\\routesrc");
+        folder.mkdirs();
 
         folder = new File(outpath + "\\route");
         suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
@@ -1041,7 +1052,7 @@ public class PcapUtils {
         System.out.println("route结束，traffic开始");
         generateTraffic(outpath);
         long e = System.currentTimeMillis();
-        System.out.println("时间3：" + (e - d) / 1000);
+        System.out.println("时间4：" + (e - d) / 1000);
 
         status = Status.PARSEBYDAY;
         setParsebydaySum(3);
@@ -1055,6 +1066,9 @@ public class PcapUtils {
         setParsebydayNum(3);
         status = Status.END;
         System.out.println("解析结束");
+        long f = System.currentTimeMillis();
+        System.out.println("时间5：" + (f - e) / 1000);
+        System.out.println("总时间：" + (f - a) / 1000);
 
     }
 
@@ -1086,6 +1100,24 @@ public class PcapUtils {
         }
     }
 
+    //递归删除文件夹下所有文件
+    public void deleteFile(String fileName) {
+        File file = new File(fileName);
+        if (file.exists()) {
+            if (file.isFile()){
+                file.delete();
+            } else if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                for (int i = 0; i < files.length; i++) {
+                    //删除子文件
+                    deleteFile(files[i].getAbsolutePath());
+                }
+                file.delete();
+            }
+        } else {
+            System.out.println("文件不存在");
+        }
+    }
     public PcapUtils() {
     }
 }

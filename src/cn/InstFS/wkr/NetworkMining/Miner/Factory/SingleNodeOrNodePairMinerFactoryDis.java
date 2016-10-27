@@ -104,10 +104,19 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
 //		}else{
 
         File[] dataDirs=dataDirectory.listFiles();
+        boolean flag = false; // 标记选择的路径是否已到具体节点目录
         for(int i=0;i<dataDirs.length;i++){
             //按天必须是文件夹
             if(dataDirs[i].isDirectory())
                 parseFile(dataDirs[i],reader);
+            else { // 路径下为文件，而非目录
+                flag = true;
+                break;
+            }
+        }
+
+        if (flag) {
+            parseFile(dataDirectory, reader);
         }
 
     }
@@ -146,12 +155,6 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
                      * @author LYH
                      * 用于测试读取时间区间数据，单节点挖掘
                      * **/
-				/*Calendar cal3 = Calendar.getInstance();
-				Calendar cal4 = Calendar.getInstance();
-				cal3.set(2014, 9, 1, 2, 0, 0);
-				cal4.set(2014,9,3,2,0,0);
-				Date date3 = cal3.getTime();
-				Date date4 = cal4.getTime();*/
                     Date date3 = getStartDate();
                     Date date4 = getEndDate();
                     rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),true,date3,date4,3600);
@@ -184,6 +187,8 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
                             dataFile, protocol, ip, MiningMethod.MiningMethods_OutliesMining));
                     taskCombination.getTasks().add(generateTask(taskRange, granularity,
                             dataFile, protocol, ip, MiningMethod.MiningMethods_SequenceMining));
+                    taskCombination.getTasks().add(generateTask(taskRange, granularity,
+                            dataFile, protocol, ip, MiningMethod.MiningMethods_PredictionMining));
                     taskCombination.setMiningObject(miningObject.toString());
                     taskCombination.setDataItems(dataItems);
                     taskCombination.setProtocol(protocol);
@@ -228,6 +233,8 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
                                 dataFile, protocol, ipPair, MiningMethod.MiningMethods_OutliesMining));
                         taskCombination.getTasks().add(generateTask(taskRange, granularity,
                                 dataFile, protocol, ipPair, MiningMethod.MiningMethods_SequenceMining));
+                        taskCombination.getTasks().add(generateTask(taskRange, granularity,
+                                dataFile, protocol, ipPair, MiningMethod.MiningMethods_PredictionMining));
                         taskCombination.setMiningObject(miningObject.toString());
                         taskCombination.setDataItems(dataItems);
                         taskCombination.setProtocol(protocol);
@@ -281,6 +288,11 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
                 task.setTaskName(name);
                 task.setComments("挖掘  "+ipOrPair+" 上,协议为"+protocol+"的部分周期");
                 break;
+            case MiningMethods_PredictionMining:
+                name=ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_预测_auto";
+                task.setTaskName(name);
+                task.setComments("预测  "+ipOrPair+" 上,协议为"+protocol+"的未来趋势");
+                break;
             default:
                 break;
         }
@@ -327,10 +339,19 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
 //		}else{
 
         File[] dataDirs=dataDirectory.listFiles();
+        boolean flag = false; // 标记选择的路径是否已到具体节点目录
         for(int i=0;i<dataDirs.length;i++){
             //按天必须是文件夹
             if(dataDirs[i].isDirectory())
                 parseFile2(dataDirs[i],reader, list);
+            else { // 路径下为文件，而非目录
+                flag = true;
+                break;
+            }
+        }
+
+        if (flag) {
+            parseFile2(dataDirectory, reader, list);
         }
         return list.size();
     }

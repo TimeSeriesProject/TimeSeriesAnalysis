@@ -143,28 +143,41 @@ public class ParseByDay {
         deleteFile(fileNameList);
     }
 
+//    private void getFileList(String fPath, String type) {
+//        File ff = new File(fPath);
+//        if (ff.isFile() && fPath.endsWith(type)) {
+//            fileList.add(ff);
+//            fileNameList.add(ff.getAbsolutePath());
+//        } else if (ff.isDirectory()) {
+//            File[] files = ff.listFiles();
+//            for (File f : files) {
+//                getFileList(f.getAbsolutePath(), type);
+//            }
+//        }
+//    }
+
+    //得到单个文件list
     private void getFileList(String fPath, String type) {
         File ff = new File(fPath);
-        if (ff.isFile() && fPath.endsWith(type)) {
-            fileList.add(ff);
-            fileNameList.add(ff.getAbsolutePath());
-        } else if (ff.isDirectory()) {
+        if (ff.isDirectory()) {
             File[] files = ff.listFiles();
             for (File f : files) {
-                getFileList(f.getAbsolutePath(), type);
+                if (f.isFile() && f.getAbsolutePath().endsWith(type)) {
+                    fileList.add(f);
+                    fileNameList.add(f.getAbsolutePath());
+                }
             }
         }
     }
 
-    private boolean deleteFile(HashSet<String> fileNameList) {
-        boolean flag = false;
+    //删除单个文件
+    private void deleteFile(HashSet<String> fileNameList) {
         for (String fileName : fileNameList) {
             File file = new File(fileName);
             if (file.isFile()) {
                 file.delete();
             }
         }
-        return flag;
     }
 }
 
@@ -185,7 +198,7 @@ class NodeGen implements Callable {
 
     @Override
     public Boolean call() throws Exception {
-        System.out.println("进入执行node");
+//        System.out.println("进入执行node");
         InputStreamReader in = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bin = new BufferedReader(in);
         String curLine = null;
@@ -242,7 +255,7 @@ class RouteGenerate implements Callable {
 
     @Override
     public Boolean call() throws Exception {
-        System.out.println("进入执行route");
+//        System.out.println("进入执行route");
         InputStreamReader in = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bin = new BufferedReader(in);
         String headLine = bin.readLine();
@@ -302,7 +315,7 @@ class TrafficGen implements Callable {
 
     @Override
     public Boolean call() throws Exception {
-        System.out.println("进入执行traffic");
+//        System.out.println("进入执行traffic");
         InputStreamReader in = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bin = new BufferedReader(in);
         String curLine = null;

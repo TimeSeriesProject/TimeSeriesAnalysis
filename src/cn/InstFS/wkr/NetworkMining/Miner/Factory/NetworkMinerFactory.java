@@ -65,6 +65,9 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			miner=new NetwokerMinerPathProb(task, reader);
 		}else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_Statistics)){
 			miner=new NetworkMinerStatistics(task, reader);
+		}
+		else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_PartialCycle)){
+			//miner=new NetworkMinerLocalPeriod(task, reader);
 		}else{
 			
 		}
@@ -600,6 +603,14 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						partialCycle.isOver.setIsover(true);
 						partialCycle.getResults().setInputData(taskCombination.getDataItems());
 						allMiners.put(task, partialCycle);
+						break;
+					case MiningMethods_PredictionMining:
+						NetworkMinerFM fm=new NetworkMinerFM(task, null);
+						fm.getResults().setRetFM(results.getRetFM());
+						fm.getResults().setInputData(taskCombination.getDataItems());
+						fm.isOver.setIsover(true);
+						allMiners.put(task, fm);
+						break;
 					default:
 						break;
 				}
@@ -631,6 +642,14 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						statistics.isOver.setIsover(true);
 						statistics.getResults().setInputData(taskCombination.getDataItems());
 						allMiners.put(task, statistics);
+						break;
+					case MiningMethods_PredictionMining:
+						NetworkMinerFM fm=new NetworkMinerFM(task, null);
+						fm.getResults().getRetPath().setRetFM(results.getRetFM());
+						fm.getResults().setInputData(taskCombination.getDataItems());
+						fm.getResults().getRetPath().setPathOriDataItems(results.getPathOriDataItems());
+						fm.isOver.setIsover(true);
+						allMiners.put(task, fm);
 						break;
 					default:
 						break;

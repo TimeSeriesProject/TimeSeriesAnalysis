@@ -272,6 +272,11 @@ public class AssociationIpListFrame extends JFrame {
 	  SingleIpProtocolAssFrame singleIpProtocol = new SingleIpProtocolAssFrame(resultList.get(row).getKey(),resultMap);
 	  singleIpProtocol.setTitle( "ip: "+resultList.get(row).getKey().getRange()+" protocol: "+resultList.get(row).getKey().getProtocol()+" "+resultList.get(row).getKey().getMiningObject()+"规律");
 	  singleIpProtocol.setVisible(true);
+	  /********以下用于测试线段化结果*******/
+	  SingleIpProtocolAssLineFrame singleIpProtocolAssLineFrame = new SingleIpProtocolAssLineFrame(resultList.get(row).getKey(),resultMap);
+	  singleIpProtocolAssLineFrame.setTitle("ip: "+resultList.get(row).getKey().getRange()+" protocol: "+resultList.get(row).getKey().getProtocol()+" "+resultList.get(row).getKey().getMiningObject()+"规律");
+	  singleIpProtocolAssLineFrame.setVisible(true);
+	  /**********测试结束*********/
 	  System.out.println("selectrow:"+row);
 	 }
 	

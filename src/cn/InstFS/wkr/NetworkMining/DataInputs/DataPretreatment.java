@@ -418,6 +418,16 @@ public class DataPretreatment {
 		if(varSet.size()!=0){
 			dataOut.setVarSet(varSet);
 		}
+		if (method.equals(AggregateMethod.Aggregate_SUM)) { // 按求和方式聚合的序列，末尾余数的点按均值补上
+			int granularityCount = granularity / 3600;
+			if (len % granularityCount !=0) {
+				String endData = dataOut.getElementAt(dataOut.getLength()-1).getData();
+				List<String> data = dataOut.getData();
+				Double newValue = Double.parseDouble(endData) / (len % granularityCount ) * granularityCount ;
+				data.set(dataOut.getLength()-1, String.valueOf(newValue));
+				dataOut.setData(data);
+			}
+		}
 		return dataOut;
 	}
 	

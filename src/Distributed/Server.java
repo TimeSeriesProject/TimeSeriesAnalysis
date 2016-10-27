@@ -33,12 +33,10 @@ import java.util.concurrent.locks.*;
  * Created by zsc on 2016/5/20.
  */
 public class Server {
-    private static Server server;
     private static ServerStart serverStart;
     private int taskCount = 0;//发送次数
     private int totalCount = 0;
     private String port = "";
-//    private AtomicInteger taskCount = new AtomicInteger(0);
     private boolean singleNodeTimeFlag = true;//判断是否生成result界面
     private boolean singleNodeTrafficFlag = true;//判断是否生成result界面
     private boolean singleNodeDisapearEmergeFlag = true;//判断是否生成result界面
@@ -95,7 +93,7 @@ public class Server {
 
     //PcapServer
     private PcapPanel pcapPanel;
-    private TaskPanel taskPanel;
+    private TaskPanel taskPanel;//分布式任务进度条
     private TaskProgressDis taskProgressDis = TaskProgressDis.getInstance();
     private ArrayList<String> allTasks = new ArrayList<String>();
     private ArrayList<String> allTasks2 = new ArrayList<String>();//第二步任务
@@ -135,6 +133,13 @@ public class Server {
 
     private ReadWriteLock isPcapRunningLock = new ReentrantReadWriteLock();
 
+    private boolean combineAndDelete = false;//判断是否完成合并删除
+    private boolean combineAndDelete2 = false;//判断是否完成合并删除
+    private Lock comAndDel = new ReentrantLock();//合并删除操作加锁
+
+    private static class Holder {
+        private static Server server = new Server();
+    }
 
     private Server() {
 
@@ -148,11 +153,7 @@ public class Server {
     }
 
     public static Server getInstance() {
-        if (server != null) {
-            return server;
-        }
-        server = new Server();
-        return server;
+        return Holder.server;
     }
 
     public static ServerStart getStartInstance() {
@@ -1042,6 +1043,7 @@ public class Server {
         pcapCount2 = 0;//发送次数
         recCount = 0;
         recCount2 = 0;
+        combineAndDelete = false;
 
         ArrayList<String> fileNames = new ArrayList<String>();
         getFileList(fileNames, filePath, type);
@@ -1061,8 +1063,31 @@ public class Server {
         }
         tasksCount = allTasks.size();
 
+        //删除outpath下的routsrc
+        File folder = new File(outPath + File.separator + "routesrc");
+        if (folder.exists() && folder.isDirectory()) {
+            deleteFile(folder.getAbsolutePath());
+        }
+
     }
 
+    public void deleteFile(String fileName) {
+        File file = new File(fileName);
+        if (file.exists()) {
+            if (file.isFile()){
+                file.delete();
+            } else if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                for (int i = 0; i < files.length; i++) {
+                    //删除子文件
+                    deleteFile(files[i].getAbsolutePath());
+                }
+                file.delete();
+            }
+        } else {
+            System.out.println("文件不存在");
+        }
+    }
 
     private int getFileList(ArrayList<String> fileNames, String filePath, String type) {
         int num = 0;
@@ -1188,7 +1213,7 @@ public class Server {
 //            mapLock.writeLock().lock();
 //            try {
             if (allCombinationTasks.get(task).equals("n")) {
-                allCombinationTasks.remove(task);
+                allCombinationTasks.remove(task);//可注释
                 allCombinationTasks.put(task, "y");//更新标记，表示完成
             }
 
@@ -2571,12 +2596,18 @@ public class Server {
                                         if (recCount == tasksCount) {
 //                                    userClient.close();
                                             System.out.println("运行结束");
-                                            combineFiles(combineFile);
-                                            System.out.println("文件已合并");
-                                            deleteFile(delFile);
-                                            System.out.println("文件已删除");
-                                            firstConnected = false;
-                                            lastConnected = true;
+                                            comAndDel.lock();
+                                            try {
+                                                combineFiles(combineFile);
+                                                System.out.println("文件已合并");
+                                                deleteFile(delFile);
+                                                System.out.println("文件已删除");
+                                                combineAndDelete = true;
+                                                firstConnected = false;
+                                                lastConnected = true;
+                                            } finally {
+                                                comAndDel.unlock();
+                                            }
 //                                        recCon.await();//释放cLock，但recLock无法释放!!!
                                         }
                                     }
@@ -2585,16 +2616,49 @@ public class Server {
                                     if (recCount < tasksCount) {
                                         continue;
                                     } else if (recCount == tasksCount) {
-                                        System.out.println("运行结束");
-                                        firstConnected = false;
-                                        lastConnected = true;
+                                        comAndDel.lock();
+                                        try {
+                                            if (!combineAndDelete) {
+                                                combineFiles(combineFile);
+                                                System.out.println("文件已合并");
+                                                deleteFile(delFile);
+                                                System.out.println("文件已删除");
+                                                combineAndDelete = true;
+                                                firstConnected = false;
+                                                lastConnected = true;
+                                                System.out.println("运行结束2");
+                                            } else {
+                                                firstConnected = false;
+                                                lastConnected = true;
+                                                System.out.println("运行结束2");
+                                            }
+                                        } finally {
+                                            comAndDel.unlock();
+                                        }
+
 //                                    recCon.await();
                                     }
                                 }
                             } else {
-                                System.out.println("运行结束");
-                                firstConnected = false;
-                                lastConnected = true;
+                                comAndDel.lock();
+                                try {
+                                    if (!combineAndDelete) {
+                                        combineFiles(combineFile);
+                                        System.out.println("文件已合并");
+                                        deleteFile(delFile);
+                                        System.out.println("文件已删除");
+                                        combineAndDelete = true;
+                                        firstConnected = false;
+                                        lastConnected = true;
+                                        System.out.println("运行结束3");
+                                    } else {
+                                        firstConnected = false;
+                                        lastConnected = true;
+                                        System.out.println("运行结束3");
+                                    }
+                                } finally {
+                                    comAndDel.unlock();
+                                }
 //                            recCon.await();
                             }
 //                        } finally {
@@ -2674,16 +2738,23 @@ public class Server {
                                         pcapPanel.getjLabel().setText("阶段 2/3");
                                         if (recCount2 == tasksCount) {
                                             System.out.println("运行结束2.1");
-                                            combineFiles2(combineFile2);
-                                            System.out.println("文件已合并");
-                                            deleteFile(delFile2);
-                                            System.out.println("文件已删除");
-                                            lastConnected = false;
-                                            firstConnected = true;
-                                            isEmpty = isEmpty2 = false;
-                                            isPcapSuspend = true;
-                                            setIsPcapRunning(false);
-                                            setIsRunning(false);
+                                            comAndDel.lock();
+                                            try {
+                                                combineFiles2(combineFile2);
+                                                System.out.println("文件已合并");
+                                                deleteFile(delFile2);
+                                                System.out.println("文件已删除");
+                                                combineAndDelete2 = true;
+                                                lastConnected = false;
+                                                firstConnected = true;
+                                                isEmpty = isEmpty2 = false;
+                                                isPcapSuspend = true;
+                                                setIsPcapRunning(false);
+                                                setIsRunning(false);
+                                            } finally {
+                                                comAndDel.unlock();
+                                            }
+
                                             getModifiedTime(inPath, "pcap");
                                             pcapPanel.getBar().setValue(0);
                                             pcapPanel.getBar().setMaximum(3);
@@ -2707,25 +2778,66 @@ public class Server {
                                     if (recCount2 < tasksCount) {
                                         continue;
                                     } else if (recCount2 == tasksCount) {
-                                        System.out.println("运行结束2.2");
+                                        comAndDel.lock();
+                                        try {
+                                            if (!combineAndDelete2) {
+                                                combineFiles2(combineFile2);
+                                                System.out.println("文件已合并");
+                                                deleteFile(delFile2);
+                                                System.out.println("文件已删除");
+                                                combineAndDelete2 = true;
+                                                lastConnected = false;
+                                                firstConnected = true;
+                                                isEmpty = isEmpty2 = false;
+                                                isPcapSuspend = true;
+                                                setIsPcapRunning(false);
+                                                setIsRunning(false);
+                                            } else {
+                                                lastConnected = false;
+                                                firstConnected = true;
+                                                isEmpty = isEmpty2 = false;
+                                                isPcapSuspend = true;
+                                                setIsPcapRunning(false);
+                                                setIsRunning(false);
+                                            }
+                                            System.out.println("运行结束2.2");
+                                            long b = System.currentTimeMillis();
+                                            System.out.println("time.... " + (b - a));
+                                        } finally {
+                                            comAndDel.unlock();
+                                        }
+
+                                    }
+                                }
+                            } else {
+                                comAndDel.lock();
+                                try {
+                                    if (!combineAndDelete2) {
+                                        combineFiles2(combineFile2);
+                                        System.out.println("文件已合并");
+                                        deleteFile(delFile2);
+                                        System.out.println("文件已删除");
+                                        combineAndDelete2 = true;
                                         lastConnected = false;
                                         firstConnected = true;
                                         isEmpty = isEmpty2 = false;
                                         isPcapSuspend = true;
                                         setIsPcapRunning(false);
                                         setIsRunning(false);
-                                        long b = System.currentTimeMillis();
-                                        System.out.println("time.... " + (b - a));
+                                    } else {
+                                        lastConnected = false;
+                                        firstConnected = true;
+                                        isEmpty = isEmpty2 = false;
+                                        isPcapSuspend = true;
+                                        setIsPcapRunning(false);
+                                        setIsRunning(false);
                                     }
+                                    System.out.println("运行结束2.3");
+                                    long b = System.currentTimeMillis();
+                                    System.out.println("time.... " + (b - a));
+                                } finally {
+                                    comAndDel.unlock();
                                 }
-                            } else {
-                                System.out.println("运行结束2.3");
-                                lastConnected = false;
-                                firstConnected = true;
-                                isEmpty = isEmpty2 = false;
-                                isPcapSuspend = true;
-                                setIsPcapRunning(false);
-                                setIsRunning(false);
                             }
 //                        } finally {
 //                            recLock2.unlock();
@@ -2852,7 +2964,7 @@ public class Server {
 
                 File key = new File(entry.getKey());//D:/57data/traffic/10.0.0.1.txt
                 String name = key.getName();//10.0.0.1.txt
-                File comFile = new File(entry.getValue() + File.separator + name);//合并后暂存为D:/57data/traffic/10.0.0.1/10.0.0.1.txt
+                File comFile = new File(entry.getValue() + File.separator + name);//合并后暂存为D:/57data/traffic/10.0.0.1/10.0.0.1.txt,未排序，从0-1942 0-1942 0-1942
                 if (!comFile.exists()) {
                     comFile.createNewFile();
                 }
@@ -2903,79 +3015,32 @@ public class Server {
             return num;
         }
 
-        private boolean deleteFile(HashSet<String> fileNameList) {
-            boolean flag = false;
+        private void deleteFile(HashSet<String> fileNameList) {
             for (String fileName : fileNameList) {
                 File file = new File(fileName);
-                if (!file.exists()) {
-                    System.out.println("删除文件失败：" + fileName + "文件不存在");
-                    flag = false;
+                if (file.isDirectory()) {
+                    deleteFile(fileName);
                 } else {
-                    if (file.isFile()) {
-                        flag = deleteFile(fileName);
-                    } else {
-                        flag = deleteDirectory(fileName);
-                    }
+                    System.out.println("不是文件夹");
                 }
             }
-            return flag;
         }
 
-        public boolean deleteFile(String fileName) {
+        public void deleteFile(String fileName) {
             File file = new File(fileName);
-            if (file.isFile() && file.exists()) {
-                file.delete();
-//                System.out.println("删除单个文件" + fileName + "成功！");
-                return true;
-            } else {
-//                System.out.println("删除单个文件" + fileName + "失败！");
-                return false;
-            }
-        }
-
-        public boolean deleteDirectory(String dir) {
-//        //如果dir不以文件分隔符结尾，自动添加文件分隔符
-//        if (!dir.endsWith(File.separator)) {
-//            dir = dir + File.separator;
-//        }
-            File dirFile = new File(dir);
-            //如果dir对应的文件不存在，或者不是一个目录，则退出
-            if (!dirFile.exists() || !dirFile.isDirectory()) {
-//                System.out.println("删除目录失败" + dir + "目录不存在！");
-                return false;
-            }
-            boolean flag = true;
-            //删除文件夹下的所有文件(包括子目录)
-            File[] files = dirFile.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                //删除子文件
-                if (files[i].isFile()) {
-                    flag = deleteFile(files[i].getAbsolutePath());
-                    if (!flag) {
-                        break;
+            if (file.exists()) {
+                if (file.isFile()){
+                    file.delete();
+                } else if (file.isDirectory()) {
+                    File[] files = file.listFiles();
+                    for (int i = 0; i < files.length; i++) {
+                        //删除子文件
+                        deleteFile(files[i].getAbsolutePath());
                     }
+                    file.delete();
                 }
-                //删除子目录
-                else {
-                    flag = deleteDirectory(files[i].getAbsolutePath());
-                    if (!flag) {
-                        break;
-                    }
-                }
-            }
-
-            if (!flag) {
-                System.out.println("删除目录失败");
-                return false;
-            }
-
-            //删除当前目录
-            if (dirFile.delete()) {
-//                System.out.println("删除目录" + dir + "成功！");
-                return true;
             } else {
-//                System.out.println("删除目录" + dir + "失败！");
-                return false;
+                System.out.println("文件不存在");
             }
         }
 
@@ -3038,6 +3103,7 @@ public class Server {
             long passedlen = 0;
             String fileName;
             String name;
+            String tempName;
             String extension;
             String finalFilePath;
             String filePath;
@@ -3048,17 +3114,18 @@ public class Server {
             try {
                 fileName = userClient.receiveMsg();//得到 文件名.扩展名 10.0.1.1_10.0.1.2.bin
                 name = getName(fileName);//得到文件名10.0.1.1_10.0.1.2
+                tempName = name + "_temp";
                 extension = getExtension(fileName);//得到扩展名bin
                 genPart(fileName, extension);//得到路由器号作为part
                 //创建文件夹/routesrc/10.0.1.1_10.0.1.2/...
                 //生成合并文件map、删除文件list
                 if (extension.equals(".bin")) {
-                    File folder = new File(outPath + File.separator + name);
+                    File folder = new File(outPath + File.separator + tempName);
                     boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
-                    finalFilePath = outPath + File.separator + name + File.separator + name + "_part_" + nameMap.get(fileName) + extension;
+                    finalFilePath = outPath + File.separator + tempName + File.separator + name + "_part_" + nameMap.get(fileName) + extension;
 //                    System.out.println("part: " + nameMap.get(fileName));
-                    filePath = outPath + File.separator + fileName;//D:/57data/routesrc/10.0.0.1_10.0.0.2.bin
-                    folderPath = outPath + File.separator + name;//D:/57data/routesrc/10.0.0.1_10.0.0.2/
+                    filePath = outPath + File.separator + fileName;//D:/57data/routesrc/10.0.0.1_10.0.0.2.bin,用于合并文件
+                    folderPath = outPath + File.separator + tempName;//D:/57data/routesrc/10.0.0.1_10.0.0.2_temp/文件夹后面加temp
                     //生成第二步的task
                     subFolder = outPath.substring(index) + File.separator + fileName;//routesrc/10.0.0.1_10.0.0.2.bin
                     task2 = subFolder + DELIMITER + name;
@@ -3066,6 +3133,7 @@ public class Server {
                     if (!combineFile.containsKey(filePath)) {
                         combineFile.put(filePath, folderPath);
                         delFile.add(folderPath);//待删除的10.0.0.1_10.0.0.2文件夹里面的所有文件
+                        System.out.println("待删除的routesrc： " + folderPath);
                         //生成第二步任务list
                         allTasks2.add(task2);
                         allTasksTags2.put(task2, "n");
@@ -3120,6 +3188,7 @@ public class Server {
             long passedlen = 0;
             String fileName;
             String name;
+            String tempName;
             String extension;
             String finalFilePath;
             String filePath;
@@ -3129,17 +3198,18 @@ public class Server {
                 fileName = userClient.receiveMsg();
 //                finalFilePath = outPath + File.separator + fileName;
                 name = getName(fileName);//得到文件名
+                tempName = name + "_temp";
                 extension = getExtension(fileName);//得到扩展名
                 genPart2(fileName, extension);//得到part
 
 
                 if (extension.equals(".txt")) {
-                    File folder = new File(outPath + File.separator + name);
+                    File folder = new File(outPath + File.separator + tempName);
                     boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
-                    finalFilePath = outPath + File.separator + name + File.separator + name + "_part_" + nameMap2.get(fileName) + extension;
+                    finalFilePath = outPath + File.separator + tempName + File.separator + name + "_part_" + nameMap2.get(fileName) + extension;
 //                    System.out.println("part: " + nameMap.get(fileName));
                     filePath = outPath + File.separator + fileName;//D:/57data/traffic/10.0.0.1.txt
-                    folderPath = outPath + File.separator + name;//D:/57data/traffic/10.0.0.1/
+                    folderPath = outPath + File.separator + tempName;//D:/57data/traffic/10.0.0.1/
                     if (!combineFile2.containsKey(filePath)) {
                         combineFile2.put(filePath, folderPath);
                         delFile2.add(folderPath);//待删除的10.0.0.1-10.0.0.2文件夹们
@@ -3166,14 +3236,14 @@ public class Server {
 
         private void updateMap(String task) {
             if (allTasksTags.get(task).equals("n")) {
-                allTasksTags.remove(task);
+                allTasksTags.remove(task);//可注释
                 allTasksTags.put(task, "y");//更新标记，表示完成
             }
         }
 
         private void updateMap2(String task2) {
             if (allTasksTags2.get(task2).equals("n")) {
-                allTasksTags2.remove(task2);
+                allTasksTags2.remove(task2);//可注释
                 allTasksTags2.put(task2, "y");//更新标记，表示完成
             }
         }

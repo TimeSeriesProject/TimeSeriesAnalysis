@@ -35,6 +35,7 @@ public class ProtocolAssociationLine {
 	}
 	*/
 	HashMap<String,ArrayList<ProtocolDataItems>> ip_proData ;
+	List<TreeMap<Integer,Linear>> linesPosList = new ArrayList<TreeMap<Integer,Linear>>();
 	public ProtocolAssociationLine(HashMap<String,ArrayList<ProtocolDataItems>> pdi,AssociationRuleLineParams arp){
 		
 		ip_proData = new HashMap<String,ArrayList<ProtocolDataItems>>();
@@ -78,7 +79,7 @@ public class ProtocolAssociationLine {
 			List<ProtocolDataItems> proDataList = compressData(proDataList2);
 			
 			List<TreeMap<Integer,SymbolNode>> linesList = new ArrayList<TreeMap<Integer,SymbolNode>>();
-			List<TreeMap<Integer,Linear>> linesPosList = new ArrayList<TreeMap<Integer,Linear>>();
+			linesPosList = new ArrayList<TreeMap<Integer,Linear>>();
 			for(int i = 0;i < proDataList.size();i++)
 			{
 				TreeMap<Integer,Double> sourceData_i = convertDataToTreeMap(proDataList.get(i));
@@ -86,7 +87,7 @@ public class ProtocolAssociationLine {
 //				System.out.println("***"+sourceData_i);
 		        BottomUpLinear bottomUpLinear_i = new BottomUpLinear(sourceData_i,arp);
 		        bottomUpLinear_i.run();
-		        TreeMap<Integer, Linear> linears = bottomUpLinear_i.getLinears();  //linears的格式为:key:线段其实位置，Linear：span表示该线段的长度
+		        TreeMap<Integer, Linear> linears = bottomUpLinear_i.getLinears();  //linears的格式为:key:线段起始位置，Linear：span表示该线段的长度
 		        linesPosList.add(linears);  
 		        System.out.println("**"+linears);
 		        System.out.println("开始运行DPCluster聚类算法！");
@@ -186,6 +187,7 @@ public class ProtocolAssociationLine {
 			}
 			mr_fp_l.setConfidence(max_confidence);
 			mr_fp_l.protocolPairList = resultList;
+			mr_fp_l.setLinesList(linesPosList);
 			//找序列的关联信息
 	        //计算两个符号化序列的关联度
 		}

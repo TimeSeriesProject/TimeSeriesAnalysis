@@ -572,9 +572,12 @@ public class WavCluster {
 	 */
 	public static DataItems SelfCluster(List<SegPattern>patterns,DataItems dataItems,int clusterNum,String fileName)
 	{
+		clusterNum=(int) Math.sqrt(clusterNum);
 		DataItems result = new DataItems();
-		ArrayList<ArrayList<Double>> instances =new ArrayList<ArrayList<Double>>();
-		SimpleKMeans kMeans;
+		ArrayList<ArrayList<Double>> xinstances =new ArrayList<ArrayList<Double>>();
+		ArrayList<ArrayList<Double>> yinstances =new ArrayList<ArrayList<Double>>();
+		SimpleKMeans xkMeans;
+		SimpleKMeans ykMeans;
 		DescriptiveStatistics xStatistics=new DescriptiveStatistics();
 		DescriptiveStatistics yStatistics=new DescriptiveStatistics();
 		
@@ -595,29 +598,37 @@ public class WavCluster {
 		for(int i=0;i<patterns.size();i++)
 		{
 			SegPattern pattern=patterns.get(i);
-			ArrayList <Double> vector = new ArrayList<Double>();
+			ArrayList <Double> xvector = new ArrayList<Double>();
+			ArrayList <Double> yvector = new ArrayList<Double>();
 			double xSpan=pattern.getEnd()-pattern.getStart()+1.0;
 			double ySpan=Double.parseDouble(dataItems.getData().get(pattern.getEnd()))-
 					Double.parseDouble(dataItems.getData().get(pattern.getStart()));
-			vector.add((xSpan-xMean)/xStd);
-			vector.add((ySpan-yMean)/yStd);
-			instances.add(vector);
+			double hSpan= (Double.parseDouble(dataItems.getData().get(pattern.getEnd()))+
+					Double.parseDouble(dataItems.getData().get(pattern.getStart())))/2;
+			xvector.add((xSpan-xMean)/xStd);
+			yvector.add((ySpan-yMean)/yStd);
+			xinstances.add(xvector);
+			yinstances.add(yvector);
 
 		}
-		if(instances.size()==0)
+		if(xinstances.size()==0)
 			return result;
-		kMeans = Kmeans(instances,clusterNum,fileName,true);
+		xkMeans = Kmeans(xinstances,clusterNum,fileName,true);
+		ykMeans = Kmeans(yinstances,clusterNum,fileName,true);
 		try
 		{
-			int labels[]=kMeans.getAssignments();
+			int xlabels[]=xkMeans.getAssignments();
+			int ylabels[]=ykMeans.getAssignments();
 //			for(int label:labels)
 //				System.out.println(label);
 			
-			for(int i=0;i<labels.length;i++)
+			for(int i=0;i<xlabels.length;i++)
 			{
-				
+				//if(xlabels[i]==0)
+				//	System.out.print("label"+" "+i+" "+xlabels[i]+" "+ylabels[i]);
 				DataItem dataItem =new DataItem();	
-				dataItem.setData(String.valueOf(labels[i]));
+				dataItem.setData(String.valueOf(xlabels[i]*clusterNum+ylabels[i]));
+				
 				dataItem.setTime(dataItems.getTime().get(patterns.get(i).getStart()));
 				result.add1Data(dataItem);
 			}

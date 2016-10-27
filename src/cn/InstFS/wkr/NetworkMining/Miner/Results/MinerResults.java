@@ -12,6 +12,7 @@ public class MinerResults {
 	private Date dateProcess;
 	private boolean isAbnormal;	// 是否异常
 	DataItems di;
+	
 	private MinerResultsPM retPM;
 	private MinerResultsOM retOM;
 	private MinerResultsSM retSM; 
@@ -163,7 +164,8 @@ public class MinerResults {
 	public void setRetPartialCycle(MinerResultsPartialCycle retPartialCycle) {
 		this.retPartialCycle = retPartialCycle;
 	}
-	
+
+
 	
 }
 
