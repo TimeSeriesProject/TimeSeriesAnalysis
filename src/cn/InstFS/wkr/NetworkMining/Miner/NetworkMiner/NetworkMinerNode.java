@@ -197,7 +197,7 @@ class NodeTimerTask extends TimerTask{
 		for(TaskElement task:tasks){
 			dataItems=oriDataItems;
 			if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
-				if(task.getMiningObject().equals("结点出现消失")){
+				if(task.getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())){
 					DataItems items=DataPretreatment.aggregateData(oriDataItems, task.getGranularity(), task.getAggregateMethod(),
 							!dataItems.isAllDataIsDouble());
 					dataItems = NodeDisapearData(items);
@@ -236,11 +236,11 @@ class NodeTimerTask extends TimerTask{
 				setPMResults(results, pmMethod);
 				break;
 			case MiningMethods_OutliesMining:
-				if(task.getMiningObject().equals("结点出现消失")){
+				if(task.getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())){
 					tsaMethod = new GaussianOutlierDetection(dataItems);
 					results.getRetNode().getRetOM().setIslinkDegree(true);
 				}else {
-					if(task.getMiningObject().equals("流量")){
+					if(task.getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())){
 						if(results.getRetNode().getRetStatistics().getMean() < 3500){
 							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(true);
@@ -249,7 +249,7 @@ class NodeTimerTask extends TimerTask{
 							//tsaMethod = new FastFourierOutliesDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(false);
 						}
-					}else if(task.getMiningObject().equals("通信次数")){
+					}else if(task.getMiningObject().equals(MiningObject.MiningObject_Times.toString())){
 						if(results.getRetNode().getRetStatistics().getMean() < 100){
 							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(true);

@@ -326,14 +326,14 @@ public class NodePairListFrame extends JFrame {
                 {
                 case ItemEvent.SELECTED: 
                     System.out.println("选中" + event.getItem());
-                    if(event.getItem().equals("流量"))
+                    if(event.getItem().equals(MiningObject.MiningObject_Traffic.toString()))
                     {
-                    	resultMap=resultMaps.get("流量");
+                    	resultMap=resultMaps.get(MiningObject.MiningObject_Traffic.toString());
                     	
                     }
-                    else if(event.getItem().equals("通信次数"))
+                    else if(event.getItem().equals(MiningObject.MiningObject_Times.toString()))
                     {
-                    	resultMap=resultMaps.get("通信次数");
+                    	resultMap=resultMaps.get(MiningObject.MiningObject_Times.toString());
                     }
                     update();
                     break;
