@@ -10,4 +10,8 @@
     <statisticsParamPath>ssParams</statisticsParamPath>
     <sequencePatternParamPath>sParams</sequencePatternParamPath>
 	<loggerPath>D:\57data\logger</loggerPath>
+    <serverParamsParamsPath>serverParams</serverParamsParamsPath>
+    <pcapParseDisParamsParamsPath>pcapParseDisParams</pcapParseDisParamsParamsPath>
+    <clientParamsParamsPath>clientParams</clientParamsParamsPath>
+
 </config>

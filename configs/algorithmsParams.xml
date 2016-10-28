@@ -108,7 +108,26 @@
 
     <!-- pcap解析参数 -->
     <pcapParseParams>
-        <pcapPath></pcapPath>
-        <outputPath></outputPath>
+        <pcapPath>D:\pca</pcapPath>
+        <outputPath>D:\out</outputPath>
     </pcapParseParams>
+
+    <!-- 分布式服务端参数 -->
+    <serverParams>
+        <port>777</port>
+    </serverParams>
+
+    <!-- 分布式pcap解析参数 -->
+    <pcapParseDisParams>
+        <pcapPath>D:\pca</pcapPath>
+        <outputPath>D:\out</outputPath>
+    </pcapParseDisParams>
+
+    <!-- 客户端参数 -->
+    <clientParams>
+        <ip>127.0.0.1</ip>
+        <port>7777</port>
+        <pcapPath>D:\pca</pcapPath>
+        <outputPath>D:\out</outputPath>
+    </clientParams>
 </algorithmsParams>

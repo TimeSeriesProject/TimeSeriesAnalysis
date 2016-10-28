@@ -1,5 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt;
 
+import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
+
 import java.io.*;
 import java.lang.reflect.Method;
 import java.nio.MappedByteBuffer;
@@ -732,9 +734,10 @@ public class PcapUtils {
     public static void main(String[] args) throws IOException, FileNotFoundException {
         long a = System.currentTimeMillis();
         String fpath = "E:\\pcap";
+        String outpath = "E:\\out";
         PcapUtils pcapUtils = new PcapUtils();
         //pcapUtils.readInput(fpath,1);
-        pcapUtils.readInput(fpath, "E:\\out");
+        pcapUtils.readInput(fpath, outpath);
         long b = System.currentTimeMillis();
         System.out.println("时间：" + (b - a) / 1000);
         //pcapUtils.generateRoute("C:\\data\\out\\routesrc","C:\\data\\out");
