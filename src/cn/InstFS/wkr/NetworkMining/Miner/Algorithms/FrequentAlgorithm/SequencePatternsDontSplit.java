@@ -146,7 +146,10 @@ public class SequencePatternsDontSplit {
 				
 				String first_item = newestSequence.get(i);
 				String last_item = basicSequence.get(j);
-				
+				if(first_item.compareTo("16") == 0){
+					int a = 0;
+					a ++;
+				}
 				if(isSatisfied(first_item,last_item,sliceSequence,position,thresh))
 				{
 					new_sequence.add(first_item+","+last_item);
@@ -184,7 +187,7 @@ public class SequencePatternsDontSplit {
 				if(sliceSequence.charAt(j) != last_item.charAt(m))
 					break;
 			}
-			if(m == last_item.length())
+			if(m == last_item.length() && ((j < sliceSequence.length() && sliceSequence.charAt(j) == ',') ||j == sliceSequence.length()) )
 			{
 				asi_list.add(index);
 				nextPos=index+first_item.length() + last_item.length()+1;
@@ -218,7 +221,10 @@ public class SequencePatternsDontSplit {
 			if(item.length() == 0)
 				continue;
 			ArrayList<Integer> labelPosition = new ArrayList<Integer>();
-			
+			if(item.compareTo("16") == 0){
+				int a = 0;
+				a++;
+			}
 			int len = 0;
 			while(true)
 			{
