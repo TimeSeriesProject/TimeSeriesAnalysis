@@ -37,6 +37,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
+import Distributed.DisParams;
 import Distributed.PropertiesGBC;
 import cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt.PcapUtils;
 
@@ -51,8 +52,8 @@ public class ProcessBarShow extends JDialog implements Callable {
 
 	JButton beginDig = new JButton("开始解析");
 
-	JTextField inputTxtfile = new JTextField("D:\\pcap");
-	JTextField outputTxtfile = new JTextField("D:\\out");
+	JTextField inputTxtfile = new JTextField(DisParams.getPcapPath());
+	JTextField outputTxtfile = new JTextField(DisParams.getOutputPath());
 	String inputPath = "";
 	String outputPath = "";
 //	JPanel jpanel = new JPanel();
@@ -303,6 +304,8 @@ public class ProcessBarShow extends JDialog implements Callable {
 					haseBegin = true;
 					pp = new PecapParse(inputTxtfile.getText(), outputTxtfile
 							.getText());
+					DisParams.setPcapPath(inputTxtfile.getText().trim());//配置更改，保存
+					DisParams.setOutputPath(outputTxtfile.getText().trim());
 					ExecutorService exec = Executors.newFixedThreadPool(1);
 					exec.submit(pp);
 					timer.start();
