@@ -214,6 +214,8 @@ class NodeTimerTask extends TimerTask{
 			}
 			results.setInputData(dataItems);
 			taskCombination.setDataItems(dataItems);
+			results.getRetNode().setOriDataItems(dataItems);
+
 			int dimension = task.getDiscreteDimension();
 			dimension = Math.max(task.getDiscreteDimension(), dataItems.getDiscretizedDimension());
 			IMinerPM pmMethod=null;
