@@ -27,6 +27,10 @@ public class GlobalConfig {
     private String seriesStatisticParamPath; // 统计参数文件路径
     private String sequencePatternParamPath; //频繁项参数文件路径
     private String loggerPath;  //日志存储路径
+
+    private String pcapParseDisParamPath;//分布式pcap解析参数文件路径
+    private String serverParamPath;//分布式配置路径
+    private String clientParamPath;//客户端配置路径
     
     public String getLoggerPath() {
 		return loggerPath;
@@ -71,6 +75,9 @@ public class GlobalConfig {
         sequencePatternParamPath = config.getChildText("sequencePatternParamPath");
         loggerPath = config.getChildText("loggerPath");
         forecastParamPath=config.getChildText("forecastParamsPath");
+        pcapParseDisParamPath = config.getChildText("pcapParseDisParamsParamsPath");
+        serverParamPath = config.getChildText("serverParamsParamsPath");
+        clientParamPath = config.getChildText("clientParamsParamsPath");
     }
 
     public String getConfigPath() {
@@ -151,6 +158,30 @@ public class GlobalConfig {
 
     public void setSequencePatternParamPath(String sequencePatternParamPath) {
         this.sequencePatternParamPath = sequencePatternParamPath;
+    }
+
+    public String getPcapParseDisParamPath() {
+        return pcapParseDisParamPath;
+    }
+
+    public void setPcapParseDisParamPath(String pcapParseDisParamPath) {
+        this.pcapParseDisParamPath = pcapParseDisParamPath;
+    }
+
+    public String getServerParamPath() {
+        return serverParamPath;
+    }
+
+    public void setServerParamPath(String serverParamPath) {
+        this.serverParamPath = serverParamPath;
+    }
+
+    public String getClientParamPath() {
+        return clientParamPath;
+    }
+
+    public void setClientParamPath(String clientParamPath) {
+        this.clientParamPath = clientParamPath;
     }
 
     public static void main (String[] args) {

@@ -187,37 +187,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 
 
 		int cc = 0;
-		Map<Integer, List<String>> freq = rslt.getRetSM().getFrequentItem(); //Integer对应线段类标签，List为该类所有线段的起始点
-		DataItems freqPatterns = rslt.getRetSM().getPatterns();	// 频繁模式
-		List<LineElement> lineElements = rslt.getRetSM().getLineElements();
-		List<SegPattern> segPatterns = rslt.getRetSM().getSegPatterns();
-		final HashMap<Integer, List<List<LineElement>>> modeList = new HashMap<>();
-		DataItems freqPatternsTemp=new DataItems();
-		DataItems freqResult=new DataItems();
-		freqPatternsTemp=freqPatterns;
-		List<String>freqPatternsListTemp = freqPatternsTemp.getData();
-		int len=freqPatternsListTemp.size()-1;
-		for(;len>0;len--)
-		{
-			String tempString=freqPatternsListTemp.get(len);
-			for(int j=0;j<len;j++)
-			{
-				String tempStringDelete=freqPatternsListTemp.get(j);
-				if(tempString.contains(tempStringDelete))
-				{
-//					if(!freqResult.getData().contains(tempString)) {
-//
-//					}
-					freqPatternsListTemp.remove(tempStringDelete);
-					len--;
-				}
-			}
-			DataItem di = new DataItem();
-			di.setData(tempString);
-			freqResult.add1Data(di);
 
-		}
-		freqPatterns=freqResult;
 //		ArrayList<String> test=new ArrayList<>();
 //		for(int i=0;i<freqPatterns.getLength();i++)
 //		{
@@ -230,11 +200,50 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 		else if (count == 0) {
 
 
+
+
 			long startTime = System.currentTimeMillis();
-			if (freq != null && count == 0) {
+			if (rslt.getRetSM().isHasFreItems() && count == 0) {
+				Map<Integer, List<String>> freq = rslt.getRetSM().getFrequentItem(); //Integer对应线段类标签，List为该类所有线段的起始点
+				DataItems freqPatterns = rslt.getRetSM().getPatterns();	// 频繁模式
+				List<LineElement> lineElements = rslt.getRetSM().getLineElements();
+				List<SegPattern> segPatterns = rslt.getRetSM().getSegPatterns();
+				final HashMap<Integer, List<List<LineElement>>> modeList = new HashMap<>();
+				DataItems freqResult=new DataItems();
+
+				List<String>freqPatternsListTemp = new ArrayList<>(freqPatterns.getData());
+				int len=freqPatternsListTemp.size()-1;
+				for(;len>=0;len--)
+				{
+					String tempString=freqPatternsListTemp.get(len);
+					List<String> deletedPatterns = new ArrayList<>();
+					for(int j=0;j<len;j++)
+					{
+						String tempStringDelete=freqPatternsListTemp.get(j);
+
+						// 判断是否包含在其他模式之中
+						if (tempString.contains(","+ tempStringDelete + ",")) { // 子串在中间位置
+							deletedPatterns.add(tempStringDelete);
+						} else if ( (tempString.indexOf(tempStringDelete)+tempStringDelete.length()) == tempString.length()  // 子串在末位
+								&& tempString.contains(","+ tempStringDelete)) {
+							deletedPatterns.add(tempStringDelete);
+						} else if (tempString.indexOf(tempStringDelete)==0 && tempString.contains(tempStringDelete+",") ) { // 子串在起始位
+							deletedPatterns.add(tempStringDelete);
+						}
+					}
+					DataItem di = new DataItem();
+					di.setData(tempString);
+					freqResult.add1Data(di);
+
+					freqPatternsListTemp.removeAll(deletedPatterns);
+					freqPatternsListTemp.remove(tempString);
+					len = freqPatternsListTemp.size();
+
+				}
+				freqPatterns=freqResult;
 
 				List<String>freqPatternsList = freqPatterns.getData();
-				int key = 0;
+				int key = freqPatternsList.size() - 1;
 				for (String pattern: freqPatternsList) {
 					ArrayList<DataItems> nor_data = new ArrayList<DataItems>(); // 存储符合某一频繁模式的所有线段
 					ArrayList<List<LineElement>> nor_data_List = new ArrayList<>();
@@ -273,7 +282,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 					}
 
 					modeList.put(key, nor_data_List);
-					key++;
+					key--;
 				}
 
 				final JPanel checkboxPanel = new JPanel();
@@ -398,6 +407,17 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				long endTime = System.currentTimeMillis();
 				System.out.println(endTime - startTime + "ms");
 
+			} else {
+				int[] temp = new int[10];
+				HashMap<String, ArrayList<DataItems>> temp_f_model_nor = new HashMap<>();
+				HashMap<String, ArrayList<DataItems>> temp_f_model_nor_mode = new HashMap<>();
+				List<SegPattern> segPatterns = rslt.getRetSM().getSegPatterns();
+
+				JFreeChart jf = ChartPanelShowFI.createChart(temp_f_model_nor, nor, temp_f_model_nor_mode, temp, yName,segPatterns);
+				ChartPanel chartpanel = new ChartPanel(jf);
+				remove(chart1);
+				chartpanel.setMouseWheelEnabled(true);
+				add(chartpanel, BorderLayout.CENTER);
 			}
 		}
 	}

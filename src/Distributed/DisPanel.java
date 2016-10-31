@@ -96,7 +96,7 @@ public class DisPanel extends JDialog {
 
     public JTextField getPortFiled() {
         if (portFiled == null) {
-            portFiled = new JTextField("7777");
+            portFiled = new JTextField(DisParams.getPort());
         }
         return portFiled;
     }
@@ -117,6 +117,7 @@ public class DisPanel extends JDialog {
                                 @Override
                                 public void run() {
                                     Server.getInstance().setPort(portFiled.getText().trim());
+                                    DisParams.setPort(portFiled.getText().trim());//配置更改，保存
                                     new Thread(Server.getStartInstance()).start();
                                 }
                             };

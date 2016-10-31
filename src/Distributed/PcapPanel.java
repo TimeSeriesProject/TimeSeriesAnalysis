@@ -102,7 +102,7 @@ public class PcapPanel extends JPanel {
     public JTextField getInText() {
         if (inText == null) {
             inText = new JTextField();
-            inText.setText("D:\\pcap");
+            inText.setText(DisParams.getPcapPathDis());
         }
         return inText;
     }
@@ -110,7 +110,7 @@ public class PcapPanel extends JPanel {
     public JTextField getOutText() {
         if (outText == null) {
             outText = new JTextField();
-            outText.setText("D:\\out");
+            outText.setText(DisParams.getOutputPathDis());
         }
         return outText;
     }
@@ -138,6 +138,8 @@ public class PcapPanel extends JPanel {
                                     public void run() {
                                         System.out.println("进入......");
                                         Server.getInstance().initPcap(PcapPanel.this, inText.getText().trim(), outText.getText().trim());
+                                        DisParams.setPcapPathDis(inText.getText().trim());
+                                        DisParams.setOutputPathDis(outText.getText().trim());
                                         Server.getInstance().genTasks(inText.getText().trim(), "pcap");
                                         Server.getInstance().awakePcap();
                                         Server.getInstance().setIsPcapRunning(true);

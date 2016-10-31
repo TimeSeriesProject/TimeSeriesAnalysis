@@ -171,11 +171,11 @@ class PathTimerTask extends TimerTask{
 			dataItems=oriDataItems;
 			
 			List datas = new ArrayList();
-			if (task.getMiningObject().equals("流量")){
+			if (task.getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())){
 				datas = dataItems.getNonNumData();
 				dataItems = DataPretreatment.changeDataToProb(dataItems);
 				datas = dataItems.getProbMap();
-			} else if (task.getMiningObject().equals("通信次数")) {
+			} else if (task.getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
 				DataPretreatment.translateProbilityOfData(dataItems);//将跳转概率保存到文件中
 				dataItems = DataPretreatment.changeDataToProb(dataItems); //计算每条路径的概率
 				datas = dataItems.getProbMap();

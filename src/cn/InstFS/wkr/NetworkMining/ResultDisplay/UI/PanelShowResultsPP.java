@@ -9,6 +9,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.*;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 import org.jfree.chart.ChartPanel;
@@ -444,9 +445,9 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
     public List<List<String>> PMDetect(DataItems dataItems,TaskElement tasks){
 
         List datas = new ArrayList();
-        if (task.getMiningObject().equals("流量")){
+        if (task.getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())){
             datas = dataItems.getNonNumData();
-        } else if (task.getMiningObject().equals("通信次数")) {
+        } else if (task.getMiningObject().equals(MiningObject.MiningObject_Times.toString())) {
             DataPretreatment.translateProbilityOfData(dataItems);//将跳转概率保存到文件中
             dataItems = DataPretreatment.changeDataToProb(dataItems); //计算每条路径的概率
             datas = dataItems.getProbMap();

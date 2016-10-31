@@ -56,8 +56,8 @@ public class PcapRouteGen {
             length = byteArrayToInt(buffer_4, 0);
 
             name = new byte[length];
-            strName = new String(name).intern();//指向常量池中的string
             is.get(name);
+            strName = new String(name).intern();//指向常量池中的string
             data.setPcapFile(strName);
             datas.add(data);
 

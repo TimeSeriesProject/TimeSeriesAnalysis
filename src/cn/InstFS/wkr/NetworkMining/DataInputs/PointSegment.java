@@ -39,6 +39,7 @@ public class PointSegment {
 	
 	public List<SegPattern> getPatterns(){
 		splitByPointsInDistnce();
+		addtionalPoint();
 		List<Integer> copyPoints=new ArrayList<Integer>();
 		for(int point:pointsIndex)
 			copyPoints.add(point);
@@ -118,21 +119,97 @@ public class PointSegment {
 		if(minIndex<maxIndex){
 			pointsIndex.add(minIndex);
 			while(minIndex<length-1){
-				maxIndex=findMaxinum(minIndex, ratio);
-				minIndex=findMininum(maxIndex, ratio);
+				maxIndex=findMininum(minIndex, ratio);
+				minIndex=findMaxinum(maxIndex, ratio);
 				if(minIndex==maxIndex)
 					break;
+				pointsIndex.add(maxIndex);
+				pointsIndex.add(minIndex);
 			}
 		}else{
 			pointsIndex.add(maxIndex);
 			while(maxIndex<length-1){
-				minIndex=findMininum(maxIndex, ratio);
-				maxIndex=findMaxinum(minIndex, ratio);
+				minIndex=findMaxinum(maxIndex, ratio);
+				maxIndex=findMininum(minIndex, ratio);
 				if(minIndex==maxIndex)
 					break;
+				pointsIndex.add(minIndex);
+				pointsIndex.add(maxIndex);
 			}
 		}
 		pointsIndex.add(length-1);
+	}
+	
+	private void addtionalPoint(){
+		List<Integer> points=new ArrayList<Integer>();
+		points.addAll(pointsIndex);
+		pointsIndex.clear();
+		pointsIndex.add(0);
+		int length=points.size();
+		double sValue,dValue;
+		double min,max;
+		for(int i=0;i<length-1;i++){
+			if(points.get(i+1)-points.get(i)<4){
+				pointsIndex.add(points.get(i+1));
+				continue;
+			}
+			sValue=getItem(points.get(i));
+			dValue=getItem(points.get(i+1));
+			min=sValue<dValue?sValue:dValue;
+			max=sValue>dValue?sValue:dValue;
+			int maxIndex=findmaxIndexBetween(points.get(i), points.get(i+1));
+			int minIndex=findminIndexBetween(points.get(i), points.get(i+1));
+			if(getItem(maxIndex)>max){
+				if(max==sValue){
+					pointsIndex.add(minIndex);
+					pointsIndex.add(maxIndex);
+					
+				}else{
+					pointsIndex.add(maxIndex);
+					pointsIndex.add(minIndex);
+				}
+			}else if(getItem(minIndex)<min){
+				if(min==sValue){
+					pointsIndex.add(maxIndex);
+					pointsIndex.add(minIndex);
+					
+				}else{
+					pointsIndex.add(minIndex);
+					pointsIndex.add(maxIndex);
+				}
+			}
+			pointsIndex.add(points.get(i+1));
+		}
+	}
+	
+	private int findmaxIndexBetween(int start,int end){
+		if(start>=end){
+			throw new RuntimeException();
+		}
+		int maxIndex=0;
+		double maxValue=Double.MIN_VALUE;
+		for(int i=start+1;i<end;i++){
+			if(getItem(i)>maxValue){
+				maxValue=getItem(i);
+				maxIndex=i;
+			}
+		}
+		return maxIndex;
+	}
+	
+	private int findminIndexBetween(int start,int end){
+		if(start>=end){
+			throw new RuntimeException();
+		}
+		int minIndex=0;
+		double minValue=Double.MAX_VALUE;
+		for(int i=start+1;i<end;i++){
+			if(getItem(i)<minValue){
+				minValue=getItem(i);
+				minIndex=i;
+			}
+		}
+		return minIndex;
 	}
 	
 	private void splitByPointsInRatio(){
@@ -165,14 +242,14 @@ public class PointSegment {
 			if(Math.cos(7*Math.PI/8)<=span&&span<=Math.cos(Math.PI/8)){
 				if(Math.abs(span)<maxSpan){
 					index=i;
-					maxSpan=span;
+					maxSpan=Math.abs(span);
 				}
 			}
 		}
 		if(Math.cos(7*Math.PI/8)<=maxSpan&&maxSpan<=Math.cos(Math.PI/8)){
 			pointsIndex.add(index);
-			splitByPointsInArea(start, index);
-			splitByPointsInArea(index, end);
+//			splitByPointsInArea(start, index);
+//			splitByPointsInArea(index, end);
 		}
 	}
 	
@@ -196,12 +273,12 @@ public class PointSegment {
 				iMin=i;
 			if(std>1){
 				if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-patternThreshold*getItem(i))>=getItem(iMin)){
-					pointsIndex.add(iMin);
+					//pointsIndex.add(iMin);
 					break;
 				}
 			}else{
 				if((i-iMin)>=span&&getItem(i)>getItem(iMin)&&(getItem(i)-patternThreshold*std)>=getItem(iMin)){
-					pointsIndex.add(iMin);
+					//pointsIndex.add(iMin);
 					break;
 				}
 			}
@@ -230,12 +307,12 @@ public class PointSegment {
 				iMax=i;
 			if(std>1){
 				if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-patternThreshold*getItem(iMax))){
-					pointsIndex.add(iMax);
+					//pointsIndex.add(iMax);
 					break;
 				}
 			}else{
 				if((i-iMax)>=span&&getItem(i)<getItem(iMax)&&getItem(i)<=(getItem(iMax)-patternThreshold*std)){
-					pointsIndex.add(iMax);
+					//pointsIndex.add(iMax);
 					break;
 				}
 			}

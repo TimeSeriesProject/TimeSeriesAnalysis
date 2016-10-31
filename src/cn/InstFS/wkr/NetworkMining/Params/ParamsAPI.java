@@ -2,6 +2,9 @@ package cn.InstFS.wkr.NetworkMining.Params;
 
 import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleLineParams;
 import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleSimilarityParams;
+import cn.InstFS.wkr.NetworkMining.Params.DistributeParams.ClientParams;
+import cn.InstFS.wkr.NetworkMining.Params.DistributeParams.PcapParseDisParams;
+import cn.InstFS.wkr.NetworkMining.Params.DistributeParams.ServerParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.*;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.Params.PcapParseParams.PcapParseParams;
@@ -36,6 +39,14 @@ public class ParamsAPI {
 	 * 陈维
 	 */
 	private PcapParseParams pcapParseParams;
+
+	/**
+	 * 分布式参数
+	 * zsc
+	 */
+	private PcapParseDisParams pcapParseDisParams;
+	private ServerParams serverParams;
+	private ClientParams clientParams;
 	/**
 	 * 异常检测参数
 	 * LYH
@@ -103,6 +114,46 @@ public class ParamsAPI {
 
 	public void setPcapParseParams(PcapParseParams pcapParseParams) {
 		this.pcapParseParams = pcapParseParams;
+	}
+
+	public PcapParseDisParams getPcapParseDisParams() {
+		if (pcapParseDisParams == null) {
+			String pcapParseDisParamsPath = GlobalConfig.getInstance().getPcapParseDisParamPath();
+			Element pcapParam = getRootElement(pcapParseDisParamsPath);
+			pcapParseDisParams = new PcapParseDisParams(pcapParam);
+		}
+		return pcapParseDisParams;
+	}
+
+	public void setPcapParseDisParams(PcapParseDisParams pcapParseDisParams) {
+		this.pcapParseDisParams = pcapParseDisParams;
+	}
+
+	public ServerParams getServerParams() {
+		if (serverParams == null) {
+			String serverParamsPath = GlobalConfig.getInstance().getServerParamPath();
+			Element serverParam = getRootElement(serverParamsPath);
+			serverParams = new ServerParams(serverParam);
+
+		}
+		return serverParams;
+	}
+
+	public void setServerParams(ServerParams serverParams) {
+		this.serverParams = serverParams;
+	}
+
+	public ClientParams getClientParams() {
+		if (clientParams == null) {
+			String clientParamsPath = GlobalConfig.getInstance().getClientParamPath();
+			Element clientParam = getRootElement(clientParamsPath);
+			clientParams = new ClientParams(clientParam);
+		}
+		return clientParams;
+	}
+
+	public void setClientParams(ClientParams clientParams) {
+		this.clientParams = clientParams;
 	}
 
 	public ParamsOM getPom() {
