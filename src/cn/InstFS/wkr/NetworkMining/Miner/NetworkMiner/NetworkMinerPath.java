@@ -254,7 +254,7 @@ class PathTimerTask extends TimerTask{
 						IMinerOM omMethod = null;
 						MinerResultsOM retOM = new MinerResultsOM();
 												
-						if(retPathPM.get(name).getHasPeriod()){
+						/*if(retPathPM.get(name).getHasPeriod()){
 							omMethod = new MultidimensionalOutlineDetection(newItem);
 							retOM.setIslinkDegree(true);
 						}else if(!retPathPM.get(name).getHasPeriod()){
@@ -262,7 +262,10 @@ class PathTimerTask extends TimerTask{
 							retOM.setIslinkDegree(false);
 						}else {
 							System.out.println("方法不存在");
-						}																						
+						}*/	
+						omMethod = new MultidimensionalOutlineDetection(newItem);
+						retOM.setIslinkDegree(true);
+						
 						omMethod.TimeSeriesAnalysis();
 						setOMResults(retOM, omMethod);
 						retPathOM.put(name, retOM);
