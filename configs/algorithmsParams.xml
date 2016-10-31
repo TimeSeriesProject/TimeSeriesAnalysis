@@ -64,7 +64,7 @@
             <sizeWindow>10</sizeWindow>
             <stepWindow>1</stepWindow>
             <splitLeastLen>4</splitLeastLen>
-            <clusterNum>8</clusterNum>
+            <clusterNum>25</clusterNum>
         </smParam>
     </sParams>
 
@@ -108,7 +108,26 @@
 
     <!-- pcap解析参数 -->
     <pcapParseParams>
-        <pcapPath></pcapPath>
-        <outputPath></outputPath>
+        <pcapPath>D:\pcap</pcapPath>
+        <outputPath>D:\out</outputPath>
     </pcapParseParams>
+
+    <!-- 分布式服务端参数 -->
+    <serverParams>
+        <port>7777</port>
+    </serverParams>
+
+    <!-- 分布式pcap解析参数 -->
+    <pcapParseDisParams>
+        <pcapPath>D:\pcap</pcapPath>
+        <outputPath>D:\out</outputPath>
+    </pcapParseDisParams>
+
+    <!-- 客户端参数 -->
+    <clientParams>
+        <ip>127.0.0.1</ip>
+        <port>7777</port>
+        <pcapPath>E:\pcap</pcapPath>
+        <outputPath>E:\57data</outputPath>
+    </clientParams>
 </algorithmsParams>
