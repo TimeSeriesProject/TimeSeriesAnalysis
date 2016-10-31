@@ -80,7 +80,7 @@ public class PanelShowResultAssLine extends JPanel{
 	public JFreeChart createChart(DataItems oriDataItems,List<TreeMap<Integer, Linear>> linesList){
 		XYDataset xydataset0 = createOriDataset(oriDataItems);
 		XYDataset xydataset1 = createLineDataset(linesList.get(0), oriDataItems);
-		JFreeChart jfreechart = ChartFactory.createScatterPlot("异常度检测", "序列编号", "流量", xydataset0);
+		JFreeChart jfreechart = ChartFactory.createScatterPlot("关联规则线段化", "序列编号", "流量", xydataset0);
 		XYPlot xyPlot = jfreechart.getXYPlot();
 		xyPlot.setDataset(0, xydataset0);
 		xyPlot.setDataset(1, xydataset1);
@@ -108,10 +108,10 @@ public class PanelShowResultAssLine extends JPanel{
         xylineandshaperenderer1.setSeriesLinesVisible(0, true);
         xylineandshaperenderer1.setBaseShapesVisible(false);
         xylineandshaperenderer1.setSeriesShape(0, new java.awt.geom.Ellipse2D.Double(-2D, -2D, 4D, 4D));
-        xylineandshaperenderer1.setSeriesPaint(0, Color.BLUE);
-        xylineandshaperenderer1.setSeriesFillPaint(0, Color.BLUE);
-        xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.BLUE);
-        xylineandshaperenderer1.setSeriesStroke(0, new BasicStroke(0.5F));
+        xylineandshaperenderer1.setSeriesPaint(0, Color.RED);
+        xylineandshaperenderer1.setSeriesFillPaint(0, Color.RED);
+        xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.RED);
+        xylineandshaperenderer1.setSeriesStroke(0, new BasicStroke(0.8F));
         xyPlot.setRenderer(1,xylineandshaperenderer1);
         
         return jfreechart;
