@@ -572,49 +572,70 @@ public class WavCluster {
 	 */
 	public static DataItems SelfCluster(List<SegPattern>patterns,DataItems dataItems,int clusterNum,String fileName)
 	{
-		clusterNum=(int) Math.sqrt(clusterNum);
+		//clusterNum=(int) Math.sqrt(clusterNum);
 		DataItems result = new DataItems();
-		ArrayList<ArrayList<Double>> xinstances =new ArrayList<ArrayList<Double>>();
-		ArrayList<ArrayList<Double>> yinstances =new ArrayList<ArrayList<Double>>();
+//		ArrayList<ArrayList<Double>> xinstances =new ArrayList<ArrayList<Double>>();
+//		ArrayList<ArrayList<Double>> yinstances =new ArrayList<ArrayList<Double>>();
+		ArrayList<ArrayList<Double>> leninstances =new ArrayList<ArrayList<Double>>();
+		ArrayList<ArrayList<Double>> angleinstances =new ArrayList<ArrayList<Double>>();
 		SimpleKMeans xkMeans;
 		SimpleKMeans ykMeans;
-		DescriptiveStatistics xStatistics=new DescriptiveStatistics();
-		DescriptiveStatistics yStatistics=new DescriptiveStatistics();
+//		DescriptiveStatistics xStatistics=new DescriptiveStatistics();
+//		DescriptiveStatistics yStatistics=new DescriptiveStatistics();
+//		DescriptiveStatistics lenStatistics=new DescriptiveStatistics();
+//		DescriptiveStatistics angleStatistics=new DescriptiveStatistics();
+//		for(int i=0;i<patterns.size();i++){
+//			SegPattern pattern=patterns.get(i);
+//			double xSpan=pattern.getEnd()-pattern.getStart()+1.0;
+//			double ySpan=Double.parseDouble(dataItems.getData().get(pattern.getEnd()))-
+//					Double.parseDouble(dataItems.getData().get(pattern.getStart()));
+//			//xStatistics.addValue(xSpan);
+//		    //yStatistics.addValue(ySpan);
+//		
+//			lenStatistics.addValue(Math.sqrt(xSpan*xSpan+ySpan*ySpan));
+//			if(xSpan==0)
+//				angleStatistics.addValue(3.14/2);
+//			else
+//				angleStatistics.addValue(Math.atan(ySpan/xSpan));
+//		}
 		
-		for(int i=0;i<patterns.size();i++){
-			SegPattern pattern=patterns.get(i);
-			double xSpan=pattern.getEnd()-pattern.getStart()+1.0;
-			double ySpan=Double.parseDouble(dataItems.getData().get(pattern.getEnd()))-
-					Double.parseDouble(dataItems.getData().get(pattern.getStart()));
-			xStatistics.addValue(xSpan);
-			yStatistics.addValue(ySpan);
-		}
-		
-		double xMean=xStatistics.getMean();
-		double xStd=xStatistics.getStandardDeviation();
-		double yMean=yStatistics.getMean();
-		double yStd=yStatistics.getStandardDeviation();
+//		double xMean=xStatistics.getMean();
+//		double xStd=xStatistics.getStandardDeviation();
+//		double yMean=yStatistics.getMean();
+//		double yStd=yStatistics.getStandardDeviation();
 		
 		for(int i=0;i<patterns.size();i++)
 		{
 			SegPattern pattern=patterns.get(i);
-			ArrayList <Double> xvector = new ArrayList<Double>();
-			ArrayList <Double> yvector = new ArrayList<Double>();
+//			ArrayList <Double> xvector = new ArrayList<Double>();
+//			ArrayList <Double> yvector = new ArrayList<Double>();
+			ArrayList <Double> lenvector = new ArrayList<Double>();
+			ArrayList <Double> anglevector = new ArrayList<Double>();
 			double xSpan=pattern.getEnd()-pattern.getStart()+1.0;
 			double ySpan=Double.parseDouble(dataItems.getData().get(pattern.getEnd()))-
 					Double.parseDouble(dataItems.getData().get(pattern.getStart()));
 			double hSpan= (Double.parseDouble(dataItems.getData().get(pattern.getEnd()))+
 					Double.parseDouble(dataItems.getData().get(pattern.getStart())))/2;
-			xvector.add((xSpan-xMean)/xStd);
-			yvector.add((ySpan-yMean)/yStd);
-			xinstances.add(xvector);
-			yinstances.add(yvector);
+//			xvector.add((xSpan-xMean)/xStd);
+//			yvector.add((ySpan-yMean)/yStd);
+//			xinstances.add(xvector);
+//			yinstances.add(yvector);
+			
+			lenvector.add(Math.sqrt(xSpan*xSpan+ySpan*ySpan));
+			if(xSpan==0)
+				anglevector.add(3.14/2);
+			else
+				anglevector.add(Math.atan(ySpan/xSpan));
+			leninstances.add(lenvector);
+			angleinstances.add(anglevector);
 
 		}
-		if(xinstances.size()==0)
+//		if(xinstances.size()==0)
+//			return result;
+		if(leninstances.size()==0)
 			return result;
-		xkMeans = Kmeans(xinstances,clusterNum,fileName,true);
-		ykMeans = Kmeans(yinstances,clusterNum,fileName,true);
+		xkMeans = Kmeans(leninstances,clusterNum,fileName,true);
+		ykMeans = Kmeans(angleinstances,6,fileName,true);
 		try
 		{
 			int xlabels[]=xkMeans.getAssignments();
@@ -627,7 +648,7 @@ public class WavCluster {
 				//if(xlabels[i]==0)
 				//	System.out.print("label"+" "+i+" "+xlabels[i]+" "+ylabels[i]);
 				DataItem dataItem =new DataItem();	
-				dataItem.setData(String.valueOf(xlabels[i]*clusterNum+ylabels[i]));
+				dataItem.setData(String.valueOf(xlabels[i]*6+ylabels[i]));
 				
 				dataItem.setTime(dataItems.getTime().get(patterns.get(i).getStart()));
 				result.add1Data(dataItem);
