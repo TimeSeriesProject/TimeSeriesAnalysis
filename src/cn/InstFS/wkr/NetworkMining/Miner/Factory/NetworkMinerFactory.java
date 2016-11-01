@@ -559,6 +559,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	private void taskAdd2allMiner(TaskCombination taskCombination, HashMap<TaskCombination, ?> resultsMap) {
 		if (resultsMap.get(taskCombination) instanceof MinerNodeResults) {
 			MinerNodeResults results = (MinerNodeResults) resultsMap.get(taskCombination);
+			TaskElement partialCycleTask = null;
 			for (TaskElement task : taskCombination.getTasks()) {
 				switch (task.getMiningMethod()) {
 					case MiningMethods_OutliesMining:
@@ -599,6 +600,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						allMiners.put(task, statistics);
 						break;
 					case MiningMethods_PartialCycle:
+						partialCycleTask = task;
 						NetworkMinerPartialCycle partialCycle = new NetworkMinerPartialCycle(task,null);
 						partialCycle.getResults().setRetPartialCycle(results.getRetPartialCycle());
 						partialCycle.isOver.setIsover(true);
@@ -615,6 +617,9 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 					default:
 						break;
 				}
+			}
+			if (results.getRetPM().getHasPeriod()) {
+				taskCombination.getTasks().remove(partialCycleTask);
 			}
 		} else if (resultsMap.get(taskCombination) instanceof MinerResultsPath){
 			MinerResultsPath results= (MinerResultsPath) resultsMap.get(taskCombination);

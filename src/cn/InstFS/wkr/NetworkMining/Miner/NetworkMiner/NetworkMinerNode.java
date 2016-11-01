@@ -194,6 +194,7 @@ class NodeTimerTask extends TimerTask{
 
 		DataItems oriDataItems=dataItems;
 		//results.setInputData(oriDataItems);
+		boolean minePartialCycle = true; // 判断是否挖掘部分周期
 		for(TaskElement task:tasks){
 			dataItems=oriDataItems;
 			if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
@@ -351,8 +352,12 @@ class NodeTimerTask extends TimerTask{
 				setFrequentResults(results, sequencePattern,frequentItem, lineElements,segPatterns);
 				break;
 			case MiningMethods_PartialCycle:
-				LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
-				results.getRetNode().setRetPartialCycle(dtw.getResult());
+				if (results.getRetNode().getRetPM().getHasPeriod()) { // 若有周期性,不挖掘部分周期
+					minePartialCycle = false;
+				} else {
+					LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
+					results.getRetNode().setRetPartialCycle(dtw.getResult());
+				}
 				/*if(task.getRange().equals("10.0.7.2"))
 				{
 					PartialCycle partialCycle = new PartialCycle(results);
