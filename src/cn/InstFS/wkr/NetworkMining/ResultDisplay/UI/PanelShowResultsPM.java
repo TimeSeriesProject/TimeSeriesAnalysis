@@ -200,7 +200,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 			if(retPM.getHasPeriod()){
 				lblIsPeriod.setText("是否周期：是");
 				lblPeriodValue.setText("周期值："+retPM.getPeriod() + 
-						"(特征值:" + formatter.format(retPM.getFeatureValue()) + ")");
+						"(特征值:" + formatter.format(retPM.getFeatureValues()[(int) (retPM.getPeriod() - 1)]) + ")");
 				lblFirstPossiblePeriod.setText("最小的可能周期:" + retPM.getFirstPossiblePeriod() +
 						"(特征值:" + formatter.format(retPM.getFeatureValues()[retPM.getFirstPossiblePeriod() - 1]) + ")");
 //				lblPeriodFeature.setText("特征值：" + formatter.format(retPM.getFeatureValue()) + 

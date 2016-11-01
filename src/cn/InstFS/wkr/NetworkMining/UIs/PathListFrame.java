@@ -454,7 +454,7 @@ public class PathListFrame extends JFrame{
     			}
     		}
     	}
-    	max = Double.parseDouble(String.format("%.4f",max));
+    	max = Double.parseDouble(String.format("%.3f",max));
     	return max;
     }
     public double getMin(HashMap<String, MinerResultsOM> map){
@@ -471,7 +471,7 @@ public class PathListFrame extends JFrame{
     			}
     		}
     	}
-    	min = Double.parseDouble(String.format("%.4f",min));
+    	min = Double.parseDouble(String.format("%.3f",min));
     	return min;
     }
 
