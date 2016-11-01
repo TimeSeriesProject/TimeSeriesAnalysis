@@ -229,7 +229,8 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 			
 		else{
 //			chartDistribute = new ChartPanelShowScatterPlot("周期内分布", "周期内的点", obName, null);
-			chartDistribute.displayDataItems(rets.getRetPM().getDistributePeriod(),rets.getRetPM().getMaxDistributePeriod(),rets.getRetPM().getMinDistributePeriod(), "周期","最大值","最小值");
+//			chartDistribute.displayDataItems(rets.getRetPM().getDistributePeriod(),rets.getRetPM().getMaxDistributePeriod(),rets.getRetPM().getMinDistributePeriod(), "周期","最大值","最小值");
+			chartDistribute.displayDataItems(rets.getRetPM().getDistributePeriod(),rets.getRetPM().getMaxDistributePeriod(),rets.getRetPM().getMinDistributePeriod(),"周期内分布", "序列编号", obName, "周期","最大值","最小值");
 		}
 			
 	}
