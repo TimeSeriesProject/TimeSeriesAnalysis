@@ -158,9 +158,9 @@ public class CWNetworkReader  implements IReader{
 		TaskElement task = new TaskElement();
 		task.setSourcePath("E:\\javaproject\\NetworkMiningSystem\\NetworkMiningSystem\\mergeNode");
 		
-		task.setMiningObject("网络直径");
+		task.setMiningObject("平均网络直径");
 		CWNetworkReader reader = new CWNetworkReader(task);
-		System.out.println("网络直径");
+		System.out.println("平均网络直径");
 //		System.out.println(reader.readClusterByText().getData());
 		System.out.println(reader.readInputByText().getData());
 	
@@ -775,7 +775,7 @@ public class CWNetworkReader  implements IReader{
 		switch(task.getMiningObject())
 		{
 		case "网络簇系数": return readClusterByText(false,null,null);
-		case "网络直径":return readDiameterByText(false,null,null);
+		case "平均网络直径":return readDiameterByText(false,null,null);
 		default: return null;
 		}
 	}
@@ -784,7 +784,7 @@ public class CWNetworkReader  implements IReader{
 		switch(task.getMiningObject())
 		{
 		case "网络簇系数": return readClusterByText(isReadBetween,startDate,endDate);
-		case "网络直径":return readDiameterByText(isReadBetween,startDate,endDate);
+		case "平均网络直径":return readDiameterByText(isReadBetween,startDate,endDate);
 		default: return null;
 		}
 	}
@@ -795,7 +795,7 @@ public class CWNetworkReader  implements IReader{
 		switch(task.getMiningObject())
 		{
 		case "网络簇系数": return readClusterByText(false,null,null);
-		case "网络直径":return readDiameterByText(false,null,null);
+		case "平均网络直径":return readDiameterByText(false,null,null);
 		default: return null;
 		}
 		

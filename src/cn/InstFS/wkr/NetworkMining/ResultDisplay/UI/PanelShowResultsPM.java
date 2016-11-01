@@ -78,7 +78,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 		add(panel, gbc_panel);
 
 		//设置检查框
-		chckShowFeatureVal = new JCheckBox("显示特征值");
+		chckShowFeatureVal = new JCheckBox("显示平均熵");
 		panel.add(chckShowFeatureVal);
 		chckShowFeatureVal.addActionListener(new ActionListener() {
 			@Override
@@ -138,7 +138,7 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 		add(panel, gbc_panel);
 		
 		//设置检查框
-		chckShowFeatureVal = new JCheckBox("显示特征值");
+		chckShowFeatureVal = new JCheckBox("显示平均熵");
 		panel.add(chckShowFeatureVal);
 		chckShowFeatureVal.addActionListener(new ActionListener() {			
 			@Override
@@ -200,9 +200,9 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 			if(retPM.getHasPeriod()){
 				lblIsPeriod.setText("是否周期：是");
 				lblPeriodValue.setText("周期值："+retPM.getPeriod() + 
-						"(特征值:" + formatter.format(retPM.getFeatureValues()[(int) (retPM.getPeriod() - 1)]) + ")");
+						"(平均熵:" + formatter.format(retPM.getFeatureValues()[(int) (retPM.getPeriod() - 1)]) + ")");
 				lblFirstPossiblePeriod.setText("最小的可能周期:" + retPM.getFirstPossiblePeriod() +
-						"(特征值:" + formatter.format(retPM.getFeatureValues()[retPM.getFirstPossiblePeriod() - 1]) + ")");
+						"(平均熵:" + formatter.format(retPM.getFeatureValues()[retPM.getFirstPossiblePeriod() - 1]) + ")");
 //				lblPeriodFeature.setText("特征值：" + formatter.format(retPM.getFeatureValue()) + 
 //						"（门限：" + formatter.format(((ParamsPM)rets.getMiner().getTask().getMiningParams()).getPeriodThreshold()) + "）");
 				DataItems items = retPM.getDistributePeriod();
@@ -221,10 +221,18 @@ public class PanelShowResultsPM extends JPanel implements IPanelShowResults{
 		MinerResults rets = miner.getResults();
 		if (rets == null)
 			return;
-		if (chckShowFeatureVal.isSelected())
-			chartDistribute.displayDataItems(rets.getRetPM().getFeatureValues(), "周期性特征值");
-		else
-			chartDistribute.displayDataItems(rets.getRetPM().getDistributePeriod(),rets.getRetPM().getMaxDistributePeriod(),rets.getRetPM().getMinDistributePeriod(), "周期","最大值","最小值");
+		if (chckShowFeatureVal.isSelected()){
+//			chartDistribute = new ChartPanelShowScatterPlot("周期平均熵", "序列编号", "平均熵", null);
+//			chartDistribute.displayDataItems(rets.getRetPM().getFeatureValues(), "周期性平均熵");
+			chartDistribute.displayDataItems("周期平均熵", "序列编号", "平均熵", "周期性平均熵", rets.getRetPM().getFeatureValues());
+		}
+			
+		else{
+//			chartDistribute = new ChartPanelShowScatterPlot("周期内分布", "周期内的点", obName, null);
+//			chartDistribute.displayDataItems(rets.getRetPM().getDistributePeriod(),rets.getRetPM().getMaxDistributePeriod(),rets.getRetPM().getMinDistributePeriod(), "周期","最大值","最小值");
+			chartDistribute.displayDataItems(rets.getRetPM().getDistributePeriod(),rets.getRetPM().getMaxDistributePeriod(),rets.getRetPM().getMinDistributePeriod(),"周期内分布", "序列编号", obName, "周期","最大值","最小值");
+		}
+			
 	}
 	@Override
 	public void displayMinerResults() {
