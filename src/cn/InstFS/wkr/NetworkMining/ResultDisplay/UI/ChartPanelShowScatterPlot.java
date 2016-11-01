@@ -159,7 +159,23 @@ public class ChartPanelShowScatterPlot extends JPanel{
 		dataset.addSeries(series);
 		chart.getXYPlot().setDataset(dataset);
 	}
-	
+	public void displayDataItems(String title,String timeAxisLabel,String valueAxisLabel,String lineLabel,Double [] items){
+		if(items == null)
+			return;
+		XYSeries series = new XYSeries(lineLabel);
+		int len = items.length;
+		for (int i = 0; i < len; i ++)
+			series.add(i+1, items[i]);
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		dataset.addSeries(series);
+		chart.setTitle(title);
+		XYPlot plot = chart.getXYPlot();
+		plot.setDataset(dataset);
+		NumberAxis valeAxis = (NumberAxis)plot.getRangeAxis();
+		NumberAxis timeAxis = (NumberAxis)plot.getDomainAxis();
+		valeAxis.setLabel(valueAxisLabel);
+		timeAxis.setLabel(timeAxisLabel);
+	}
 //	public static void main(String []args){
 //		JFrame f = new JFrame();
 //		ChartPanelShowScatterPlot p = new ChartPanelShowScatterPlot("title","x","y",null);
