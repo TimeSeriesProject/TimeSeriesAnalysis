@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 /**
  * Created by zsc on 2016/7/27.
+ * 将bin文件中的数据存入PcapData数据结构中
  */
 public class PcapRouteGen {
 
