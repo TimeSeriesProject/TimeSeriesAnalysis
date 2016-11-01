@@ -148,6 +148,43 @@ public class ChartPanelShowScatterPlot extends JPanel{
 		validate();
 
 	}
+	public void displayDataItems(DataItems items,DataItems items1,DataItems items2,String title,String timeAxisLabel,String valueAxisLabel, String lineLabel,String lineLabel2,String lineLabel3){
+		if(items == null)
+			return;
+		XYSeries series = new XYSeries(lineLabel);
+		int len = items.getLength();
+		List<String>datas = items.getData();
+		for (int i = 0; i < len; i ++)
+			series.add(i+1, Double.parseDouble(datas.get(i)));
+		XYSeries series1 = new XYSeries(lineLabel2);
+		int len1 = items.getLength();
+		List<String>datas1 = items1.getData();
+		for (int i = 0; i < len1; i ++)
+			series1.add(i+1, Double.parseDouble(datas1.get(i)));
+		XYSeriesCollection dataset = new XYSeriesCollection();
+
+		XYSeries series2 = new XYSeries(lineLabel3);
+		int len2 = items.getLength();
+		List<String>datas2 = items2.getData();
+		for (int i = 0; i < len2; i ++)
+			series2.add(i+1, Double.parseDouble(datas2.get(i)));
+		dataset.addSeries(series);
+		dataset.addSeries(series1);
+		dataset.addSeries(series2);
+//		chart.getXYPlot().setDataset(dataset);
+		chart.setTitle(title);
+		XYPlot plot = chart.getXYPlot();
+		plot.setDataset(dataset);
+		NumberAxis valeAxis = (NumberAxis)plot.getRangeAxis();
+		NumberAxis timeAxis = (NumberAxis)plot.getDomainAxis();
+		valeAxis.setLabel(valueAxisLabel);
+		timeAxis.setLabel(timeAxisLabel);
+//		dataset1.addSeries(series1);
+//		chart.getXYPlot().setDataset(1,dataset1);
+		updateUI();
+		validate();
+
+	}
 	public void displayDataItems(Double [] items, String lineLabel){
 		if(items == null)
 			return;
@@ -159,7 +196,23 @@ public class ChartPanelShowScatterPlot extends JPanel{
 		dataset.addSeries(series);
 		chart.getXYPlot().setDataset(dataset);
 	}
-	
+	public void displayDataItems(String title,String timeAxisLabel,String valueAxisLabel,String lineLabel,Double [] items){
+		if(items == null)
+			return;
+		XYSeries series = new XYSeries(lineLabel);
+		int len = items.length;
+		for (int i = 0; i < len; i ++)
+			series.add(i+1, items[i]);
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		dataset.addSeries(series);
+		chart.setTitle(title);
+		XYPlot plot = chart.getXYPlot();
+		plot.setDataset(dataset);
+		NumberAxis valeAxis = (NumberAxis)plot.getRangeAxis();
+		NumberAxis timeAxis = (NumberAxis)plot.getDomainAxis();
+		valeAxis.setLabel(valueAxisLabel);
+		timeAxis.setLabel(timeAxisLabel);
+	}
 //	public static void main(String []args){
 //		JFrame f = new JFrame();
 //		ChartPanelShowScatterPlot p = new ChartPanelShowScatterPlot("title","x","y",null);

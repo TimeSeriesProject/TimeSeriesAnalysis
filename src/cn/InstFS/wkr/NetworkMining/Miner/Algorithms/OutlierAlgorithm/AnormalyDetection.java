@@ -65,8 +65,8 @@ public class AnormalyDetection implements IMinerOM {
     	for(int i = 0;i < size;i++){
     		slice.put((long)i, Math.round(Double.parseDouble(data.get(i))));
     	}
-    	detect(slice);
-    	
+//    	detect(slice);
+    	detect1(slice);
      	outDegree = mapToDegree(degreeMap);
      	outlies = genOutline(outDegree);
     }
@@ -125,17 +125,17 @@ public class AnormalyDetection implements IMinerOM {
     }
     /**@author LYH
      * 滑动高斯检测，滑动窗口不重叠
-     * 不实用，窗口太大时K-S检验运行时间太长
+     * 
      * */
-    public HashMap<Long,Long> detect1(HashMap<Long,Long> slice){
+    public void  detect1(HashMap<Long,Long> slice){
         if(slice == null){
-            return null;
+            return ;
         }
         int size = slice.size();
         if(size < 1){
-            return null;
+            return ;
         }
-        HashMap<Long,Long> outlier = new HashMap<>();
+//        HashMap<Long,Long> outlier = new HashMap<>();
         long max = getmaxKey(slice);
         double[] data;
         int index = initWindowSize;
@@ -166,10 +166,11 @@ public class AnormalyDetection implements IMinerOM {
                 	if (slice.get((long) i)!=null) {						
 						double target = (double)slice.get((long)i);
 	                    if(!normalDistributionTest.isDawnToThisDistri(target)){
-	                        outlier.put((long)i,slice.get((long)i));
+//	                        outlier.put((long)i,slice.get((long)i));
 	                        slice.put((long)i, (long)normalDistributionTest.getMean());
 	                    }
 	                    double distance = Math.abs(data[i-index+nowWindowSize] - mean)/stv;
+	                    distance = distance>5 ? 1 : distance/5;
 	                    degreeMap.put(i, distance);
                     }  
                 }                
@@ -192,11 +193,12 @@ public class AnormalyDetection implements IMinerOM {
 			stv = normalDistributionTest.getStdeviation();
 		}
         for(int i=(int)max-initWindowSize;i<max;i++){
-        	double distance = (slice.get((long)i) - mean)/stv;
+        	double distance =Math.abs(slice.get((long)i) - mean)/stv;
+        	distance = distance>5 ? 1 : distance/5;
         	degreeMap.put(i, distance);        	
         }
         outDegree = mapToDegree(degreeMap);
-        return outlier;
+       
     }
     private long getmaxKey(HashMap<Long, Long> slice) {
         Iterator<Long> iterator = slice.keySet().iterator();

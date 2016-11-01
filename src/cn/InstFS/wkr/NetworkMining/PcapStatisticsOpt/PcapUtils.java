@@ -23,7 +23,7 @@ class Node implements Callable {
 
     @Override
     public Boolean call() throws Exception {
-        Collections.sort(entry.getValue());//排序
+        Collections.sort(entry.getValue());//对pcapnode按时间排序
         OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(outPath + "\\node\\" + entry.getKey() + ".txt"), "UTF-8");
         BufferedWriter bw = new BufferedWriter(out);
         for (int i = 0; i < entry.getValue().size(); i++) {
@@ -179,8 +179,8 @@ class RouteGen implements Callable {
 
     String path;
     String outpath;
-    ConcurrentHashMap<RecordKey, Integer> trafficRecords;
-    ConcurrentHashMap<RecordKey, Integer> comRecords;
+    ConcurrentHashMap<RecordKey, Integer> trafficRecords;//总流量
+    ConcurrentHashMap<RecordKey, Integer> comRecords;//总次数
     ArrayList<PcapData> datas = new ArrayList<PcapData>();
     PcapUtils pcapUtils;
 
@@ -228,6 +228,7 @@ class RouteGen implements Callable {
         int num = 0;
         int count = 0;
 
+        //保存0-4:0,13-2:0,13-3:1...
         class NodeAndTTL implements Comparable<NodeAndTTL> {
             String node;
             Integer TTL;
@@ -262,6 +263,7 @@ class RouteGen implements Callable {
             }
             //记录每一次通信的通信路径，一次通信只记录一次流量。
             if (!pre.getSrcIP().equals(data.getSrcIP()) || !pre.getDstIP().equals(data.getDstIP()) || pre.getSrcPort() != data.getSrcPort() || pre.getDstPort() != data.getDstPort()) {
+                System.out.println("不相等......");
                 updateRecords(pre);
                 StringBuilder sb = new StringBuilder();
                 sb.append(String.valueOf(pre.getTime_s())).append(",").append(pre.getSrcIP()).append(",").append(pre.getDstIP()).append(",").append(pre.getTraffic()).append(",").append(num);
@@ -296,7 +298,7 @@ class RouteGen implements Callable {
             }
         }
         updateRecords(pre);
-
+        //将最后的记录写到文件
         StringBuilder sb = new StringBuilder();
         sb.append(String.valueOf(pre.getTime_s())).append(",").append(pre.getSrcIP()).append(",").append(pre.getDstIP()).append(",").append(pre.getTraffic()).append(",").append(num);
         Collections.sort(ttlList);
@@ -630,7 +632,7 @@ public class PcapUtils {
     private ArrayList<File> fileList = new ArrayList<File>();
     private HashMap<String, BufferedWriter> bws = new HashMap<String, BufferedWriter>();
     private ConcurrentHashMap<String, BufferedOutputStream> bos = new ConcurrentHashMap<String, BufferedOutputStream>();
-    private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap = new ConcurrentHashMap<String, ArrayList<PcapNode>>();
+    private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap = new ConcurrentHashMap<String, ArrayList<PcapNode>>();//0-0，对应文件里的所有pcapnode信息
     private String date;
     private ParseByDay parseByDay;
     private ConcurrentHashMap<String, String> strMap = new ConcurrentHashMap<String, String>();
@@ -884,7 +886,7 @@ public class PcapUtils {
 
     private void generateNode(String outpath) {
         System.out.println("genNode");
-        //key = 文件名第一个字符
+        //key = 文件名第一个字符，将0-0,0-1,0-2合并为0，存入tResult
         HashMap<String, ArrayList<PcapNode>> tResult = new HashMap<String, ArrayList<PcapNode>>();
         for (Map.Entry<String, ArrayList<PcapNode>> entry : nodeMap.entrySet()) {
             //合并list,重新维护一个hashmap，判断有无，合并
@@ -940,6 +942,7 @@ public class PcapUtils {
         StringBuilder curLine = new StringBuilder();
         for (Map.Entry<RecordKey, Integer> entry : sortedtrafficRecords.entrySet()) {
             RecordKey key = entry.getKey();
+            //同一ip对的不同时间
             if (prekey == null || !prekey.getSrcIp().equals(key.getSrcIp()) || !prekey.getTime().equals(key.getTime()) || !prekey.getDstIp().equals(key.getDstIp())) {
                 try {
                     if (prekey != null) {
@@ -951,11 +954,13 @@ public class PcapUtils {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                //准备写同一个ip对下的下一个时间
                 trafficsum = 0;
                 comsum = 0;
                 curLine.delete(0, curLine.length());
                 curLine.append(key.getTime() + "," + key.getSrcIp() + "," + key.getDstIp() + ",");
             }
+            //ip对不相同，新建txt文件
             if (prekey == null || !(prekey.getSrcIp()).equals(key.getSrcIp())) {
                 try {
                     if (prekey != null) {
@@ -969,7 +974,7 @@ public class PcapUtils {
                 }
             }
 
-
+            //写入本次ip对的流量、次数以及总流量、次数
             trafficsum += entry.getValue();
             comsum += comRecords.get(entry.getKey());
             curLine.append(key.getProtocol() + ":" + String.valueOf(entry.getValue()) + ":" + String.valueOf(comRecords.get(entry.getKey())) + ";");

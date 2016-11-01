@@ -64,7 +64,7 @@
             <sizeWindow>10</sizeWindow>
             <stepWindow>1</stepWindow>
             <splitLeastLen>4</splitLeastLen>
-            <clusterNum>25</clusterNum>
+            <clusterNum>6</clusterNum>
         </smParam>
     </sParams>
 
