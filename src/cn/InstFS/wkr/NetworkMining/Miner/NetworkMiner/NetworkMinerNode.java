@@ -243,7 +243,7 @@ class NodeTimerTask extends TimerTask{
 					tsaMethod = new GaussianOutlierDetection(dataItems);
 					results.getRetNode().getRetOM().setIslinkDegree(true);
 				}else {
-					if(task.getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())){
+					/*if(task.getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())){
 						if(results.getRetNode().getRetStatistics().getMean() < 3500){
 							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(true);
@@ -261,7 +261,9 @@ class NodeTimerTask extends TimerTask{
 							//tsaMethod = new FastFourierOutliesDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(false);
 						}
-					} else {
+					}*/ 
+					
+					/*else {
 						if(results.getRetNode().getRetStatistics().getComplex() < 1.9){
 							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(true);
@@ -269,6 +271,13 @@ class NodeTimerTask extends TimerTask{
 							tsaMethod = new AnormalyDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(false);
 						}
+					}*/
+					if(results.getRetNode().getRetPM().getHasPeriod()){
+						tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+						results.getRetNode().getRetOM().setIslinkDegree(true);
+					}else{
+						tsaMethod = new AnormalyDetection(dataItems);
+						results.getRetNode().getRetOM().setIslinkDegree(false);
 					}
 				}
 				tsaMethod.TimeSeriesAnalysis();

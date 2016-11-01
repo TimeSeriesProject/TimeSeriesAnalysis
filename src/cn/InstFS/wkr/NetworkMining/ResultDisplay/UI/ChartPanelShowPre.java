@@ -117,7 +117,7 @@ public class ChartPanelShowPre extends JPanel{
         //获取正常数据的长度、
         int length=normal.getLength();
         int time[] = new int[length];
-        XYSeries xyseries = new XYSeries("normal");
+        XYSeries xyseries = new XYSeries("原始序列");
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
@@ -132,9 +132,9 @@ public class ChartPanelShowPre extends JPanel{
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
-    //对异常点进行初始化
+    
     public static XYDataset createAbnormalDataset(DataItems abnor)
-    {  // 统计异常点的长度
+    {  
         int length=abnor.getLength();
         XYSeries xyseries = new XYSeries("abnormal");
 
@@ -160,7 +160,7 @@ public class ChartPanelShowPre extends JPanel{
     public static XYDataset createAbnormalDataset(DataItems abnor, int norDataLength)
     {  // 统计异常点的长度
         int length=abnor.getLength();
-        XYSeries xyseries = new XYSeries("abnormal");
+        XYSeries xyseries = new XYSeries("预测结果");
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
