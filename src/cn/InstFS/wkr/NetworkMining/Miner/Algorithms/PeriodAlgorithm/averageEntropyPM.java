@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import oracle.net.aso.k;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerPM;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -237,16 +238,25 @@ public class averageEntropyPM implements IMinerPM {
 			}
 		}
 		
-		double ratios=0;
+//		double ratios=0;
 		int possiPeriod=0;
+//		for(Integer key:ratio.keySet()){
+//			if(ratio.get(key)>ratios){
+//				ratios=ratio.get(key);
+//				possiPeriod=key;
+//			}
+//		}
+//		predictPeriod=possiPeriod;
+//		confidence=ratios;        //该检测周期的置信度
+		double minEntropy=Double.MAX_VALUE;
 		for(Integer key:ratio.keySet()){
-			if(ratio.get(key)>ratios){
-				ratios=ratio.get(key);
+			if(entropies[key-1]<minEntropy){
+				minEntropy=entropies[key-1];
+				predictPeriod=key;
 				possiPeriod=key;
+				confidence=ratio.get(key);
 			}
 		}
-		predictPeriod=possiPeriod;
-		confidence=ratios;        //该检测周期的置信度
 		
 		for(int i=1;i<maxPeriod;i++){
 			if(entropies[i]<minEntropy){

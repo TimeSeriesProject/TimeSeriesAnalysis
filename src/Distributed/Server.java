@@ -3140,6 +3140,7 @@ public class Server {
             File file = new File(fileName);
             if (file.exists()) {
                 if (file.isFile()){
+                    System.out.println("delfilename:   " + file.getName());
                     file.delete();
                 } else if (file.isDirectory()) {
                     File[] files = file.listFiles();
@@ -3147,6 +3148,7 @@ public class Server {
                         //删除子文件
                         deleteFile(files[i].getAbsolutePath());
                     }
+                    System.out.println("delfileDirename: " + file.getName());
                     file.delete();
                 }
             } else {
