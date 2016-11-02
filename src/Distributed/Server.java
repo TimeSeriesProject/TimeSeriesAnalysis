@@ -3140,7 +3140,7 @@ public class Server {
             File file = new File(fileName);
             if (file.exists()) {
                 if (file.isFile()){
-                    System.out.println("delfilename: " + file.getName());
+                    System.out.println("delfilename:   " + file.getName());
                     file.delete();
                 } else if (file.isDirectory()) {
                     File[] files = file.listFiles();
