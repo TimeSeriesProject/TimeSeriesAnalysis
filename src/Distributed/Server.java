@@ -2682,8 +2682,8 @@ public class Server {
                         }
 
                         //接收结果
-//                        recLock.lock();
-//                        try {
+                        recLock.lock();
+                        try {
                             if (!isEmpty) {
                                 //判断是否返回已存在结果，若不存在，则接收
                                 task = userClient.receiveMsg();
@@ -2771,9 +2771,9 @@ public class Server {
                                 }
 //                            recCon.await();
                             }
-//                        } finally {
-//                            recLock.unlock();
-//                        }
+                        } finally {
+                            recLock.unlock();
+                        }
                     }
 
                     tasksCount = allTasks2.size();
@@ -2822,8 +2822,8 @@ public class Server {
                         }
 
                         //接收结果
-//                        recLock2.lock();
-//                        try {
+                        recLock2.lock();
+                        try {
                             if (!isEmpty2) {
                                 //判断是否返回已存在结果
                                 task2 = userClient.receiveMsg();
@@ -2949,9 +2949,9 @@ public class Server {
                                     comAndDel.unlock();
                                 }
                             }
-//                        } finally {
-//                            recLock2.unlock();
-//                        }
+                        } finally {
+                            recLock2.unlock();
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -3091,9 +3091,11 @@ public class Server {
         }
 
         private void combineFiles(ConcurrentHashMap<String, String> combineFile) throws IOException {
+            System.out.println("combineFiles000: " + combineFile.size());
             for (Map.Entry<String, String> entry : combineFile.entrySet()) {
                 ArrayList<File> fileList = new ArrayList<File>();
                 getFilePath(fileList, entry.getValue(), "bin");//得到待删除文件
+                System.out.println("combineFiles:  " + fileList.size());
 
                 File outputFile = new File(entry.getKey());
                 if (!outputFile.exists()) {
