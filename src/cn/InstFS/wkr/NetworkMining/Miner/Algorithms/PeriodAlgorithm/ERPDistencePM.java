@@ -80,7 +80,17 @@ public class ERPDistencePM implements IMinerPM {
 		this.threshold=pmParam.getThreshold();
 		this.longestPeriod=pmParam.getLongestPeriod();
 	}
-	
+	public ERPDistencePM(double threshold,int longestPeriod){
+		hasPeriod = false;
+		predictPeriod=1;
+		minEntropy = Double.MAX_VALUE;
+		predictValuesMap= new HashMap<>();
+		minPredictValuesMap= new HashMap<>();
+		maxPredictValuesMap= new HashMap<>();
+		existPeriod=new ArrayList<Integer>();
+		this.threshold = threshold;
+		this.longestPeriod = longestPeriod;
+	}
 	public void predictPeriod(){
 		int numItems=di.getLength();
 		if(numItems==0){
