@@ -31,6 +31,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.S
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.MinerFactorySettings;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.SingleNodeOrNodePairMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.SingleNodeOrNodePairMinerFactoryDis;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
@@ -149,6 +150,24 @@ public class NetworkMinerNode implements INetworkMiner{
 					settings = SingleNodeOrNodePairMinerFactory.getInstance();
 				} else if (taskCombination.getTaskRange().equals(TaskRange.NodePairRange))
 					settings = SingleNodeOrNodePairMinerFactory.getPairInstance();
+				break;
+			case MiningTypes_WholeNetwork:
+				settings = NetworkFactory.getInstance();
+				break;
+			default:
+				break;
+		}
+		return settings;
+	}
+
+	public static MinerFactorySettings getMinerFactorySettingsDis(TaskCombination taskCombination) {
+		MinerFactorySettings settings = null;
+		switch (taskCombination.getMinerType()) {
+			case MiningType_SinglenodeOrNodePair:
+				if (taskCombination.getTaskRange().equals(TaskRange.SingleNodeRange)){
+					settings = SingleNodeOrNodePairMinerFactoryDis.getInstance();
+				} else if (taskCombination.getTaskRange().equals(TaskRange.NodePairRange))
+					settings = SingleNodeOrNodePairMinerFactoryDis.getPairInstance();
 				break;
 			case MiningTypes_WholeNetwork:
 				settings = NetworkFactory.getInstance();
