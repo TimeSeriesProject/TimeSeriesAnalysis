@@ -282,7 +282,7 @@ public class TimeSeriesChart1 extends Composite {
 			modelColor.put(""+model[j], aColor);
 			button[j] = new Button(controller, SWT.CHECK);
 			Label colorLabel=new Label(controller,SWT.NULL);
-			button[j].setText("模式:" + (j+1)+"("+modelcount[j]+")");
+			button[j].setText("模式:" + model[j]+"("+modelcount[j]+")");
 			colorLabel.setText("——	");
 			RGB rgb=new RGB(aColor.getRed(),aColor.getGreen(),aColor.getBlue());
 			
