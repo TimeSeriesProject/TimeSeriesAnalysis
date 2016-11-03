@@ -150,11 +150,10 @@ public class AnormalyDetection implements IMinerOM {
                 }
             }
             NormalDistributionTest normalDistributionTest = new NormalDistributionTest(data,k);
-            if(!normalDistributionTest.isNormalDistri()){
-            
+            if(!normalDistributionTest.isNormalDistri()&&nowWindowSize<maxWindowSize){            
             	index += expWindowSize;
                 nowWindowSize+=expWindowSize;
-            }else{               
+            }else {               
             	double mean = normalDistributionTest.getMean();
                 double stv;
             	if(normalDistributionTest.getStdeviation()<=0){
