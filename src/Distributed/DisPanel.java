@@ -149,3 +149,4 @@ public class DisPanel extends JDialog {
         return isDistributed;
     }
 }
+
