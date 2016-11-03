@@ -98,11 +98,11 @@ public class NetworkFactoryDis extends MinerFactorySettings {
         taskCombination.setName();
         taskCombination.setDataItems(dataItems);
         taskCombination.getTasks().add(generateTask(granularity,
+                miningObject.toString(),  MiningMethod.MiningMethods_Statistics));
+        taskCombination.getTasks().add(generateTask(granularity,
                 miningObject.toString(),  MiningMethod.MiningMethods_PeriodicityMining));
         taskCombination.getTasks().add(generateTask(granularity,
                 miningObject.toString(),  MiningMethod.MiningMethods_OutliesMining));
-        taskCombination.getTasks().add(generateTask(granularity,
-                miningObject.toString(),  MiningMethod.MiningMethods_Statistics));
         taskCombination.getTasks().add(generateTask(granularity,
                 miningObject.toString(), MiningMethod.MiningMethods_SequenceMining));
         taskCombination.getTasks().add(generateTask(granularity,
