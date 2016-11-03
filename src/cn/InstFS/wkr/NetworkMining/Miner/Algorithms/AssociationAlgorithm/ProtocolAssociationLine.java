@@ -89,16 +89,16 @@ public class ProtocolAssociationLine {
 		        bottomUpLinear_i.run();
 		        TreeMap<Integer, Linear> linears = bottomUpLinear_i.getLinears();  //linears的格式为:key:线段起始位置，Linear：span表示该线段的长度
 		        //过滤短线段
-		        Iterator<Map.Entry<Integer, Linear>> it = linears.entrySet().iterator();
-//		        System.out.println("过滤前线段条数："+linears.size());
-		        while(it.hasNext())
-		        {
-		        	Map.Entry<Integer, Linear> entry =it.next();
-		        	Linear linear =entry.getValue();
-		        	if(linear.span<=1)
-		        		it.remove();
-		        		
-		        }
+//		        Iterator<Map.Entry<Integer, Linear>> it = linears.entrySet().iterator();
+////		        System.out.println("过滤前线段条数："+linears.size());
+//		        while(it.hasNext())
+//		        {
+//		        	Map.Entry<Integer, Linear> entry =it.next();
+//		        	Linear linear =entry.getValue();
+//		        	if(linear.span<=1)
+//		        		it.remove();
+//		        		
+//		        }
 //		        System.out.println("过滤后线段条数："+linears.size());
 		        linesPosList.add(linears);  
 		        System.out.println("**"+linears);
