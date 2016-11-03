@@ -23,6 +23,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourier
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.GaussianOutlierDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalPeriodDetectionWitnDTW;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalPeriodMinerERP;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.PartialCycle;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.averageEntropyPM;
@@ -30,6 +31,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.S
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.MinerFactorySettings;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.NetworkFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.SingleNodeOrNodePairMinerFactory;
+import cn.InstFS.wkr.NetworkMining.Miner.Factory.SingleNodeOrNodePairMinerFactoryDis;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.IResultsDisplayer;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
@@ -157,6 +159,24 @@ public class NetworkMinerNode implements INetworkMiner{
 		}
 		return settings;
 	}
+
+	public static MinerFactorySettings getMinerFactorySettingsDis(TaskCombination taskCombination) {
+		MinerFactorySettings settings = null;
+		switch (taskCombination.getMinerType()) {
+			case MiningType_SinglenodeOrNodePair:
+				if (taskCombination.getTaskRange().equals(TaskRange.SingleNodeRange)){
+					settings = SingleNodeOrNodePairMinerFactoryDis.getInstance();
+				} else if (taskCombination.getTaskRange().equals(TaskRange.NodePairRange))
+					settings = SingleNodeOrNodePairMinerFactoryDis.getPairInstance();
+				break;
+			case MiningTypes_WholeNetwork:
+				settings = NetworkFactory.getInstance();
+				break;
+			default:
+				break;
+		}
+		return settings;
+	}
 }
 
 class NodeTimerTask extends TimerTask{
@@ -194,6 +214,7 @@ class NodeTimerTask extends TimerTask{
 
 		DataItems oriDataItems=dataItems;
 		//results.setInputData(oriDataItems);
+		boolean minePartialCycle = true; // 判断是否挖掘部分周期
 		for(TaskElement task:tasks){
 			dataItems=oriDataItems;
 			if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
@@ -214,6 +235,8 @@ class NodeTimerTask extends TimerTask{
 			}
 			results.setInputData(dataItems);
 			taskCombination.setDataItems(dataItems);
+			results.getRetNode().setOriDataItems(dataItems);
+
 			int dimension = task.getDiscreteDimension();
 			dimension = Math.max(task.getDiscreteDimension(), dataItems.getDiscretizedDimension());
 			IMinerPM pmMethod=null;
@@ -240,7 +263,7 @@ class NodeTimerTask extends TimerTask{
 					tsaMethod = new GaussianOutlierDetection(dataItems);
 					results.getRetNode().getRetOM().setIslinkDegree(true);
 				}else {
-					if(task.getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())){
+					/*if(task.getMiningObject().equals(MiningObject.MiningObject_Traffic.toString())){
 						if(results.getRetNode().getRetStatistics().getMean() < 3500){
 							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(true);
@@ -258,7 +281,9 @@ class NodeTimerTask extends TimerTask{
 							//tsaMethod = new FastFourierOutliesDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(false);
 						}
-					} else {
+					}*/ 
+					
+					/*else {
 						if(results.getRetNode().getRetStatistics().getComplex() < 1.9){
 							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(true);
@@ -266,6 +291,13 @@ class NodeTimerTask extends TimerTask{
 							tsaMethod = new AnormalyDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(false);
 						}
+					}*/
+					if(results.getRetNode().getRetPM().getHasPeriod()){
+						tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+						results.getRetNode().getRetOM().setIslinkDegree(true);
+					}else{
+						tsaMethod = new AnormalyDetection(dataItems);
+						results.getRetNode().getRetOM().setIslinkDegree(false);
 					}
 				}
 				tsaMethod.TimeSeriesAnalysis();
@@ -340,8 +372,14 @@ class NodeTimerTask extends TimerTask{
 				setFrequentResults(results, sequencePattern,frequentItem, lineElements,segPatterns);
 				break;
 			case MiningMethods_PartialCycle:
-				LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
-				results.getRetNode().setRetPartialCycle(dtw.getResult());
+				if (results.getRetNode().getRetPM().getHasPeriod()) { // 若有周期性,不挖掘部分周期
+					minePartialCycle = false;
+				} else {
+					/*LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
+					results.getRetNode().setRetPartialCycle(dtw.getResult());*/
+					LocalPeriodMinerERP localPeriodMinerERP = new LocalPeriodMinerERP(dataItems,0.15,300);
+					results.getRetNode().setRetPartialCycle(localPeriodMinerERP.getResult());
+				}				
 				/*if(task.getRange().equals("10.0.7.2"))
 				{
 					PartialCycle partialCycle = new PartialCycle(results);

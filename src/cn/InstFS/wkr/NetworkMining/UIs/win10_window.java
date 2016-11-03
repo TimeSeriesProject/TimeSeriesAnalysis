@@ -841,77 +841,77 @@ public class win10_window extends JFrame {
         this.setLayout(null);
         final JButton bNetwork=new JButton("网络结构");
         bNetwork.setBackground( new Color(102,205,170));
-        bNetwork.setBounds(100,120,200,200);
+        bNetwork.setBounds(100,20,200,200);
         setIcon("img\\deploy_network_Icon.png",bNetwork);
         bNetwork.setMargin(new Insets(0, 0, 0, 0));
 //        bNetwork.setEnabled(false);
 
         final JButton bNetLoad=new JButton("承载路径");
         bNetLoad.setBackground( new Color(102,205,170));
-        bNetLoad.setBounds(100,330,200,200);
+        bNetLoad.setBounds(100,230,200,200);
         setIcon("img\\deploy_netRoad_Icon.png",bNetLoad);
 //        bNetLoad.setEnabled(false);
 
         final JButton bNode=new JButton("节点");
         bNode.setBackground(new Color(102, 205, 170));
-        bNode.setBounds(100,540,200,200);
+        bNode.setBounds(100,440,200,200);
         setIcon("img\\deploy_node_Icon.png",bNode);
 //        bNode.setEnabled(false);
 
         final JButton blinkRoad=new JButton("链路");
-        blinkRoad.setBounds(100,750,200,200);
+        blinkRoad.setBounds(100,650,200,200);
         setIcon("img\\deploy_linkRoad_Icon.png",blinkRoad);
 //        blinkRoad.setEnabled(false);
 
         final JButton bMultiServer=new JButton("多业务");
 //        bMultiServer.setBackground( new Color(102,205,170));
-        bMultiServer.setBounds(310,750,200,200);
+        bMultiServer.setBounds(310,650,200,200);
         setIcon("img\\deploy_mul_server_Icon.png",bMultiServer);
 //        bMultiServer.setEnabled(false);
 
         //中间一列
         final JButton bPcap=new JButton("PCAP 解析");
         bPcap.setBackground( new Color(178,234,34));
-        bPcap.setBounds(310,120,410,200);
+        bPcap.setBounds(310,20,410,200);
         setIcon("img\\file.png",bPcap);
 
         final JButton bAll=new JButton("挖掘全部");
         bAll.setBackground(Color.YELLOW);
-        bAll.setBounds(310,330,410,200);
+        bAll.setBounds(310,230,410,200);
         setIcon("img\\MinAll.png",bAll);
 //        final JButton bSetting=new JButton("设置");
 //        bSetting.setBackground(Color.orange);
 //        bSetting.setBounds(138,824,200,100);
 
         final JButton bSingle = new JButton("单机版");
-        bSingle.setBounds(310,540, 200, 200);
+        bSingle.setBounds(310,440, 200, 200);
         setIcon("img\\standalone_version_IconG.png", bSingle);
 
         final JButton bDis = new JButton("分布式");
-        bDis.setBounds(520, 540, 200, 200);
+        bDis.setBounds(520, 440, 200, 200);
         setIcon("img\\distributed_version_Icon.png", bDis);
 
         //最后一列
         final JButton bMinNet=new JButton("挖掘网络结构");
-        bMinNet.setBounds(730,120,200,200);
+        bMinNet.setBounds(730,20,200,200);
         setIcon("img\\dig_network_Icon.png",bMinNet);
         final JButton bMinNetLoad=new JButton("挖掘承载路径");
         bMinNetLoad.setBackground( new Color(102,205,170));
-        bMinNetLoad.setBounds(730,330,200,200);
+        bMinNetLoad.setBounds(730,230,200,200);
         setIcon("img\\dig_netRoad_Icon.png",bMinNetLoad);
 
         final JButton bMinNode=new JButton("挖掘节点");
         bMinNode.setBackground(new Color(102, 205, 170));
-        bMinNode.setBounds(730,540,200,200);
+        bMinNode.setBounds(730,440,200,200);
         setIcon("img\\dig_node_Icon.png",bMinNode);
 
         final JButton bMinlinkRoad=new JButton("挖掘链路");
-        bMinlinkRoad.setBounds(730,750,200,200);
+        bMinlinkRoad.setBounds(730,650,200,200);
         setIcon("img\\dig_linkRoad_Icon.png",bMinlinkRoad);
 
         final JButton bMinMultiServer=new JButton("挖掘多业务");
         bMinMultiServer.setBackground( new Color(102,205,170));
-        bMinMultiServer.setBounds(520,750,200,200);
+        bMinMultiServer.setBounds(520,650,200,200);
         setIcon("img\\dig_mul_server_Icon.png",bMinMultiServer);
 
 //        bgp=new BackgroundPanel((new ImageIcon("img\\background.png")).getImage());

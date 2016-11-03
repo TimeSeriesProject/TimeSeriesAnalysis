@@ -289,10 +289,10 @@ public class ChartPanelShowFI extends JPanel {
         xylineandshaperenderer1.setSeriesLinesVisible(0, true);
         xylineandshaperenderer1.setBaseShapesVisible(false);
         xylineandshaperenderer1.setSeriesShape(0, new java.awt.geom.Ellipse2D.Double(-2D, -2D, 4D, 4D));
-        xylineandshaperenderer1.setSeriesPaint(0, Color.BLUE);
-        xylineandshaperenderer1.setSeriesFillPaint(0, Color.BLUE);
-        xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.BLUE);
-        xylineandshaperenderer1.setSeriesStroke(0, new BasicStroke(0.5F));
+        xylineandshaperenderer1.setSeriesPaint(0, Color.RED);
+        xylineandshaperenderer1.setSeriesFillPaint(0, Color.RED);
+        xylineandshaperenderer1.setSeriesOutlinePaint(0, Color.RED);
+        xylineandshaperenderer1.setSeriesStroke(0, new BasicStroke(0.8F));
         xyplot.setRenderer(1,xylineandshaperenderer1);
         ArrayList<DataItems> one = new ArrayList<DataItems>();
         ArrayList<DataItems> second = new ArrayList<DataItems>();

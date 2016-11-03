@@ -1,8 +1,11 @@
 package cn.InstFS.wkr.NetworkMining.Miner.Results;
 
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+
 import java.io.Serializable;
 
 public class MinerNodeResults implements Serializable{
+	private DataItems di;
 	private MinerResultsStatistics retStatistics;
 	private MinerResultsPM retPM;
 	private MinerResultsOM retOM;
@@ -64,5 +67,12 @@ public class MinerNodeResults implements Serializable{
 	public void setRetFM(MinerResultsFM retFM) {
 		this.retFM = retFM;
 	}
-	
+
+	public DataItems getOriDataItems() {
+		return di;
+	}
+
+	public void setOriDataItems(DataItems di) {
+		this.di = di;
+	}
 }

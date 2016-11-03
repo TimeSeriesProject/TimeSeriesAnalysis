@@ -162,7 +162,7 @@ public class PcapByteParser {
             byteLength += 4;
 
             System.arraycopy(temp, 0, buffer_278, byteLength, temp.length);
-            is.get(buffer, 0, data.getpLength() - datalength);
+            is.get(buffer, 0, data.getpLength() - datalength);//读取数据
 
             if (data.getTraffic() > 30) {
                 BufferedOutputStream bo;

@@ -17,8 +17,10 @@ import java.awt.GridBagLayout;
 
 import javax.swing.JLabel;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Button;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -44,8 +46,10 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYLineAnnotation;
 import org.jfree.chart.annotations.XYPointerAnnotation;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.category.CategoryDataset;
@@ -53,6 +57,8 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleAnchor;
+import org.jfree.ui.TextAnchor;
 import org.openide.loaders.TemplateWizard.Iterator;
 
 public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowResults{
@@ -93,31 +99,19 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 /*		Button b=new Button();
 		b.setLabel("a Buttom");
 		this.add(b);*/
-		
-		
-				//构造数据
-		initData();
-		
+
 		//初始化控制器
-		LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(data,0.9,0.9,3);
-		 map=dtw.getResult().getPartialCyclePos();
-		int modelnum=map.keySet().size();
-		
-		 
-		// initModel();
-		
-
-
-		
-		
-		
+		//LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(data,0.9,0.75,3);
+		// map=dtw.getResult().getPartialCyclePos();
+		int modelnum=map.keySet().size();	
 		 jfreechart = createChart(createDataset(data,map));
+		 
 		plot=jfreechart.getXYPlot();
 		//plot.getRenderer().setBaseShape(null);
 		
 		//initModel();
 		PaintPeriodLine();
-		
+		PaintDomainMarker();
 		
 		
 		ChartPanel chartpanel = new ChartPanel(jfreechart);
@@ -214,17 +208,7 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 			
 		 
 	}
-	public void initData(){
-		data=new DataItems();
-		double[] da={ 3,4,5,6,1,2,3,4,5,5,5,5,5,5,4,4,4,3,2,1, 2,3,4,5,5,5,5,5,4,4,4,4,1,2,3, 1,7,8,9,0,33,44,55,6,7,66,8,2,3,4,5,6,7,1,1,1,1,1,2,2,2,2,2,2,1,1,1,1,1,2,2,2,2,2,2};
-		for(int i=0;i<da.length;i++){
-			DataItem d=new DataItem();
-			d.setData(""+da[i]);
-			data.add1Data(d);
-		}
-		
-	
-	}
+
 	
 /*	public void initModel(){
 		 XYSeriesCollection=(XYSeriesCollection)plot.getDataset();
@@ -251,6 +235,39 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 		 
 	}*/
 	
+	/**
+	 * 画标记线分割周期
+	 */
+	private void PaintDomainMarker(){
+		 Object[] key=map.keySet().toArray();
+		 for(int i=0;i<map.size();i++){
+			 ArrayList<NodeSection> list=map.get(key[i]);
+			 java.util.Iterator<NodeSection> it=list.iterator();
+			 int b;
+			 int e=0;
+			 while(it.hasNext()){
+				 NodeSection nodesection=it.next();
+				 b=nodesection.begin;
+				 e=nodesection.end;
+				 int p=(int)key[i];
+				 for(int j=b;j<=e;j+=p){
+					 ValueMarker valuemarker3 = new ValueMarker(j);
+						valuemarker3.setPaint(new Color(100,100,100,250));
+						valuemarker3.setStroke(  new   BasicStroke(1,   BasicStroke.CAP_BUTT,  
+                                BasicStroke.JOIN_BEVEL,   0,  
+                                new   float[]{10,   4},   0)  );
+						//valuemarker3.setLabel("Close Date (02:15)");
+						//valuemarker3.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+						//valuemarker3.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+						plot.addDomainMarker(valuemarker3);
+				 }
+				 
+				
+			 }
+	}
+	}
+	
+	
 	private static XYDataset createDataset(DataItems data,Map<Integer,ArrayList<NodeSection>> map){
 		XYSeries xyseries = new XYSeries("原序列");
 		XYSeriesCollection XYSeriesCollection=new XYSeriesCollection();
@@ -266,7 +283,7 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 				
 				 Object[] key=map.keySet().toArray();
 				 for(int i=0;i<map.size();i++){
-					 XYSeries x=new XYSeries("周期："+key[i]+"");
+					 XYSeries x=new XYSeries("	周期："+key[i]+"");
 					 ArrayList<NodeSection> list=map.get(key[i]);
 					 java.util.Iterator<NodeSection> it=list.iterator();
 					 int b;
@@ -281,8 +298,12 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 						 }
 						 b=nodesection.begin;
 						 e=nodesection.end;
+						 int p=(int)key[i];
+						
+						 
 						 for(int j=b;j<e;j++){
 							 x.add(j,Double.parseDouble(data.getElementAt(j).getData()));
+							
 							 
 					      }
 					 }
@@ -321,6 +342,9 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 	{
 		JFreeChart jfreechart = ChartFactory.createXYLineChart("时间序列", "time", "data", xydataset, PlotOrientation.VERTICAL, true, true, false);
 		XYPlot xyplot = (XYPlot)jfreechart.getPlot();
+		NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
+		numberaxis.setAutoRangeIncludesZero(false);
+		numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		xyplot.setDomainPannable(true);
 		xyplot.setRangePannable(true);
 		XYLineAndShapeRenderer xylineandshaperenderer = new XYLineAndShapeRenderer();
@@ -392,6 +416,7 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 
 		//initModel();
 		PaintPeriodLine();
+		PaintDomainMarker();
 
 
 

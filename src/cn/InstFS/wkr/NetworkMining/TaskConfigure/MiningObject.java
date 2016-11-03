@@ -5,7 +5,7 @@ public enum MiningObject {
 	MiningObject_Times("通信次数"),
 	MiningObject_NodeDisapearEmerge("结点出现消失"),
 	MiningObject_Cluster("网络簇系数"),
-	MiningObject_Diameter("网络直径"),
+	MiningObject_Diameter("平均网络直径"),
 	MiningObject_None("无");
 	
 	private String value;

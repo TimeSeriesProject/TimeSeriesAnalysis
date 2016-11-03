@@ -143,28 +143,28 @@ public class DataPanel extends JPanel {
 
     public JTextField getIPFiled() {
         if (IPFiled == null) {
-            IPFiled = new JTextField("127.0.0.1");
+            IPFiled = new JTextField(DisParams.getIp());
         }
         return IPFiled;
     }
 
     public JTextField getPortFiled() {
         if (portFiled == null) {
-            portFiled = new JTextField("7777");
+            portFiled = new JTextField(DisParams.getClientPort());
         }
         return portFiled;
     }
 
     public JTextField getPcapFolderFiled() {
         if (pcapFolderFiled == null) {
-            pcapFolderFiled = new JTextField("E:\\pcap");
+            pcapFolderFiled = new JTextField(DisParams.getCpcapPath());
         }
         return pcapFolderFiled;
     }
 
     public JTextField getFileFolderFiled() {
         if (fileFolderFiled == null) {
-            fileFolderFiled = new JTextField("E:\\57data");
+            fileFolderFiled = new JTextField(DisParams.getcOutputPath());
         }
         return fileFolderFiled;
     }
@@ -196,6 +196,10 @@ public class DataPanel extends JPanel {
                         portNum = Integer.parseInt(portFiled.getText().trim());
                         filePath = pcapFolderFiled.getText().trim();
                         outPath = fileFolderFiled.getText().trim();
+                        DisParams.setIp(IPFiled.getText().trim());
+                        DisParams.setClientPort(portFiled.getText().trim());
+                        DisParams.setCpcapPath(pcapFolderFiled.getText().trim());
+                        DisParams.setcOutputPath(fileFolderFiled.getText().trim());
                         client = new Client(DataPanel.this, IPStr, portNum, filePath, outPath);
                         getIPFiled().setEditable(false);
                         getPortFiled().setEditable(false);

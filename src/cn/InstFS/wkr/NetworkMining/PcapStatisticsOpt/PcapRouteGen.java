@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 /**
  * Created by zsc on 2016/7/27.
+ * 将bin文件中的数据存入PcapData数据结构中
  */
 public class PcapRouteGen {
 
@@ -56,8 +57,8 @@ public class PcapRouteGen {
             length = byteArrayToInt(buffer_4, 0);
 
             name = new byte[length];
-            strName = new String(name).intern();//指向常量池中的string
             is.get(name);
+            strName = new String(name).intern();//指向常量池中的string
             data.setPcapFile(strName);
             datas.add(data);
 

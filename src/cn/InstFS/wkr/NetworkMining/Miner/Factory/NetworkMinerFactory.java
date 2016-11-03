@@ -559,6 +559,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	private void taskAdd2allMiner(TaskCombination taskCombination, HashMap<TaskCombination, ?> resultsMap) {
 		if (resultsMap.get(taskCombination) instanceof MinerNodeResults) {
 			MinerNodeResults results = (MinerNodeResults) resultsMap.get(taskCombination);
+			TaskElement partialCycleTask = null;
 			for (TaskElement task : taskCombination.getTasks()) {
 				switch (task.getMiningMethod()) {
 					case MiningMethods_OutliesMining:
@@ -567,7 +568,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 							System.out.println("true");
 						}
 						minerOM.getResults().setRetOM(results.getRetOM());
-						minerOM.getResults().setInputData(taskCombination.getDataItems());
+						minerOM.getResults().setInputData(results.getOriDataItems());
 						minerOM.isOver.setIsover(true);
 						allMiners.put(task, minerOM);
 						break;
@@ -575,7 +576,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						NetworkMinerPM minerPM = new NetworkMinerPM(task, null);
 						minerPM.getResults().setRetPM(results.getRetPM());
 						minerPM.isOver.setIsover(true);
-						minerPM.getResults().setInputData(taskCombination.getDataItems());
+						minerPM.getResults().setInputData(results.getOriDataItems());
 						allMiners.put(task, minerPM);
 						break;
 					case MiningMethods_SequenceMining:
@@ -587,33 +588,38 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						} else {
 							System.out.println(taskCombination.getName() + " none freitems");
 						}
-						minerSM.getResults().setInputData(taskCombination.getDataItems());
+//						minerSM.getResults().setInputData(taskCombination.getDataItems()); //taskCombination中的数据为聚合前数据
+						minerSM.getResults().setInputData(results.getOriDataItems());
 						allMiners.put(task, minerSM);
 						break;
 					case MiningMethods_Statistics:
 						NetworkMinerStatistics statistics = new NetworkMinerStatistics(task, null);
 						statistics.getResults().setRetStatistics(results.getRetStatistics());
 						statistics.isOver.setIsover(true);
-						statistics.getResults().setInputData(taskCombination.getDataItems());
+						statistics.getResults().setInputData(results.getOriDataItems());
 						allMiners.put(task, statistics);
 						break;
 					case MiningMethods_PartialCycle:
+						partialCycleTask = task;
 						NetworkMinerPartialCycle partialCycle = new NetworkMinerPartialCycle(task,null);
 						partialCycle.getResults().setRetPartialCycle(results.getRetPartialCycle());
 						partialCycle.isOver.setIsover(true);
-						partialCycle.getResults().setInputData(taskCombination.getDataItems());
+						partialCycle.getResults().setInputData(results.getOriDataItems());
 						allMiners.put(task, partialCycle);
 						break;
 					case MiningMethods_PredictionMining:
 						NetworkMinerFM fm=new NetworkMinerFM(task, null);
 						fm.getResults().setRetFM(results.getRetFM());
-						fm.getResults().setInputData(taskCombination.getDataItems());
+						fm.getResults().setInputData(results.getOriDataItems());
 						fm.isOver.setIsover(true);
 						allMiners.put(task, fm);
 						break;
 					default:
 						break;
 				}
+			}
+			if (results.getRetPM().getHasPeriod()) {
+				taskCombination.getTasks().remove(partialCycleTask);
 			}
 		} else if (resultsMap.get(taskCombination) instanceof MinerResultsPath){
 			MinerResultsPath results= (MinerResultsPath) resultsMap.get(taskCombination);
