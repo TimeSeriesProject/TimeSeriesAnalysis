@@ -61,14 +61,11 @@ public class BottomUpLinear {
         double cost = 0;
         double dis = (endValue-startValue)*(endValue-startValue)*100+Math.log((endTime-startTime+1))*Math.log((endTime-startTime+1));
         for(int i = startTime;i <= endTime;i++){
-        	//int midle = startTime+first.span;
         	
         	double midleValue  = datas.get(i);
             //cost+=Math.abs(startValue+slope*(i-startTime)-datas.get(i));//点到直线的距离
             cost+=Math.abs(slope*i+b-midleValue)/Math.sqrt(slope*slope+1);//点到直线的垂直距离
-//            cost+=(startValue+slope*(i-startTime)-datas.get(i))*(startValue+slope*(i-startTime)-datas.get(i));
         }
-//        return cost;
         cost = cost/Math.sqrt(dis);
 //        return cost/(endTime-startTime-1);
         return cost;
@@ -160,20 +157,20 @@ public class BottomUpLinear {
             }
             last = lin;
             //用于测试
-            if(first.startTime>=224 && first.startTime<=242){
+            /*if(first.startTime>=224 && first.startTime<=242){
             	System.out.println("startTime at"+first.startTime);
-            }
+            }*/
             
             double cost = computeCost(first,last);
-            if(first.startTime>=224 && first.startTime<=242){
+            /*if(first.startTime>=224 && first.startTime<=242){
             	System.out.println("startTime at"+first.startTime);
             	for(int j = first.startTime;j<last.startTime+last.span;j++){
             		System.out.println("("+j+","+datas.get(j)+")");           		
             	}
 //            	System.out.println("cost:"+minNode.cost);
-            }
+            }*/
 //            costList.add(cost);//用于测试
-            System.out.println("线段"+first.startTime+"和线段"+last.startTime+"的合并代价:"+cost);
+//            System.out.println("线段"+first.startTime+"和线段"+last.startTime+"的合并代价:"+cost);
             Node node = new Node(cost);
             node.first = first;
             node.second = last;
@@ -187,20 +184,14 @@ public class BottomUpLinear {
         int a = 0;
         Node minNode = findMinNode(head);
         while(minNode!=null){
-        	if(minNode.first.startTime>=224 && minNode.first.startTime<242){
+        	/*if(minNode.first.startTime>=224 && minNode.first.startTime<242){
             	System.out.println("startTime at"+minNode.first.startTime);
             	for(int i=minNode.first.startTime;i<minNode.second.startTime+minNode.second.span;i++){
             		System.out.println("("+i+","+datas.get(i)+")");           		
             	}
             	System.out.println("cost:"+minNode.cost);
-            }
-            mergeNode(minNode);
-           /*a++;
-           if(a == 135){
-        	   System.out.println("a:"+a);
-           }
-           System.out.println("a:"+a);*/
-            
+            }*/
+            mergeNode(minNode);            
             minNode = findMinNode(head);
         }
         //合并线段长度很小的node

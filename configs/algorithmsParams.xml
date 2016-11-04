@@ -21,7 +21,7 @@
         <!-- 高斯滑动窗口 -->
         <gaussianParams>
             <initWindowSize>30</initWindowSize>
-            <maxWindowSize>60</maxWindowSize>
+            <maxWindowSize>90</maxWindowSize>
             <expWindowSize>3</expWindowSize>
             <windowVarK>3.0</windowVarK>
         </gaussianParams>
