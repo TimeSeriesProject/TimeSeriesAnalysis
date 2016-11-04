@@ -79,10 +79,10 @@ public class ChartPanelShowStatistics extends JPanel {
 
         itemShape = ShapeUtilities.createDiamond((float) 3);
         renderer.setSeriesShape(0, itemShape);
-        renderer.setSeriesPaint(0, new Color(255,0,0));
+        renderer.setSeriesPaint(0, Color.black);
 
         renderer.setSeriesShape(1, itemShape);
-        renderer.setSeriesPaint(1, new Color(0,255,0));
+        renderer.setSeriesPaint(1, Color.black);
 
         renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0}:({1} , {2})", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), new DecimalFormat("#.00")));
     }
