@@ -151,7 +151,7 @@ public class BottomUpLinear {
         Node head = new Node(-1.0);
         Node now = head;
         Linear first=null,last=null;
-        List<Double> costList = new ArrayList<Double>(); //用于测试
+//        List<Double> costList = new ArrayList<Double>(); //用于测试
         for(int i : linears.keySet()){
             Linear lin = linears.get(i);
             if(first==null){

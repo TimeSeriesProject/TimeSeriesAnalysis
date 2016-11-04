@@ -172,9 +172,9 @@ public class AnormalyDetection implements IMinerOM {
 	                    distance = distance>5 ? 1 : distance/5;
 	                    degreeMap.put(i, distance);
                     }  
-                }                
-                index = index + nowWindowSize;
-                nowWindowSize=initWindowSize;                
+                }       
+            	nowWindowSize=initWindowSize;   
+                index = index + nowWindowSize;                             
             }            
         }
         
