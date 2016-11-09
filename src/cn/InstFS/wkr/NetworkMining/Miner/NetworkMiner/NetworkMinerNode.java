@@ -11,6 +11,7 @@ import WaveletUtil.SAXPartternDetection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
+import cn.InstFS.wkr.NetworkMining.DataInputs.PatternMent;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
@@ -352,7 +353,7 @@ class NodeTimerTask extends TimerTask{
 				ParamsSM paramsSM = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
 				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
 				DataItems clusterItems=null;
-				List<SegPattern> segPatterns=segment.getPatterns();
+				List<PatternMent> segPatterns=segment.getPatterns();
 				
 				if(task.getPatternNum()==0){
 					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
@@ -453,7 +454,7 @@ class NodeTimerTask extends TimerTask{
 	}
 	
 	private void setFrequentResults(MinerResults results,SequencePatternsDontSplit sequencePattern,
-			Map<Integer, List<String>>frequentItem, List<LineElement> lineElements,List<SegPattern> segPatterns){		
+			Map<Integer, List<String>>frequentItem, List<LineElement> lineElements,List<PatternMent> segPatterns){		
 		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
 		results.getRetNode().getRetSM().setSegPatterns(segPatterns);
 		if(sequencePattern.isHasFreItems()){

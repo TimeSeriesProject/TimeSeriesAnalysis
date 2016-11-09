@@ -83,7 +83,7 @@ public class MergeSegment
 		while(index/2>=1&&nodes[index/2].error>nodes[index].error)
 		{
 			/**
-			 * ºÍ¸¸Ç×½áµã½»»¥Î»ÖÃ£¬Í¬Ê±indexÊôÐÔÒªºÍÏÂ±êÒ»ÖÂ
+			 * ï¿½Í¸ï¿½ï¿½×½ï¿½ã½»ï¿½ï¿½Î»ï¿½Ã£ï¿½Í¬Ê±indexï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Â±ï¿½Ò»ï¿½ï¿½
 			 */
 			MergeSegmentNode t=nodes[index/2];
 			nodes[index/2]=nodes[index];
@@ -99,7 +99,7 @@ public class MergeSegment
 		while((index*2<=size&&nodes[index].error>nodes[2*index].error)||(index*2+1<=size&&nodes[index].error>nodes[2*index+1].error))
 		{
 			int cindex=2*index;
-			if(index*2<=size&&nodes[index].error>nodes[2*index].error) //¿ÉÊ¡ÂÔ
+			if(index*2<=size&&nodes[index].error>nodes[2*index].error) //ï¿½ï¿½Ê¡ï¿½ï¿½
 				cindex=2*index;
 			if(index*2+1<=size&&nodes[2*index+1].error<nodes[2*index].error)
 				cindex=2*index+1;
@@ -136,7 +136,7 @@ public class MergeSegment
 		
 	}
 	/**
-	 * ÀûÓÃ¶Ñ½øÐÐÏß¶ÎºÏ²¢£¬Ã¿´ÎÕÒ³ö×îÐ¡´ú¼ÛºÏ²¢£¬²¢¸üÐÂ¶Ñ
+	 * ï¿½ï¿½ï¿½Ã¶Ñ½ï¿½ï¿½ï¿½ï¿½ß¶ÎºÏ²ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½Ò³ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ÛºÏ²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¶ï¿½
 	 * @param dataItems
 	 * @param rate
 	 */
@@ -169,7 +169,7 @@ public class MergeSegment
 //		System.out.println();
 	}
 	/**
-	 * »ñÈ¡ºÏ²¢¹ýºóµÄµã
+	 * ï¿½ï¿½È¡ï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½
 	 * @return
 	 */
 	public DataItems getMergedDataItems()
@@ -184,14 +184,14 @@ public class MergeSegment
 		}
 		return dataItems;
 	}
-	public ArrayList<Pattern> getPatterns()
+	public ArrayList<PatternMent> getPatterns()
 	{
-		ArrayList<Pattern> patList = new ArrayList<Pattern>();
+		ArrayList<PatternMent> patList = new ArrayList<PatternMent>();
 		if(dataItemArray.length==0)
 			return patList;
 		
 		int pre = -1;
-		double maxSpan=Double.MIN_VALUE,maxSlope=Double.MIN_VALUE,maxAverage=Double.MIN_VALUE;  //´æ´¢×î´óÊ±¼ä¼ä¸ô£¬×î´óÁ÷Á¿±ä»¯µÄ¾ø¶ÔÖµ
+		double maxSpan=Double.MIN_VALUE,maxSlope=Double.MIN_VALUE,maxAverage=Double.MIN_VALUE;  //ï¿½æ´¢ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä»¯ï¿½Ä¾ï¿½ï¿½ï¿½Öµ
 		double minSpan=Double.MAX_VALUE,minSlope=Double.MAX_VALUE,minAverage=Double.MAX_VALUE;
 		for(int i=0;i<dataItemArray.length;i++)
 		{
@@ -207,9 +207,9 @@ public class MergeSegment
 					x2=dataItemArray[i].getTime().getTime();
 					y2=Double.valueOf(dataItemArray[i].getData());
 					
-					Pattern pat =new Pattern();
+					PatternMent pat =new PatternMent();
 					pat.setAverage((y1+y2)/2);
-					pat.setSpan(Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)));
+					pat.setSpan((int)Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)));
 					pat.setSlope(Math.atan((y2-y1)/(x2-x1)));
 					pat.setStart(pre);;
 					pat.setEnd(i);
@@ -234,17 +234,17 @@ public class MergeSegment
 		
 		for(int i=0;i<patList.size();i++)
 		{
-			Pattern pat = patList.get(i);
+			PatternMent pat = patList.get(i);
 			pat.setAverage((pat.getAverage()-minAverage)/(maxAverage-minAverage));
 			pat.setSlope((pat.getSlope()-minSlope)/(maxSlope-minSlope));
-			pat.setSpan((pat.getSpan()-minSpan)/(maxSpan-minSpan));
+			pat.setSpan((int)((pat.getSpan()-minSpan)/(maxSpan-minSpan)));
 			patList.set(i,pat);
 //			System.out.println(seg.slope+",");
 		}
 		return patList;
 	}
 	/**
-	 * µÃµ½ºÏ²¢ºóµÄÏß¶Î£¬²¢×÷min-max¹éÒ»»¯
+	 * ï¿½Ãµï¿½ï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½ß¶Î£ï¿½ï¿½ï¿½ï¿½ï¿½min-maxï¿½ï¿½Ò»ï¿½ï¿½
 	 * @return
 	 */
 	public ArrayList<Segment> getSegmentList()
@@ -254,7 +254,7 @@ public class MergeSegment
 			return segList;
 		
 		int pre = -1;
-		double maxLength=Double.MIN_VALUE,maxSlope=Double.MIN_VALUE,maxCentery=Double.MIN_VALUE;  //´æ´¢×î´óÊ±¼ä¼ä¸ô£¬×î´óÁ÷Á¿±ä»¯µÄ¾ø¶ÔÖµ
+		double maxLength=Double.MIN_VALUE,maxSlope=Double.MIN_VALUE,maxCentery=Double.MIN_VALUE;  //ï¿½æ´¢ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä»¯ï¿½Ä¾ï¿½ï¿½ï¿½Öµ
 		double minLength=Double.MAX_VALUE,minSlope=Double.MAX_VALUE,minCentery=Double.MAX_VALUE;
 //		System.out.println("result");
 		for(int i=0;i<dataItemArray.length;i++)

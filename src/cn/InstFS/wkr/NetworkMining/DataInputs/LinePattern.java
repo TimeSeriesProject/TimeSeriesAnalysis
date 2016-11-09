@@ -11,8 +11,8 @@ import oracle.net.aso.p;
 public class LinePattern {
 	private DataItems dataItems = new DataItems();     //时间序列 
 	private TreeMap<Integer,Double> datas = new TreeMap<Integer, Double>();//原始数据
-    private TreeMap<Integer, Pattern> linesMap = new TreeMap<Integer, Pattern>();  //拟合后的线段
-	private List<Pattern> patterns = new ArrayList<Pattern>();       // 线段模式	
+    private TreeMap<Integer, PatternMent> linesMap = new TreeMap<Integer, PatternMent>();  //拟合后的线段
+	private List<PatternMent> patterns = new ArrayList<PatternMent>();       // 线段模式	
 	private double mergerPrice = 0.1;      //合并代价阈值
 	private double compressionRatio = 0.65;//压缩率
 	public LinePattern(DataItems di,double mergerPrice){
@@ -29,7 +29,7 @@ public class LinePattern {
         System.out.println("线段两两拟合完毕！");
         mergeLinear();//合并线段
         System.out.println("合并线段完毕！mergerPrice="+mergerPrice);
-        for(Map.Entry<Integer, Pattern> entry : linesMap.entrySet()){
+        for(Map.Entry<Integer, PatternMent> entry : linesMap.entrySet()){
         	patterns.add(entry.getValue());
         }
         comAngle(patterns);
@@ -87,7 +87,7 @@ public class LinePattern {
             //double slope = (lastValue - firstValue)/(time - firstTime);//计算斜率，斜率大小随变量单位变化
             double height = lastValue - firstValue;
             double length = time - firstTime;           
-            Pattern pattern = new Pattern(firstTime,time - firstTime,Math.atan2(height,length),firstValue);
+            PatternMent pattern = new PatternMent(firstTime,time - firstTime,Math.atan2(height,length),firstValue);
             pattern.setHspan(lastValue-firstValue); 
             linesMap.put(firstTime,pattern);
             firstTime = time;
@@ -99,7 +99,7 @@ public class LinePattern {
      * @param last
      * @return
      */
-    private double computeCost(Pattern first, Pattern last) {
+    private double computeCost(PatternMent first, PatternMent last) {
         int start = first.getStart();
         int end = last.getStart()+last.getLen();
         double startValue = datas.get(start);
@@ -154,9 +154,9 @@ public class LinePattern {
     private void mergeLinear(){
         Node head = new Node(-1.0);
         Node now = head;
-        Pattern first=null,last=null;
+        PatternMent first=null,last=null;
         for(int i : linesMap.keySet()){
-        	Pattern pattern = linesMap.get(i);
+        	PatternMent pattern = linesMap.get(i);
             if(first==null){
                 first = pattern;
                 continue;
@@ -181,7 +181,7 @@ public class LinePattern {
         //合并线段长度很小的node
         //mergeAtLeastNum(head);
         
-        linesMap = new TreeMap<Integer, Pattern>();
+        linesMap = new TreeMap<Integer, PatternMent>();
         now =head.after;
         linesMap.put(now.first.getStart(),now.first);
         while(now!=null&&now.second!=null){
@@ -227,12 +227,12 @@ public class LinePattern {
     private void mergeMinLengthNode(Node minNode) {
 		
     	Node before = minNode.before,after = minNode.after;
-        Pattern first = minNode.first,second = minNode.second;
+        PatternMent first = minNode.first,second = minNode.second;
         //double newSlope = (datas.get(second.getSpan()+second.getStart())-first.getStartValue())/(second.getSpan()+second.getStart()-first.getStart());
-        double height = datas.get(second.getLen()+second.getStart())-first.getStartValue();
-        double length = second.getLen()+second.getStart()-first.getStart();
-        Pattern newLinear = new Pattern(first.getStart(),second.getEnd()-first.getStart(),Math.atan2(height,length),first.getStartValue());
-        newLinear.setHspan(datas.get(second.getLen()+second.getStart())-first.getStartValue());
+        double height = datas.get(second.getSpan()+second.getStart())-first.getStartValue();
+        double length = second.getSpan()+second.getStart()-first.getStart();
+        PatternMent newLinear = new PatternMent(first.getStart(),second.getEnd()-first.getStart(),Math.atan2(height,length),first.getStartValue());
+        newLinear.setHspan(datas.get(second.getSpan()+second.getStart())-first.getStartValue());
         before.second=newLinear;
         before.after=after;
         if (after != null) {
@@ -247,12 +247,12 @@ public class LinePattern {
      */
     private void mergeNode(Node minNode) {
         Node before = minNode.before,after = minNode.after;
-        Pattern first = minNode.first,second = minNode.second;
+        PatternMent first = minNode.first,second = minNode.second;
         //double newSlope = (datas.get(second.getSpan()+second.getStart())-first.getStartValue())/(second.getSpan()+second.getStart()-first.getStart());
-        double height = datas.get(second.getLen()+second.getStart())-first.getStartValue();
-        double length = second.getLen()+second.getStart()-first.getStart();
-        Pattern newLinear = new Pattern(first.getStart(),second.getEnd()-first.getStart(),Math.atan2(height,length),first.getStartValue());
-        newLinear.setHspan(datas.get(second.getLen()+second.getStart())-first.getStartValue());
+        double height = datas.get(second.getSpan()+second.getStart())-first.getStartValue();
+        double length = second.getSpan()+second.getStart()-first.getStart();
+        PatternMent newLinear = new PatternMent(first.getStart(),second.getEnd()-first.getStart(),Math.atan2(height,length),first.getStartValue());
+        newLinear.setHspan(datas.get(second.getSpan()+second.getStart())-first.getStartValue());
         before.second=newLinear;
         before.after=after;
         if (after != null) {
@@ -265,7 +265,7 @@ public class LinePattern {
     /**
      * 计算Pattern中的angle,与前一条线段的夹角
      * */
-    public void comAngle(List<Pattern> pList){
+    public void comAngle(List<PatternMent> pList){
     	pList.get(0).setAngle(pList.get(0).getSlope());
     	for(int i=1;i<pList.size();i++){
     		double angle = Math.PI - pList.get(i).getSlope() + pList.get(i-1).getSlope();
@@ -283,7 +283,7 @@ public class LinePattern {
         this.datas = datas;
     }
 
-    public TreeMap<Integer, Pattern> getLinears() {
+    public TreeMap<Integer, PatternMent> getLinears() {
         return linesMap;
     }
 
@@ -291,7 +291,7 @@ public class LinePattern {
         this.mergerPrice = mergerPrice;
     }
 
-	public List<Pattern> getPatterns() {
+	public List<PatternMent> getPatterns() {
 		return patterns;
 	}
     
@@ -302,7 +302,7 @@ public class LinePattern {
  */
 class Node{
     public double cost;
-    public Pattern first,second;
+    public PatternMent first,second;
     public Node before,after;
     public Node(double cost){
         this.cost = cost;

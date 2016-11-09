@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.poi.ss.formula.functions.Slope;
 import org.omg.CORBA.INTERNAL;
 
 public class PointSegment {
@@ -16,7 +17,7 @@ public class PointSegment {
 	private double patternThreshold;
 	private ArrayList<Integer> pointsIndex;
 	private int length;
-	private List<SegPattern> patterns;
+	private List<PatternMent> patterns;
 	private double std;
 	
 	public PointSegment(DataItems dataItems,int ratio){
@@ -24,7 +25,7 @@ public class PointSegment {
 		this.ratio=ratio;
 		length=dataItems.getLength();
 		pointsIndex=new ArrayList<Integer>();
-		patterns=new ArrayList<SegPattern>();
+		patterns=new ArrayList<PatternMent>();
 		setItemStd(dataItems);
 	}
 	public PointSegment(DataItems dataItems,int ratio,double patternThreshold){
@@ -33,11 +34,11 @@ public class PointSegment {
 		this.patternThreshold = patternThreshold;
 		length=dataItems.getLength();
 		pointsIndex=new ArrayList<Integer>();
-		patterns=new ArrayList<SegPattern>();
+		patterns=new ArrayList<PatternMent>();
 		setItemStd(dataItems);
 	}
 	
-	public List<SegPattern> getPatterns(){
+	public List<PatternMent> getPatterns(){
 		splitByPointsInDistnce();
 		addtionalPoint();
 		List<Integer> copyPoints=new ArrayList<Integer>();
@@ -50,7 +51,7 @@ public class PointSegment {
 		return patterns;
 	}
 	
-	public List<Pattern> getTEOPattern(){
+	public List<PatternMent> getTEOPattern(){
 		splitByPointsInDistnce();
 		List<Integer> copyPoints=new ArrayList<Integer>();
 		for(int point:pointsIndex)
@@ -58,7 +59,7 @@ public class PointSegment {
 		for(int i=0;i<copyPoints.size()-1;i++){
 			splitByPointsInArea(copyPoints.get(i), copyPoints.get(i+1));
 		}
-		List<Pattern> teoPatterns=new ArrayList<Pattern>();
+		List<PatternMent> teoPatterns=new ArrayList<PatternMent>();
 		Collections.sort(pointsIndex);
 		int len=pointsIndex.size();
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
@@ -66,7 +67,7 @@ public class PointSegment {
 			statistics.clear();
 			int start=pointsIndex.get(i);
 			int end=pointsIndex.get(i+1);
-			Pattern pattern=new Pattern();
+			PatternMent pattern=new PatternMent();
 			pattern.setStart(start);
 			pattern.setEnd(end);
 			pattern.setSlope((getItem(end)-getItem(start))/(end-start+1));
@@ -92,20 +93,23 @@ public class PointSegment {
 			statistics.clear();
 			int start=pointsIndex.get(i);
 			int end=pointsIndex.get(i+1);
-			SegPattern pattern=new SegPattern();
-			pattern.setStart(start);
-			pattern.setEnd(end);
-			pattern.setHeight(getItem(end)-getItem(start));
-			pattern.setLength(end-start+1);
-			for(int pos=start;pos<end;pos++){
-				statistics.addValue(getItem(pos));
-			}
-			pattern.setMean(statistics.getMean());
-			pattern.setStd(statistics.getStandardDeviation());
+			int span = end-start;
 			double endData = Double.parseDouble(dataItems.getElementAt(end).getData());
 			double startData = Double.parseDouble(dataItems.getElementAt(start).getData());
 			double angle = (endData-startData)/(end - start);
-			pattern.setAngle(angle);
+			//double height = getItem(end)-getItem(start);
+			
+			
+			
+			for(int pos=start;pos<end;pos++){
+				statistics.addValue(getItem(pos));
+			}
+			double mean = statistics.getMean();
+			double std = statistics.getStandardDeviation();
+			
+			
+			//pattern.setAngle(angle);
+			PatternMent pattern=new PatternMent(start,span,angle,startData,mean,std);
 			patterns.add(pattern);
 		}
 	}

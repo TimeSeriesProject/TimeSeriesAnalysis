@@ -42,6 +42,7 @@ import org.jfree.util.ShapeUtilities;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.DataInputs.PatternMent;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.parseDateToHour;
 public class ChartPanelShowFI extends JPanel {
@@ -234,7 +235,7 @@ public class ChartPanelShowFI extends JPanel {
         return xyseriescollection;
     }
 
-    public static XYDataset createLineDataset(DataItems di,List<SegPattern> segPatterns) {
+    public static XYDataset createLineDataset(DataItems di,List<PatternMent> segPatterns) {
         XYSeries xyseries = new XYSeries("线段模式");
 
         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
@@ -256,7 +257,7 @@ public class ChartPanelShowFI extends JPanel {
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
     }
-    public static JFreeChart createChart(HashMap<String, ArrayList<DataItems>> nor_model, DataItems nor, HashMap<String, ArrayList<DataItems>> nor_model_mode,int []modelindex,String yName,List<SegPattern> segPatterns) {
+    public static JFreeChart createChart(HashMap<String, ArrayList<DataItems>> nor_model, DataItems nor, HashMap<String, ArrayList<DataItems>> nor_model_mode,int []modelindex,String yName,List<PatternMent> segPatterns) {
         Date startDate = nor.getTime().get(0);
         XYDataset xydataset = createNormalDataset(nor, startDate);
         XYDataset xydataset1 = createLineDataset(nor, segPatterns);

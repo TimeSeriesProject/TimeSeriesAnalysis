@@ -9,6 +9,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.openide.nodes.Children.Map;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.DataInputs.PatternMent;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
@@ -17,7 +18,7 @@ import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMPiontPatternParams;
 public class PointPatternDetection implements IMinerOM{
 
 	private DataItems dataItems;     //时间序列 
-	private List<SegPattern> patterns;   //TEO 线段模式
+	private List<PatternMent> patterns;   //TEO 线段模式
 	private int densityK = 2;//序列线段化时，找极值点的参数
 	private double patternThreshold = 0.1;
 	private int neighborK = 10;//计算模式P的K-邻域中的k
@@ -63,23 +64,23 @@ public class PointPatternDetection implements IMinerOM{
 		
 		//min-max归一化
 		for(int i=0;i<patterns.size();i++){
-			if(heightMax<patterns.get(i).getHeight()){
-				heightMax=patterns.get(i).getHeight();
+			if(heightMax<patterns.get(i).getHspan()){
+				heightMax=patterns.get(i).getHspan();
 			}
-			if(heightMin>patterns.get(i).getHeight()){
-				heightMin=patterns.get(i).getHeight();
+			if(heightMin>patterns.get(i).getHspan()){
+				heightMin=patterns.get(i).getHspan();
 			}
-			if(lengthMax<patterns.get(i).getLength()){
-				lengthMax=patterns.get(i).getLength();
+			if(lengthMax<patterns.get(i).getLen()){
+				lengthMax=patterns.get(i).getLen();
 			}
-			if(lengthMin>patterns.get(i).getLength()){
-				lengthMin=patterns.get(i).getLength();
+			if(lengthMin>patterns.get(i).getLen()){
+				lengthMin=patterns.get(i).getLen();
 			}
-			if(meanMax<patterns.get(i).getMean()){
-				meanMax=patterns.get(i).getMean();
+			if(meanMax<patterns.get(i).getAverage()){
+				meanMax=patterns.get(i).getAverage();
 			}
-			if(meanMin>patterns.get(i).getMean()){
-				meanMin=patterns.get(i).getMean();
+			if(meanMin>patterns.get(i).getAverage()){
+				meanMin=patterns.get(i).getAverage();
 			}
 			if(stdMax<patterns.get(i).getStd()){
 				stdMax=patterns.get(i).getStd();
@@ -89,9 +90,9 @@ public class PointPatternDetection implements IMinerOM{
 			}
 		}
 		for(int i=0;i<patterns.size();i++){
-			patterns.get(i).setHeight((patterns.get(i).getHeight()-heightMin)/(heightMax-heightMin));
-			patterns.get(i).setLength((patterns.get(i).getLength()-lengthMin)/(lengthMax-lengthMin));
-			patterns.get(i).setMean((patterns.get(i).getMean()-meanMin)/(meanMax-meanMin));
+			patterns.get(i).setHspan((patterns.get(i).getHspan()-heightMin)/(heightMax-heightMin));
+			patterns.get(i).setSpan((patterns.get(i).getLen()-lengthMin)/(lengthMax-lengthMin));
+			patterns.get(i).setAverage((patterns.get(i).getAverage()-meanMin)/(meanMax-meanMin));
 			patterns.get(i).setStd((patterns.get(i).getStd()-stdMin)/(stdMax-stdMin));
 		}
 		
@@ -109,9 +110,9 @@ public class PointPatternDetection implements IMinerOM{
 					continue;
 				}else{
 					double distance=distanceOfPatterns(patterns.get(i),patterns.get(j));//线段i，j的距离
-					double disH=Math.abs(patterns.get(i).getHeight()-patterns.get(j).getHeight());
-					double disL=Math.abs(patterns.get(i).getLength()-patterns.get(j).getLength());
-					double disM=Math.abs(patterns.get(i).getMean()-patterns.get(j).getMean());
+					double disH=Math.abs(patterns.get(i).getHspan()-patterns.get(j).getHspan());
+					double disL=Math.abs(patterns.get(i).getLen()-patterns.get(j).getLen());
+					double disM=Math.abs(patterns.get(i).getAverage()-patterns.get(j).getAverage());
 					double disS=Math.abs(patterns.get(i).getStd()-patterns.get(j).getStd());
 					addNeighbor(dist, distance);
 					addNeighbor(distHList, disH);
@@ -189,11 +190,11 @@ public class PointPatternDetection implements IMinerOM{
 	 * @param patternsB 
 	 * @return 模式间的距离
 	 */
-	private double distanceOfPatterns(SegPattern patternsA,SegPattern patternsB){
+	private double distanceOfPatterns(PatternMent patternsA,PatternMent patternsB){
 		
-		double heightDist=Math.abs(patternsA.getHeight()-patternsB.getHeight());
-		double lengthDist=Math.abs(patternsA.getLength()-patternsB.getLength());
-		double meanDist=Math.abs(patternsA.getMean()-patternsB.getMean());
+		double heightDist=Math.abs(patternsA.getHspan()-patternsB.getHspan());
+		double lengthDist=Math.abs(patternsA.getLen()-patternsB.getLen());
+		double meanDist=Math.abs(patternsA.getAverage()-patternsB.getAverage());
 		double stdDist=Math.abs(patternsA.getStd()-patternsB.getStd());
 		return Math.sqrt(heightDist*heightDist+lengthDist*lengthDist+meanDist*meanDist+stdDist*stdDist);
 	}

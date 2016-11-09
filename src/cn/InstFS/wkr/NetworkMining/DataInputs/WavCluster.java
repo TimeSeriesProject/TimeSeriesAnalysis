@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import cn.InstFS.wkr.NetworkMining.DataInputs.PatternMent;
 
 
 
@@ -570,7 +570,7 @@ public class WavCluster {
 	 * @param clusterNum 聚类的类标签数量
 	 * @return 聚类之后的结果
 	 */
-	public static DataItems SelfCluster(List<SegPattern>patterns,DataItems dataItems,int clusterNum,String fileName)
+	public static DataItems SelfCluster(List<PatternMent> patterns,DataItems dataItems,int clusterNum,String fileName)
 	{
 		//clusterNum=(int) Math.sqrt(clusterNum);
 		DataItems result = new DataItems();
@@ -606,7 +606,7 @@ public class WavCluster {
 		
 		for(int i=0;i<patterns.size();i++)
 		{
-			SegPattern pattern=patterns.get(i);
+			PatternMent pattern=patterns.get(i);
 //			ArrayList <Double> xvector = new ArrayList<Double>();
 //			ArrayList <Double> yvector = new ArrayList<Double>();
 			ArrayList <Double> lenvector = new ArrayList<Double>();

@@ -9,7 +9,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-import cn.InstFS.wkr.NetworkMining.DataInputs.Pattern;
+import cn.InstFS.wkr.NetworkMining.DataInputs.PatternMent;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMTEOParams;
@@ -19,7 +19,7 @@ public class TEOPartern implements IMinerOM{
 	private int boundraryMinlen;                 //边缘点最短距离
 	private int operatorLen;         //算子长度
 	private List<Integer> boundaryPoints;  //边缘点
-	private List<Pattern> patterns;       //TEO 线段模式
+	private List<PatternMent> patterns;       //TEO 线段模式
 	private int densityK;
 	private DataItems outlies;
 	private DataItems outDegree = new DataItems(); //异常度
@@ -53,8 +53,8 @@ public class TEOPartern implements IMinerOM{
 	 * 通过从底至顶的方法生成线段模型
 	 * @return 线段模型
 	 */
-	public List<Pattern> timeSeriesToPatternsByBottomToUp(){
-		patterns=new ArrayList<Pattern>();
+	public List<PatternMent> timeSeriesToPatternsByBottomToUp(){
+		patterns=new ArrayList<PatternMent>();
 		int dataLen=dataItems.getData().size();
 		double[] items=new double[dataLen];
 		for(int i=0;i<dataLen;i++){
@@ -65,7 +65,7 @@ public class TEOPartern implements IMinerOM{
 			}
 		}
 		for(int i=0;i<dataLen-1;i++){
-			Pattern pattern=new Pattern();
+			PatternMent pattern=new PatternMent();
 			pattern.setStart(i);
 			pattern.setEnd(i+1);
 			//pattern.setLength(Math.sqrt(1+(items[i+1]-items[i])*(items[i+1]-items[i])));
@@ -81,7 +81,7 @@ public class TEOPartern implements IMinerOM{
 		}
 		DescriptiveStatistics lenStatistics=new DescriptiveStatistics();
 		DescriptiveStatistics slopeStatistics=new DescriptiveStatistics();
-		for(Pattern pattern:patterns){
+		for(PatternMent pattern:patterns){
 			//lenStatistics.addValue(pattern.getLength());
 			slopeStatistics.addValue(pattern.getSlope());
 		}
@@ -89,7 +89,7 @@ public class TEOPartern implements IMinerOM{
 		double slopeMean=slopeStatistics.getMean();
 		double lenStd=lenStatistics.getStandardDeviation();
 		double slopeStd=slopeStatistics.getStandardDeviation();
-		for(Pattern pattern:patterns){
+		for(PatternMent pattern:patterns){
 			//pattern.setLength((pattern.getLength()-lenMean)/lenStd);
 			pattern.setSlope((pattern.getSlope()-slopeMean)/slopeStd);
 		}
@@ -102,7 +102,7 @@ public class TEOPartern implements IMinerOM{
 	 * @param items 
 	 * @return 相邻线段的合并代价
 	 */
-	private List<Double> patternDist(List<Pattern> patterns,double[] items){
+	private List<Double> patternDist(List<PatternMent> patterns,double[] items){
 		int len=patterns.size();
 		List<Double> distBetweenItem=new ArrayList<Double>();
 		for(int i=0;i<len-1;i++){
@@ -119,7 +119,7 @@ public class TEOPartern implements IMinerOM{
 	 * @param items
 	 * @return
 	 */
-	private double distanceBetweenPatterns(Pattern A,Pattern B,double[] items){
+	private double distanceBetweenPatterns(PatternMent A,PatternMent B,double[] items){
 		double ySpan=items[B.getEnd()]-items[A.getStart()];
 		double xSpan=B.getEnd()-A.getStart();
 		double slope=ySpan/xSpan;
@@ -139,7 +139,7 @@ public class TEOPartern implements IMinerOM{
 	 * @param items
 	 * @param dists 合并代价数组
 	 */
-	private void mergePattern(List<Pattern> patterns,int index,double[] items,List<Double> dists){
+	private void mergePattern(List<PatternMent> patterns,int index,double[] items,List<Double> dists){
 		int rigthtPos=patterns.get(index+1).getEnd();
 		int leftPos=patterns.get(index).getStart();
 		double ySpan=items[rigthtPos]-items[leftPos];
@@ -191,7 +191,7 @@ public class TEOPartern implements IMinerOM{
 	 * 通过逐步的方式构造时间序列模式
 	 */
 	public void timeSeriesToPatternByStep(double threshold){
-		patterns=new ArrayList<Pattern>();
+		patterns=new ArrayList<PatternMent>();
 		int dataitemLen=dataItems.getLength();
 		double[] items=new double[dataitemLen];
 		for(int i=0;i<dataitemLen;i++){
@@ -202,7 +202,7 @@ public class TEOPartern implements IMinerOM{
 			}
 		}
 		for(int i=0;i<dataitemLen;i++){
-			Pattern pattern=new Pattern();
+			PatternMent pattern=new PatternMent();
 			pattern.setStart(i);
 			if((i+1)<dataitemLen){
 		    	pattern.setEnd(i+1);
@@ -236,13 +236,13 @@ public class TEOPartern implements IMinerOM{
 			}
 			patterns.add(pattern);
 		}
-		for(Pattern pattern:patterns){
+		for(PatternMent pattern:patterns){
 			System.out.print(pattern.getStart()+",");
 		}
 		System.out.println(dataitemLen);
 	}
 	
-	private double mergePointDistance(Pattern pattern,double[] items){
+	private double mergePointDistance(PatternMent pattern,double[] items){
 		int start=pattern.getStart();
 		int end=pattern.getEnd()+1;
 		double ySpan=items[end]-items[start];
@@ -257,8 +257,8 @@ public class TEOPartern implements IMinerOM{
 		return dist;
 	}
 	
-	public List<Pattern> timeSeriesToPatternsByTEO(){
-		patterns=new ArrayList<Pattern>();
+	public List<PatternMent> timeSeriesToPatternsByTEO(){
+		patterns=new ArrayList<PatternMent>();
 		int dataItemsLen=dataItems.getData().size();
 		double[] items=new double[dataItemsLen];
 		for(int i=0;i<dataItemsLen;i++){
@@ -293,7 +293,7 @@ public class TEOPartern implements IMinerOM{
 				int rightPoint=boundaryPoints.get(i);
 				double XSpan=rightPoint-leftPoint;
 				double YSpan=items[rightPoint]-items[leftPoint];
-				Pattern pattern=new Pattern();
+				PatternMent pattern=new PatternMent();
 				pattern.setSlope(YSpan/XSpan);
 				pattern.setStart(leftPoint);
 				pattern.setEnd(rightPoint);
@@ -310,11 +310,11 @@ public class TEOPartern implements IMinerOM{
 	 */
 	public void outliesDectation(){
 		//模式的K最近邻模式
-		HashMap<Pattern, List<Pattern>>patternMap=new HashMap<Pattern, List<Pattern>>();
+		HashMap<PatternMent, List<PatternMent>>patternMap=new HashMap<PatternMent, List<PatternMent>>();
 		//模式可达数量
-		HashMap<Pattern, Integer> patternReachMap=new HashMap<Pattern, Integer>();
+		HashMap<PatternMent, Integer> patternReachMap=new HashMap<PatternMent, Integer>();
 		//模式奇异度map
-		HashMap<Pattern, Double> patternOutliesMap=new HashMap<Pattern, Double>();
+		HashMap<PatternMent, Double> patternOutliesMap=new HashMap<PatternMent, Double>();
 		//计算每个模式的K最近邻
 		
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
@@ -364,7 +364,7 @@ public class TEOPartern implements IMinerOM{
 				statistics.addValue(dis);
 			}
 			
-			List<Pattern> patternList=new ArrayList<Pattern>();
+			List<PatternMent> patternList=new ArrayList<PatternMent>();
 			for(Integer position:pos){
 				patternList.add(patterns.get(position));
 				if(!patternReachMap.containsKey(patterns.get(position))){
@@ -379,7 +379,7 @@ public class TEOPartern implements IMinerOM{
 		}
 		
 		int lastPof=0;
-		for(Pattern pattern:patterns){
+		for(PatternMent pattern:patterns){
 
 			if(!patternReachMap.containsKey(pattern)){
 				patternOutliesMap.put(pattern, 1.0);
@@ -390,10 +390,10 @@ public class TEOPartern implements IMinerOM{
 				lastPof=10;
 			}else{
 				double pof=0.0;
-				List<Pattern> neighborPatterns=patternMap.get(pattern);
+				List<PatternMent> neighborPatterns=patternMap.get(pattern);
 				double size=neighborPatterns.size();
 				double reachSize=patternReachMap.get(pattern);
-				for(Pattern neighborPattern:neighborPatterns){
+				for(PatternMent neighborPattern:neighborPatterns){
 					double insize=patternReachMap.get(neighborPattern);
 					pof+=(reachSize/insize);
 				}
@@ -458,7 +458,7 @@ public class TEOPartern implements IMinerOM{
 	 * @param patternsB 
 	 * @return 模式间的距离
 	 */
-	private double distanceOfPatterns(Pattern patternsA,Pattern patternsB){
+	private double distanceOfPatterns(PatternMent patternsA,PatternMent patternsB){
 		
 		double slopeDist=Math.abs(patternsA.getSlope()-patternsB.getSlope());
 		double averageDist=Math.abs(patternsA.getAverage()-patternsB.getAverage());

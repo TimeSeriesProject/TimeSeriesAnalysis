@@ -18,7 +18,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.GMMParameter;
 import cn.InstFS.wkr.NetworkMining.DataInputs.LinePattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.MovingAverage;
-import cn.InstFS.wkr.NetworkMining.DataInputs.Pattern;
+import cn.InstFS.wkr.NetworkMining.DataInputs.PatternMent;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.ResultItem;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
@@ -44,7 +44,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	private DataItems outDegree = new DataItems(); //异常度
 	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
 	
-	private List<Pattern> patterns = new ArrayList<Pattern>();   //线段模式
+	private List<PatternMent> patterns = new ArrayList<PatternMent>();   //线段模式
 	private static int dataDimen = 4; //线段属性个数
 	private static int GuassK = 6; //混合高斯中高斯个数
 	private static double diff = 0.2; //判断是否为异常的异常度差值,如果阈值一侧的数据与前一个数据的差值小于diff,则阈值向前移,直到差值大于diff
@@ -93,7 +93,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		//获得观测值dataSet	
 		for(int i=0;i<patterns.size();i++){
 			ArrayList<Double> data = new ArrayList<Double>();
-			data.add(patterns.get(i).getSpan()); //线段时间跨度
+			data.add((double)patterns.get(i).getSpan()); //线段时间跨度
 			data.add(patterns.get(i).getAverage()); //线段均值
 			data.add(patterns.get(i).getSlope()); //倾斜角
 			data.add(patterns.get(i).getAngle()); //与前一条线段的夹角
@@ -284,7 +284,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 				di.add1Data(time.get(j),data.get(j));
 			}
 			outSet.add(di);
-			System.out.println("异常为线段"+indexList.get(i)+"的时间跨度为:"+patterns.get(indexList.get(i)).getLen());
+			System.out.println("异常为线段"+indexList.get(i)+"的时间跨度为:"+patterns.get(indexList.get(i)).getSpan());
 		}
 		return outSet;
 	}
@@ -335,13 +335,13 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	 *@Description 生成异常度,即补全distance,对同一线段的点的异常度设为该线段的高斯距离
 	 *@return ArrayList<Double>
 	 */
-	public ArrayList<Double> genDegree(ArrayList<Double> dis,List<Pattern> patterns){		
+	public ArrayList<Double> genDegree(ArrayList<Double> dis,List<PatternMent> patterns){		
 		ArrayList<Double> degree = new ArrayList<Double>();
 		for(int i=0;i<dis.size();i++){
 			double distance = dis.get(i);
 			distance = distance>5 ? 1 : distance/5;
 			
-			for(int k=0;k<patterns.get(i).getLen();k++){
+			for(int k=0;k<patterns.get(i).getSpan();k++){
 				degree.add(distance);
 			}
 		}

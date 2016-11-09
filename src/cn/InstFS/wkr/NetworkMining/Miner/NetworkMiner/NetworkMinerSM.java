@@ -10,6 +10,7 @@ import java.util.TimerTask;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataPretreatment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
+import cn.InstFS.wkr.NetworkMining.DataInputs.PatternMent;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
@@ -166,7 +167,7 @@ class SMTimerTask extends TimerTask {
 		//符号化后的序列
 		DataItems clusterItems=null;
 		PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
-		List<SegPattern> segPatterns=segment.getPatterns();
+		List<PatternMent> segPatterns=segment.getPatterns();
 		
 		if(task.getPatternNum()==0){
 			clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,paramsSM.getSMparam().getClusterNum(),
