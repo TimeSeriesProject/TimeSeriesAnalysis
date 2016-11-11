@@ -55,7 +55,7 @@ public class ParseByDay {
         ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
         for (int i = 0; i < fileList.size(); i++) {
             String outPath = outputPath + "\\node\\" + fileList.get(i).getName().substring(0, fileList.get(i).getName().lastIndexOf("."));
-            System.out.println("outpath: " + outPath);
+//            System.out.println("outpath: " + outPath);
             File folder = new File(outPath);
             boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
             NodeGen nodeGen = new NodeGen(fileList.get(i), outPath, initTime);
@@ -88,7 +88,7 @@ public class ParseByDay {
         ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
         for (int i = 0; i < fileList.size(); i++) {
             String outPath = outputPath + "\\route\\" + fileList.get(i).getName().substring(0, fileList.get(i).getName().lastIndexOf("."));
-            System.out.println("outpath: " + outPath);
+//            System.out.println("outpath: " + outPath);
             File folder = new File(outPath);
             boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
             RouteGenerate routeGen = new RouteGenerate(fileList.get(i), outPath, initTime);
@@ -121,7 +121,7 @@ public class ParseByDay {
         ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
         for (int i = 0; i < fileList.size(); i++) {
             String outPath = outputPath + "\\traffic\\" + fileList.get(i).getName().substring(0, fileList.get(i).getName().lastIndexOf("."));
-            System.out.println("outpath: " + outPath);
+//            System.out.println("outpath: " + outPath);
             File folder = new File(outPath);
             boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
             TrafficGen trafficGen = new TrafficGen(fileList.get(i), outPath, initTime);

@@ -105,7 +105,7 @@ public class Server {
     private ConcurrentHashMap<String, String> combineFile2 = new ConcurrentHashMap<String, String>();//合并文件,key=最后合并生成的文件，valude=待合并的小文件的文件夹路径
     private HashSet<String> delFile = new HashSet<String>();//删除文件
     private HashSet<String> delFile2 = new HashSet<String>();//删除文件
-    private HashMap<String, StringBuilder> tasksMap = new HashMap<String, StringBuilder>();
+    private HashMap<String, StringBuilder> tasksMap = new HashMap<String, StringBuilder>();//0, 0-0\r\n0-1\r\n0-2
     private HashMap<String, String> swapMap = new HashMap<String, String>();//文件名\r\n,路由号
     private HashMap<String, String> swapMap2 = new HashMap<String, String>();//routesrc/1.1_1.2, 1.1_1.2
 
@@ -977,6 +977,7 @@ public class Server {
         recCount2 = 0;
         combineAndDelete = false;
 
+        //按节点得到所有任务
         ArrayList<String> fileNames = new ArrayList<String>();
         getFileList(fileNames, filePath, type);
 

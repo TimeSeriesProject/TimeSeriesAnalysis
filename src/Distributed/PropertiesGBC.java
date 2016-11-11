@@ -55,7 +55,7 @@ public class PropertiesGBC extends GridBagConstraints {
         return this;
     }
 
-    //内填充
+    //内填充，设置组件的最小大小，保证组件不会收缩到ipadx,ipady所确定的大小以下
     public PropertiesGBC setIpad(int ipadx, int ipady) {
         this.ipadx = ipadx;
         this.ipady = ipady;

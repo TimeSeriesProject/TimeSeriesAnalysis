@@ -4,11 +4,13 @@ import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 
 /**
  * Created by zsc on 2016/10/28.
+ * 保存配置的变量值，保证下次使用时值不变
  */
 public class DisParams {
     //单机pcap
     private static String pcapPath = ParamsAPI.getInstance().getPcapParseParams().getPcapPath();
     private static String outputPath = ParamsAPI.getInstance().getPcapParseParams().getOutputPath();
+    private static boolean parseAll = ParamsAPI.getInstance().getPcapParseParams().isParseAll();
 
     //分布式pcap
     private static String pcapPathDis = ParamsAPI.getInstance().getPcapParseDisParams().getPcapPath();
@@ -61,6 +63,14 @@ public class DisParams {
 
     public static void setOutputPath(String outputPath) {
         DisParams.outputPath = outputPath;
+    }
+
+    public static boolean isParseAll() {
+        return parseAll;
+    }
+
+    public static void setParseAll(boolean parseAll) {
+        DisParams.parseAll = parseAll;
     }
 
     public static String getOutputPathDis() {

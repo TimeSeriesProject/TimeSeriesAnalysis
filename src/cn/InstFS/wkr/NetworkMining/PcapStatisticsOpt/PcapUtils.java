@@ -119,9 +119,10 @@ class Parser implements Callable {
         try {
             fc = new FileInputStream(file).getChannel();
             length = fc.size();
-            String fileName = file.getName();
-            int index = fileName.lastIndexOf(".");
-            fileName = fileName.substring(0, index);
+            String fileName = new StringBuilder().append(file.getParent().substring(file.getParent().lastIndexOf("\\") + 1)).//得到文件夹名0、1...14
+                    append("-").append(file.getName().substring(0, file.getName().lastIndexOf("."))).toString();//合并为0-文件名
+//            String fileName = file.getName();
+//            fileName = fileName.substring(0, fileName.lastIndexOf("."));
             if (length <= Integer.MAX_VALUE) {
                 MappedByteBuffer is = fc.map(FileChannel.MapMode.READ_ONLY, 0, length);
 //                PcapParser.unpack(fc, is, fileName, trafficRecords, bws, nodeMap, path);
@@ -626,16 +627,16 @@ class RouteGen implements Callable {
  */
 public class PcapUtils {
     private boolean SessionLevel = true;   //判断读取的数据是否是业务层数据
-    private ConcurrentHashMap<RecordKey, Integer> trafficRecords = new ConcurrentHashMap<RecordKey, Integer>(); //记录流量
-    private ConcurrentHashMap<RecordKey, Integer> comRecords = new ConcurrentHashMap<RecordKey, Integer>();
-    TreeMap<RecordKey, Integer> sortedtrafficRecords = new TreeMap<RecordKey, Integer>();
-    private ArrayList<File> fileList = new ArrayList<File>();
-    private HashMap<String, BufferedWriter> bws = new HashMap<String, BufferedWriter>();
-    private ConcurrentHashMap<String, BufferedOutputStream> bos = new ConcurrentHashMap<String, BufferedOutputStream>();
-    private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap = new ConcurrentHashMap<String, ArrayList<PcapNode>>();//0-0，对应文件里的所有pcapnode信息
+    private ConcurrentHashMap<RecordKey, Integer> trafficRecords; //记录流量
+    private ConcurrentHashMap<RecordKey, Integer> comRecords;
+    private TreeMap<RecordKey, Integer> sortedtrafficRecords;
+    private ArrayList<File> fileList;
+    private HashMap<Long, ArrayList<File>> tasks = new HashMap<Long, ArrayList<File>>();//日期，filelist 得到对应时间的文件列表
+    private HashMap<String, BufferedWriter> bws;
+    private ConcurrentHashMap<String, BufferedOutputStream> bos;
+    private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap;//0-0，对应文件里的所有pcapnode信息
     private String date;
     private ParseByDay parseByDay;
-    private ConcurrentHashMap<String, String> strMap = new ConcurrentHashMap<String, String>();
 
     public enum Status {
         PREPARE("prepare"), PARSE("parse"), GENROUTE("genroute"), PARSEBYDAY("parsebyday"), END("end");
@@ -660,6 +661,9 @@ public class PcapUtils {
     private int gentedTrafficNum = 0;
     private int parsebydaySum = 0;
     private int parsebydayNum = 0;
+
+    private int taskCount = 0;
+    private int taskSum = 0;
 
     public Status getStatus() {
         return status;
@@ -733,13 +737,26 @@ public class PcapUtils {
         this.parsebydayNum = parsebydayNum;
     }
 
+    public synchronized int getTaskCount() {
+        return taskCount;
+    }
+
+    public synchronized void setTaskCount(int taskCount) {
+        this.taskCount = taskCount;
+    }
+
+    public int getTaskSum() {
+        return taskSum;
+    }
+
     public static void main(String[] args) throws IOException, FileNotFoundException {
         long a = System.currentTimeMillis();
         String fpath = "E:\\pcap";
         String outpath = "E:\\out";
+        boolean parseAll = false;
         PcapUtils pcapUtils = new PcapUtils();
         //pcapUtils.readInput(fpath,1);
-        pcapUtils.readInput(fpath, outpath);
+        pcapUtils.startParse(fpath, outpath, parseAll);
         long b = System.currentTimeMillis();
         System.out.println("时间：" + (b - a) / 1000);
         //pcapUtils.generateRoute("C:\\data\\out\\routesrc","C:\\data\\out");
@@ -799,8 +816,8 @@ public class PcapUtils {
 //        }
     }
 
-    private void parsePcap(String fpath, String outpath) throws IOException, FileNotFoundException {
-        getFileList(fpath, "pcap");
+    private void parsePcap(String outpath) throws IOException, FileNotFoundException {
+//        getFileList(fpath, "pcap");
         parseSum = fileList.size();
         status = Status.PARSE;
         System.out.println(status);
@@ -853,7 +870,7 @@ public class PcapUtils {
             File file = fileList.get(i);
             Parser parser = new Parser(this, file, trafficRecords, bws, bos, nodeMap, outpath);
             results.add(exec.submit(parser));
-//            parser.call();
+//            parser.call();//单线程，直接调用
         }
         for (int i = 0; i < results.size(); i++) {
             try {
@@ -1022,8 +1039,44 @@ public class PcapUtils {
         generateTraffic(outpath);
     }
 
-    public void readInput(String fpath, String outpath) throws IOException, FileNotFoundException {
-        getModifiedTime(fpath, "pcap");//获取最后修改时间，当天0点
+    public void startParse(String fpath, String outpath, boolean parseAll) throws IOException{
+        getTaskNum(fpath, parseAll);
+        taskSum = tasks.size();
+        System.out.println("taskSize: " + taskSum);
+        for (Map.Entry<Long, ArrayList<File>> entry : tasks.entrySet()){
+            System.out.println("initDay: " + entry.getKey());
+        }
+        for (Map.Entry<Long, ArrayList<File>> entry : tasks.entrySet()) {
+            taskCount += 1;
+            //将变量设为初始值
+            status = Status.PREPARE;
+            fileList = entry.getValue();
+            getModifiedTime(entry.getKey());//得到date
+            System.out.println("date: " + date);
+            trafficRecords = new ConcurrentHashMap<RecordKey, Integer>(); //记录流量
+            comRecords = new ConcurrentHashMap<RecordKey, Integer>();
+            sortedtrafficRecords = new TreeMap<RecordKey, Integer>();
+            bws = new HashMap<String, BufferedWriter>();
+            bos = new ConcurrentHashMap<String, BufferedOutputStream>();
+            nodeMap = new ConcurrentHashMap<String, ArrayList<PcapNode>>();//0-0，对应文件里的所有pcapnode信息
+            parseSum = 0;
+            parsedNum = 0;
+            genRouteSum = 0;
+            genedRouteNum = 0;
+            genTrafficSum = 0;
+            gentedTrafficNum = 0;
+            parsebydaySum = 0;
+            parsebydayNum = 0;
+
+            readInput(outpath);
+        }
+        status = Status.END;
+    }
+
+    public void readInput(String outpath) throws IOException, FileNotFoundException {
+
+//        getFileAbsPath(fpath, parseAll);//得到要解析的所有文件的绝对路径
+//        getModifiedTime(fileList);//获取最后修改时间，当天0点
 
         File folder = new File(outpath + "\\routesrc");
         boolean suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
@@ -1040,10 +1093,10 @@ public class PcapUtils {
 
         folder = new File(outpath + "\\traffic");
         suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
-        System.out.println(status);
+        System.out.println("当前状态： " + status);
         System.out.println("parsepcap开始");
         long a = System.currentTimeMillis();
-        parsePcap(fpath, outpath);
+        parsePcap(outpath);
         long b = System.currentTimeMillis();
         System.out.println("时间1：" + (b - a) / 1000);
 
@@ -1072,12 +1125,99 @@ public class PcapUtils {
         setParsebydayNum(2);
         parseByDay.parseTraffic();
         setParsebydayNum(3);
-        status = Status.END;
         System.out.println("解析结束");
         long f = System.currentTimeMillis();
         System.out.println("时间5：" + (f - e) / 1000);
         System.out.println("总时间：" + (f - a) / 1000);
 
+    }
+
+    //得到时间个数，即任务filelist个数
+    public void getTaskNum(String fpath, boolean parseAll) {
+        System.out.println("parseallaaaaa:  " + parseAll);
+        TreeMap<Long, File> allTimes = new TreeMap<Long, File>();
+        genTimeList(fpath, parseAll, allTimes);//得到时间序列
+        getTaskMap(allTimes);//得到map
+    }
+
+    //得到需要解析的文件的时间list
+    public void genTimeList(String fpath, boolean parseAll, TreeMap<Long, File> allTimes) {
+        File ff = new File(fpath);
+        if (parseAll) {
+            if (ff.isFile()) {
+                allTimes.put(ff.lastModified(), ff);
+                ff.setWritable(false);//设为已读
+            } else if (ff.isDirectory()) {
+                File[] files = ff.listFiles();
+                for (File f : files) {
+                    genTimeList(f.getAbsolutePath(), parseAll, allTimes);
+                }
+            }
+        } else {
+            if (ff.isFile()) {
+                if (ff.canWrite()) {//如果不可写，即只读
+                    allTimes.put(ff.lastModified(), ff);
+                    ff.setWritable(false);//设为已读
+                }
+            } else if (ff.isDirectory()) {
+                File[] files = ff.listFiles();
+                for (File f : files) {
+                    genTimeList(f.getAbsolutePath(), parseAll, allTimes);
+                }
+            }
+        }
+    }
+
+    //得到task MAP
+    public void getTaskMap(TreeMap<Long, File> allTimes) {
+        Long key = 0l;//实际时间
+        Long switchKey = 0l;//key转换为当天0点，parsebyday也做了处理...
+        for (Map.Entry<Long, File> entry : allTimes.entrySet()) {
+            //只在最初运行一次
+            if (key == 0l) {
+                key = entry.getKey();
+                switchKey = key - (key + 8 * 3600000) % 86400000;//转换为当天0点，北京时间多8小时
+                tasks.put(switchKey, new ArrayList<File>());
+            }
+            //进行判断，若else，则新添加
+            if ((entry.getKey() - key) <= 86400000) {
+                tasks.get(switchKey).add(entry.getValue());
+            } else {
+                key = entry.getKey();
+                switchKey = key - (key + 8 * 3600000) % 86400000;
+                tasks.put(switchKey, new ArrayList<File>());
+                tasks.get(switchKey).add(entry.getValue());
+                continue;
+            }
+        }
+
+    }
+
+//    public void getTimeCategory(String pcapPath, boolean parseAll) {
+//        //如果解析全部，则得到路径下的所有文件，否则，只得到pcap文件
+//        if (parseAll) {
+//            getFileList(pcapPath, "");
+//        } else {
+//            getFileList(pcapPath, "pcap");
+//        }
+//    }
+//
+//    public void getFileAbsPath(String pcapPath, boolean parseAll) {
+//        //如果解析全部，则得到路径下的所有文件，否则，只得到pcap文件
+//        if (parseAll) {
+//            getFileList(pcapPath, "");
+//        } else {
+//            getFileList(pcapPath, "pcap");
+//        }
+//    }
+
+    public void modifyPcap(ArrayList<File> fileList) {
+        for (int i = 0; i < fileList.size(); i++) {
+            if (fileList.get(i).getName().endsWith("pcap")) {
+                fileList.get(i).renameTo(new File(fileList.get(i).getAbsolutePath().
+                        substring(0, fileList.get(i).getAbsolutePath().lastIndexOf(".")) + date + ".bin"));
+            }
+        }
     }
 
     private void getFileList(String fpath, String type) {
@@ -1093,19 +1233,10 @@ public class PcapUtils {
         }
     }
 
-    private void getModifiedTime(String fPath, String type) {
-        File ff = new File(fPath);
-        if (ff.isFile() && fPath.endsWith(type)) {
-            long time = ff.lastModified();
-            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-            date = sdf.format(new Date(time));
-            return;
-        } else if (ff.isDirectory()) {
-            File[] files = ff.listFiles();
-            for (File f : files) {
-                getModifiedTime(f.getAbsolutePath(), type);
-            }
-        }
+
+    private void getModifiedTime(Long time) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        date = sdf.format(new Date(time));
     }
 
     //递归删除文件夹下所有文件
