@@ -1,0 +1,275 @@
+package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.transform.DftNormalization;
+import org.apache.commons.math3.transform.FastFourierTransformer;
+import org.apache.commons.math3.transform.TransformType;
+
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
+import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPartialCycle;
+
+public class LocalPeriod{
+	DataItems dataItems = new DataItems();//原始数据
+	private MinerResultsPartialCycle result = new MinerResultsPartialCycle();//挖掘结果
+	HashMap<Integer,ArrayList<NodeSection>> partialCyclePos = new HashMap<Integer,ArrayList<NodeSection>>();//
+	boolean hasPartialCycle = false;
+	private double threshold;
+	private int longestPeriod;
+	private int minWindowSize = 30;
+	private int minPeriod=20;
+	private Set<Integer> cycleCandidate =new TreeSet<Integer>();
+	public LocalPeriod(){}
+	public LocalPeriod(DataItems di,double threshold,int longestPeriod){
+		this();
+		this.dataItems = di;
+		this.threshold = threshold;
+		this.longestPeriod = longestPeriod;
+		FourierFilter();
+		run();
+	}
+	public void FourierFilter()
+	{
+		
+		List<String> data =dataItems.getData();
+		int oldSize =data.size();
+		//oldSize =3200;
+//			if(data.size()==0)
+//				return;
+		int newSize = (int)Math.pow(2,(int) (Math.log(oldSize)/Math.log(2)));
+		if(newSize<oldSize)
+			newSize*=2;
+		System.out.println(oldSize+" "+newSize);
+		
+		double original[] = new double[newSize];
+		for(int i=0;i<newSize;i++)
+		{
+			if(i<oldSize)
+			{
+				original[i]=Double.parseDouble(data.get(i));
+			}
+			else
+				original[i]=0;
+		}
+		 FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
+		 Complex[] result = fft.transform(original, TransformType.FORWARD);
+//		 for(int i=(int)(result.length*0.2);i<result.length;i++)
+//		 {
+//			 result[i]=new Complex(0,0);
+//			// result[i+result.length/2]=new Complex(0,0);
+//		 }
+		 class Node implements Comparable<Node>
+		 {
+			 int i;
+			 double v;
+			 Node(int i,double v)
+			 {
+				 this.i=i;
+				 this.v=v;
+			 }
+			@Override
+			public int compareTo(Node arg0) {
+				// TODO Auto-generated method stub
+				if(v<arg0.v)
+					return -1;
+				else if(v==arg0.v)
+					return 0;
+				else return 1;
+				
+			}
+			 
+		 }
+		 ArrayList<Node> list =new ArrayList<Node>();
+		 for(int i=0;i<oldSize;i++)
+		 {
+			 Node node =new Node(i,result[i].abs());
+			 list.add(node);
+			 //System.out.println("i "+i+" "+result[i].abs());
+			 
+		 }
+		 Collections.sort(list);
+		 int num=(int)(list.size()*0.03);
+		 if(num<minPeriod)
+			 num=minPeriod;
+		 if(num>list.size())
+			 num=list.size();
+		 for(int i=oldSize-num;i<oldSize;i++)  //获得候选周期
+		 {
+			 //System.out.println("i "+list.get(i).i+" "+list.get(i).v);
+			 if(list.get(i).i==0)
+				 continue;
+			 int tmp = result.length/list.get(i).i;
+			 if(tmp-1>=minPeriod)
+				 cycleCandidate.add(tmp-1);
+			 if(tmp>=minPeriod)
+				 cycleCandidate.add(tmp);
+			 if(tmp+1>=minPeriod)
+				 cycleCandidate.add(tmp+1);	
+		 }
+//		 System.out.println("result "+result.length);
+//		 Complex [] denoised = fft.transform(result, TransformType.INVERSE);
+//		 List<String> newData =new ArrayList<String>();
+//		 for(int i=0;i<oldSize;i++)
+//		 {
+//			 newData.add(String.valueOf(denoised[i].getReal()));
+//		 }
+//		 dataItems.setData(newData);
+	}
+	private boolean isSimilar(double array[],double avg,int start,int len)
+	{
+		double partialAvg =0;
+		double sum=0;
+		for(int i=start;i<start+2*len;i++)
+		{
+			sum+=array[i];
+		}
+		partialAvg =sum/(2*len)+0.000000001;
+		int simBestNum=0;
+		int simSubNum=0;
+		int simSubSubNum=0;
+		for(int i=start;i<start+len;i++)
+		{
+			if(i+len>=array.length)
+				break;
+			double dif = Math.abs((array[i]-array[i+len]));
+			double  relativeError = 2*dif/(array[i]+array[i+len]+0.000000001);
+			if((relativeError<0.20 )/*&&dif/avg<0.8*/)
+			{
+				simBestNum++;
+			}
+			if((relativeError<0.5 ))
+			{
+				simSubNum++;
+			}
+			if(relativeError<0.5)
+				simSubSubNum++;
+		}
+		if(1.0*simBestNum/len>0.80 )
+			return true;
+		return false;
+	}
+	private void calPeriod(double array[],int st,int ed,int len,boolean flag[])
+	{
+		int pre=st;
+		int num=1;
+		int i;
+		for(i=st;i+2*len-1<=ed;i+=len)
+		{
+			if(isSimilar(array,0,i,len))
+			{
+				num++;
+				continue;
+			}
+			if(num<3)
+			{
+				pre=i+len;
+				num=1;
+				continue;
+			}
+			for(int j=pre;j<=i+len-1;j++)
+				flag[j]=true;
+			if(!partialCyclePos.containsKey(len)){
+				ArrayList<NodeSection> nodeList = new ArrayList<NodeSection>();
+				NodeSection nodeSection = new NodeSection(pre, i+len-1);
+				nodeList.add(nodeSection);
+				partialCyclePos.put(len, nodeList);
+				hasPartialCycle = true;
+			}else{
+				ArrayList<NodeSection> nodeList = new ArrayList<NodeSection>();
+				nodeList = partialCyclePos.get(len);
+				NodeSection nodeSection = new NodeSection(pre, i+len-1);
+				nodeList.add(nodeSection);
+				partialCyclePos.put(len, nodeList);
+				hasPartialCycle = true;
+			}
+			pre=i+len;
+			num=1;
+		}
+		if(num>=3)
+		{
+			for(int j=pre;j<=i+len-1;j++)
+				flag[j]=true;
+			if(!partialCyclePos.containsKey(len)){
+				ArrayList<NodeSection> nodeList = new ArrayList<NodeSection>();
+				NodeSection nodeSection = new NodeSection(pre, i+len-1);
+				nodeList.add(nodeSection);
+				partialCyclePos.put(len, nodeList);
+				hasPartialCycle = true;
+			}else{
+				ArrayList<NodeSection> nodeList = new ArrayList<NodeSection>();
+				nodeList = partialCyclePos.get(len);
+				NodeSection nodeSection = new NodeSection(pre, i+len-1);
+				nodeList.add(nodeSection);
+				partialCyclePos.put(len, nodeList);
+				hasPartialCycle = true;
+			}
+		}
+	}
+	public void run(){
+		double array[]= new double [dataItems.getLength()];
+		for(int i=0;i<dataItems.getLength();i++)
+		{
+			array[i]=Double.parseDouble(dataItems.getElementAt(i).getData());
+		}
+		ArrayList<NodeSection> sectionList = new ArrayList<NodeSection>();
+	//	ArrayList<NodeSection> newSectionList = new ArrayList<NodeSection>();
+		boolean [] flag = new boolean[dataItems.getLength()];
+		for(int i=0;i<dataItems.getLength();i++)
+			flag[i]=false;
+		
+		sectionList.add(new NodeSection(0,dataItems.getLength()-1));
+		
+		Iterator<Integer> iter = cycleCandidate.iterator();
+		while(iter.hasNext())
+		{
+			int len =iter.next();
+//			newSectionList.clear();
+			for(int i=0;i<sectionList.size();i++)
+			{
+				calPeriod(array,sectionList.get(i).begin,sectionList.get(i).end,len,flag);
+			}
+			int pre=-1;
+			int i;
+			sectionList.clear();
+			for(i=0;i<dataItems.getLength();i++)
+			{
+				if(!flag[i])
+				{
+					if(pre==-1)
+						pre=i;
+				}
+				else if(pre!=-1)
+				{
+					sectionList.add(new NodeSection(pre,i-1));
+					pre=-1;
+				}
+			}
+			if(pre!=-1)
+				sectionList.add(new NodeSection(pre,i-1));
+		}
+		
+	}
+	public MinerResultsPartialCycle getResult() {
+		result.setPartialCyclePos(partialCyclePos);
+		result.setHasPartialCycle(hasPartialCycle);
+		return result;
+
+	}
+	public int getMinWindowSize() {
+		return minWindowSize;
+	}
+	public void setMinWindowSize(int minWindowSize) {
+		this.minWindowSize = minWindowSize;
+	}
+	
+}

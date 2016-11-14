@@ -23,6 +23,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDet
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.GaussianOutlierDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalPeriod;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalPeriodDetectionWitnDTW;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalPeriodMinerERP;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.PartialCycle;
@@ -378,8 +379,10 @@ class NodeTimerTask extends TimerTask{
 				} else {
 					/*LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
 					results.getRetNode().setRetPartialCycle(dtw.getResult());*/
-					LocalPeriodMinerERP localPeriodMinerERP = new LocalPeriodMinerERP(dataItems,0.15,300);
-					results.getRetNode().setRetPartialCycle(localPeriodMinerERP.getResult());
+//					LocalPeriodMinerERP localPeriodMinerERP = new LocalPeriodMinerERP(dataItems,0.15,300);
+					LocalPeriod localPeriod = new LocalPeriod(dataItems,0.15,300);
+//					results.getRetNode().setRetPartialCycle(localPeriodMinerERP.getResult());
+					results.getRetNode().setRetPartialCycle(localPeriod.getResult());
 				}				
 				/*if(task.getRange().equals("10.0.7.2"))
 				{
