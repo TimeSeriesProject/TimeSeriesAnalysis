@@ -106,15 +106,16 @@ public class LinePattern {
         double endValue = datas.get(end);
         double slope = (endValue-startValue)/(end-start);
         double b = startValue - slope*start;
-        double dis = (endValue-startValue)*(endValue-startValue)*100+Math.log((end-start+1))*Math.log((end-start+1));
+        double dis = (endValue-startValue)*(endValue-startValue)*100+Math.log(((end-start)*4+1))*Math.log(((end-start)*4+1));
         double cost = 0;
         for(int i = start;i <= end;i++){
         	double midleValue  = datas.get(i);
-//        	cost+=Math.abs(startValue+slope*(i-start)-datas.get(i));
-        	cost+=Math.abs(slope*i+b-midleValue)/Math.sqrt(slope*slope+1);//点到直线的垂直距离
+        	cost+=Math.abs(startValue+slope*(i-start)-datas.get(i));
+//        	cost+=Math.abs(slope*i+b-midleValue)/Math.sqrt(slope*slope+1);//点到直线的垂直距离
         }
-        cost = cost/Math.sqrt(dis);
-        return cost;
+//        cost = cost/Math.sqrt(dis);
+//        return cost;
+        return cost/(end-start);
     }
 
 
@@ -127,25 +128,20 @@ public class LinePattern {
         Node minNode = null;
         double minCost = Double.MAX_VALUE;
         Node now = head;
-        int nowLength = 0;
+//        int nowLength = 0;
         while(now.after!=null){
             now=now.after;
-            nowLength++;
+//            nowLength++;
             if(now.cost <= mergerPrice && now.cost < minCost){
                 minCost=now.cost;
                 minNode=now;
             }
         }
-        nowLength++;
-        if((nowLength*1.0)/datas.size() < compressionRatio)
-            minNode = null;
+//        nowLength++;
+        /*if((nowLength*1.0)/datas.size() < compressionRatio)
+            minNode = null;*/
         return minNode;
     }
-
-
-
-
-    
 
     /**
      * 合并线段表
@@ -163,6 +159,7 @@ public class LinePattern {
             }
             last = pattern;
             double cost = computeCost(first,last);
+//            System.out.println("线段"+first.getStart()+"和线段"+last.getStart()+"的合并代价是:"+cost);
             Node node = new Node(cost);
             node.first = first;
             node.second = last;
@@ -175,7 +172,15 @@ public class LinePattern {
 
         Node minNode = findMinNode(head);
         while(minNode!=null){
-            mergeNode(minNode);
+            if(minNode.first.getStart()>=179 && minNode.first.getStart()<193){
+            	System.out.println("startTime at"+minNode.first.getStart());
+            	for(int i=minNode.first.getStart();i<minNode.second.getStart()+minNode.second.getLen();i++){
+            		System.out.println("("+i+","+datas.get(i)+")");           		
+            	}
+            	System.out.println("cost:"+minNode.cost);
+            }
+//            System.out.println("合并线段"+minNode.first.getStart()+"和线段"+minNode.second.getStart()+",合并代价是:"+minNode.cost);
+        	mergeNode(minNode);        	
             minNode = findMinNode(head);
         }
         //合并线段长度很小的node
@@ -249,24 +254,34 @@ public class LinePattern {
         Node before = minNode.before,after = minNode.after;
         PatternMent first = minNode.first,second = minNode.second;
         //double newSlope = (datas.get(second.getSpan()+second.getStart())-first.getStartValue())/(second.getSpan()+second.getStart()-first.getStart());
-        double height = datas.get(second.getSpan()+second.getStart())-first.getStartValue();
+        double height = datas.get(second.getLen()+second.getStart())-first.getStartValue();
         double length = second.getSpan()+second.getStart()-first.getStart();
         PatternMent newLinear = new PatternMent(first.getStart(),second.getEnd()-first.getStart(),Math.atan2(height,length),first.getStartValue());
-        newLinear.setHspan(datas.get(second.getSpan()+second.getStart())-first.getStartValue());
+        newLinear.setHspan(datas.get(second.getLen()+second.getStart())-first.getStartValue());
         before.second=newLinear;
         before.after=after;
+        if(minNode.before.first != null)
+        {
+        	 double cost = computeCost(minNode.before.first,minNode.before.second);
+             minNode.before.cost = cost;
+        }
         if (after != null) {
             after.first = newLinear;
-            after.before = before;
+            after.before = before;            
+            double cost = computeCost(minNode.after.first,minNode.after.second);
+            minNode.after.cost = cost;
+            minNode.cost = cost;
         }
     }
 
 
     /**
      * 计算Pattern中的angle,与前一条线段的夹角
+     * 计算Pattern中的average
      * */
     public void comAngle(List<PatternMent> pList){
-    	pList.get(0).setAngle(pList.get(0).getSlope());
+//    	pList.get(0).setAngle(pList.get(0).getSlope());
+    	pList.get(0).setAngle(0);
     	for(int i=1;i<pList.size();i++){
     		double angle = Math.PI - pList.get(i).getSlope() + pList.get(i-1).getSlope();
     		pList.get(i).setAngle(angle);    		
