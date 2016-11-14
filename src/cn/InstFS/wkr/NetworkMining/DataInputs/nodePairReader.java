@@ -22,7 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import common.Logger;
-
 import RTreeUtil.TimeSeries;
 import cn.InstFS.wkr.NetworkMining.PcapStatistics.IPStreamPool;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
@@ -2264,6 +2263,109 @@ public class nodePairReader implements IReader {
 		}
 		System.out.println("readEachNodeDisapearEmergeDataItems 调用结束");
 		return protocolDataItems;
+	}
+
+	/**
+	 * @author 艾长青
+	 * @param absolutePath
+	 * @param isReadBetween
+	 * @param date1
+	 * @param date2
+	 * @param i
+	 * @return
+	 */
+	public DataItems readIpSumTraffic(String absolutePath, boolean isReadBetween,
+			Date date1, Date date2, int timeGran) {
+
+		Logger.log("filePath",filePath);
+		Logger.log("isReadBetween",String.valueOf(isReadBetween));
+		Logger.log("startTime",date1.toString());
+		Logger.log("endTime",date2.toString());
+		System.out.println("readEachIpPairProtocolTrafficDataItems.....");
+		DataItems SumDataItems = new DataItems();
+		/**
+		 * 读取文件时间段
+		 */
+		if(isReadBetween == false)
+		{
+			long startTime = Long.MAX_VALUE;
+			long endTime = 0;
+			File dir = new File(filePath);
+		
+			for(int i = 0;i < dir.list().length;i++)
+			{
+				//fileList.add(dir.list()[i]);
+				String str[] = dir.list()[i].split("\\.");
+				long time = Long.valueOf(str[0]);
+				if(time < startTime)
+					startTime = time;
+				if(time > endTime)
+					endTime = time;
+				
+			}
+			if(dir.list().length==0)
+			{
+				System.out.println("No file!");
+				return SumDataItems;
+			}
+			
+			date1 = new Date(startTime);
+			date2 = new Date(endTime);
+		}
+		
+		int start = 0;
+		
+		long[] fileDays = floorDate(date1, date2);
+		long fileDay = fileDays[0];
+		long endDay = fileDays[1];
+		long startDay = fileDay; // 数据起始日0点
+		parseDateToHour pHour = new parseDateToHour(date1, new Date(startDay));
+		start=pHour.getHour();
+		for (int k = 0; fileDay <= endDay; k++) {
+			
+			String fileName = fileDay+".txt";
+			Logger.log("当前处理文件", fileName);
+			TextUtils textUtils=new TextUtils();
+			textUtils.setTextPath(filePath+"\\"+ fileName);
+			
+			String line = null;		
+		//	List<Integer> indexs = new ArrayList<Integer>();
+			while((line = textUtils.readByrow()) != null){
+				
+				String[] items = line.split(",");
+				int timeSpan = Integer.parseInt(items[0])+24*k;			
+				Date time = parseTime(timeSpan*3600,startDay);
+				String protocolItems = items[items.length-1];
+				String[] eachProtocol = protocolItems.split(";");
+				String ipPair = items[1]+"-"+items[2];
+				if(isReadBetween){
+					if(time.compareTo(date1) < 0 || time.compareTo(date2) > 0){
+						continue;
+					}
+					//start=pHour.getHour();
+				}
+				
+				while(SumDataItems.getLength() <= timeSpan-start)
+				{
+					int j = SumDataItems.getLength();  //j为新增数据点的下标
+					SumDataItems.add1Data(parseTime((j+start)*3600, startDay), "0");
+				}
+				//对所有端口进行求和
+				int currentTrffic = 0;
+				for(String protocol:eachProtocol){
+					String[] proAndTraffic=protocol.split(":");
+					if(proAndTraffic.length <= 1)
+						continue;
+					currentTrffic += Integer.parseInt(proAndTraffic[1]); //traffic
+				}
+				int lastTraffic = Integer.parseInt(SumDataItems.data.get(timeSpan));
+				int index = SumDataItems.time.indexOf(time);
+				SumDataItems.data.set(index,String.valueOf(currentTrffic+lastTraffic));
+			}
+			fileDay += 86400000; // 下一天的文件名时间戳
+		}
+		return SumDataItems;
+	
 	}
 	
 }

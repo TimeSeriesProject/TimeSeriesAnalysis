@@ -110,6 +110,7 @@
     <pcapParseParams>
         <pcapPath>D:\pcap</pcapPath>
         <outputPath>D:\out</outputPath>
+        <parseAll>true</parseAll>
     </pcapParseParams>
 
     <!-- 分布式服务端参数 -->

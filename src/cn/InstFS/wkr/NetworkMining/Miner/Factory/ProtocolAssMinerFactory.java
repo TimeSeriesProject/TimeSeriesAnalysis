@@ -1,11 +1,15 @@
 package cn.InstFS.wkr.NetworkMining.Miner.Factory;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import weka.gui.beans.Startable;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
@@ -21,7 +25,7 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 	private MiningObject miningObject;
 	private TaskRange taskRange = TaskRange.SingleNodeRange;
 	public static HashMap<String, HashMap<String, DataItems>> eachProtocolItems;
-	
+	public static Map<String,DataItems> rawDataList;
 	ProtocolAssMinerFactory(){
 		super(MinerType.MiningType_ProtocolAssociation.toString());
 		dataPath = GlobalConfig.getInstance().getDataPath() + "\\traffic";
@@ -33,6 +37,7 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 		miningObjectCheck.addAll(miningObjectList);
 
 		eachProtocolItems= new HashMap<String, HashMap<String,DataItems>>();
+		rawDataList = new HashMap<String,DataItems>();
 	}
 	
 	public static ProtocolAssMinerFactory getInstance(){
@@ -91,8 +96,75 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 					addTask(dataDirs[i].getAbsoluteFile(),granularity,reader);
 			}
 		}
+		addIpPairTask(granularity,reader);
 	}
 	
+	private void addIpPairTask(int granularity, nodePairReader reader) {
+		
+		Set<String> set = new HashSet<String>();
+		Iterator<String> iter_i = rawDataList.keySet().iterator();
+		while(iter_i.hasNext()) {
+			
+			String ip_i = iter_i.next();
+			
+			Iterator<String> iter_j = rawDataList.keySet().iterator();
+			while(iter_j.hasNext()) {
+				
+				String ip_j = iter_j.next();
+				if(set.contains(ip_j))
+					continue;
+				set.add(ip_j);
+				
+				TaskCombination taskCombination = new TaskCombination();
+				taskCombination.getTasks().add(
+						generateIpPairTask(granularity,MiningMethod.MiningMethods_FrequenceItemMining,ip_i,ip_j));
+				
+				HashMap<String, HashMap<String, DataItems>> ipPairItems = new HashMap<String, HashMap<String, DataItems>>();
+				HashMap<String, DataItems> dataIpPair = new HashMap<String, DataItems>();
+				dataIpPair.put(ip_i, rawDataList.get(ip_i));
+				dataIpPair.put(ip_j, rawDataList.get(ip_j));
+				ipPairItems.put(ip_i+"_"+ip_j, dataIpPair);
+				taskCombination.setEachIpProtocolItems(ipPairItems);
+				
+				taskCombination.setMiningObject(miningObject.toString());
+				taskCombination.setRange(ip_i+"_"+ip_j);
+				taskCombination.setName();
+				taskCombination.setMinerType(MinerType.MiningType_ProtocolAssociation);
+				TaskElement.add1Task(taskCombination, false);
+				TaskElement.add1Task(taskCombination, false);
+			}
+		} 
+	}
+
+	private TaskElement generateIpPairTask(int granularity,
+			MiningMethod method, String ip_i, String ip_j) {
+		String ip = ip_i +"_"+ ip_j;
+		TaskElement task = new TaskElement();
+		task.setMiningMethod(method);
+		task.setGranularity(granularity);
+		task.setRange(ip);
+		task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
+		task.setDiscreteMethod(DiscreteMethod.None);
+		String name;
+		switch (method) {
+		case MiningMethods_FrequenceItemMining:
+			task.setMiningAlgo(MiningAlgo.MiningAlgo_LineProtocolASS);
+			name = ip+"之间关联规则挖掘";
+			task.setTaskName(name);
+			task.setComments(ip+"之间关于 "+miningObject.toString()+" 的多元关联规律");
+			break;
+		case MiningMethods_SimilarityMining:
+			task.setMiningAlgo(MiningAlgo.MiningAlgo_RtreeProtocolASS);
+			name = ip+"之间关联规则挖掘";
+			task.setTaskName(name);
+			task.setComments(ip+"之间关于 "+miningObject.toString()+" 的相似度挖掘");
+			break;
+		default:
+			break;
+		}
+		return task;
+	}
+
 	private void addTask(File file,int granularity,nodePairReader reader){
 		String ip=file.getName();//.substring(0, file.getName().lastIndexOf("."));
 		System.out.println("ip:"+ip);
@@ -123,6 +195,9 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 		HashMap<String, DataItems> rawDataItems = 
 				reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(), true, date1, date2, 3600);
 		eachProtocolItems.put(ip, rawDataItems);
+
+		DataItems ipData = reader.readIpSumTraffic(dataFile.getAbsolutePath(), true, date1, date2, 3600);
+		rawDataList.put(ip, ipData);
 	}
 	
 	private TaskElement generateTask(File file,int granularity,MiningMethod method){
