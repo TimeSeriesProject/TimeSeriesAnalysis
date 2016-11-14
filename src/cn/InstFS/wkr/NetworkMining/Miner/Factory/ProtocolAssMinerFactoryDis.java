@@ -251,7 +251,7 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
         return pretreatmentMap;
     }
 
-    //有待解决，总共36
+    //有待解决，总共36个
     public int getCount(ArrayList<String> list){
         File dataDirectory=new File(dataPath);
         nodePairReader reader=new nodePairReader();
