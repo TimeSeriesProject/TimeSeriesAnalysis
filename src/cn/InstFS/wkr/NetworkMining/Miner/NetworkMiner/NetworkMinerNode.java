@@ -352,8 +352,8 @@ class NodeTimerTask extends TimerTask{
 			case MiningMethods_SequenceMining:
 				
 				ParamsSM paramsSM = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
-//				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
-				LinePattern segment = new LinePattern(dataItems, 0.06);
+				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
+//				LinePattern segment = new LinePattern(dataItems, 0.06);
 				DataItems clusterItems=null;
 				List<PatternMent> segPatterns=segment.getPatterns();
 				

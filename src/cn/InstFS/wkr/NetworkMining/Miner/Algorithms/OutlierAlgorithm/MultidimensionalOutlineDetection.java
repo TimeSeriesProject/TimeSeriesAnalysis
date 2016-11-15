@@ -76,8 +76,10 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		newItems = movingAverage.getNewItems();
 //		PointSegment segment=new PointSegment(newItems, densityK,patternThreshold); //线段化模式
 //		patterns = segment.getTEOPattern();
-		LinePattern linePattern = new LinePattern(newItems,mergerPrice);
-		patterns=linePattern.getPatterns();
+		/*LinePattern linePattern = new LinePattern(newItems,mergerPrice);
+		patterns=linePattern.getPatterns();*/
+		PointSegment segment = new PointSegment(dataItems, 4);
+		patterns = segment.getPatterns();
 		for(int i=0;i<patterns.size();i++){
 			System.out.print(" " + patterns.get(i).getSpan());
 		}
