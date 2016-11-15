@@ -48,6 +48,7 @@ import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.association.AssociationMingObject;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.association.AssociationSortType;
 
 public class AssociationIpListFrame extends JFrame {
 
@@ -72,8 +73,8 @@ public class AssociationIpListFrame extends JFrame {
 	HashMap<TaskCombination, MinerProtocolResults> resultMap;
 	HashMap<String,HashMap<TaskCombination, MinerProtocolResults>> resultMaps;
 	ArrayList<Map.Entry<TaskCombination, MinerProtocolResults> > resultList;
-	String sortMethod = "按ip协议部分置信度排序";
-	String mingObj = "IP内端口之间的关联规则挖掘";
+	String sortMethod = AssociationSortType.IPPartConfidence.toString();
+	String mingObj = AssociationMingObject.IPInterMing.toString();
 	/**
 	 * Launch the application.
 	 */
@@ -314,9 +315,9 @@ public class AssociationIpListFrame extends JFrame {
 		
 		JLabel sortLabel= new JLabel("选择排序方式");
 		sortTypeComboBox = new JComboBox<String>();
-		sortTypeComboBox.addItem("按ip协议部分置信度排序");
-		sortTypeComboBox.addItem("按ip协议整体置信度排序");
-		sortTypeComboBox.addItem("按ip排序");
+		sortTypeComboBox.addItem(AssociationSortType.IPPartConfidence.toString());
+		sortTypeComboBox.addItem(AssociationSortType.IPIntegerMing.toString());
+		sortTypeComboBox.addItem(AssociationSortType.IPIP.toString());
 		sortTypeComboBox.setSelectedIndex(1);
 		sortTypeComboBox.addItemListener(new ItemListener()
         {
@@ -401,10 +402,10 @@ public class AssociationIpListFrame extends JFrame {
 			switch(sortMethod)
 			{
 			
-			case "按ip协议部分置信度排序":
+			case "按ip端口部分置信度排序":
 				sortByPartyProtocolConfidence();
 				break;
-			case "按ip协议整体置信度排序":
+			case "按ip端口整体置信度排序":
 				sortByWholeProtocolConfidence();
 				break;
 			case "按ip排序":
