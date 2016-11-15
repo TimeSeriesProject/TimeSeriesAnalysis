@@ -98,9 +98,7 @@ public class PointSegment {
 			double startData = Double.parseDouble(dataItems.getElementAt(start).getData());
 			double angle = (endData-startData)/(end - start);
 			//double height = getItem(end)-getItem(start);
-			
-			
-			
+									
 			for(int pos=start;pos<end;pos++){
 				statistics.addValue(getItem(pos));
 			}
@@ -370,7 +368,7 @@ public class PointSegment {
 		}
 		return i;
 	}
-	
+
 	private void setItemStd(DataItems dataItems){
 		List<String> datas=dataItems.getData();
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
