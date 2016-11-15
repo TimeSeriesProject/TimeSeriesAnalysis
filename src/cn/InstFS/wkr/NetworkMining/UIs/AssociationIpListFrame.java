@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -46,6 +47,8 @@ import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.association.AssociationMingObject;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.association.AssociationSortType;
 
 public class AssociationIpListFrame extends JFrame {
 
@@ -68,10 +71,10 @@ public class AssociationIpListFrame extends JFrame {
 	JComboBox<String> miningObjectComboBox;
 	JPanel selectPanel = new JPanel();
 	HashMap<TaskCombination, MinerProtocolResults> resultMap;
-	HashMap<MiningObject,HashMap<TaskCombination, MinerProtocolResults>> resultMaps;
+	HashMap<String,HashMap<TaskCombination, MinerProtocolResults>> resultMaps;
 	ArrayList<Map.Entry<TaskCombination, MinerProtocolResults> > resultList;
-	String sortMethod = "按ip协议部分置信度排序";
-	String mingObj = "";
+	String sortMethod = AssociationSortType.IPPartConfidence.toString();
+	String mingObj = AssociationMingObject.IPInterMing.toString();
 	/**
 	 * Launch the application.
 	 */
@@ -117,9 +120,51 @@ public class AssociationIpListFrame extends JFrame {
 		// TODO Auto-generated method stub
 //		MiningMethod method = MiningMethod.MiningMethods_PeriodicityMining;
 //		miningMethods.add(method);
+//		Map.Entry<TaskCombination, MinerProtocolResults> enytEntry = (Entry<TaskCombination, MinerProtocolResults>) resultMap.entrySet();
 		resultList = new ArrayList<Map.Entry<TaskCombination, MinerProtocolResults>>(resultMap.entrySet());
+		resultMaps = new HashMap<String,HashMap<TaskCombination, MinerProtocolResults>>();
+		
+		for(int i = 0;i < resultList.size();i++ ) {
+			
+			Map.Entry<TaskCombination, MinerProtocolResults> enytEntry = resultList.get(i);
+			if(enytEntry.getKey().getRange().contains("_")) {
+				
+				if(resultMaps.containsKey(AssociationMingObject.IPInterMing.toString())) {
+					resultMaps.get(AssociationMingObject.IPInterMing.toString()).put(enytEntry.getKey(), enytEntry.getValue());
+				}
+				else {
+					HashMap<TaskCombination, MinerProtocolResults> hashMap = new HashMap<TaskCombination, MinerProtocolResults>();
+					hashMap.put(enytEntry.getKey(), enytEntry.getValue());
+					resultMaps.put(AssociationMingObject.IPInterMing.toString(),hashMap);
+				}
+			}
+			else {
+				if(resultMaps.containsKey(AssociationMingObject.IPInnerPortMing.toString())) {
+					resultMaps.get(AssociationMingObject.IPInnerPortMing.toString()).put(enytEntry.getKey(), enytEntry.getValue());
+				}
+				else {
+					HashMap<TaskCombination, MinerProtocolResults> hashMap = new HashMap<TaskCombination, MinerProtocolResults>();
+					hashMap.put(enytEntry.getKey(), enytEntry.getValue());
+					resultMaps.put(AssociationMingObject.IPInnerPortMing.toString(),hashMap);
+				}
+			}
+			
+		}
+		resultList.clear();
 	}
-	
+	private void updateMingObject() {
+
+		System.out.println("更新显示结果");
+		if(listTable!=null)
+		{
+			//		scrollPane.remove(listTable);
+			System.out.println("remove");
+		}
+		resultList = new ArrayList<Map.Entry<TaskCombination, MinerProtocolResults>>(resultMaps.get(mingObj).entrySet());
+		sort();
+		createTable();
+		
+	}
 	private void update()
 	{
 		System.out.println("更新显示结果");
@@ -128,7 +173,7 @@ public class AssociationIpListFrame extends JFrame {
 			//		scrollPane.remove(listTable);
 			System.out.println("remove");
 		}
-		resultList = new ArrayList<Map.Entry<TaskCombination, MinerProtocolResults>>(resultMap.entrySet());
+		resultList = new ArrayList<Map.Entry<TaskCombination, MinerProtocolResults>>(resultMaps.get(mingObj).entrySet());
 		sort();
 		createTable();
 		
@@ -234,11 +279,45 @@ public class AssociationIpListFrame extends JFrame {
 	{
 		System.out.println("initModel....");
 
+		/**
+		 * 选择ip之间的关联规则挖掘结果或者IP内端口之间的关联规则挖掘结果
+		 */
+		JLabel mingLabel= new JLabel("选择挖掘对象");
+		miningObjectComboBox = new JComboBox<String>();
+		miningObjectComboBox.addItem(AssociationMingObject.IPInnerPortMing.toString());
+		miningObjectComboBox.addItem(AssociationMingObject.IPInterMing.toString());
+//		sortTypeComboBox.addItem("按ip排序");
+		miningObjectComboBox.setSelectedIndex(1);
+		miningObjectComboBox.addItemListener(new ItemListener()
+        {
+            public void itemStateChanged(ItemEvent event)
+            { 
+            	System.out.println("选中");
+                switch (event.getStateChange())
+                {
+                case ItemEvent.SELECTED: 
+                    System.out.println("选中" + event.getItem());
+                    mingObj=event.getItem().toString();
+                    System.out.println(mingObj);
+                    updateMingObject();
+                    break;
+                case ItemEvent.DESELECTED:
+                    System.out.println("取消选中" + event.getItem());
+                    break;
+                }
+            }
+
+			
+        });
+		selectPanel.add(mingLabel);
+		selectPanel.add(miningObjectComboBox);
+		
+		
 		JLabel sortLabel= new JLabel("选择排序方式");
 		sortTypeComboBox = new JComboBox<String>();
-		sortTypeComboBox.addItem("按ip协议部分置信度排序");
-		sortTypeComboBox.addItem("按ip协议整体置信度排序");
-		sortTypeComboBox.addItem("按ip排序");
+		sortTypeComboBox.addItem(AssociationSortType.IPPartConfidence.toString());
+		sortTypeComboBox.addItem(AssociationSortType.IPIntegerMing.toString());
+		sortTypeComboBox.addItem(AssociationSortType.IPIP.toString());
 		sortTypeComboBox.setSelectedIndex(1);
 		sortTypeComboBox.addItemListener(new ItemListener()
         {
@@ -259,6 +338,7 @@ public class AssociationIpListFrame extends JFrame {
                 }
             }
         });
+		
 		selectPanel.add(sortLabel);
 		selectPanel.add(sortTypeComboBox);
 	    scrollPane = new JScrollPane();
@@ -269,13 +349,13 @@ public class AssociationIpListFrame extends JFrame {
 	{
 	  int row=listTable.getSelectedRow();    
 	  //得到所在行的第一个列的值，作为下面事件传递的参数
-	  /*SingleIpProtocolAssFrame singleIpProtocol = new SingleIpProtocolAssFrame(resultList.get(row).getKey(),resultMap);
+	  SingleIpProtocolAssFrame singleIpProtocol = new SingleIpProtocolAssFrame(resultList.get(row).getKey(),resultMap);
 	  singleIpProtocol.setTitle( "ip: "+resultList.get(row).getKey().getRange()+" protocol: "+resultList.get(row).getKey().getProtocol()+" "+resultList.get(row).getKey().getMiningObject()+"规律");
-	  singleIpProtocol.setVisible(true);*/
+	  singleIpProtocol.setVisible(true);
 	  /********以下用于测试线段化结果*******/
-	  SingleIpProtocolAssLineFrame singleIpProtocolAssLineFrame = new SingleIpProtocolAssLineFrame(resultList.get(row).getKey(),resultMap);
-	  singleIpProtocolAssLineFrame.setTitle("ip: "+resultList.get(row).getKey().getRange()+" protocol: "+resultList.get(row).getKey().getProtocol()+" "+resultList.get(row).getKey().getMiningObject()+"规律");
-	  singleIpProtocolAssLineFrame.setVisible(true);
+//	  SingleIpProtocolAssLineFrame singleIpProtocolAssLineFrame = new SingleIpProtocolAssLineFrame(resultList.get(row).getKey(),resultMap);
+//	  singleIpProtocolAssLineFrame.setTitle("ip: "+resultList.get(row).getKey().getRange()+" protocol: "+resultList.get(row).getKey().getProtocol()+" "+resultList.get(row).getKey().getMiningObject()+"规律");
+//	  singleIpProtocolAssLineFrame.setVisible(true);
 	  /**********测试结束*********/
 	  System.out.println("selectrow:"+row);
 	 }
@@ -322,10 +402,10 @@ public class AssociationIpListFrame extends JFrame {
 			switch(sortMethod)
 			{
 			
-			case "按ip协议部分置信度排序":
+			case "按ip端口部分置信度排序":
 				sortByPartyProtocolConfidence();
 				break;
-			case "按ip协议整体置信度排序":
+			case "按ip端口整体置信度排序":
 				sortByWholeProtocolConfidence();
 				break;
 			case "按ip排序":
