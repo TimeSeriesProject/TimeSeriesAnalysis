@@ -28,6 +28,8 @@ public class LocalPeriod{
 	private int longestPeriod;
 	private int minWindowSize = 30;
 	private int minPeriod=20;
+	private int maxPeriod=300;
+	private int preSimNum=-1;
 	private Set<Integer> cycleCandidate =new TreeSet<Integer>();
 	public LocalPeriod(){}
 	public LocalPeriod(DataItems di,double threshold,int longestPeriod){
@@ -35,7 +37,7 @@ public class LocalPeriod{
 		this.dataItems = di;
 		this.threshold = threshold;
 		this.longestPeriod = longestPeriod;
-		FourierFilter();
+		//FourierFilter();
 		run();
 	}
 	public void FourierFilter()
@@ -125,7 +127,7 @@ public class LocalPeriod{
 //		 }
 //		 dataItems.setData(newData);
 	}
-	private boolean isSimilar(double array[],double avg,int start,int len)
+	private boolean isSimilar(double array[],int pre,int start,int len)
 	{
 		double partialAvg =0;
 		double sum=0;
@@ -137,25 +139,67 @@ public class LocalPeriod{
 		int simBestNum=0;
 		int simSubNum=0;
 		int simSubSubNum=0;
-		for(int i=start;i<start+len;i++)
+		int firstSimNum=0;
+		if(preSimNum==-1)
 		{
-			if(i+len>=array.length)
-				break;
-			double dif = Math.abs((array[i]-array[i+len]));
-			double  relativeError = 2*dif/(array[i]+array[i+len]+0.000000001);
-			if((relativeError<0.20 )/*&&dif/avg<0.8*/)
+			for(int i=start;i<start+len;i++)
 			{
-				simBestNum++;
+				if(i+len>=array.length)
+					break;
+				double dif = Math.abs((array[i]-array[i+len]));
+				double  relativeError = 2*dif/(array[i]+array[i+len]+0.000000001);
+				if((relativeError<0.20 )/*&&dif/avg<0.8*/)
+				{
+					simBestNum++;
+					if(i==start)
+						firstSimNum=1;
+				}
+				if((relativeError<0.5 ))
+				{
+					simSubNum++;
+				}
+				if(relativeError<0.5)
+					simSubSubNum++;
 			}
-			if((relativeError<0.5 ))
-			{
-				simSubNum++;
-			}
-			if(relativeError<0.5)
-				simSubSubNum++;
 		}
+		else
+		{
+			//计算首尾两点
+			for(int i=start;i<start+len;i+=len-1)
+			{
+				if(i+len>=array.length)
+					break;
+				double dif = Math.abs((array[i]-array[i+len]));
+				double  relativeError = 2*dif/(array[i]+array[i+len]+0.000000001);
+				if((relativeError<0.20 )/*&&dif/avg<0.8*/)
+				{
+					
+					if(i==start)
+						firstSimNum=1;
+					if(i==start+len-1)
+						simBestNum++;
+				}
+			}
+			
+			simBestNum+=preSimNum;
+			
+		}
+		preSimNum=simBestNum-firstSimNum;
+		int headSimNum=0;
+//		for(int i=0;i<len;i++)
+//		{
+//			if(start+len+i>=array.length)
+//				break;
+//			double dif =Math.abs(array[pre+i]-array[start+i+len]);
+//			double  relativeError = 2*dif/(array[pre+i]+array[start+i+len]+0.000000001);
+//			if(relativeError<0.2)
+//				headSimNum++;
+//		}
 		if(1.0*simBestNum/len>0.80 )
+		{
+			
 			return true;
+		}	
 		return false;
 	}
 	private void calPeriod(double array[],int st,int ed,int len,boolean flag[])
@@ -163,17 +207,32 @@ public class LocalPeriod{
 		int pre=st;
 		int num=1;
 		int i;
-		for(i=st;i+2*len-1<=ed;i+=len)
+		preSimNum=-1;
+		for(i=st;i+2*len-1<=ed;)
 		{
-			if(isSimilar(array,0,i,len))
+			if(isSimilar(array,pre,i,len))
 			{
 				num++;
+				preSimNum=-1;
+				i+=len;
 				continue;
 			}
+			
+			if(num==1)
+			{
+				pre=i+1;
+				num=1;
+				i++;
+				continue;
+			}
+			
+			preSimNum=-1;
+			
 			if(num<3)
 			{
 				pre=i+len;
 				num=1;
+				i+=len;
 				continue;
 			}
 			for(int j=pre;j<=i+len-1;j++)
@@ -194,6 +253,7 @@ public class LocalPeriod{
 			}
 			pre=i+len;
 			num=1;
+			i+=len;
 		}
 		if(num>=3)
 		{
@@ -229,10 +289,10 @@ public class LocalPeriod{
 		
 		sectionList.add(new NodeSection(0,dataItems.getLength()-1));
 		
-		Iterator<Integer> iter = cycleCandidate.iterator();
-		while(iter.hasNext())
+		//Iterator<Integer> iter = cycleCandidate.iterator();
+		for(int len=minPeriod;len<=maxPeriod;len++)
 		{
-			int len =iter.next();
+			
 //			newSectionList.clear();
 			for(int i=0;i<sectionList.size();i++)
 			{
