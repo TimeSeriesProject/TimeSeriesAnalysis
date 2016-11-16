@@ -2274,7 +2274,7 @@ public class nodePairReader implements IReader {
 	 * @param i
 	 * @return
 	 */
-	public DataItems readIpSumTraffic(String absolutePath, boolean isReadBetween,
+	public DataItems readIpSumTraffic(String filePath, boolean isReadBetween,
 			Date date1, Date date2, int timeGran) {
 
 		Logger.log("filePath",filePath);
@@ -2325,6 +2325,16 @@ public class nodePairReader implements IReader {
 			
 			String fileName = fileDay+".txt";
 			Logger.log("当前处理文件", fileName);
+			
+			File file = new File(filePath+"\\"+ fileName);
+			//如果该文件不存在，则跳过
+			if(!file.exists())
+			{
+				
+				fileDay += 86400000; // 下一天的文件名时间戳
+				continue;
+			}
+			
 			TextUtils textUtils=new TextUtils();
 			textUtils.setTextPath(filePath+"\\"+ fileName);
 			
@@ -2358,8 +2368,9 @@ public class nodePairReader implements IReader {
 						continue;
 					currentTrffic += Integer.parseInt(proAndTraffic[1]); //traffic
 				}
-				int lastTraffic = Integer.parseInt(SumDataItems.data.get(timeSpan));
 				int index = SumDataItems.time.indexOf(time);
+				int lastTraffic = Integer.parseInt(SumDataItems.data.get(index));
+				
 				SumDataItems.data.set(index,String.valueOf(currentTrffic+lastTraffic));
 			}
 			fileDay += 86400000; // 下一天的文件名时间戳

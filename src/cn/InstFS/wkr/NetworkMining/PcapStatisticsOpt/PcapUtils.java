@@ -627,16 +627,16 @@ class RouteGen implements Callable {
  */
 public class PcapUtils {
     private boolean SessionLevel = true;   //判断读取的数据是否是业务层数据
-    private ConcurrentHashMap<RecordKey, Integer> trafficRecords; //记录流量
-    private ConcurrentHashMap<RecordKey, Integer> comRecords;
-    private TreeMap<RecordKey, Integer> sortedtrafficRecords;
+    private ConcurrentHashMap<RecordKey, Integer> trafficRecords = new ConcurrentHashMap<RecordKey, Integer>();//记录流量
+    private ConcurrentHashMap<RecordKey, Integer> comRecords = new ConcurrentHashMap<RecordKey, Integer>();
+    private TreeMap<RecordKey, Integer> sortedtrafficRecords = new TreeMap<RecordKey, Integer>();
     private ArrayList<File> fileList;
     private HashMap<Long, ArrayList<File>> tasks = new HashMap<Long, ArrayList<File>>();//日期，filelist 得到对应时间的文件列表
-    private HashMap<String, BufferedWriter> bws;
-    private ConcurrentHashMap<String, BufferedOutputStream> bos;
-    private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap;//0-0，对应文件里的所有pcapnode信息
-    private String date;
-    private ParseByDay parseByDay;
+    private HashMap<String, BufferedWriter> bws = new HashMap<String, BufferedWriter>();
+    private ConcurrentHashMap<String, BufferedOutputStream> bos = new ConcurrentHashMap<String, BufferedOutputStream>();
+    private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap = new ConcurrentHashMap<String, ArrayList<PcapNode>>();//0-0，对应文件里的所有pcapnode信息
+    private String date;//函数中初始化
+    private ParseByDay parseByDay;//readInput中初始化
 
     public enum Status {
         PREPARE("prepare"), PARSE("parse"), GENROUTE("genroute"), PARSEBYDAY("parsebyday"), END("end");
@@ -662,8 +662,8 @@ public class PcapUtils {
     private int parsebydaySum = 0;
     private int parsebydayNum = 0;
 
-    private int taskCount = 0;
-    private int taskSum = 0;
+    private int taskCount = 0;//需初始化
+    private int taskSum = 0;//可以不用初始化
 
     public Status getStatus() {
         return status;
@@ -864,7 +864,7 @@ public class PcapUtils {
         status = Status.PARSE;
         System.out.println(status);
         System.out.println("parseSum " + parseSum);
-        ExecutorService exec = Executors.newFixedThreadPool(16);
+        ExecutorService exec = Executors.newFixedThreadPool(4);
         ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
         for (int i = 0; i < fileList.size(); i++) {
             File file = fileList.get(i);
@@ -1011,6 +1011,28 @@ public class PcapUtils {
         }
     }
 
+    public void initDis(ArrayList<File> fileList) {
+        //将变量设为初始值
+        status = Status.PREPARE;
+//        fileList = entry.getValue();
+        getModifiedTime2(fileList);//得到date
+        System.out.println("date: " + date);
+        trafficRecords = new ConcurrentHashMap<RecordKey, Integer>(); //记录流量
+        comRecords = new ConcurrentHashMap<RecordKey, Integer>();
+        sortedtrafficRecords = new TreeMap<RecordKey, Integer>();
+        bws = new HashMap<String, BufferedWriter>();
+        bos = new ConcurrentHashMap<String, BufferedOutputStream>();
+        nodeMap = new ConcurrentHashMap<String, ArrayList<PcapNode>>();//0-0，对应文件里的所有pcapnode信息
+        parseSum = 0;
+        parsedNum = 0;
+        genRouteSum = 0;
+        genedRouteNum = 0;
+        genTrafficSum = 0;
+        gentedTrafficNum = 0;
+        parsebydaySum = 0;
+        parsebydayNum = 0;
+    }
+
     public void First2Step(ArrayList<File> fileList, String outpath) throws IOException{
         //删除已存在的所有文件
         File ff = new File(outpath);
@@ -1140,7 +1162,7 @@ public class PcapUtils {
         getTaskMap(allTimes);//得到map
     }
 
-    //得到需要解析的文件的时间list
+    //得到需要解析的文件的时间、外加对应文件map
     public void genTimeList(String fpath, boolean parseAll, TreeMap<Long, File> allTimes) {
         File ff = new File(fpath);
         if (parseAll) {
@@ -1168,7 +1190,7 @@ public class PcapUtils {
         }
     }
 
-    //得到task MAP
+    //遍历时间，若超过一天，则put，在一天之内，则append，得到task MAP，个数代表所需解析文件list的个数，原来只有一个，现在可能有多个
     public void getTaskMap(TreeMap<Long, File> allTimes) {
         Long key = 0l;//实际时间
         Long switchKey = 0l;//key转换为当天0点，parsebyday也做了处理...
@@ -1235,6 +1257,12 @@ public class PcapUtils {
 
 
     private void getModifiedTime(Long time) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        date = sdf.format(new Date(time));
+    }
+
+    private void getModifiedTime2(ArrayList<File> fileList) {
+        long time = fileList.get(0).lastModified();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         date = sdf.format(new Date(time));
     }

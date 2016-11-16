@@ -111,7 +111,7 @@ public class ProtocolAssociationLine {
 		        System.out.println("DPCluster聚类算法计算完毕！");
 		        System.out.println("***************************************************");
 			}
-			double max_confidence = -1;
+			double max_confidence = 0.0;
 			List<ProtoclPair> resultList = new ArrayList<ProtoclPair>();
 			for(int i = 0;i < linesList.size();i++)
 			{
