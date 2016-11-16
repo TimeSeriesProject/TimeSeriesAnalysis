@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.*;
 
 
@@ -113,21 +114,21 @@ public class Server {
     private String DELIMITER = "\r\n";
     private String inPath;
     private String outPath = "D:\\57data";
-    //    private String fileName;
+//    private String fileName;
     private int index;
     private int BUF_LEN = 5 * 1024 * 1024;
-    private int pcapCount1 = 0;//发送次数
-    private int pcapCount2 = 0;//发送次数
-    private int recCount = 0;
-    private int recCount2 = 0;
+    private AtomicInteger pcapCount1 = new AtomicInteger(0);//发送次数
+    private AtomicInteger pcapCount2 = new AtomicInteger(0);//发送次数
+    private AtomicInteger recCount = new AtomicInteger(0);//接收到的个数
+    private AtomicInteger recCount2 = new AtomicInteger(0);
     private int tasksCount = 0;
     private String date;
     private ParseByDay parseByDay;
 
-    private Lock recLock = new ReentrantLock();//接收结果
-    private Lock sendLock = new ReentrantLock();
-    private Lock recLock2 = new ReentrantLock();//接收结果和第一步要分开，否则出bug
-    private Lock sendLock2 = new ReentrantLock();
+//    private Lock recLock = new ReentrantLock();//接收结果
+//    private Lock sendLock = new ReentrantLock();
+//    private Lock recLock2 = new ReentrantLock();//接收结果和第一步要分开，否则出bug
+//    private Lock sendLock2 = new ReentrantLock();
 
     private Lock pcapLock = new ReentrantLock();
     private Condition pcapCon = pcapLock.newCondition();
@@ -984,10 +985,10 @@ public class Server {
         tasksMap = new HashMap<String, StringBuilder>();
         swapMap = new HashMap<String, String>();//文件名\r\n,路由号
         swapMap2 = new HashMap<String, String>();//routesrc/1.1_1.2, 1.1_1.2
-        pcapCount1 = 0;//发送次数
-        pcapCount2 = 0;//发送次数
-        recCount = 0;
-        recCount2 = 0;
+        pcapCount1 = new AtomicInteger(0);//发送次数
+        pcapCount2 = new AtomicInteger(0);//发送次数
+        recCount = new AtomicInteger(0);
+        recCount2 = new AtomicInteger(0);
         combineAndDelete = false;
 
         //按节点得到所有任务
@@ -1808,6 +1809,16 @@ public class Server {
         }
     }
 
+    /**
+     * Pcap解析线程
+     *
+     * 1.要考虑到first与last这两步之间的过渡，即first未执行完，其他线程已经开始last，first执行完毕后如何跳转
+     * 2.考虑first和last2个发送线程的原子性（直接更改为原子操作）
+     * 3.考虑接收线程的原子性（直接更改为原子操作即可）
+     * 4.考虑最后合并删除操作的唯一性
+     * 5.考虑多个fileList循环，接收线程的完成解锁情况
+     *
+     */
     class ParsePcap implements Runnable {
         private boolean firstConnected = false;
         private boolean lastConnected = false;
@@ -1848,7 +1859,7 @@ public class Server {
                             pcapLock.unlock();
                         }
                     }
-                    pcapPanel.getBar().setValue(recCount);
+                    pcapPanel.getBar().setValue(recCount.get());
                     pcapPanel.getBar().setMaximum(allTasks.size());//进度条最大
                     pcapPanel.getjLabel().setText("阶段 1/3");
                     long a = System.currentTimeMillis();
@@ -1857,42 +1868,46 @@ public class Server {
                         System.out.println("First接收到ready");
                         userClient.sendMsg("First");
                         if (dataFromClient.equals("Ready")) {
-                            //pcapCount1 < 或 =两种情况，只发送一次
-                            sendLock.lock();
-                            try {
-                                if (pcapCount1 < allTasks.size()) {
-                                    userClient.sendTask(allTasks.get(pcapCount1));
-                                    System.out.println("第" + pcapCount1 + "次已发送" + allTasks.size());
-                                    pcapCount1 += 1;
-                                    System.out.println("下一次发送：" + pcapCount1);
-                                } else {
-                                    int temp = 0;//中途最后一个结果发回来，发送Empty，避免客户端发送ready后接收不到任务造成死锁
+//                            pcapCount1 < 或 =两种情况，只发送一次
+//                            sendLock.lock();//将全部过程锁起
+//                            try {
+                            int tempNum;//作为发送任务的临时变量
+                            if ((tempNum = pcapCount1.getAndIncrement()) < allTasks.size()) {
+//                                pcapCount1 += 1;
+//                                sendLock.unlock();
+                                userClient.sendTask(allTasks.get(tempNum));
+                                System.out.println("第" + tempNum + "次已发送" + allTasks.size());
+//                                pcapCount1 += 1;
+                                System.out.println("下一次发送：" + (tempNum + 1));
+                            } else {
+//                                sendLock.unlock();
+                                int temp = 0;//中途最后一个结果发回来，发送Empty，避免客户端发送ready后接收不到任务造成死锁
 
-                                    //找到没有完成的任务
-                                    for (Map.Entry<String, String> entry : allTasksTags.entrySet()) {
-                                        temp += 1;
-                                        System.out.println("遍历TaskCombination= " + entry.getKey() +
-                                                " and String = " + entry.getValue());
-                                        if (entry.getValue().equals("n")) {
-                                            userClient.sendTask(entry.getKey());
-                                            System.out.println("第二次发送的task：" + entry.getKey());
-                                            break;
-                                        }
-                                        if (temp == allTasksTags.size()) {
-                                            userClient.sendMsg("Empty");//全部结果已返回，客户端重新待命
-                                            System.out.println("发送Empty");
-                                            isEmpty = true;
-                                        }
+                                //找到没有完成的任务
+                                for (Map.Entry<String, String> entry : allTasksTags.entrySet()) {
+                                    temp += 1;
+                                    System.out.println("遍历TaskCombination= " + entry.getKey() +
+                                            " and String = " + entry.getValue());
+                                    if (entry.getValue().equals("n")) {
+                                        userClient.sendTask(entry.getKey());
+                                        System.out.println("第二次发送的task：" + entry.getKey());
+                                        break;
+                                    }
+                                    if (temp == allTasksTags.size()) {
+                                        userClient.sendMsg("Empty");//全部结果已返回，客户端重新待命
+                                        System.out.println("发送Empty");
+                                        isEmpty = true;
                                     }
                                 }
-                            } finally {
-                                sendLock.unlock();
                             }
+//                            } finally {
+//                                sendLock.unlock();
+//                            }
                         }
 
                         //接收结果
-                        recLock.lock();
-                        try {
+//                        recLock.lock();
+//                        try {
                             if (!isEmpty) {
                                 //判断是否返回已存在结果，若不存在，则接收
                                 task = userClient.receiveMsg();
@@ -1904,26 +1919,32 @@ public class Server {
 
                                 if (status.equals("Absent")) {
                                     status = null;
-                                    if (recCount < tasksCount) {
+                                    if (recCount.getAndIncrement() < tasksCount) {
                                         finalFolderPath = outPath;
                                         //接收文件
                                         receiveResult(finalFolderPath);
                                         updateMap(task);
-                                        recCount += 1;
-                                        pcapPanel.getBar().setValue(recCount);
+//                                        recCount += 1;
+                                        pcapPanel.getBar().setValue(recCount.get());
                                         pcapPanel.getjLabel().setText("阶段 1/3");
-                                        if (recCount == tasksCount) {
+                                        if (recCount.get() == tasksCount) {
 //                                    userClient.close();
                                             System.out.println("运行结束");
                                             comAndDel.lock();
                                             try {
-                                                combineFiles(combineFile);
-                                                System.out.println("文件已合并");
-                                                deleteFile(delFile);
-                                                System.out.println("文件已删除");
-                                                combineAndDelete = true;
-                                                firstConnected = false;
-                                                lastConnected = true;
+                                                if (!combineAndDelete) {
+                                                    combineFiles(combineFile);
+                                                    System.out.println("文件已合并");
+                                                    deleteFile(delFile);
+                                                    System.out.println("文件已删除");
+                                                    combineAndDelete = true;
+                                                    firstConnected = false;
+                                                    lastConnected = true;
+                                                } else {
+                                                    firstConnected = false;
+                                                    lastConnected = true;
+                                                    System.out.println("运行结束2");
+                                                }
                                             } finally {
                                                 comAndDel.unlock();
                                             }
@@ -1932,9 +1953,9 @@ public class Server {
                                     }
                                 } else if (status.equals("Existent")) {
                                     status = null;
-                                    if (recCount < tasksCount) {
+                                    if (recCount.get() < tasksCount) {
                                         continue;
-                                    } else if (recCount == tasksCount) {
+                                    } else if (recCount.get() == tasksCount) {
                                         comAndDel.lock();
                                         try {
                                             if (!combineAndDelete) {
@@ -1980,13 +2001,13 @@ public class Server {
                                 }
 //                            recCon.await();
                             }
-                        } finally {
-                            recLock.unlock();
-                        }
+//                        } finally {
+//                            recLock.unlock();
+//                        }
                     }
 
                     tasksCount = allTasks2.size();
-                    pcapPanel.getBar().setValue(recCount2);
+                    pcapPanel.getBar().setValue(recCount2.get());
                     pcapPanel.getBar().setMaximum(tasksCount);//进度条最大
                     pcapPanel.getjLabel().setText("阶段 2/3");
                     //执行后2步
@@ -1995,44 +2016,45 @@ public class Server {
                         System.out.println("last接收到ready");
                         userClient.sendMsg("Last");
                         if (dataFromClient.equals("Ready")) {
-                            //pcapCount1 < 或 =两种情况，只发送一次
-                            sendLock2.lock();
-                            try {
-                                if (pcapCount2 < allTasks2.size()) {
-                                    userClient.sendTask(allTasks2.get(pcapCount2));
-                                    System.out.println("第" + pcapCount2 + "次已发送" + allTasks2.size());
-                                    sendFileTask(allTasks2.get(pcapCount2).split(DELIMITER)[0]);//发送单个文件,routesrc/10.0.0.1_10.0.0.2.bin
-                                    pcapCount2 += 1;
-                                    System.out.println("下一次发送：" + pcapCount2);
-                                } else {
-                                    int temp = 0;//中途最后一个结果发回来，发送Empty，避免客户端发送ready后接收不到任务造成死锁
+//                            pcapCount1 < 或 =两种情况，只发送一次
+//                            sendLock2.lock();
+//                            try {
+                            int tempNum;//作为发送任务的临时变量
+                            if ((tempNum = pcapCount2.getAndIncrement()) < allTasks2.size()) {
+                                userClient.sendTask(allTasks2.get(tempNum));
+                                System.out.println("第" + tempNum + "次已发送" + allTasks2.size());
+                                sendFileTask(allTasks2.get(tempNum).split(DELIMITER)[0]);//发送单个文件,routesrc/10.0.0.1_10.0.0.2.bin
+//                                pcapCount2 += 1;
+                                System.out.println("下一次发送：" + (tempNum + 1));
+                            } else {
+                                int temp = 0;//中途最后一个结果发回来，发送Empty，避免客户端发送ready后接收不到任务造成死锁
 
-                                    //找到没有完成的任务
-                                    for (Map.Entry<String, String> entry : allTasksTags2.entrySet()) {
-                                        temp += 1;
-                                        System.out.println("遍历TaskCombination= " + entry.getKey() +
-                                                " and String = " + entry.getValue());
-                                        if (entry.getValue().equals("n")) {
-                                            userClient.sendTask(entry.getKey());
-                                            sendFileTask(entry.getKey().split(DELIMITER)[0]);
-                                            System.out.println("第二次发送的task：" + entry.getKey());
-                                            break;
-                                        }
-                                        if (temp == allTasksTags2.size()) {
-                                            userClient.sendMsg("Empty");//全部结果已返回，客户端重新待命
-                                            System.out.println("发送Empty");
-                                            isEmpty2 = true;
-                                        }
+                                //找到没有完成的任务
+                                for (Map.Entry<String, String> entry : allTasksTags2.entrySet()) {
+                                    temp += 1;
+                                    System.out.println("遍历TaskCombination= " + entry.getKey() +
+                                            " and String = " + entry.getValue());
+                                    if (entry.getValue().equals("n")) {
+                                        userClient.sendTask(entry.getKey());
+                                        sendFileTask(entry.getKey().split(DELIMITER)[0]);
+                                        System.out.println("第二次发送的task：" + entry.getKey());
+                                        break;
+                                    }
+                                    if (temp == allTasksTags2.size()) {
+                                        userClient.sendMsg("Empty");//全部结果已返回，客户端重新待命
+                                        System.out.println("发送Empty");
+                                        isEmpty2 = true;
                                     }
                                 }
-                            } finally {
-                                sendLock2.unlock();
                             }
+//                            } finally {
+//                                sendLock2.unlock();
+//                            }
                         }
 
                         //接收结果
-                        recLock2.lock();
-                        try {
+//                        recLock2.lock();
+//                        try {
                             if (!isEmpty2) {
                                 //判断是否返回已存在结果
                                 task2 = userClient.receiveMsg();
@@ -2047,29 +2069,39 @@ public class Server {
 
                                 if (status.equals("Absent")) {
                                     status = null;
-                                    if (recCount2 < tasksCount) {
+                                    if (recCount2.getAndIncrement() < tasksCount) {
                                         finalFolderPath = outPath;
                                         //接收文件
                                         receiveResult2(finalFolderPath);
                                         updateMap2(task2);
-                                        recCount2 += 1;
-                                        pcapPanel.getBar().setValue(recCount2);
+//                                        recCount2 += 1;
+                                        pcapPanel.getBar().setValue(recCount2.get());
                                         pcapPanel.getjLabel().setText("阶段 2/3");
-                                        if (recCount2 == tasksCount) {
-                                            System.out.println("运行结束2.1");
+                                        if (recCount2.get() == tasksCount) {
                                             comAndDel.lock();
                                             try {
-                                                combineFiles2(combineFile2);
-                                                System.out.println("文件已合并");
-                                                deleteFile(delFile2);
-                                                System.out.println("文件已删除");
-                                                combineAndDelete2 = true;
-                                                lastConnected = false;
-                                                firstConnected = true;
-                                                isEmpty = isEmpty2 = false;
-                                                isPcapSuspend = true;
-                                                setIsPcapRunning(false);
-                                                setIsRunning(false);
+                                                if (!combineAndDelete2) {
+                                                    combineFiles2(combineFile2);
+                                                    System.out.println("文件已合并");
+                                                    deleteFile(delFile2);
+                                                    System.out.println("文件已删除");
+                                                    combineAndDelete2 = true;
+                                                    lastConnected = false;
+                                                    firstConnected = true;
+                                                    isEmpty = isEmpty2 = false;
+                                                    isPcapSuspend = true;
+                                                    setIsPcapRunning(false);
+                                                    setIsRunning(false);
+                                                } else {
+                                                    lastConnected = false;
+                                                    firstConnected = true;
+                                                    isEmpty = isEmpty2 = false;
+                                                    isPcapSuspend = true;
+                                                    setIsPcapRunning(false);
+                                                    setIsRunning(false);
+                                                }
+                                                System.out.println("运行结束2.1");
+
                                             } finally {
                                                 comAndDel.unlock();
                                             }
@@ -2094,9 +2126,9 @@ public class Server {
                                     }
                                 } else if (status.equals("Existent")) {
                                     status = null;
-                                    if (recCount2 < tasksCount) {
+                                    if (recCount2.get() < tasksCount) {
                                         continue;
-                                    } else if (recCount2 == tasksCount) {
+                                    } else if (recCount2.get() == tasksCount) {
                                         comAndDel.lock();
                                         try {
                                             if (!combineAndDelete2) {
@@ -2158,9 +2190,9 @@ public class Server {
                                     comAndDel.unlock();
                                 }
                             }
-                        } finally {
-                            recLock2.unlock();
-                        }
+//                        } finally {
+//                            recLock2.unlock();
+//                        }
                     }
                 }
             } catch (IOException e) {
@@ -2300,11 +2332,11 @@ public class Server {
         }
 
         private void combineFiles(ConcurrentHashMap<String, String> combineFile) throws IOException {
-            System.out.println("combineFiles000: " + combineFile.size());
+//            System.out.println("combineFiles000: " + combineFile.size());
             for (Map.Entry<String, String> entry : combineFile.entrySet()) {
                 ArrayList<File> fileList = new ArrayList<File>();
                 getFilePath(fileList, entry.getValue(), "bin");//得到待删除文件
-                System.out.println("combineFiles:  " + fileList.size());
+//                System.out.println("combineFiles:  " + fileList.size());
 
                 File outputFile = new File(entry.getKey());
                 if (!outputFile.exists()) {
@@ -2351,7 +2383,7 @@ public class Server {
             File file = new File(fileName);
             if (file.exists()) {
                 if (file.isFile()){
-                    System.out.println("delfilename:   " + file.getName());
+//                    System.out.println("delfilename:   " + file.getName());
                     file.delete();
                 } else if (file.isDirectory()) {
                     File[] files = file.listFiles();
@@ -2359,7 +2391,7 @@ public class Server {
                         //删除子文件
                         deleteFile(files[i].getAbsolutePath());
                     }
-                    System.out.println("delfileDirename: " + file.getName());
+//                    System.out.println("delfileDirename: " + file.getName());
                     file.delete();
                 }
             } else {
@@ -2456,7 +2488,7 @@ public class Server {
                     if (!combineFile.containsKey(filePath)) {
                         combineFile.put(filePath, folderPath);
                         delFile.add(folderPath);//待删除的10.0.0.1_10.0.0.2文件夹里面的所有文件
-                        System.out.println("待删除的routesrc： " + folderPath);
+//                        System.out.println("待删除的routesrc： " + folderPath);
                         //生成第二步任务list
                         allTasks2.add(task2);
                         allTasksTags2.put(task2, "n");
