@@ -644,6 +644,7 @@ public class WavCluster {
 //			for(int label:labels)
 //				System.out.println(label);
 			
+			Map<String,ArrayList<SegPattern>> patternMap = new HashMap<String,ArrayList<SegPattern>> ();
 			for(int i=0;i<xlabels.length;i++)
 			{
 				//if(xlabels[i]==0)
@@ -653,7 +654,34 @@ public class WavCluster {
 				dataItem.setData(String.valueOf(xlabels[i]*6+ylabels[i]));
 				
 				dataItem.setTime(dataItems.getTime().get(patterns.get(i).getStart()));
+				
 				result.add1Data(dataItem);
+				SegPattern segPattern = new SegPattern();
+				segPattern.setAngle(angleinstances.get(i).get(0));
+				segPattern.setLength(leninstances.get(i).get(0));
+				if(patternMap.containsKey(dataItem.getData()))
+					patternMap.get(dataItem.getData()).add(segPattern);
+				else
+				{
+					ArrayList<SegPattern> list = new ArrayList<SegPattern> ();
+					list.add(segPattern);
+					patternMap.put(dataItem.getData(), list);
+				}
+			}
+			for(Map.Entry<String, ArrayList<SegPattern>> entry:patternMap.entrySet())
+			{
+				ArrayList<SegPattern> list = entry.getValue();
+				SegPattern pattern = new SegPattern();
+				double angleSum=0;
+				double lenSum=0;
+				for(int i=0;i<list.size();i++)
+				{
+					angleSum+=list.get(i).getAngle();
+					lenSum  +=list.get(i).getLength();
+				}
+				pattern.setAngle(angleSum/list.size());
+				pattern.setLength(lenSum/list.size());
+				clusterCentroids.put(entry.getKey(),pattern);
 			}
 		}
 		catch(Exception e)
