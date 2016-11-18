@@ -10,6 +10,7 @@ import java.net.InetAddress;
 
 /**
  * Created by zsc on 2016/10/12.
+ * 分布式配置JPanel
  */
 public class DisPanel extends JDialog {
     private JPanel panel = new JPanel();

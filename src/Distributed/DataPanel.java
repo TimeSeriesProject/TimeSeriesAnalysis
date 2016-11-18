@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 
 /**
  * Created by zsc on 2016/6/30.
+ * 客户端JPanel
  */
 public class DataPanel extends JPanel {
     private Client client = null;
