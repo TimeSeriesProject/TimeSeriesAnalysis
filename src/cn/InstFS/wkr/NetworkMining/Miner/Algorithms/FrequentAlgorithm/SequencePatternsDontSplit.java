@@ -1,3 +1,4 @@
+
 package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm;
 
 import java.text.SimpleDateFormat;
@@ -37,6 +38,8 @@ public class SequencePatternsDontSplit {
 	private DataItems dataItems;
 	private TaskElement task;
 	private List<ArrayList<String>> patterns;
+	//模式的支持度
+	private HashMap<ArrayList<String>, Integer> patternsSupDegree;
 	private int winSize = 100; // 单位为秒
 	private int stepSize = 10;
 	private Date minDate = null;
@@ -48,6 +51,7 @@ public class SequencePatternsDontSplit {
 		this.winSize=paramsSM.getSMparam().getSizeWindow();
 		this.stepSize=paramsSM.getSMparam().getStepWindow();
 		this.threshold=paramsSM.getSMparam().getMinSupport();
+		patternsSupDegree=new HashMap<ArrayList<String>, Integer>();
 		
 	}
 	public SequencePatternsDontSplit(DataItems dataItems, TaskElement task,
@@ -55,6 +59,7 @@ public class SequencePatternsDontSplit {
 		this.dataItems = dataItems;
 		this.task = task;
 		this.patterns = patterns;
+		patternsSupDegree=new HashMap<ArrayList<String>, Integer>();
 		
 		this.winSize=paramsSM.getSMparam().getSizeWindow();
 		this.stepSize=paramsSM.getSMparam().getStepWindow();
@@ -87,6 +92,7 @@ public class SequencePatternsDontSplit {
 		//计算各个频繁序列可能出现的位置
 		HashMap<String, ArrayList<Integer>> position = getItemSamplePosition(
 				sliceSequence, BasicSequence,thresh);
+		HashMap<String, Integer> supportDegree=new HashMap<String, Integer>();
 		
 		//得到满足条件的频繁项
 		ArrayList<String> sequenceResult = new ArrayList<String>();
@@ -94,12 +100,12 @@ public class SequencePatternsDontSplit {
 		ArrayList<String> NewestSequence = (ArrayList<String>)BasicSequence.clone();
 		while (true) {
 			NewestSequence = getNewFrequentItemsAndJudge(BasicSequence,NewestSequence,
-					sliceSequence,position,thresh);
+					sliceSequence,position,supportDegree,thresh);
 			if(NewestSequence.size() == 0)
 				break;
 			sequenceResult.addAll(NewestSequence);
 		}
-		ArrayList<ArrayList<String>> patternResult = convertToStandard(sequenceResult);
+		ArrayList<ArrayList<String>> patternResult = convertToStandard(sequenceResult,supportDegree);
 		return patternResult;
 	}
 	/**
@@ -108,11 +114,12 @@ public class SequencePatternsDontSplit {
 	 * @return
 	 */
 	private ArrayList<ArrayList<String>> convertToStandard(
-			ArrayList<String> sequenceResult) {
+			ArrayList<String> sequenceResult,HashMap<String, Integer> supportDegree) {
 		
 		ArrayList<ArrayList<String>> patternResult = new ArrayList<ArrayList<String>>();
 		for(int i = 0;i < sequenceResult.size();i++)
 		{
+			int degree=supportDegree.get(sequenceResult.get(i));
 			ArrayList<String> items = new ArrayList<String>();
 			String[] sample = sequenceResult.get(i).split(",");
 			for(int j = 0;j < sample.length;j++)
@@ -120,6 +127,7 @@ public class SequencePatternsDontSplit {
 				items.add(sample[j]);
 			}
 			patternResult.add(items);
+			patternsSupDegree.put(items,degree);
 		}
 		return patternResult;
 	}
@@ -133,10 +141,9 @@ public class SequencePatternsDontSplit {
 	 * @return  所有新增的频繁项集
 	 */
 	private ArrayList<String> getNewFrequentItemsAndJudge(
-			ArrayList<String> basicSequence,
-			ArrayList<String> newestSequence,
-			String sliceSequence,
-			HashMap<String, ArrayList<Integer>> position, double thresh) {
+			ArrayList<String> basicSequence,ArrayList<String> newestSequence,
+			String sliceSequence,HashMap<String, ArrayList<Integer>> position,
+			HashMap<String, Integer> supportDegree, double thresh) {
 		
 		ArrayList<String> new_sequence = new ArrayList<String>();
 		for(int i = 0;i < newestSequence.size();i++)
@@ -150,7 +157,7 @@ public class SequencePatternsDontSplit {
 					int a = 0;
 					a ++;
 				}
-				if(isSatisfied(first_item,last_item,sliceSequence,position,thresh))
+				if(isSatisfied(first_item,last_item,sliceSequence,position,supportDegree,thresh))
 				{
 					new_sequence.add(first_item+","+last_item);
 				}
@@ -168,7 +175,8 @@ public class SequencePatternsDontSplit {
 	 * @return  所有满足阈值的储备频繁项
 	 */
 	private boolean isSatisfied(String first_item, String last_item,
-			String sliceSequence,HashMap<String, ArrayList<Integer>> position, double thresh) {
+			String sliceSequence,HashMap<String, ArrayList<Integer>> position,
+			HashMap<String, Integer> supportDegree, double thresh) {
 		
 		ArrayList<Integer> ps = position.get(first_item);
 		if(ps == null)
@@ -198,6 +206,7 @@ public class SequencePatternsDontSplit {
 		{
 			hasFreItems=true;
 			position.put(first_item+","+last_item, asi_list);
+			supportDegree.put(first_item+","+last_item, asi_list.size());
 			return true;
 		}
 		return false;
@@ -393,6 +402,14 @@ public class SequencePatternsDontSplit {
 	public void setThreshold(double threshold) {
 		this.threshold = threshold;
 	}
+	
+	public HashMap<ArrayList<String>, Integer> getPatternsSupDegree() {
+		return patternsSupDegree;
+	}
+	public void setPatternsSupDegree(
+			HashMap<ArrayList<String>, Integer> patternsSupDegree) {
+		this.patternsSupDegree = patternsSupDegree;
+	}
 
 	public int getStepSize() {
 		return stepSize;
@@ -477,16 +494,5 @@ public class SequencePatternsDontSplit {
 		Collections.sort(list, new compareCmp());
 		return list;
 	}
-	/**
-	 * 修改类标签的名字，把类中心改为1,2,3...*/
-	public Map<Integer, List<String>> changeLabelName(Map<Integer, List<String>> frequentItem){
-		Map<Integer, List<String>> frequentItem2 = new HashMap<Integer, List<String>>();
-		int label = 1;
-		for(Map.Entry<Integer, List<String>> entry:frequentItem.entrySet()){
-			List<String> value = entry.getValue();
-			frequentItem2.put(label, value);
-			label++;
-		}
-		return frequentItem2;
-	}
 }
+

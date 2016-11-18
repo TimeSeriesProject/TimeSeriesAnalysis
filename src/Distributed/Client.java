@@ -120,7 +120,8 @@ public class Client {
     }
 
     private String getPart1(String tasks) {
-        return tasks.substring(0, tasks.indexOf("-"));
+        return tasks.substring(tasks.lastIndexOf("\\") - 1, tasks.lastIndexOf("\\"));//得到sub文件夹，例如0,1...
+//        return tasks.substring(0, tasks.indexOf("-"));
     }
 
     //接收信息封装
@@ -270,6 +271,7 @@ public class Client {
                         fileList.clear();//清空文件list
                         getTaskList(tasks);//生成filelist,子文件夹及子文件目录与服务端一致
                         part1 = getPart1(tasks);//发送来的一个任务代表一个路由节点的所有pcap文件，part1代表路由节点的名称
+                        System.out.println("part1: " + part1);
                         pcapUtils = new PcapUtils();
                         dataPanel.sendLog("正在执行First2Step");
                         pcapUtils.First2Step(fileList, outPath + part1);//执行前两步每次在不同的文件夹下保存结果
@@ -293,6 +295,7 @@ public class Client {
                             continue;//所有结果已发送，返回
                         }
                         part2 = getPart2(tasks2);//得到10.0.0.1_10.0.0.2
+                        System.out.println("part2: " + part2);
                         //删除已存在的所有文件
                         File ff = new File(outPath + part2);
                         if (ff.exists() && ff.isDirectory()) {

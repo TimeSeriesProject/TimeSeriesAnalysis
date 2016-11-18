@@ -59,6 +59,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
+import org.jfree.util.ShapeUtilities;
 import org.openide.loaders.TemplateWizard.Iterator;
 
 public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowResults{
@@ -271,68 +272,64 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 	private static XYDataset createDataset(DataItems data,Map<Integer,ArrayList<NodeSection>> map){
 		XYSeries xyseries = new XYSeries("原序列");
 		XYSeriesCollection XYSeriesCollection=new XYSeriesCollection();
-			
-			
-			
-			
-				// 获取正常数据的长度、
-				int length = data.getLength();
-				int time[] = new int[length];
-				
-				
-				
-				 Object[] key=map.keySet().toArray();
-				 for(int i=0;i<map.size();i++){
-					 XYSeries x=new XYSeries("	周期："+key[i]+"");
-					 ArrayList<NodeSection> list=map.get(key[i]);
-					 java.util.Iterator<NodeSection> it=list.iterator();
-					 int b;
-					 int e=0;
-					 while(it.hasNext()){
-						 NodeSection nodesection=it.next();
-						/* int k=(nodesection.begin+nodesection.end)/2;
-						 XYPointerAnnotation xypointerannotation1 = new XYPointerAnnotation("wqe", k, Double.parseDouble(data.getElementAt(k).getData()), 3.9269908169872414D );
-						 plot.addAnnotation(xypointerannotation1);*/
-						 if((nodesection.begin-e)>1){
-							 x.add(e+1,null);
-						 }
-						 b=nodesection.begin;
-						 e=nodesection.end;
-						 int p=(int)key[i];
-						
-						 
-						 for(int j=b;j<e;j++){
-							 x.add(j,Double.parseDouble(data.getElementAt(j).getData()));
-							
-							 
-					      }
-					 }
-					 x.add(e+1,null);
-					 XYSeriesCollection.addSeries(x); 
-					
-
-				 }
-			
-				
-
-
-				for (int i = 0; i < length; i++) {
-					DataItem temp = new DataItem();
-
-					temp = data.getElementAt(i);
-
-					// System.out.println("DataItem.time=" + temp.getTime().getTime());
-
-					xyseries.add(i,Double.parseDouble(temp.getData())); // 对应的横轴
-
-				}
-
-				XYSeriesCollection.addSeries(xyseries);
-			
-	
-			
-	
 		
+		
+			
+			
+			
+		// 获取正常数据的长度、
+		int length = data.getLength();
+		int time[] = new int[length];
+		
+		
+		
+		 Object[] key=map.keySet().toArray();
+		 int num=0;
+		 for(int i=0;i<map.size();i++){
+			
+			 ArrayList<NodeSection> list=map.get(key[i]);
+			 java.util.Iterator<NodeSection> it=list.iterator();
+			 int b;
+			 int e=0;
+			 while(it.hasNext()){
+				 num++;
+				 XYSeries x=new XYSeries("	周期"+num+"");
+				 NodeSection nodesection=it.next();
+				/* int k=(nodesection.begin+nodesection.end)/2;
+				 XYPointerAnnotation xypointerannotation1 = new XYPointerAnnotation("wqe", k, Double.parseDouble(data.getElementAt(k).getData()), 3.9269908169872414D );
+				 plot.addAnnotation(xypointerannotation1);*/
+//						 if((nodesection.begin-e)>1){
+//							 x.add(e+1,null);
+//						 }
+				 b=nodesection.begin;
+				 e=nodesection.end;
+				 int p=(int)key[i];
+				
+				 
+				 for(int j=b;j<e;j++){
+					 x.add(j,Double.parseDouble(data.getElementAt(j).getData()));
+					
+					 
+			      }
+				 XYSeriesCollection.addSeries(x); 
+			 }
+			// x.add(e+1,null);
+			
+			
+
+		 }
+			
+		 for (int i = 0; i < length; i++) {
+				DataItem temp = new DataItem();
+
+				temp = data.getElementAt(i);
+
+				// System.out.println("DataItem.time=" + temp.getTime().getTime());
+
+				xyseries.add(i,Double.parseDouble(temp.getData())); // 对应的横轴
+
+			}	
+		 XYSeriesCollection.addSeries(xyseries);	
 		
 		return   XYSeriesCollection;
 		
@@ -352,6 +349,10 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 		xylineandshaperenderer.setSeriesShapesVisible(0, false);*/
 /*		xylineandshaperenderer.setSeriesLinesVisible(1, true);
 		xylineandshaperenderer.setSeriesShapesVisible(1, false);*/
+
+       
+		int last =xydataset.getSeriesCount();
+		xylineandshaperenderer.setSeriesPaint(last-1, Color.black);
 		xylineandshaperenderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
 		xylineandshaperenderer.setDefaultEntityRadius(6);
 		xyplot.setRenderer(xylineandshaperenderer);

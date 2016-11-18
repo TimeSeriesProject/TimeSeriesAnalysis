@@ -24,11 +24,13 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.ARIMATSA;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.NeuralNetwork;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.SMForecast;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm.SequencePatternsDontSplit;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.GaussianOutlierDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalPeriod;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalPeriodDetectionWitnDTW;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalPeriodMinerERP;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.PartialCycle;
@@ -220,7 +222,9 @@ class NodeTimerTask extends TimerTask{
 	
 	private void PMDetect(DataItems dataItems,List<TaskElement>tasks){
 
+		DataItems clusterItems=null;
 		DataItems oriDataItems=dataItems;
+		SequencePatternsDontSplit sequencePattern=null;
 		//results.setInputData(oriDataItems);
 		boolean minePartialCycle = true; // 判断是否挖掘部分周期
 		for(TaskElement task:tasks){
@@ -341,26 +345,37 @@ class NodeTimerTask extends TimerTask{
 					forecast.TimeSeriesAnalysis();
 					System.out.println(task.getTaskName()+" forecast over");
 					setForecastResult(results, forecast);
-				} */else {
+				} *//*else {
 					NeuralNetwork forecast=new NeuralNetwork(dataItems, task,
 							ParamsAPI.getInstance().getParamsPrediction().getNnp());
 					System.out.println(task.getTaskName()+" forecast start");
 					forecast.TimeSeriesAnalysis();
 					System.out.println(task.getTaskName()+" forecast over");
 					setForecastResult(results, forecast);
-					/*ARIMATSA forecast=new ARIMATSA(task, dataItems,
-							ParamsAPI.getInstance().getParamsPrediction().getAp());
+				}*/else{
+					SMForecast forecast=new SMForecast(clusterItems, sequencePattern.getPatterns(),
+							sequencePattern.getPatternsSupDegree(), WavCluster.clusterCentroids,
+							task, oriDataItems);
+					System.out.println(task.getTaskName()+" forecast start");
 					forecast.TimeSeriesAnalysis();
-					setForecastResult(results, forecast);*/
+					System.out.println(task.getTaskName()+" forecast over");
+					if(forecast.getPredictItems()==null||forecast.getPredictItems().getLength()<=0){
+						NeuralNetwork workforecast=new NeuralNetwork(dataItems, task,
+								ParamsAPI.getInstance().getParamsPrediction().getNnp());
+						System.out.println(task.getTaskName()+" forecast start");
+						workforecast.TimeSeriesAnalysis();
+						System.out.println(task.getTaskName()+" forecast over");
+						setForecastResult(results, workforecast);
+					}else{
+				    	setForecastResult(results, forecast);
+					}
 				}
-
 				break;
 			case MiningMethods_SequenceMining:
 				
 				ParamsSM paramsSM = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
 				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
 //				LinePattern segment = new LinePattern(dataItems, 0.06);
-				DataItems clusterItems=null;
 				List<PatternMent> segPatterns=segment.getPatterns();
 				
 				//kmeans聚类
@@ -377,7 +392,7 @@ class NodeTimerTask extends TimerTask{
 				TranDPCluster dpCluster = new TranDPCluster(dataItems, segPatterns, arp);
 				clusterItems = dpCluster.getClusterItems();
 				
-				SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit(paramsSM);
+				sequencePattern=new SequencePatternsDontSplit(paramsSM);
 				sequencePattern.setDataItems(clusterItems);
 				sequencePattern.setTask(task);
 
@@ -393,8 +408,10 @@ class NodeTimerTask extends TimerTask{
 				} else {
 					/*LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
 					results.getRetNode().setRetPartialCycle(dtw.getResult());*/
-					LocalPeriodMinerERP localPeriodMinerERP = new LocalPeriodMinerERP(dataItems,0.15,300);
-					results.getRetNode().setRetPartialCycle(localPeriodMinerERP.getResult());
+//					LocalPeriodMinerERP localPeriodMinerERP = new LocalPeriodMinerERP(dataItems,0.15,300);
+					LocalPeriod localPeriod = new LocalPeriod(dataItems,0.15,300);
+//					results.getRetNode().setRetPartialCycle(localPeriodMinerERP.getResult());
+					results.getRetNode().setRetPartialCycle(localPeriod.getResult());
 				}				
 				/*if(task.getRange().equals("10.0.7.2"))
 				{

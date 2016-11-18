@@ -375,18 +375,32 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 				switch (task.getMiningMethod()) {
 					case MiningMethods_SimilarityMining:
 						NetworkMinerProtocolAssSim minerSim =new NetworkMinerProtocolAssSim(task,null);
-						minerSim.getResults().setRetSim(resultsMap.get(taskCombination).getRetSim());
-						minerSim.getResults().setInputData(taskCombination.getDataItems());
-						minerSim.isOver.setIsover(true);
-						allMiners.put(task, minerSim);
+
+						if(resultsMap.containsKey(taskCombination)) {
+
+							MinerResultsFP_Whole retSim = resultsMap.get(taskCombination).getRetSim();
+							minerSim.getResults().setRetSim(retSim);
+							minerSim.getResults().setInputData(taskCombination.getDataItems());
+							minerSim.isOver.setIsover(true);
+							allMiners.put(task, minerSim);
+						}
+						else {
+							System.out.println("对应任务没有完成。");
+						}
+
 						break;
 					case MiningMethods_FrequenceItemMining:
 
 						NetworkMinerProtoclAssLine minerFPLine=new NetworkMinerProtoclAssLine(task, null);
-						minerFPLine.getResults().setRetFPLine(resultsMap.get(taskCombination).getRetFP());
-						minerFPLine.isOver.setIsover(true);
-						minerFPLine.getResults().setInputData(taskCombination.getDataItems());
-						allMiners.put(task, minerFPLine);
+
+						if(resultsMap.containsKey(taskCombination)) {
+
+							minerFPLine.getResults().setRetFPLine(resultsMap.get(taskCombination).getRetFP());
+							minerFPLine.isOver.setIsover(true);
+							minerFPLine.getResults().setInputData(taskCombination.getDataItems());
+							allMiners.put(task, minerFPLine);
+						}
+
 						break;
 					default:
 						break;

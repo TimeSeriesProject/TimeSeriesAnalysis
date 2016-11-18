@@ -26,7 +26,7 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
 
     ProtocolAssMinerFactoryDis(){
         super(MinerType.MiningType_ProtocolAssociation.toString());
-        dataPath = GlobalConfig.getInstance().getDataPath() + "\\traffic";
+        dataPath = GlobalConfig.getInstance().getDataPath() + "\\trafficDiff";
 
         List<MiningObject> miningObjectList = this.getMiningObjectList();
         miningObjectList.add(MiningObject.MiningObject_Traffic);
@@ -104,15 +104,17 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
         while(iter_i.hasNext()) {
 
             String ip_i = iter_i.next();
-
+            set.add(ip_i);
+            if(rawDataList.get(ip_i).data.size() == 0)
+                continue;
             Iterator<String> iter_j = rawDataList.keySet().iterator();
             while(iter_j.hasNext()) {
 
                 String ip_j = iter_j.next();
                 if(set.contains(ip_j))
                     continue;
-                set.add(ip_j);
-
+                if(rawDataList.get(ip_j).data.size() == 0)
+                    continue;
                 TaskCombination taskCombination = new TaskCombination();
                 taskCombination.getTasks().add(
                         generateIpPairTask(granularity,MiningMethod.MiningMethods_SimilarityMining,ip_i,ip_j));
@@ -131,7 +133,6 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
                 taskCombination.setName();
                 taskCombination.setMinerType(MinerType.MiningType_ProtocolAssociation);
                 TaskCombinationList.addTaskOnly(taskCombination, false);
-//                TaskElement.add1Task(taskCombination, false);
             }
         }
         rawDataList.clear();

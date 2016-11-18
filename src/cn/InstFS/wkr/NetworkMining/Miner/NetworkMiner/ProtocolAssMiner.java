@@ -172,6 +172,7 @@ class ProtocolMinerTask extends TimerTask{
 				ProtocolAssociationLine pal = new ProtocolAssociationLine(eachProtocolItems,
 						ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams());
 				protocolAssResult.setRetFP(pal.miningAssociation());
+				results.setRetProtocol(protocolAssResult);
 				break;
 			case MiningMethods_SimilarityMining:
 				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_SimilarityProtocolASS)){
