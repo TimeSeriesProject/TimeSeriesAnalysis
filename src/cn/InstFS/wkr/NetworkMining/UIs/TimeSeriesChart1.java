@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -115,11 +116,6 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalP
 import associationRules.LinePos;
 import associationRules.ProtoclPair;
 
-/**
- * An example of a time series chart. For the most part, default settings are
- * used, except that the renderer is modified to show filled shapes (as well as
- * lines) at each data point.
- */
 public class TimeSeriesChart1 extends Composite {
 
 	public Group controller = null;
@@ -144,34 +140,29 @@ public class TimeSeriesChart1 extends Composite {
 		String protocol2 = pp.getProtocol2();
 		final JScrollBar scroller;
 		// 归一化两条曲线，只显示线段化得数据点
-		
+
 		final DataItems dataitems1 = DataItemsNormalization(pp.getDataItems1(),
 				1);
 		final DataItems dataitems2 = DataItemsNormalization(pp.getDataItems2(),
 				0);
 
-		//LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataitems2,0.95,0.85);
-		// 初始化原始序列数据集合
-/*		normalizationDataset = createNormalDataset(dataitems1, dataitems2, protocol1,
-				protocol2);*/
-		//normalizationDataset=new  XYSeriesCollection();
-		//原始序列数据集
-		XYDataset initialDataset = createNormalDataset(pp.getDataItems1(), pp.getDataItems2(), protocol1,
-				protocol2);
-		//创建关联挖掘图表的数据集，包含两条原始序列和模式序列数据
-		createLineDataset(dataitems1, dataitems2,protocol1,protocol2, pp.getMapAB());
+		// 原始序列数据集
+		XYDataset initialDataset = createNormalDataset(pp.getDataItems1(),
+				pp.getDataItems2(), protocol1, protocol2);
+		// 创建关联挖掘图表的数据集，包含两条原始序列和模式序列数据
+		createLineDataset(dataitems1, dataitems2, protocol1, protocol2,
+				pp.getMapAB());
 
 		// 创建原始图
-		String chartname =" TimeSeriesChart" ;
-		String subtitle ="Confidence("+protocol1+","+protocol2+"):"
-				+ String.format("%.4f",pp.confidence)  ;
-		chart = createChart(normalizationDataset, pp.getMapAB(), chartname,subtitle,
-				protocol1, protocol2);
+		String chartname = "时间序列";
+		String subtitle = "Confidence(" + protocol1 + "," + protocol2 + "):"
+				+ String.format("%.4f", pp.confidence);
+		chart = createChart(normalizationDataset, pp.getMapAB(), chartname,
+				subtitle, protocol1, protocol2);
 		JFreeChart initialChart = createChart(initialDataset, pp.getMapAB(),
-				chartname, null,protocol1, protocol2);
-		//原图显示坐标轴
-		//((XYPlot) initialChart.getPlot()).getRangeAxis().setVisible(true);
-		
+				"原始图", null, protocol1, protocol2);
+		// 原图显示坐标轴
+		// ((XYPlot) initialChart.getPlot()).getRangeAxis().setVisible(true);
 
 		GridLayout ParentsLayout = new GridLayout();
 		ParentsLayout.numColumns = 1;
@@ -185,21 +176,9 @@ public class TimeSeriesChart1 extends Composite {
 
 		// 初始化模式
 		modelAnnotation = new HashMap<String, ArrayList<XYPolygonAnnotation>>();
-		modelColor=new HashMap<String,Color>();
+		modelColor = new HashMap<String, Color>();
 
 		ChartComposite frame = new ChartComposite(this, SWT.NONE, chart, true);
-
-		frame.addMouseWheelListener(new MouseWheelListener(){
-
-			@Override
-			public void mouseScrolled(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
-		
-		
 		frame.setDisplayToolTips(true);
 		frame.setHorizontalAxisTrace(false);
 		frame.setVerticalAxisTrace(false);
@@ -232,45 +211,36 @@ public class TimeSeriesChart1 extends Composite {
 		Object[] s = pp.getMapAB().keySet().toArray();
 		modelnum = s.length;
 		int[] model = new int[modelnum];
-		int[] modelcount=new int[modelnum];
+		int[] modelcount = new int[modelnum];
 		for (int i = 0; i < modelnum; i++)
 
 		{
 			model[i] = Integer.parseInt("" + s[i]);
-			modelcount[i]=pp.getMapAB().get(s[i]).size();
-			//System.out.println("model:" + Integer.parseInt("" + s[i])+" count"+modelcount[i]);
+			modelcount[i] = pp.getMapAB().get(s[i]).size();
+			// System.out.println("model:" + Integer.parseInt("" +
+			// s[i])+" count"+modelcount[i]);
 		}
-		
 
-		
-		
-		
-		
 		/*
-		 *  model 模式   modelcount 模式次数
-		 *  此段对模式次数进行排序
+		 * model 模式 modelcount 模式次数 此段对模式次数进行排序
 		 */
 
-		for(int i=0;i<modelnum;i++){
-			int maxmodel=model[i];
-			int maxmodelcount=modelcount[i];
-			for(int j=i;j<modelnum;j++){
-				if(modelcount[j]>maxmodelcount){
-					maxmodel=model[j];
-					model[j]=model[i];
-					model[i]=maxmodel;
-					
-					maxmodelcount=modelcount[j];
-					modelcount[j]=modelcount[i];
-					modelcount[i]=maxmodelcount;
+		for (int i = 0; i < modelnum; i++) {
+			int maxmodel = model[i];
+			int maxmodelcount = modelcount[i];
+			for (int j = i; j < modelnum; j++) {
+				if (modelcount[j] > maxmodelcount) {
+					maxmodel = model[j];
+					model[j] = model[i];
+					model[i] = maxmodel;
+
+					maxmodelcount = modelcount[j];
+					modelcount[j] = modelcount[i];
+					modelcount[i] = maxmodelcount;
 				}
 			}
 		}
-		
 
-		
-		
-		
 		isModelSelected = new HashMap<String, Integer>();
 		for (int i = 0; i < model.length; i++) {
 			isModelSelected.put("" + model[i], 0);
@@ -278,25 +248,29 @@ public class TimeSeriesChart1 extends Composite {
 
 		final Button[] button = new Button[modelnum];
 		for (int j = 0; j < modelnum; j++) {
-			Color aColor=getColor(color++);
-			modelColor.put(""+model[j], aColor);
+			Color aColor = getColor(color++);
+			modelColor.put("" + model[j], aColor);
 			button[j] = new Button(controller, SWT.CHECK);
-			Label colorLabel=new Label(controller,SWT.NULL);
-			button[j].setText("模式:" + model[j]+"("+modelcount[j]+")");
+			Label colorLabel = new Label(controller, SWT.NULL);
+			button[j].setText("模式:" + model[j] + "(" + modelcount[j] + ")");
 			colorLabel.setText("——	");
-			RGB rgb=new RGB(aColor.getRed(),aColor.getGreen(),aColor.getBlue());
-			
-			org.eclipse.swt.graphics.Color swtcolor=new org.eclipse.swt.graphics.Color(this.getDisplay(),rgb);
+			RGB rgb = new RGB(aColor.getRed(), aColor.getGreen(),
+					aColor.getBlue());
+
+			org.eclipse.swt.graphics.Color swtcolor = new org.eclipse.swt.graphics.Color(
+					this.getDisplay(), rgb);
 			colorLabel.setForeground(swtcolor);
-			/*colorLabel.setFont(new Font(this.getDisplay(),"宋体",30, SWT.NULL));*/
+
 			swtcolor.dispose();
-			
+
 			final int temp = j;
 			button[j].addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					// System.out.println("model "+.getText()+"is selected!");
-					//注意：易错点  button文本为"模式:5(10)" 意思为模式5出现了10次，以下挖出模式key,直接根据“（”会报错，解决办法使用\\(
-					String key = (button[temp].getText().split(":")[1].split("\\(")[0]);
+					// 注意：易错点 button文本为"模式:5(10)"
+					// 意思为模式5出现了10次，以下挖出模式key,直接根据“（”会报错，解决办法使用\\(
+					String key = (button[temp].getText().split(":")[1]
+							.split("\\(")[0]);
 					// System.out.println("key ="+key);
 					// System.out.println("model key="+key);
 					if (button[temp].getSelection()) {
@@ -331,19 +305,14 @@ public class TimeSeriesChart1 extends Composite {
 
 	}
 
-	private int[] sort(int[] model, int[] modelcount) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/*
-	 * 模式线段显示绘图控制，只显示选中的按钮进行绘制线段
+	/**
+	 * @功能：模式线段显示绘图控制，只显示选中的按钮进行绘制线段
 	 */
 	public void paintModelSegment(
 			Map<String, ArrayList<double[]>> IndexOfModelInDataset,
 			String modelname) {
 		ArrayList<double[]> modeldata;
-		//System.out.println("keySet=" + IndexOfModelInDataset.keySet());
+		// System.out.println("keySet=" + IndexOfModelInDataset.keySet());
 		ArrayList<XYPolygonAnnotation> list = new ArrayList<XYPolygonAnnotation>();
 		if (IndexOfModelInDataset.keySet().contains(modelname)) {
 			modeldata = IndexOfModelInDataset.get(modelname);
@@ -351,20 +320,19 @@ public class TimeSeriesChart1 extends Composite {
 
 			while (it.hasNext()) {
 				XYPolygonAnnotation xypolygonannotation = new XYPolygonAnnotation(
-						(double[]) it.next(), new BasicStroke(0.5F), new Color(255,255,255,100), modelColor.get(modelname));// new
-																			// Color(200,
-																			// 200,
-																			// 255,
-																			// 100)
+						(double[]) it.next(), new BasicStroke(0.5F), new Color(
+								255, 255, 255, 100), modelColor.get(modelname));// new
+				// Color(200,
+				// 200,
+				// 255,
+				// 100)
 				xypolygonannotation.setToolTipText("Count:" + modeldata.size());
-				
-				
+
 				list.add(xypolygonannotation);
 				barrenderer
 						.addAnnotation(xypolygonannotation, Layer.BACKGROUND);
-			//	xypolygonannotation.
+				// xypolygonannotation.
 			}
-
 
 			//
 			modelAnnotation.put(modelname, list);
@@ -374,8 +342,8 @@ public class TimeSeriesChart1 extends Composite {
 		}
 	}
 
-	/*
-	 * 冒泡排序
+	/**
+	 * @功能：冒泡排序
 	 */
 	public static int[] sort(int[] values) {
 		int temp;
@@ -391,8 +359,8 @@ public class TimeSeriesChart1 extends Composite {
 		return values;
 	}
 
-	/*
-	 * getDataItems 功能：通过start end 取出DataItems上的线段保存进一个新的DataItems并返回
+	/**
+	 * @功能：通过start end 取出DataItems上的线段保存进一个新的DataItems并返回
 	 */
 	public static DataItems getDataItems(DataItems dataitems, int start, int end) {
 		DataItems ret = new DataItems();
@@ -407,8 +375,8 @@ public class TimeSeriesChart1 extends Composite {
 
 	}
 
-	/*
-	 * 归一化DataItems中的List<String>,并且曲线向上平移addanumber个单位长度
+	/**
+	 * @功能：归一化DataItems中的List<String>,并且曲线向上平移addanumber个单位长度
 	 */
 	public DataItems DataItemsNormalization(DataItems data, int addanumber) {
 		DataItems ret = new DataItems();
@@ -458,24 +426,34 @@ public class TimeSeriesChart1 extends Composite {
 
 	}
 
+	/**
+	 * @功能：创建主图
+	 * @param initialDataset
+	 * @param mapAB
+	 * @param chartname
+	 * @param subtitle
+	 * @param protocol1
+	 * @param protocol2
+	 * @return
+	 */
 	public static JFreeChart createChart(XYDataset initialDataset,
-			Map<String, ArrayList<LinePos>> mapAB, String chartname,String subtitle,
-			String protocol1, String protocol2) {
+			Map<String, ArrayList<LinePos>> mapAB, String chartname,
+			String subtitle, String protocol1, String protocol2) {
 
 		JFreeChart jfreechart = ChartFactory.createXYLineChart(chartname,
 				"Time", "Value", initialDataset);
-		if(subtitle!=null){
+		if (subtitle != null) {
 			jfreechart.addSubtitle(new TextTitle(subtitle));
 		}
-		
+
 		jfreechart.getLegend().visible = false;
 
 		XYPlot xyplot = (XYPlot) jfreechart.getPlot();
-		ValueAxis rangeAxis=xyplot.getRangeAxis();
+		ValueAxis rangeAxis = xyplot.getRangeAxis();
 		rangeAxis.setVisible(false);
 		NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
 		numberaxis.setAutoRangeIncludesZero(false);
-	//	numberaxis.setVisible(false);
+		// numberaxis.setVisible(false);
 		java.awt.geom.Ellipse2D.Double double1 = new java.awt.geom.Ellipse2D.Double(
 				-4D, -4D, 6D, 6D);
 
@@ -486,35 +464,27 @@ public class TimeSeriesChart1 extends Composite {
 		barrenderer.setSeriesLinesVisible(0, true);
 		barrenderer.setBaseShapesVisible(false);
 		barrenderer.setSeriesShape(0, double1);
-		Color color=new Color(0,0,255,150);
+		Color color = new Color(0, 0, 255, 150);
 		barrenderer.setSeriesPaint(0, color);
-		barrenderer.setSeriesFillPaint(0,color);
-		barrenderer.setSeriesOutlinePaint(0,color);
+		barrenderer.setSeriesFillPaint(0, color);
+		barrenderer.setSeriesOutlinePaint(0, color);
 		barrenderer.setSeriesStroke(0, new BasicStroke(0.5F));
-
-		// 显示两条折线中间的那条分界线，y=1
-/*		ValueMarker valuemarker = new ValueMarker(1); // 水平线的值
-		valuemarker.setLabelOffsetType(LengthAdjustmentType.EXPAND);
-		valuemarker.setPaint(Color.black); // 线条颜色
-		valuemarker.setStroke(new BasicStroke(1.0F)); // 粗细
-		// valuemarker.setLabel("分界线"); //线条上显示的文本
-		valuemarker.setLabelFont(new Font("SansSerif", 0, 11)); // 文本格式
-		valuemarker.setLabelPaint(Color.red);
-		valuemarker.setLabelAnchor(RectangleAnchor.TOP_LEFT);
-		valuemarker.setLabelTextAnchor(TextAnchor.BOTTOM_LEFT);
-		xyplot.addRangeMarker(valuemarker);*/
-		// //
 
 		jfreechart.getLegend().setVisible(true);
 		return jfreechart;
 	}
 
-	/*
-	 * 获取两条DataItems曲线虚线线段集合
-	 * 
-	 * @param mapAB 保存每个模式的所有线段集合
+	/**
+	 * @功能：获取两条DataItems曲线虚线线段集合
+	 * @param dataitems1
+	 * @param dataitems2
+	 * @param protocol1
+	 * @param protocol2
+	 * @param mapAB
+	 *            保存每个模式的所有线段集合
 	 */
-	public void createLineDataset(DataItems dataitems1, DataItems dataitems2,String protocol1,String protocol2,
+	public void createLineDataset(DataItems dataitems1, DataItems dataitems2,
+			String protocol1, String protocol2,
 			Map<String, ArrayList<LinePos>> mapAB) {
 		// 获取模式的种类个数、
 		int modelcount = mapAB.keySet().size();
@@ -523,82 +493,81 @@ public class TimeSeriesChart1 extends Composite {
 
 		long off1 = dataitems1.getElementAt(0).getTime().getTime();
 		long off2 = dataitems2.getElementAt(0).getTime().getTime();
-		long off=off1>off2?off2:off1;
+		long off = off1 > off2 ? off2 : off1;
+		// 設置时间粒度unit
 		long unit = 0;
 		if (dataitems1.getLength() > 0) {
 			unit = dataitems1.getElementAt(1).getTime().getTime() - off;
 		} else {
 			unit = 3600000;
-		}
-		
-		XYSeries xyseries11 = new XYSeries(protocol1);
-		XYSeries xyseries22 = new XYSeries(protocol2);
-		XYSeriesCollection LineDataset=new XYSeriesCollection();
-		
-		
-		
-		modelDataset = new HashMap<String, ArrayList<double[]>>();
-		//System.out.println("Set：" + mapAB.keySet());
-		for (Object se : mapAB.keySet()) {
-			int modeltime = 0;
+		}// 设置结束
+
+		/*
+		 * XYSeries modelxyseries1 = new XYSeries(protocol1);// 保存曲线1的模式线段
+		 * XYSeries modelxyseries2 = new XYSeries(protocol2);// 保存曲线2的模式线段
+		 */
+		XYSeries initseries1 = new XYSeries(protocol1);// 保存曲线1，包含模式线段线段化（线段化：同一个模式线段首位相连）过后的结束
+		XYSeries initseries2 = new XYSeries(protocol2);// 保存曲线2，包含模式线段线段化（线段化：同一个模式线段首位相连）过后的结束
+
+		int initseries1start = 0;// 标记曲线1的索引
+		int initseries2start = 0;
+
+		modelDataset = new HashMap<String, ArrayList<double[]>>();// 最后要将模式线段的区域保存在次数据集
+
+		XYSeriesCollection LineDataset = new XYSeriesCollection();
+
+		// 先进性相邻模式合并
+		/*
+		 * for (Object se : mapAB.keySet()) { ArrayList<LinePos> s =
+		 * SegmentDataMerging(mapAB.get(se));// mapAB..remove(se);
+		 * mapAB.put(""+se, s); }
+		 */
+		// 功能：保存线段化后的模式线段数据
+		Iterator<Entry<String, ArrayList<LinePos>>> mapit = mapAB.entrySet()
+				.iterator();
+		Map<String, ArrayList<LinePos>> CopyMapAB = new HashMap<String, ArrayList<LinePos>>();
+		while (mapit.hasNext()) {
+			Entry e = mapit.next();
+			String se = (String) e.getKey();
 			ArrayList<double[]> aModelIndex = new ArrayList<double[]>();
-			ArrayList<LinePos> s = SegmentDataMerging(mapAB.get(se));
-			int oneModelCount = s.size();
+			ArrayList<LinePos> s = SegmentDataMerging(mapAB.get(se));//
+			mapit.remove();
+			CopyMapAB.put(se, s);
 
 			Iterator it = s.iterator();
 
-			
-			
 			while (it.hasNext()) {
 				LinePos temp = (LinePos) it.next();
-				//遍历需要使用
-				//double[] area = new double[(temp.B_end-temp.B_start+1)*2+(temp.A_end-temp.A_start+1)*2];
 				double[] area = new double[8];
-	/*			DataItem d1 = new DataItem();
-				d1 = dataitems1.getElementAt(temp.A_start);
-				DataItem d2 = new DataItem();
-				d2 = dataitems2.getElementAt(temp.B_start);*/
-				// DataItems ds1 = new DataItems();
-				int a=(temp.A_end-temp.A_start+1)*2;
-				int b=(temp.B_end-temp.B_start+1)*2;
-				
+
 				DataItem d1 = new DataItem();
-				
-				d1 = dataitems1.getElementAt(temp.A_start);	
-				area[0]=(d1.getTime().getTime() - off) / unit;
-				area[1]=Double.parseDouble(d1.getData());
-				xyseries11.add(area[0], area[1]);
+
+				d1 = dataitems1.getElementAt(temp.A_start);
+				area[0] = temp.A_start;
+				area[1] = Double.parseDouble(d1.getData());
+
+				// modelxyseries1.add(area[0], area[1]);
+
 				d1 = dataitems1.getElementAt(temp.A_end);
-				area[6]=(d1.getTime().getTime() - off) / unit;
-				area[7]=Double.parseDouble(d1.getData());
-				xyseries11.add(area[6], area[7]);
-				d1 = dataitems2.getElementAt(temp.B_start);	
-				area[2]=(d1.getTime().getTime() - off) / unit;
-				area[3]=Double.parseDouble(d1.getData());
-				xyseries22.add(area[2],area[3]);
-				d1 = dataitems2.getElementAt(temp.B_end);	
-				area[4]=(d1.getTime().getTime() - off) / unit;
-				area[5]=Double.parseDouble(d1.getData());
-				xyseries22.add(area[4], area[5]);
-				
-				//遍历模式中序列的点
-/*				for(int i=0;i<b;i=i+2){
-					DataItem d1 = new DataItem();
-					d1 = dataitems2.getElementAt(temp.B_start+i/2);
-					area[i]=(d1.getTime().getTime() - off) / unit;
-					area[i+1]=Double.parseDouble(d1.getData());
-					xyseries22.add(area[i], area[i+1]);
-					
-				}
-				for(int i=0;i<a;i=i+2){
-					DataItem d = new DataItem();
-					d = dataitems1.getElementAt(temp.A_end-i/2);
-					area[b+i]=(d.getTime().getTime() - off) / unit;
-					area[b+i+1]=Double.parseDouble(d.getData());
-					xyseries11.add(area[b+i], area[b+i+1]);
-				}*/
+				area[6] = temp.A_end;
+				area[7] = Double.parseDouble(d1.getData());
+				// modelxyseries1.add(area[6], area[7]);
+				// initseries1start=temp.A_end;
+				// modelxyseries1.add(area[6], null);// 防止不同线段连接
 
+				d1 = dataitems2.getElementAt(temp.B_start);
+				area[2] = temp.B_start;
+				area[3] = Double.parseDouble(d1.getData());
+				// modelxyseries2.add(area[2], area[3]);
 
+				d1 = dataitems2.getElementAt(temp.B_end);
+				area[4] = temp.B_end;
+				area[5] = Double.parseDouble(d1.getData());
+				// modelxyseries2.add(area[4], area[5]);
+				// modelxyseries2.add(area[4], null);// 防止不同线段连接
+
+				// 遍历模式中序列的点
+				// 取出曲线1中不是模式内的所有点，加入数据集modelxyseries1
 
 				aModelIndex.add(area);
 
@@ -607,86 +576,147 @@ public class TimeSeriesChart1 extends Composite {
 			modelDataset.put("" + se, aModelIndex);
 
 		}
-			LineDataset.addSeries(xyseries11);
-			LineDataset.addSeries(xyseries22);
-			normalizationDataset=LineDataset;
+		//
+		mapAB.putAll(CopyMapAB);
+
+		// 排序：将所有的 不同的模式的模式线段进行排序，保存在allModelList
+		ArrayList<LinePos> allModelList = new ArrayList<LinePos>();
+		for (Object se : mapAB.keySet()) {
+			allModelList.addAll(mapAB.get(se));
+		}
+
+		// 对ArrayList<LinePos> 进行排序：根据linPos.A_start
+		Comparator<LinePos> comparator = new Comparator<LinePos>() {
+			public int compare(LinePos s1, LinePos s2) {
+				// 先排年龄
+				if (s1.A_start > s2.A_start) {
+					return 1;
+				} else if (s1.A_start < s2.A_start) {
+					return -1;
+				} else {
+					return 0;
+				}
+			}
+		};
+		Collections.sort(allModelList, comparator);
+		// 排序：结束
+
+		// 功能：遍历allModelList，保存模式线段线段化后的结果
+		Iterator itall = allModelList.iterator();
+		while (itall.hasNext()) {
+			LinePos linpos = (LinePos) itall.next();
+			// 遍历曲线1 的 模式线段前的原始线段，保存进initseries1
+			while (initseries1start < linpos.A_start) {
+				initseries1.add(
+						initseries1start,
+						Double.parseDouble(dataitems1.getElementAt(
+								initseries1start).getData()));
+				initseries1start++;
+			}
+			// 保存模式线段 initseries1
+			initseries1.add(linpos.A_start, Double.parseDouble(dataitems1
+					.getElementAt(linpos.A_start).getData()));
+			initseries1.add(linpos.A_end, Double.parseDouble(dataitems1
+					.getElementAt(linpos.A_end).getData()));
+			initseries1start = linpos.A_end;
+
+			// 遍历曲线2 的 模式线段前的原始线段，保存进initseries2
+			while (initseries2start < linpos.B_start) {
+				initseries2.add(
+						initseries2start,
+						Double.parseDouble(dataitems2.getElementAt(
+								initseries2start).getData()));
+				initseries2start++;
+			}
+			// 保存模式线段 initseries2
+			initseries2.add(linpos.B_start, Double.parseDouble(dataitems2
+					.getElementAt(linpos.B_start).getData()));
+			initseries2.add(linpos.B_end, Double.parseDouble(dataitems2
+					.getElementAt(linpos.B_end).getData()));
+			initseries2start = linpos.B_end;
+		}
+
+		// 功能：结束
+
+		/*
+		 * LineDataset.addSeries(modelxyseries1);
+		 * LineDataset.addSeries(modelxyseries2);
+		 */
+		LineDataset.addSeries(initseries1);
+		LineDataset.addSeries(initseries2);
+
+		normalizationDataset = LineDataset;
 		// return defaultcategorydataset;
 	}
 
-	public ArrayList<LinePos> SegmentDataMerging(ArrayList<LinePos> olds){
-		ArrayList<LinePos> news=new ArrayList<LinePos>();
+	/**
+	 * @功能：模式线段合并，即对线段的ArrayList<LinePos> 按照开始点进行排序，然后将[t1,t2][t2,t3]这种模式合并成[t1,t3]
+	 * 
+	 * 
+	 */
+	public ArrayList<LinePos> SegmentDataMerging(ArrayList<LinePos> olds) {
+		ArrayList<LinePos> news = new ArrayList<LinePos>();
 		LinePos t1;
 		LinePos t2;
-		LinePos mergeLinPos=new LinePos();
-		int IsMergeLinPosNull=1;
-		
-		
-		 //对ArrayList<LinePos> olds进行排序：根据linPos.A_start
-		  Comparator<LinePos> comparator = new Comparator<LinePos>(){  
-			   public int compare(LinePos s1, LinePos s2) {  
-			    //先排年龄  
-			    if(s1.A_start>s2.A_start){  
-			     return 1;  
-			    } else if(s1.A_start<s2.A_start){
-			    	return -1; 
-			    }
-			    else{  
-			    	return 0;
-			    }  
-			   }  
-			  };  
-			  Collections.sort(olds,comparator );
-			  
-				Iterator newit=news.iterator();
-				Iterator oldit=olds.iterator();
-				
-			int index=0;
-			  while(oldit.hasNext()){
-				  t1=(LinePos) oldit.next();
-				  if(IsMergeLinPosNull!=1){
-					  
-					  if((mergeLinPos.A_end==t1.A_start) && (mergeLinPos.B_end==t1.B_start)  ){
-						  mergeLinPos.A_end=t1.A_end;
-						  mergeLinPos.B_end=t1.B_end;
-					  }else{
-						  LinePos temp=new LinePos();
-						  temp.A_start=mergeLinPos.A_start;
-						  temp.A_end=mergeLinPos.A_end;
-						  temp.B_start=mergeLinPos.B_start;
-						  temp.B_end=mergeLinPos.B_end;
-						  news.add(temp);
-						  IsMergeLinPosNull=1;
-					  }
-				  }else{
-					  mergeLinPos.A_start=t1.A_start;
-					  mergeLinPos.A_end=t1.A_end;
-					  mergeLinPos.B_start=t1.B_start;
-					  mergeLinPos.B_end=t1.B_end;
-					  IsMergeLinPosNull=0;
-				  }
-				  
-				
-				  
+		LinePos mergeLinPos = new LinePos();
+		int IsMergeLinPosNull = 1;
+
+		// 对ArrayList<LinePos> olds进行排序：根据linPos.A_start
+		Comparator<LinePos> comparator = new Comparator<LinePos>() {
+			public int compare(LinePos s1, LinePos s2) {
+				// 先排
+				if (s1.A_start > s2.A_start) {
+					return 1;
+				} else if (s1.A_start < s2.A_start) {
+					return -1;
+				} else {
+					return 0;
 				}
-		
-/*		for(int i=0;i<olds.size();i++){
-			
-			if(oldit.hasNext()){
-				min=(LinePos) oldit.next();
 			}
-			while(oldit.hasNext()){
-				t=(LinePos) oldit.next();
-				if()
+		};
+		Collections.sort(olds, comparator);
+		// 排序结束
+		// 功能：同一种模式线段相连，也进行合并
+		Iterator newit = news.iterator();
+		Iterator oldit = olds.iterator();
+
+		int index = 0;
+		while (oldit.hasNext()) {
+			t1 = (LinePos) oldit.next();
+			if (IsMergeLinPosNull != 1) {
+
+				if ((mergeLinPos.A_end == t1.A_start)
+						&& (mergeLinPos.B_end == t1.B_start)) {
+					mergeLinPos.A_end = t1.A_end;
+					mergeLinPos.B_end = t1.B_end;
+				} else {
+					LinePos temp = new LinePos();
+					temp.A_start = mergeLinPos.A_start;
+					temp.A_end = mergeLinPos.A_end;
+					temp.B_start = mergeLinPos.B_start;
+					temp.B_end = mergeLinPos.B_end;
+					news.add(temp);
+					IsMergeLinPosNull = 1;
+				}
+			} else {
+				mergeLinPos.A_start = t1.A_start;
+				mergeLinPos.A_end = t1.A_end;
+				mergeLinPos.B_start = t1.B_start;
+				mergeLinPos.B_end = t1.B_end;
+				IsMergeLinPosNull = 0;
 			}
-		}*/
-		
+
+		}// 功能：结束
+
 		return news;
-		
+
 	}
-	
-	
-	/*
-	 * 将完整的DataItems保存进数据集
+
+	/**
+	 * @功能：将完整的DataItems保存进数据集
+	 * @param normal
+	 * @param protocol1
+	 * @return
 	 */
 	public static CategoryDataset createNormalDataset(DataItems normal,
 			String protocol1) {
@@ -715,8 +745,13 @@ public class TimeSeriesChart1 extends Composite {
 		return defaultcategorydataset;
 	}
 
-	/*
-	 * 重载createNormalDataset,传进两个dataItems,放进同一个数据集合中
+	/**
+	 * @功能：重载createNormalDataset,传进两个dataItems,放进同一个数据集合中
+	 * @param dataitems1
+	 * @param dataitems2
+	 * @param protocol1
+	 * @param protocol2
+	 * @return
 	 */
 	public static XYDataset createNormalDataset(DataItems dataitems1,
 			DataItems dataitems2, String protocol1, String protocol2) {
@@ -729,14 +764,14 @@ public class TimeSeriesChart1 extends Composite {
 		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
 		// 为数据集添加数据
-		//序列1数据集合
+		// 序列1数据集合
 		for (int i = 0; i < length1; i++) {
 			DataItem temp = new DataItem();
 			temp = dataitems1.getElementAt(i);
 			xyseries1.add(i, Double.parseDouble(temp.getData())); // 对应的横轴
 
 		}
-		//序列2数据集合
+		// 序列2数据集合
 		for (int i = 0; i < length2; i++) {
 			DataItem temp = new DataItem();
 
@@ -749,37 +784,37 @@ public class TimeSeriesChart1 extends Composite {
 		return xyseriescollection;
 	}
 
-
-	
-	/*
-	 * 获取颜色，下标从0开始
+	/**
+	 * @功能：获取颜色，下标从0开始
+	 * @param i
+	 * @return
 	 */
 	public static Color getColor(int i) {
 		int j = i % 10;
 		System.out.println("color" + j);
 		switch (j) {
 		case 1:
-			return (new Color(173,137,118,200));
+			return (new Color(173, 137, 118, 200));
 		case 0:
-			return (new Color(230,155,3,200));
+			return (new Color(230, 155, 3, 200));
 		case 3:
-			return (new Color(209,73,78,200));
+			return (new Color(209, 73, 78, 200));
 		case 4:
-			return (new Color(18,53,85,200));
+			return (new Color(18, 53, 85, 200));
 		case 5:
-			return (new Color(225,238,210,200));
+			return (new Color(225, 238, 210, 200));
 		case 6:
-			return (new Color(180,141,1,200));
+			return (new Color(180, 141, 1, 200));
 		case 7:
-			return (new Color(1,165,175,200));
+			return (new Color(1, 165, 175, 200));
 		case 9:
-			return (new Color(53,44,10,200));
+			return (new Color(53, 44, 10, 200));
 		case 8:
-			return (new Color(255,255,255,200));
+			return (new Color(255, 255, 255, 200));
 		case 2:
-			return (new Color(36,169,225,200));
+			return (new Color(36, 169, 225, 200));
 		default:
-			return (new Color(0,0,0,200));
+			return (new Color(0, 0, 0, 200));
 		}
 	}
 
@@ -798,10 +833,6 @@ public class TimeSeriesChart1 extends Composite {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
-	}
-
-	public class MyDataSet extends XYSeriesCollection {
-
 	}
 
 }
