@@ -264,7 +264,7 @@ class RouteGen implements Callable {
             }
             //记录每一次通信的通信路径，一次通信只记录一次流量。
             if (!pre.getSrcIP().equals(data.getSrcIP()) || !pre.getDstIP().equals(data.getDstIP()) || pre.getSrcPort() != data.getSrcPort() || pre.getDstPort() != data.getDstPort()) {
-                System.out.println("不相等......");
+//                System.out.println("不相等......");
                 updateRecords(pre);
                 StringBuilder sb = new StringBuilder();
                 sb.append(String.valueOf(pre.getTime_s())).append(",").append(pre.getSrcIP()).append(",").append(pre.getDstIP()).append(",").append(pre.getTraffic()).append(",").append(num);
@@ -1067,6 +1067,9 @@ public class PcapUtils {
         System.out.println("taskSize: " + taskSum);
         for (Map.Entry<Long, ArrayList<File>> entry : tasks.entrySet()){
             System.out.println("initDay: " + entry.getKey());
+            for (int i = 0; i < entry.getValue().size(); i++) {
+                System.out.println("list: " + entry.getValue().get(i));
+            }
         }
         for (Map.Entry<Long, ArrayList<File>> entry : tasks.entrySet()) {
             taskCount += 1;
@@ -1157,17 +1160,22 @@ public class PcapUtils {
     //得到时间个数，即任务filelist个数
     public void getTaskNum(String fpath, boolean parseAll) {
         System.out.println("parseallaaaaa:  " + parseAll);
-        TreeMap<Long, File> allTimes = new TreeMap<Long, File>();
+        TreeMap<Long, ArrayList<File>> allTimes = new TreeMap<Long, ArrayList<File>>();
         genTimeList(fpath, parseAll, allTimes);//得到时间序列
         getTaskMap(allTimes);//得到map
     }
 
     //得到需要解析的文件的时间、外加对应文件map
-    public void genTimeList(String fpath, boolean parseAll, TreeMap<Long, File> allTimes) {
+    public void genTimeList(String fpath, boolean parseAll, TreeMap<Long, ArrayList<File>> allTimes) {
         File ff = new File(fpath);
         if (parseAll) {
             if (ff.isFile()) {
-                allTimes.put(ff.lastModified(), ff);
+                if (allTimes.containsKey(ff.lastModified())) {
+                    allTimes.get(ff.lastModified()).add(ff);//若时间相同，则会覆盖！！！因此改为ArrayList<File>
+                } else {
+                    allTimes.put(ff.lastModified(), new ArrayList<File>());
+                    allTimes.get(ff.lastModified()).add(ff);
+                }
                 ff.setWritable(false);//设为已读
             } else if (ff.isDirectory()) {
                 File[] files = ff.listFiles();
@@ -1178,7 +1186,12 @@ public class PcapUtils {
         } else {
             if (ff.isFile()) {
                 if (ff.canWrite()) {//如果不可写，即只读
-                    allTimes.put(ff.lastModified(), ff);
+                    if (allTimes.containsKey(ff.lastModified())) {
+                        allTimes.get(ff.lastModified()).add(ff);//若时间相同，则会覆盖！！！因此改为ArrayList<File>
+                    } else {
+                        allTimes.put(ff.lastModified(), new ArrayList<File>());
+                        allTimes.get(ff.lastModified()).add(ff);
+                    }
                     ff.setWritable(false);//设为已读
                 }
             } else if (ff.isDirectory()) {
@@ -1191,10 +1204,10 @@ public class PcapUtils {
     }
 
     //遍历时间，若超过一天，则put，在一天之内，则append，得到task MAP，个数代表所需解析文件list的个数，原来只有一个，现在可能有多个
-    public void getTaskMap(TreeMap<Long, File> allTimes) {
+    public void getTaskMap(TreeMap<Long, ArrayList<File>> allTimes) {
         Long key = 0l;//实际时间
         Long switchKey = 0l;//key转换为当天0点，parsebyday也做了处理...
-        for (Map.Entry<Long, File> entry : allTimes.entrySet()) {
+        for (Map.Entry<Long, ArrayList<File>> entry : allTimes.entrySet()) {
             //只在最初运行一次
             if (key == 0l) {
                 key = entry.getKey();
@@ -1203,12 +1216,12 @@ public class PcapUtils {
             }
             //进行判断，若else，则新添加
             if ((entry.getKey() - key) <= 86400000) {
-                tasks.get(switchKey).add(entry.getValue());
+                tasks.get(switchKey).addAll(entry.getValue());
             } else {
                 key = entry.getKey();
                 switchKey = key - (key + 8 * 3600000) % 86400000;
                 tasks.put(switchKey, new ArrayList<File>());
-                tasks.get(switchKey).add(entry.getValue());
+                tasks.get(switchKey).addAll(entry.getValue());
                 continue;
             }
         }
