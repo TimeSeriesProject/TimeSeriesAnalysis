@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- 关联规则相关算法参数 -->
 <arParams>
 	<!-- 线段 -->
@@ -7,7 +7,7 @@
 		<mergerPrice>0.025</mergerPrice>
 		<compressionRatio>0.65</compressionRatio>
 		<!-- 线段聚类参数 -->
-		<t>0.1</t>
+		<t>0.05</t>
 		<centerLine>-1.0</centerLine>
 		<way>1</way>
 		<gaosi>3</gaosi>

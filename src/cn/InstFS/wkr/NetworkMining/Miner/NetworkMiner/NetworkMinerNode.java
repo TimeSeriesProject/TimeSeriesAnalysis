@@ -6,6 +6,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import lineAssociation.ClusterWrapper;
+import lineAssociation.DPCluster;
+import lineAssociation.Linear;
+import lineAssociation.SymbolNode;
 import WaveletUtil.PointPatternDetection;
 import WaveletUtil.SAXPartternDetection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
@@ -15,6 +19,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.LinePattern;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PatternMent;
 import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
+import cn.InstFS.wkr.NetworkMining.DataInputs.TranDPCluster;
 import cn.InstFS.wkr.NetworkMining.DataInputs.WavCluster;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.ARIMATSA;
@@ -43,6 +48,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
+import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleLineParams;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgress;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
@@ -357,13 +363,20 @@ class NodeTimerTask extends TimerTask{
 				DataItems clusterItems=null;
 				List<PatternMent> segPatterns=segment.getPatterns();
 				
-				if(task.getPatternNum()==0){
+				//kmeans聚类
+		        /*if(task.getPatternNum()==0){
 					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
 							paramsSM.getSMparam().getClusterNum(),task.getTaskName());
 				}else{
 					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
 							task.getPatternNum(),task.getTaskName());
-				}
+				}*/
+		        
+		        //DPC聚类
+		        AssociationRuleLineParams arp = ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams();
+				TranDPCluster dpCluster = new TranDPCluster(dataItems, segPatterns, arp);
+				clusterItems = dpCluster.getClusterItems();
+				
 				SequencePatternsDontSplit sequencePattern=new SequencePatternsDontSplit(paramsSM);
 				sequencePattern.setDataItems(clusterItems);
 				sequencePattern.setTask(task);

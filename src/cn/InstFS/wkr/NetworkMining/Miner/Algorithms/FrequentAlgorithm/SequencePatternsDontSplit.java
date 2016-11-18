@@ -417,7 +417,7 @@ public class SequencePatternsDontSplit {
 			}
 		}
 		HashMap<Integer, List<String>> map=new HashMap<Integer, List<String>>();
-		for(int label=0;label<99;label++){
+		for(int label=0;label<dataItems.getLength();label++){
 			for(int itemIndex=0;itemIndex<clusterItems.getLength();itemIndex++){
 				if(clusterItems.getData().get(itemIndex).equals(label+"")){
 					if(map.containsKey(label)){
@@ -476,5 +476,17 @@ public class SequencePatternsDontSplit {
 		}
 		Collections.sort(list, new compareCmp());
 		return list;
+	}
+	/**
+	 * 修改类标签的名字，把类中心改为1,2,3...*/
+	public Map<Integer, List<String>> changeLabelName(Map<Integer, List<String>> frequentItem){
+		Map<Integer, List<String>> frequentItem2 = new HashMap<Integer, List<String>>();
+		int label = 1;
+		for(Map.Entry<Integer, List<String>> entry:frequentItem.entrySet()){
+			List<String> value = entry.getValue();
+			frequentItem2.put(label, value);
+			label++;
+		}
+		return frequentItem2;
 	}
 }

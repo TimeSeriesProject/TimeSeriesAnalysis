@@ -96,6 +96,7 @@ public class PointSegment {
 			int span = end-start;
 			double endData = Double.parseDouble(dataItems.getElementAt(end).getData());
 			double startData = Double.parseDouble(dataItems.getElementAt(start).getData());
+			double hspan = endData-startData;
 			double angle = (endData-startData)/(end - start);
 			//double height = getItem(end)-getItem(start);
 									
@@ -108,6 +109,7 @@ public class PointSegment {
 			
 			//pattern.setAngle(angle);
 			PatternMent pattern=new PatternMent(start,span,angle,startData,mean,std);
+			pattern.setHspan(hspan);
 			patterns.add(pattern);
 		}
 	}

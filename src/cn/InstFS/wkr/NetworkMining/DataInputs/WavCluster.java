@@ -609,8 +609,8 @@ public class WavCluster {
 			PatternMent pattern=patterns.get(i);
 //			ArrayList <Double> xvector = new ArrayList<Double>();
 //			ArrayList <Double> yvector = new ArrayList<Double>();
-			ArrayList <Double> lenvector = new ArrayList<Double>();
-			ArrayList <Double> anglevector = new ArrayList<Double>();
+			ArrayList <Double> lenvector = new ArrayList<Double>();//长度向量
+			ArrayList <Double> anglevector = new ArrayList<Double>();//角度向量
 			double xSpan=pattern.getEnd()-pattern.getStart()+1.0;
 			double ySpan=Double.parseDouble(dataItems.getData().get(pattern.getEnd()))-
 					Double.parseDouble(dataItems.getData().get(pattern.getStart()));
@@ -634,8 +634,8 @@ public class WavCluster {
 //			return result;
 		if(leninstances.size()==0)
 			return result;
-		xkMeans = Kmeans(leninstances,clusterNum,fileName,true);
-		ykMeans = Kmeans(angleinstances,6,fileName,true);
+		xkMeans = Kmeans(leninstances,clusterNum,fileName,true);//长度聚类
+		ykMeans = Kmeans(angleinstances,6,fileName,true);//角度聚类
 		try
 		{
 			int xlabels[]=xkMeans.getAssignments();
@@ -648,7 +648,7 @@ public class WavCluster {
 				//if(xlabels[i]==0)
 				//	System.out.print("label"+" "+i+" "+xlabels[i]+" "+ylabels[i]);
 				DataItem dataItem =new DataItem();	
-				dataItem.setData(String.valueOf(xlabels[i]*6+ylabels[i]));
+				dataItem.setData(String.valueOf(xlabels[i]*6+ylabels[i]));//表示属于哪一类
 				
 				dataItem.setTime(dataItems.getTime().get(patterns.get(i).getStart()));
 				result.add1Data(dataItem);

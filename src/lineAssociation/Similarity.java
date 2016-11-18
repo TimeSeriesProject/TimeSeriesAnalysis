@@ -15,6 +15,7 @@ public class Similarity {
 //        return getXiao2Distance(l1, l2);
 //        return getXiao3Distance(l1, l2);
         return getXiao4Distance(l1, l2);
+//        return getSigmoidDistance(l1,l2);
 //        return getXiao5Distance(l1, l2);
 //        return getSinDistance(l1,l2);
 //        return getSin2Distance(l1,l2);
@@ -117,11 +118,15 @@ public class Similarity {
 
     private static double getXiao4Distance(Linear l1,Linear l2){
         if(l1.normTheta*l2.normTheta>0) {
-            return Math.abs(l1.normHspan - l2.normHspan)+
-                   Math.abs(l1.normSpan - l2.normSpan);
+        	return Math.abs(l1.normHspan - l2.normHspan)+
+                    Math.abs(l1.normSpan - l2.normSpan);
+            
         }else{
             return 1.0;
         }
+        /*double length1 = l1.normHspan*l1.normHspan+l1.normSpan*l1.normSpan;
+        double length2 = l2.normHspan*l2.normHspan+l2.normSpan*l2.normSpan;
+        return Math.abs(length1-length2)+Math.abs(l1.theta-l2.theta);*/
     }
 
     private static double getSigmoidDistance(Linear l1, Linear l2){

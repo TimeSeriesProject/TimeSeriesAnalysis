@@ -25,9 +25,9 @@ public class DPCluster {
     private HashMap<Integer,HashMap<Integer,Double>> completeDistances = new HashMap<Integer, HashMap<Integer, Double>>();
     private ArrayList<Double> distances = new ArrayList<Double>();//两用list，一用于对所有距离排序，二用于对RHO值排序
 
-    private HashMap<Double,Integer> RHO = new HashMap<Double, Integer>();
-    private TreeMap<Integer,Double> DELTA = new TreeMap<Integer, Double>();
-    private TreeMap<Integer,Double> GAMMA = new TreeMap<Integer, Double>();
+    private HashMap<Double,Integer> RHO = new HashMap<Double, Integer>();//局部密度
+    private TreeMap<Integer,Double> DELTA = new TreeMap<Integer, Double>();//与高密度之间的距离
+    private TreeMap<Integer,Double> GAMMA = new TreeMap<Integer, Double>();//聚类中心的参考依据
     private TreeMap<Integer,Double> BEITA = new TreeMap<Integer, Double>();//异常度，BEITA=DELTA/RHO；
 
     //各个数据点的归属聚类中心，-1表示聚类中心，-2表示异常点，其他表示相应归属的聚类中心
@@ -101,6 +101,9 @@ public class DPCluster {
         int M = distances.size();
         N =(int)(Math.sqrt(0.25 + 2.0*M)+0.5);
         dc = distances.get((int)(M*t));
+        if(dc == 0){
+        	dc = 0.0001;
+        }
         distances = null;//释放内存
     }
 
@@ -313,7 +316,8 @@ public class DPCluster {
             }
             mean = sum / size;
             stdvar = Math.sqrt(squareSum / size - mean * mean);
-            centerLine = mean + gaosi * stdvar;
+//            centerLine = mean + gaosi * stdvar;//原始代码
+            centerLine = mean - gaosi * stdvar; //优化代码by LYH
         }else{
 //            int size = GAMMA.size()/20;
         	//不是很懂这么做的原因
