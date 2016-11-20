@@ -12,6 +12,25 @@ public class ProtoclPair implements Serializable{
 	String protocol2 = "";
 	public double confidence = 0.0;
 	DataItems dataItems1 = null;  //包括协议1和协议2的原始序列
+	DataItems dataItems2 = null;  //包括协议1和协议2的原始序列
+	
+	DataItems lineDataItems1 = null;
+	DataItems lineDataItems2 = null;
+	
+	public DataItems getLineDataItems1() {
+		return lineDataItems1;
+	}
+	public void setLineDataItems1(DataItems lineDataItems1) {
+		this.lineDataItems1 = lineDataItems1;
+	}
+	public DataItems getLineDataItems2() {
+		return lineDataItems2;
+	}
+	public void setLineDataItems2(DataItems lineDataItems2) {
+		this.lineDataItems2 = lineDataItems2;
+	}
+
+
 	
 	public DataItems getDataItems1() {
 		return dataItems1;
@@ -25,7 +44,7 @@ public class ProtoclPair implements Serializable{
 	public void setDataItems2(DataItems dataItems2) {
 		this.dataItems2 = dataItems2;
 	}
-	DataItems dataItems2 = null;  //包括协议1和协议2的原始序列
+	
 	
 	Map<String, ArrayList<LinePos>> mapAB = null;  //记录序列1与序列2 各个关联符号所在的位置 A,B表示在哪个序列上，12表示序列的比较顺序
 	

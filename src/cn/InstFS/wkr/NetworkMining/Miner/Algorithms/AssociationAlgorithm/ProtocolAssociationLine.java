@@ -79,6 +79,7 @@ public class ProtocolAssociationLine {
 			List<ProtocolDataItems> proDataList = compressData(proDataList2);
 			
 			List<TreeMap<Integer,SymbolNode>> linesList = new ArrayList<TreeMap<Integer,SymbolNode>>();
+			List<DataItems> lineList = new ArrayList<DataItems>();
 			linesPosList = new ArrayList<TreeMap<Integer,Linear>>();
 			for(int i = 0;i < proDataList.size();i++)
 			{
@@ -88,6 +89,8 @@ public class ProtocolAssociationLine {
 		        BottomUpLinear bottomUpLinear_i = new BottomUpLinear(sourceData_i,arp);
 		        bottomUpLinear_i.run();
 		        TreeMap<Integer, Linear> linears = bottomUpLinear_i.getLinears();  //linears的格式为:key:线段起始位置，Linear：span表示该线段的长度
+		        DataItems lineData = getLineData(linears);
+		        lineList.add(lineData);
 		        //过滤短线段
 //		        Iterator<Map.Entry<Integer, Linear>> it = linears.entrySet().iterator();
 ////		        System.out.println("过滤前线段条数："+linears.size());
@@ -189,6 +192,8 @@ public class ProtocolAssociationLine {
 					pp.setConfidence(sum_confidence/(symbol-1));
 					pp.setMapAB(mapAB);
 					pp.setMapBA(mapBA);
+					pp.setLineDataItems1(lineList.get(i));
+					pp.setLineDataItems2(lineList.get(j));
 					resultList.add(pp);
 					
 					if(max_confidence < pp.confidence)
@@ -206,6 +211,20 @@ public class ProtocolAssociationLine {
 		return mr_fp_l;
 	}
 	
+	private DataItems getLineData(TreeMap<Integer, Linear> linears) {
+		
+		DataItems lineData = new DataItems();
+		int lastPoint = 0;
+		Iterator<Integer> iter = linears.keySet().iterator();
+		while(iter.hasNext()) {
+			
+			int key = iter.next();
+			lineData.data.add(String.valueOf(key));
+			lastPoint = key+linears.get(key).span;
+		}
+		lineData.data.add(String.valueOf(lastPoint));
+		return lineData;
+	}
 	private TreeMap<Integer, Double> convertDataToTreeMap(
 			ProtocolDataItems protocolDataItems) {
 		
