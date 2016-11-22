@@ -22,7 +22,7 @@ public class DPCluster {
     private double[][] distancesInput;
 
     //距离索引，半角矩阵
-    private HashMap<Integer,HashMap<Integer,Double>> completeDistances = new HashMap<Integer, HashMap<Integer, Double>>();
+    private HashMap<Integer,HashMap<Integer,Double>> completeDistances = new HashMap<Integer, HashMap<Integer, Double>>(); 
     private ArrayList<Double> distances = new ArrayList<Double>();//两用list，一用于对所有距离排序，二用于对RHO值排序
 
     private HashMap<Double,Integer> RHO = new HashMap<Double, Integer>();//局部密度
@@ -74,6 +74,7 @@ public class DPCluster {
         //计算聚类中心的排序规则
         computeGAMMA();
         System.out.println("GAMMA值计算完毕！");
+        System.out.println("Gamma:");
         
         //计算每个样本点的beta值，通过该beta值，可以去除异常点
         computeBEITA();
@@ -81,6 +82,7 @@ public class DPCluster {
         
         
         computeCenters();
+        transformCenter();//修改类中心格式，把类中心数据改为属于哪一类。
         System.out.println("聚类中心与异常点划分完毕！centerLine="+centerLine);
         System.out.println("各个map中的数据条数：\n--RHO: "+RHO.size()+"\n--DELTA: "+DELTA.size()
                 +"\n--GAMMA: "+GAMMA.size()+"\n--clusterCenters: "+clusterCenters.size()
@@ -316,8 +318,7 @@ public class DPCluster {
             }
             mean = sum / size;
             stdvar = Math.sqrt(squareSum / size - mean * mean);
-//            centerLine = mean + gaosi * stdvar;//原始代码
-            centerLine = mean - gaosi * stdvar; //优化代码by LYH
+            centerLine = mean + gaosi * stdvar;//原始代码
         }else{
 //            int size = GAMMA.size()/20;
         	//不是很懂这么做的原因
@@ -365,7 +366,35 @@ public class DPCluster {
         }
         return value;
     }
-
+    /**
+     * 修改类中心格式
+     * **/
+    public void transformCenter(){
+    	int label = 1;
+    	for(int i:belongClusterCenter.keySet()){
+    		int center = belongClusterCenter.get(i);
+    		if(center==-2)
+    			continue;
+    		if(center==-1)
+    			belongClusterCenter.put(i, i);
+    	}
+    	for(int i:belongClusterCenter.keySet()){
+    		int center = belongClusterCenter.get(i);
+    		if(center<label){
+    			continue;
+    		}
+    		for(int j:belongClusterCenter.keySet()){
+    			if(center==-1){
+        			center = i;
+        			belongClusterCenter.put(i, center);
+        		}
+    			if(belongClusterCenter.get(j)==center){
+        			belongClusterCenter.put(j, label);
+        		}
+    		}
+    		label++;
+    	}
+    }
     /**
      * 打印聚类参数信息
      */
@@ -377,7 +406,7 @@ public class DPCluster {
         System.out.println("求gamma方式(true表示相乘，false表示求最小)multiOrMin: " + multiOrMin);
         System.out.println("-----<<<参数打印完毕>>>-----");
     }
-
+    
     public HashMap<Double, Integer> getRHO() {
         return RHO;
     }

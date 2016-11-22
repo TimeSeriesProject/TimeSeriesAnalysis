@@ -14,7 +14,8 @@ public class Similarity {
 //        return getXiaoDistance(l1,l2);
 //        return getXiao2Distance(l1, l2);
 //        return getXiao3Distance(l1, l2);
-        return getXiao4Distance(l1, l2);
+//        return getXiao4Distance(l1, l2);
+        return getMaxDistance(l1, l2);
 //        return getSigmoidDistance(l1,l2);
 //        return getXiao5Distance(l1, l2);
 //        return getSinDistance(l1,l2);
@@ -22,7 +23,34 @@ public class Similarity {
 //        return getSin3Distance(l1, l2);
 //        return getChebyshevDistance(l1,l2);
     }
-
+    public static double getThetaDistance(Linear l1,Linear l2){
+    	return getThetaMahattanDistance(l1,l2);
+    }
+    public static double getLenghtDistance(Linear l1,Linear l2){
+    	return getLenghtMahattanDistance(l1,l2);
+    }
+    private static double getThetaMahattanDistance(Linear l1,Linear l2){
+    	if(l1.normTheta*l2.normTheta>=0){
+    		return Math.abs(l1.normTheta-l2.normTheta);
+    	}
+    	else{
+    		return 1.0;
+    	}
+    }
+    private static double getLenghtMahattanDistance(Linear l1,Linear l2){
+    	double len1 = Math.sqrt(Math.pow(l1.normHspan, 2)+Math.pow(l1.normSpan, 2));
+    	double len2 = Math.sqrt(Math.pow(l2.normHspan, 2)+Math.pow(l2.normSpan, 2));
+    	return Math.abs(len1-len2);
+    }
+    private static double getMaxDistance(Linear l1,Linear l2){
+    	 if(l1.normTheta*l2.normTheta>=0) {
+    		 double normLenght1 = Math.sqrt(Math.pow(l1.normSpan, 2)+Math.pow(l1.normHspan, 2));
+    		 double normLenght2 = Math.sqrt(Math.pow(l2.normSpan, 2)+Math.pow(l2.normHspan, 2));
+    		 return Math.max(Math.abs(l1.normTheta-l2.normTheta), Math.abs(normLenght1-normLenght2));
+         }else{
+             return 1.0;
+         }
+    }
     private static double getEuclideanDistance(Linear l1,Linear l2){
         return Math.sqrt(Math.pow((l1.normTheta-l2.normTheta),2)
                 +Math.pow((l1.normSpan-l2.normSpan),2)

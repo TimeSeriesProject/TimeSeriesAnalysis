@@ -29,8 +29,8 @@ public class TranDPCluster {
 		/*开始DPC聚类*/
 		System.out.println("开始运行DPCluster聚类算法！");
 		ClusterWrapper clusterWrapper = new ClusterWrapper(linears,ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams());
-		DPCluster dpCluster = clusterWrapper.run();
-		Map<Integer,Integer> map = dpCluster.getBelongClusterCenter();		
+//		DPCluster dpCluster = clusterWrapper.run();
+		Map<Integer,Integer> map = clusterWrapper.run2();		
 		System.out.println("DPCluster聚类算法计算完毕！");
 		/*聚类结果*/
 //		TreeMap<Integer,Integer> symbols = getSymbols(map); //线段序列:类中心
@@ -83,12 +83,18 @@ public class TranDPCluster {
 	 * @return DataItems 线段序列起始时间:类中心*/
 	private DataItems tranClusterMap(Map<Integer, Integer> map) {
 		DataItems clusterItems = new DataItems();
-		for(int i:map.keySet()){
-            int center = map.get(i);
-            if(center==-2)     //异常点跳过
-            	center = i;
-            else if(center==-1)
-            	center = i;
+		for(int i=0;i<dataItems.getLength();i++){
+            Object center = map.get(i);
+            if(center==null){
+            	continue;
+            }
+            if(Integer.parseInt(String.valueOf(center))==-2){//异常点跳过
+            	if(!map.containsValue(i)){
+            		center = i;
+            	}else{
+            		center = i+1;
+            	}
+            }            	
             Date time = dataItems.getTime().get(i);
             clusterItems.add1Data(time, String.valueOf(center));            
 		}

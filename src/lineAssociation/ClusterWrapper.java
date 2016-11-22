@@ -1,6 +1,8 @@
 package lineAssociation;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleLineParams;
@@ -10,7 +12,8 @@ import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleL
  */
 public class ClusterWrapper {
     private TreeMap<Integer,Linear> linears;
-    private double[][] distancesInput; //DP-Cluster数据输入，半角矩阵
+    private double[][] distancesInput1; //DP-Cluster数据输入，半角矩阵
+    private double[][] distancesInput2;
     AssociationRuleLineParams arp = null;
     public ClusterWrapper(TreeMap<Integer,Linear> linears, AssociationRuleLineParams arp){
         this.linears = linears;
@@ -65,15 +68,20 @@ public class ClusterWrapper {
      */
     private void computeDistancesInput(){
         int lsize = linears.size();
-        distancesInput = new double[lsize*(lsize-1)/2][3];
+        distancesInput1 = new double[lsize*(lsize-1)/2][3];
+        distancesInput2 = new double[lsize*(lsize-1)/2][3];
         int k = 0;
         for(int i : linears.keySet()){
             for(int j : linears.keySet()){
                 if(j <= i)
                 	continue;
-                distancesInput[k][0] = i;
-                distancesInput[k][1] = j;
-                distancesInput[k][2] = Similarity.getDistance(linears.get(i),linears.get(j));
+                distancesInput1[k][0] = i;
+                distancesInput1[k][1] = j;
+                distancesInput1[k][2] = Similarity.getThetaDistance(linears.get(i),linears.get(j));
+                
+                distancesInput2[k][0] = i;
+                distancesInput2[k][1] = j;
+                distancesInput2[k][2] = Similarity.getLenghtDistance(linears.get(i),linears.get(j));
                 k++;
             }
         }
@@ -82,8 +90,31 @@ public class ClusterWrapper {
     public DPCluster run(){
         normalize();
         computeDistancesInput();
-        DPCluster dpCluster = new DPCluster(distancesInput,arp);
-        dpCluster.run();
-        return dpCluster;
+        DPCluster dpCluster1 = new DPCluster(distancesInput1,arp);
+        dpCluster1.run();       
+        return dpCluster1;
+    }
+    public Map<Integer, Integer> run2(){
+        normalize();
+        computeDistancesInput();
+        DPCluster dpCluster1 = new DPCluster(distancesInput1,arp);
+        dpCluster1.run();
+        DPCluster dpCluster2 = new DPCluster(distancesInput2,arp);
+        dpCluster2.run();
+        Map<Integer, Integer> clusterMap = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> clusterMap1 = dpCluster1.getBelongClusterCenter();
+        Map<Integer, Integer> clusterMap2 = dpCluster2.getBelongClusterCenter();
+        for(int i : clusterMap1.keySet()){
+        	int label = 0;
+        	int label1 = clusterMap1.get(i);
+        	int label2 = clusterMap2.get(i);
+        	if(label1==-2 || label2==-2){
+        		label = -2;
+        	}else{
+        		label = label1*10+label2;
+        	}
+        	clusterMap.put(i, label);
+        }
+        return clusterMap;
     }
 }
