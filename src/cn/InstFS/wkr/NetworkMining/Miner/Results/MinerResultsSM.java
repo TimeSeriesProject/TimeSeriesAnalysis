@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
 
@@ -28,6 +29,7 @@ public class MinerResultsSM implements Serializable {
 	List<LineElement> lineElements;
 	private boolean hasFreItems=false;
 	List<PatternMent> segPatterns = new ArrayList<PatternMent>();
+	TreeMap<Integer,Double> GAMMA = new TreeMap<Integer, Double>();
 	public Map<Integer, List<String>> getFrequentItem() {
 		return frequentItem;
 	}
@@ -129,6 +131,14 @@ public class MinerResultsSM implements Serializable {
 
 	public void setSegPatterns(List<PatternMent> segPatterns) {
 		this.segPatterns = segPatterns;
+	}
+
+	public TreeMap<Integer, Double> getGAMMA() {
+		return GAMMA;
+	}
+
+	public void setGAMMA(TreeMap<Integer, Double> gAMMA) {
+		GAMMA = gAMMA;
 	}
 	
 }

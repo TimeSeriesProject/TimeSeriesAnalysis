@@ -63,6 +63,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 	public String yName;
 	public String ObName;
 	private JPanel granulartiyPanel;
+	
 	//删除重复项
 	public static void delete(ArrayList<String> lists,int size){
 		if(lists == null || lists.size()<=1 || size<=1)
@@ -128,7 +129,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 	}
 
 	public void showResults() {
-		// TODO
+		//to do 
 	}
 
 	private JPanel displayStartDate(TaskElement task) {
@@ -393,12 +394,13 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 
 							removeAll();
 //								JFreeChart jf1 = ChartPanelShowFI.createChart(f_model_nor, nor, f_model_nor_mode, modelindex,yName);
-							JFreeChart jf1 = ChartPanelShowFI.createChart(modeList, nor, modelindex, yName);
-							ChartPanel chartpanel1 = new ChartPanel(jf1);
+							JFreeChart jf1 = ChartPanelShowFI.createChart(modeList, nor, modelindex, yName);							
+							ChartPanel chartpanel1 = new ChartPanel(jf1);						
 							add(granulartiyPanel, BorderLayout.NORTH);
 							chartpanel1.setMouseWheelEnabled(true);
 							add(chartpanel1, BorderLayout.CENTER);
 							add(checkboxPanel, BorderLayout.SOUTH);
+							
 							repaint();
 							validate();
 						}
@@ -407,7 +409,17 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				}
 				long endTime = System.currentTimeMillis();
 				System.out.println(endTime - startTime + "ms");
-
+				
+				/***********************测试******************/
+				//用于测试，绘制线段的角度和长度的散点图
+				JFreeChart jf2 = ChartPanelShowFI.createChart2(rslt.getRetSM().getSegPatterns(),rslt.getRetSM().getFrequentItem());
+				ChartPanel chartpanel2 = new ChartPanel(jf2);
+				add(chartpanel2, BorderLayout.WEST);
+				//用于测试，绘制GAMMA的散点图
+				JFreeChart jf3 = ChartPanelShowFI.createChart3(rslt.getRetSM().getGAMMA());
+				ChartPanel chartpanel3 = new ChartPanel(jf3);
+				add(chartpanel3, BorderLayout.EAST);
+				/*********************测试结束*********************/
 			} else {
 				int[] temp = new int[10];
 				HashMap<String, ArrayList<DataItems>> temp_f_model_nor = new HashMap<>();

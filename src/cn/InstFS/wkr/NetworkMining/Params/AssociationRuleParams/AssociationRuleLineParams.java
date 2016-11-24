@@ -22,6 +22,8 @@ public class AssociationRuleLineParams {
     private double centerLine = -1.0;//聚类中心划界线，为 -1 时通过函数computeCenterLine自动确定
     private int way = 1;//聚类中心线自动确定方法选择( 1:高斯 or 2:间隔 )
     private double gaosi = 3;//聚类中心线自动确定方法选择高斯分布方法时有效，表示中心线距离均值gaosi倍标准差（一般gaosi = 3）
+    private double alpha = 0.2;//聚类中心线自动确定方法选择差距大小方法时有效，表示前后2个gamma大小的差距比
+    private int maxCluster = 10;//限定最多有多少类
     private boolean multiOrMin = false;//求gamma时采用相乘或求最小的方式(true表示相乘，false表示求最小)
     
     public AssociationRuleLineParams(Element paramsConfig){
@@ -50,6 +52,14 @@ public class AssociationRuleLineParams {
     	param = paramsConfig.getChildText("gaosi");
     	if(param != null){
     		gaosi = Double.parseDouble(param);
+    	}
+    	param = paramsConfig.getChildText("alpha");
+    	if(param != null){
+    		alpha = Double.parseDouble(param);
+    	}
+    	param = paramsConfig.getChildText("maxCluster");
+    	if(param != null){
+    		maxCluster = Integer.parseInt(param);
     	}
     	param = paramsConfig.getChildText("multiOrMin");
     	if(param != null){
@@ -99,6 +109,17 @@ public class AssociationRuleLineParams {
 	public void setMultiOrMin(boolean multiOrMin) {
 		this.multiOrMin = multiOrMin;
 	}
+	public double getAlpha() {
+		return alpha;
+	}
+	public void setAlpha(double alpha) {
+		this.alpha = alpha;
+	}
+	public int getMaxCluster() {
+		return maxCluster;
+	}
+	public void setMaxCluster(int maxCluster) {
+		this.maxCluster = maxCluster;
+	}
 	
-
 }

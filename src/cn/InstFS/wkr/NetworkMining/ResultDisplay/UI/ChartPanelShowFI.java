@@ -14,6 +14,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.text.SimpleAttributeSet;
 
+import lineAssociation.Linear;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
 
 import org.jfree.chart.ChartFactory;
@@ -1459,8 +1460,169 @@ public class ChartPanelShowFI extends JPanel {
         jfreechart.getLegend().setVisible(false);
         return jfreechart;
     }
+    /*******************以下用于绘制线段的散点图********************/
+    public static JFreeChart createChart2(List<PatternMent> patterns,Map<Integer, List<String>>frequentItem){
+    	XYDataset xydataset = createDatasetLine(patterns);
+    	JFreeChart jfreeChart = ChartFactory.createScatterPlot("线段散点图","Theta", "Lenght",  xydataset);
+    	XYPlot xyplot = (XYPlot) jfreeChart.getPlot();
+    	xyplot.setDataset(0, xydataset);
+        NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
+        numberaxis.setAutoRangeIncludesZero(false);
+        numberaxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
+        NumberAxis xAxis=(NumberAxis)xyplot.getDomainAxis();
+        xAxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
+    	jfreeChart.getLegend().setVisible(false);
+    	List<XYDataset> datasets = createDatasetLine(patterns, frequentItem);
+    	List<Color> colors = new ArrayList<Color>();
+    	for(int i=0;i<5;i++){
+    		int r=225,g=100,b=0;
+    		colors.add(new Color(r,g,b));
+    		r = (r+50)%225;
+    		g = (g+25)%225;
+    		b = (b+75)%225;
+    	}
+    	for(int i=0;i<datasets.size();i++){
+    		xyplot.setDataset(i+1, datasets.get(i));
+    		XYLineAndShapeRenderer lineAndShapeRenderer = new XYLineAndShapeRenderer();
+    		lineAndShapeRenderer.setSeriesPaint(0, colors.get(i%5));
+    		lineAndShapeRenderer.setSeriesFillPaint(0, colors.get(i%5));
+    		lineAndShapeRenderer.setSeriesOutlinePaint(0, colors.get(i%5));
+    		xyplot.setRenderer(i+1, lineAndShapeRenderer);
+    	}
+    	return jfreeChart;
+    }
+    private static List<XYDataset> createDatasetLine(List<PatternMent> patterns,Map<Integer, List<String>>frequentItem){
+   	 	List<XYDataset> xyList = new ArrayList<XYDataset>();
+//    	XYSeries xyseries = new XYSeries("点");
+        XYSeriesCollection xyseriescollection = new XYSeriesCollection();
+        TreeMap<Integer, Linear> linears = new TreeMap<Integer, Linear>();
+        List<Double> THETA = new ArrayList<Double>();
+        List<Double> SPAN = new ArrayList<Double>();
+        List<Double> HSPAN = new ArrayList<Double>();
+        for(int i=0;i<patterns.size();i++){
+       	 double theta = patterns.get(i).getSlope();
+       	 double hspan = patterns.get(i).getHspan();
+       	 double span = patterns.get(i).getSpan();
+       	 THETA.add(theta);
+       	 SPAN.add(span);
+       	 HSPAN.add(hspan);
+        }
+        THETA = normlizeTheta(THETA);
+        SPAN = normlize(SPAN);
+        HSPAN = normlizeTheta(HSPAN);
+        for(int i=0;i<patterns.size();i++){       	
+        	
+        	double lenght = Math.sqrt(Math.pow(SPAN.get(i), 2)+Math.pow(HSPAN.get(i), 2));
+        	int start = patterns.get(i).getStart();
+        	Linear linear = new Linear();
+        	linear.normTheta = THETA.get(i);
+        	linear.normSpan = SPAN.get(i);
+        	linear.normHspan = HSPAN.get(i);
+        	linears.put(start, linear);
+        }
+        for(int i:frequentItem.keySet()){
+        	XYSeries xyseries = new XYSeries("点"+i);
+        	if(frequentItem.get(i).size()<3){
+        		continue;
+        	}
+        	for(int j=0;j<frequentItem.get(i).size();j++){
+        		String[] item = frequentItem.get(i).get(j).split(",");
+        		int start = Integer.parseInt(item[0]);
+        		double theta = linears.get(start).normTheta;
+        		double lenght = Math.sqrt(Math.pow(linears.get(start).normSpan, 2)+Math.pow(linears.get(start).normHspan, 2));
+        		xyseries.add(theta,lenght);
+        	}
+        	xyseriescollection.addSeries(xyseries);
+        }
+        xyList.add(xyseriescollection);
+        return xyList;
+   }
+    private static XYDataset createDatasetLine(List<PatternMent> patterns){
+    	 XYSeries xyseries = new XYSeries("点");
+         XYSeriesCollection xyseriescollection = new XYSeriesCollection();
+         List<Double> THETA = new ArrayList<Double>();
+         List<Double> SPAN = new ArrayList<Double>();
+         List<Double> HSPAN = new ArrayList<Double>();
+         for(int i=0;i<patterns.size();i++){
+        	 double theta = patterns.get(i).getSlope();
+        	 double hspan = patterns.get(i).getHspan();
+        	 double span = patterns.get(i).getSpan();
+        	 THETA.add(theta);
+        	 SPAN.add(span);
+        	 HSPAN.add(hspan);
+         }
+         THETA = normlizeTheta(THETA);
+         SPAN = normlize(SPAN);
+         HSPAN = normlizeTheta(HSPAN);
+         for(int i=0;i<THETA.size();i++){
+        	
+        	 double lenght = Math.sqrt(Math.pow(SPAN.get(i), 2)+Math.pow(HSPAN.get(i), 2));
+        	 double theta = THETA.get(i);
+        	 xyseries.add(theta,lenght);
+//        	 xyseries.add(SPAN.get(i),HSPAN.get(i));
+         }
+         xyseriescollection.addSeries(xyseries);
+         return xyseriescollection;
+    }
+    private static List<Double> normlize(List<Double> list){
+    	List<Double> norm = new ArrayList<Double>();
+    	double min = Double.MAX_VALUE;
+    	double max = Double.MIN_VALUE;
+    	for(int i=0;i<list.size();i++){
+    		if(list.get(i)<min){
+    			min = list.get(i);
+    		}
+    		if(list.get(i)>max){
+    			max = list.get(i);
+    		}
+    	}
+    	for(int i=0;i<list.size();i++){
+    		double d = (list.get(i)-min)/(max-min);
+    		norm.add(d);
+    	}
+    	return norm;
+    }
+    private static List<Double> normlizeTheta(List<Double> list){
+    	List<Double> norm = new ArrayList<Double>();
+    	double min = Double.MAX_VALUE;
+    	double max = Double.MIN_VALUE;
+    	for(int i=0;i<list.size();i++){
+    		if(list.get(i)<min){
+    			min = list.get(i);
+    		}
+    		if(list.get(i)>max){
+    			max = list.get(i);
+    		}
+    	}
+    	for(int i=0;i<list.size();i++){
+    		double d = list.get(i)/Math.max(Math.abs(max), Math.abs(min));
+    		norm.add(d);
+    	}
+    	return norm;
+    }
+    /******************************绘制GAMMA散点图***************************/
+    public static JFreeChart createChart3(TreeMap<Integer,Double> GAMMA){
+    	XYDataset xydataset = createDatasetGamma(GAMMA);
+    	JFreeChart jfreeChart = ChartFactory.createScatterPlot("GAMMA显示图","i", "GAMMA",  xydataset);
+    	XYPlot xyplot = (XYPlot) jfreeChart.getPlot();
+        NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
+        numberaxis.setAutoRangeIncludesZero(false);
+        numberaxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
+        NumberAxis xAxis=(NumberAxis)xyplot.getDomainAxis();
+        xAxis.setLabelFont(new Font("微软雅黑",Font.BOLD,12));
+    	jfreeChart.getLegend().setVisible(false);
+    	return jfreeChart;
+    }
+    private static XYDataset createDatasetGamma(TreeMap<Integer,Double> GAMMA){
+   	 XYSeries xyseries = new XYSeries("点");
+        XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
-
+        for(int i : GAMMA.keySet()){       	
+       	 xyseries.add(i,GAMMA.get(i));
+        }
+        xyseriescollection.addSeries(xyseries);
+        return xyseriescollection;
+   }
 }
 
 

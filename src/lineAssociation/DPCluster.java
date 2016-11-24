@@ -2,6 +2,7 @@ package lineAssociation;
 
 import java.util.*;
 
+import cn.InstFS.wkr.NetworkMining.DataInputs.PatternMent;
 import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleLineParams;
 
 /**
@@ -13,13 +14,16 @@ public class DPCluster {
     private double centerLine = -1.0;//聚类中心划界线，为 -1 时通过函数computeCenterLine自动确定
     private int way = 1;//聚类中心线自动确定方法选择( 1:高斯 or 2:间隔 )
     private double gaosi = 3;//聚类中心线自动确定方法选择高斯分布方法时有效，表示中心线距离均值gaosi倍标准差
+    private double alpha = 0.2 ;//聚类中心线自动确定方法选择差距大小方法时有效，表示前后2个gamma大小的差距比
+    private int maxCluster = 5;//限定最多有多少类
     private boolean multiOrMin = false;//求gamma时采用相乘或求最小的方式(true表示相乘，false表示求最小)
 
     private double dc;//截断距离，通过参数t和函数computeDc确定
     private int N;//数据点个数
-
+    
 
     private double[][] distancesInput;
+    TreeMap<Integer,Linear> linears = new TreeMap<Integer, Linear>();
 
     //距离索引，半角矩阵
     private HashMap<Integer,HashMap<Integer,Double>> completeDistances = new HashMap<Integer, HashMap<Integer, Double>>(); 
@@ -46,10 +50,24 @@ public class DPCluster {
     	   centerLine = arp.getCenterLine();
     	   way = arp.getWay();
     	   gaosi = arp.getGaosi();
+    	   alpha = arp.getAlpha();
+    	   maxCluster = arp.getMaxCluster();
     	   multiOrMin = arp.isMultiOrMin();
         }
     }
-
+    public DPCluster(double[][] distancesInput,TreeMap<Integer,Linear> linears,AssociationRuleLineParams arp){
+        this.distancesInput = distancesInput;
+        this.linears = linears;
+        if(arp != null){
+    	   t = arp.getT();
+    	   centerLine = arp.getCenterLine();
+    	   way = arp.getWay();
+    	   gaosi = arp.getGaosi();
+    	   alpha = arp.getAlpha();
+    	   maxCluster = arp.getMaxCluster();
+    	   multiOrMin = arp.isMultiOrMin();
+        }
+    }
     public DPCluster(double[][] distancesInput,double centerLine,double t){
         this.distancesInput = distancesInput;
         this.centerLine = centerLine;
@@ -67,14 +85,13 @@ public class DPCluster {
         computeRHO();
         System.out.println("RHO值计算完毕！");
         
-        //计算比当前样本密度大且距离当前样本点最近的距离delta
+        //计算比当前样本密度大且距离当前样本点最近的距离delta,并初步进行聚类
         computeDELTA();
         System.out.println("DELTA值计算完毕！");
         
         //计算聚类中心的排序规则
         computeGAMMA();
         System.out.println("GAMMA值计算完毕！");
-        System.out.println("Gamma:");
         
         //计算每个样本点的beta值，通过该beta值，可以去除异常点
         computeBEITA();
@@ -82,11 +99,18 @@ public class DPCluster {
         
         
         computeCenters();
-        transformCenter();//修改类中心格式，把类中心数据改为属于哪一类。
+//        transformCenter();//修改类中心格式，把类中心数据改为属于哪一类。
         System.out.println("聚类中心与异常点划分完毕！centerLine="+centerLine);
         System.out.println("各个map中的数据条数：\n--RHO: "+RHO.size()+"\n--DELTA: "+DELTA.size()
                 +"\n--GAMMA: "+GAMMA.size()+"\n--clusterCenters: "+clusterCenters.size()
                 +"\n--outliers: "+outliers.size());
+        System.out.println("聚类中心:index,theta,lenght):");
+        Iterator<Integer> iterator = clusterCenters.iterator();
+        while(iterator.hasNext()){
+        	int index = iterator.next();
+        	double lenght = Math.sqrt(Math.pow(linears.get(index).normSpan, 2)+Math.pow(linears.get(index).normHspan, 2));
+        	System.out.println("("+index+","+linears.get(index).normTheta+","+lenght+")");
+        }
     }
 
     /**
@@ -167,7 +191,7 @@ public class DPCluster {
      * 计算DELTA值，并根据其中获取DELTA时相应的数据点确定归属聚类中心
      * 计算离当前样本点密度大的且离当前样本点最近的距离delta
      */
-    private void computeDELTA(){
+    /*private void computeDELTA(){
         int size = distances.size();
         for(int x = size-1;x>=0;x--){
             double delta = -1.0;
@@ -203,8 +227,45 @@ public class DPCluster {
             belongClusterCenter.put(RHO.get(d),belongCC);
         }
         distances = null;       //释放内存；
+    }*/
+    private void computeDELTA(){
+        int size = distances.size();
+        for(int x = size-1;x>=0;x--){
+            double delta = -1.0;
+            int belongCC = -1;
+            double d = distances.get(x);
+            for(int y = size-1;y>x;y--){   
+                double e = distances.get(y);
+                if(d==e)break;
+                int i = RHO.get(d),j = RHO.get(e);
+                double distance = 0.0;
+                if(i>j) 
+                	distance = completeDistances.get(j).get(i);
+                else 
+                	distance = completeDistances.get(i).get(j);
+                
+                if(delta == -1.0||distance < delta){
+                    delta = distance;
+                    if(distance<=dc)
+                    	belongCC=j;
+                }
+            }
+            //处理第一个点x=size-1
+            if(delta==-1.0){
+                HashMap<Integer,Double> firstDists = completeDistances.get(RHO.get(d));
+                double max = 0.0;
+                for(int z : firstDists.keySet()){
+                    
+                	if(firstDists.get(z)>max)
+                    	max=firstDists.get(z);
+                }
+                delta = max;
+            }
+            DELTA.put(RHO.get(d),delta);
+            belongClusterCenter.put(RHO.get(d),belongCC);
+        }
+        distances = null;       //释放内存；
     }
-
     /**
      * 计算GAMMA值，GAMMA = RHO*DELTA;
      * 参与计算前先对两个变量进行MIN_MAX归一化
@@ -232,7 +293,7 @@ public class DPCluster {
             }else {
                 gamma = Math.min(((d - rhomin) / (rhomax - rhomin)), ((delta - deltamin) / (deltamax - deltamin)));
             }
-            if(gamma<0.001)gamma=0.001;
+            if(gamma<0.0001)gamma=0.0001;
             GAMMA.put(RHO.get(d),gamma);
         }
     }
@@ -318,11 +379,13 @@ public class DPCluster {
             }
             mean = sum / size;
             stdvar = Math.sqrt(squareSum / size - mean * mean);
-            centerLine = mean + gaosi * stdvar;//原始代码
-        }else{
+            centerLine = mean + gaosi * stdvar;
+        }
+        /*else{
 //            int size = GAMMA.size()/20;
         	//不是很懂这么做的原因
-            int size = 100;
+//            int size = 100;
+            int size = 50;
             int[] bucket = new int[size+1];
             for(int i : GAMMA.keySet()){
                 bucket[(int)Math.ceil(GAMMA.get(i)*size)]++;
@@ -337,6 +400,23 @@ public class DPCluster {
                 }
             }
             centerLine = (i*1.0)/size;
+        }*/
+        else{
+        	List<Double> gammaList = new ArrayList<Double>();
+        	for(int i:GAMMA.keySet()){
+        		gammaList.add(GAMMA.get(i));
+        	}
+        	Collections.sort(gammaList);
+        	Collections.reverse(gammaList);
+        	if(maxCluster>gammaList.size()){
+        		maxCluster = gammaList.size()-1;
+        	}
+        	for(int i=1;i<maxCluster;i++){
+        		if((gammaList.get(i)-gammaList.get(i+1))/gammaList.get(i)>alpha){
+        			centerLine = gammaList.get(i);
+        		}
+        	}
+        	centerLine = centerLine<0 ? gammaList.get(maxCluster) : centerLine;
         }
     }
 
@@ -403,6 +483,8 @@ public class DPCluster {
         System.out.println("dc选择前置参数t: " + t);
         System.out.println("聚类中心线自动确定方法选择( 1:高斯 or 2:间隔 )way: " + way);
         System.out.println("若way为1，中心线距离均值gaosi倍标准差gaosi: " + gaosi);
+        System.out.println("若way为2，中心线前后两差值比例alpha为:"+alpha);
+        System.out.println("若way为2，中心线底线（即最多有多少类）为:"+maxCluster);
         System.out.println("求gamma方式(true表示相乘，false表示求最小)multiOrMin: " + multiOrMin);
         System.out.println("-----<<<参数打印完毕>>>-----");
     }

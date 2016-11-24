@@ -5,16 +5,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
+
 import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleLineParams;
+import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowResultsSM;
 
 /**
  * Created by xzbang on 2016/1/18.
  */
 public class ClusterWrapper {
     private TreeMap<Integer,Linear> linears;
+    private double[][] distancesInput; 
     private double[][] distancesInput1; //DP-Cluster数据输入，半角矩阵
     private double[][] distancesInput2;
     AssociationRuleLineParams arp = null;
+    
+    public TreeMap<Integer,Double> GAMMA = new TreeMap<Integer, Double>();//用于测试GAMMA
+    
     public ClusterWrapper(TreeMap<Integer,Linear> linears, AssociationRuleLineParams arp){
         this.linears = linears;
         if(arp != null){
@@ -30,7 +37,8 @@ public class ClusterWrapper {
     	
         Linear linearMax = new Linear(Double.MIN_VALUE,0,Integer.MIN_VALUE,Double.MIN_VALUE);
         Linear linearMin = new Linear(Double.MAX_VALUE,0,Integer.MAX_VALUE,Double.MAX_VALUE);
-        linearMax.hspan=linearMin.hspan=0.0;
+        linearMax.hspan = Double.MIN_VALUE;
+        linearMin.hspan = Double.MAX_VALUE;
         for(int i : linears.keySet()){
             Linear linear = linears.get(i);
             if(linear.theta > linearMax.theta)
@@ -57,6 +65,7 @@ public class ClusterWrapper {
             linear.normSpan = (linear.span-linearMin.span)*1.0/(linearMax.span-linearMin.span);//[0,1]
             linear.normStartValue = (linear.startValue-linearMin.startValue)/(linearMax.startValue-linearMin.startValue);//[0,1]
             linear.normHspan = linear.hspan/Math.max(Math.abs(linearMax.hspan),Math.abs(linearMin.hspan));//[-1,1]
+//            linear.normHspan = (linear.hspan-linearMin.hspan)/(linearMax.hspan-linearMin.hspan);//[0,1]
 //            linear.normTheta = (Math.exp(linear.normTheta)/(1+Math.exp(linear.normTheta))-0.5)*2*(1+Math.E)/(Math.E-1);
         }
         System.out.println("linearMax: "+linearMax.toDetailString());
@@ -68,6 +77,7 @@ public class ClusterWrapper {
      */
     private void computeDistancesInput(){
         int lsize = linears.size();
+        distancesInput = new double[lsize*(lsize-1)/2][3];
         distancesInput1 = new double[lsize*(lsize-1)/2][3];
         distancesInput2 = new double[lsize*(lsize-1)/2][3];
         int k = 0;
@@ -75,6 +85,10 @@ public class ClusterWrapper {
             for(int j : linears.keySet()){
                 if(j <= i)
                 	continue;
+                distancesInput[k][0] = i;
+                distancesInput[k][1] = j;
+                distancesInput[k][2] = Similarity.getDistance(linears.get(i),linears.get(j));
+                
                 distancesInput1[k][0] = i;
                 distancesInput1[k][1] = j;
                 distancesInput1[k][2] = Similarity.getThetaDistance(linears.get(i),linears.get(j));
@@ -86,14 +100,22 @@ public class ClusterWrapper {
             }
         }
     }
-
-    public DPCluster run(){
+    
+    //聚类一次
+    public Map<Integer, Integer> run(){
         normalize();
         computeDistancesInput();
-        DPCluster dpCluster1 = new DPCluster(distancesInput1,arp);
-        dpCluster1.run();       
-        return dpCluster1;
+//        DPCluster dpCluster = new DPCluster(distancesInput,arp);
+        DPCluster dpCluster = new DPCluster(distancesInput,linears,arp);
+        dpCluster.run(); 
+        Map<Integer, Integer> clusterMap = dpCluster.getBelongClusterCenter();
+        //用于测试：绘制gamma的散点图
+        GAMMA  = dpCluster.getGAMMA();
+        //测试完毕
+        return clusterMap;
     }
+    
+    //分维度进行2次聚类
     public Map<Integer, Integer> run2(){
         normalize();
         computeDistancesInput();

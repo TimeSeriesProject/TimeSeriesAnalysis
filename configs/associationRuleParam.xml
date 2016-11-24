@@ -1,22 +1,45 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
 <!-- 关联规则相关算法参数 -->
+
 <arParams>
-	<!-- 线段 -->
-	<associationRuleLineParams>
-		<!-- 线段数合并代价参数 -->
-		<mergerPrice>0.025</mergerPrice>
-		<compressionRatio>0.65</compressionRatio>
-		<!-- 线段聚类参数 -->
-		<t>0.05</t>
-		<centerLine>-1.0</centerLine>
-		<way>1</way>
-		<gaosi>3</gaosi>
-		<multiOriMin>false</multiOriMin>
-	</associationRuleLineParams>
-	<!-- 相似度 -->
-	<associationRuleSimilarityParams>
-		<supportThresh>0.4,10</supportThresh>
-		<bias>0</bias>
-		<whichAlgorithm>1</whichAlgorithm>
-	</associationRuleSimilarityParams> 
+	
+<!-- 线段 -->
+	
+<associationRuleLineParams>
+		
+<!-- 线段数合并代价参数 -->
+		
+<mergerPrice>0.025</mergerPrice>
+		
+<compressionRatio>0.65</compressionRatio>
+		
+<!-- 线段聚类参数 -->
+		
+<t>0.05</t>
+		
+<centerLine>-1.0</centerLine>
+		
+<way>1</way>
+		
+<gaosi>3</gaosi>
+	
+<alpha>0.2<alpha/>	    
+<maxCluster>5<maxCluster/> 	
+<multiOriMin>false</multiOriMin>
+	
+</associationRuleLineParams>
+	
+<!-- 相似度 -->
+	
+<associationRuleSimilarityParams>
+		
+<supportThresh>0.4,10</supportThresh>
+		
+<bias>0</bias>
+		
+<whichAlgorithm>1</whichAlgorithm>
+	
+</associationRuleSimilarityParams> 
+
 </arParams>

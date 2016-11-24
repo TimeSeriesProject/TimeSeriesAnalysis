@@ -17,6 +17,8 @@ public class TranDPCluster {
 	DataItems dataItems = new DataItems();//原始数据
 	DataItems clusterItems = new DataItems();//输出聚类结果   线段起始时间:类中心
 	List<PatternMent> segPatterns = new ArrayList<PatternMent>();
+	TreeMap<Integer, Linear> linears = new TreeMap<Integer, Linear>();
+	public TreeMap<Integer,Double> GAMMA = new TreeMap<Integer, Double>();
 	public TranDPCluster(DataItems dataItems,List<PatternMent> segPatterns,AssociationRuleLineParams arp){
 		this.dataItems = dataItems;
 		this.segPatterns = segPatterns;
@@ -24,16 +26,15 @@ public class TranDPCluster {
 	}
 	public void run(){
 		/*修改线段数据格式*/
-		TreeMap<Integer, Linear> linears = TranLinears();
+		linears = TranLinears();
 		
 		/*开始DPC聚类*/
 		System.out.println("开始运行DPCluster聚类算法！");
 		ClusterWrapper clusterWrapper = new ClusterWrapper(linears,ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams());
-//		DPCluster dpCluster = clusterWrapper.run();
-		Map<Integer,Integer> map = clusterWrapper.run2();		
+		Map<Integer,Integer> map = clusterWrapper.run();
+		GAMMA = clusterWrapper.GAMMA;
 		System.out.println("DPCluster聚类算法计算完毕！");
 		/*聚类结果*/
-//		TreeMap<Integer,Integer> symbols = getSymbols(map); //线段序列:类中心
 		clusterItems = tranClusterMap(map); //线段起始时间:类中心
 	}
 	/**

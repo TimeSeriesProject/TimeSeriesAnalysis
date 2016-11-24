@@ -400,7 +400,8 @@ class NodeTimerTask extends TimerTask{
 						printClusterLabelTOLines(clusterItems, dataItems);
 				List<LineElement> lineElements = sequencePattern.getLineElement(frequentItem);
 				sequencePattern.patternMining();
-				setFrequentResults(results, sequencePattern,frequentItem, lineElements,segPatterns);
+//				setFrequentResults(results, sequencePattern,frequentItem, lineElements,segPatterns);
+				setFrequentResults(results, sequencePattern,frequentItem, lineElements,segPatterns,dpCluster.GAMMA);
 				break;
 			case MiningMethods_PartialCycle:
 				if (results.getRetNode().getRetPM().getHasPeriod()) { // 若有周期性,不挖掘部分周期
@@ -489,6 +490,21 @@ class NodeTimerTask extends TimerTask{
 			Map<Integer, List<String>>frequentItem, List<LineElement> lineElements,List<PatternMent> segPatterns){		
 		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
 		results.getRetNode().getRetSM().setSegPatterns(segPatterns);
+		if(sequencePattern.isHasFreItems()){
+			results.getRetNode().getRetSM().setPatters(patterns);
+			results.getRetNode().getRetSM().setHasFreItems(true);
+			results.getRetNode().getRetSM().setFrequentItem(frequentItem);
+			results.getRetNode().getRetSM().setLineElements(lineElements);
+			System.out.println(taskCombination.getName()+" has freitems");
+		}else{
+			results.getRetNode().getRetSM().setHasFreItems(false);
+		}
+	}
+	private void setFrequentResults(MinerResults results,SequencePatternsDontSplit sequencePattern,
+			Map<Integer, List<String>>frequentItem, List<LineElement> lineElements,List<PatternMent> segPatterns,TreeMap<Integer,Double> GAMMA){		
+		List<ArrayList<String>> patterns=sequencePattern.getPatterns();
+		results.getRetNode().getRetSM().setSegPatterns(segPatterns);
+		results.getRetNode().getRetSM().setGAMMA(GAMMA);
 		if(sequencePattern.isHasFreItems()){
 			results.getRetNode().getRetSM().setPatters(patterns);
 			results.getRetNode().getRetSM().setHasFreItems(true);

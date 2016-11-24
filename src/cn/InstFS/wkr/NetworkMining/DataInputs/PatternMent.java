@@ -1,6 +1,8 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
-public class PatternMent {
+import java.io.Serializable;
+
+public class PatternMent implements Serializable{
 	private int start;
 	private int end;
 	private int len; //end - start

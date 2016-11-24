@@ -61,19 +61,19 @@ public class ClusterMain {
 
         System.out.println("开始运行DPCluster聚类算法！");
         ClusterWrapper clusterWrapper = new ClusterWrapper(linears,null);
-        DPCluster dpCluster = clusterWrapper.run();
+//        DPCluster dpCluster = clusterWrapper.run();
         System.out.println("DPCluster聚类算法计算完毕！");
         System.out.println("***************************************************");
 
 
         FileOutput.writeFileLinear(linears,linearPath,lastPoint);
-        FileOutput.writeFile(rhoPath, dpCluster.getRHO());
+       /* FileOutput.writeFile(rhoPath, dpCluster.getRHO());
         FileOutput.writeFile(dpCluster.getDELTA(),DELTAPath);
         FileOutput.writeFile(dpCluster.getGAMMA(),GAMMAPath);
         FileOutput.writeFile(dpCluster.getBEITA(),BEITAPath);
         FileOutput.writeFileInteger(dpCluster.getBelongClusterCenter(), belongPath);
         FileOutput.writeFile(dpCluster.getClusterCenters(), centerPath);
-        FileOutput.writeFile(dpCluster.getOutliers(),outlierPath);
+        FileOutput.writeFile(dpCluster.getOutliers(),outlierPath);*/
         System.out.println("测试结果输出完毕！");
 
     }
