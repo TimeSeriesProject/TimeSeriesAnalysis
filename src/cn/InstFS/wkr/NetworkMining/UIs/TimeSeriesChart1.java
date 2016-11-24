@@ -140,7 +140,8 @@ public class TimeSeriesChart1 extends Composite {
 		String protocol2 = pp.getProtocol2();
 		final JScrollBar scroller;
 		// 归一化两条曲线，只显示线段化得数据点
-
+		
+		
 		final DataItems dataitems1 = DataItemsNormalization(pp.getDataItems1(),
 				1);
 		final DataItems dataitems2 = DataItemsNormalization(pp.getDataItems2(),
@@ -150,7 +151,7 @@ public class TimeSeriesChart1 extends Composite {
 		XYDataset initialDataset = createNormalDataset(pp.getDataItems1(),
 				pp.getDataItems2(), protocol1, protocol2);
 		// 创建关联挖掘图表的数据集，包含两条原始序列和模式序列数据
-		createLineDataset(dataitems1, dataitems2, protocol1, protocol2,
+		createLineDataset(dataitems1, dataitems2,pp.getLineDataItems1(),pp.getLineDataItems2(), protocol1, protocol2,
 				pp.getMapAB());
 
 		// 创建原始图
@@ -483,7 +484,7 @@ public class TimeSeriesChart1 extends Composite {
 	 * @param mapAB
 	 *            保存每个模式的所有线段集合
 	 */
-	public void createLineDataset(DataItems dataitems1, DataItems dataitems2,
+	public void createLineDataset(DataItems dataitems1, DataItems dataitems2,DataItems indexdataitems1,DataItems indexdataitems2,
 			String protocol1, String protocol2,
 			Map<String, ArrayList<LinePos>> mapAB) {
 		// 获取模式的种类个数、
@@ -603,37 +604,51 @@ public class TimeSeriesChart1 extends Composite {
 
 		// 功能：遍历allModelList，保存模式线段线段化后的结果
 		Iterator itall = allModelList.iterator();
-		while (itall.hasNext()) {
+		Iterator<String> indexit1=indexdataitems1.data.iterator();
+		Iterator<String> indexit2=indexdataitems2.data.iterator();
+		initseries1start=(indexit1.hasNext())?	(Integer.parseInt(indexit1.next())):-1;
+		initseries2start=(indexit2.hasNext())?(Integer.parseInt(indexit2.next())):-1;
+		while (itall.hasNext() && (initseries1start>=0) && (initseries2start>=0) ) {
 			LinePos linpos = (LinePos) itall.next();
 			// 遍历曲线1 的 模式线段前的原始线段，保存进initseries1
-			while (initseries1start < linpos.A_start) {
+			
+			while (initseries1start <=linpos.A_start ) {
 				initseries1.add(
 						initseries1start,
 						Double.parseDouble(dataitems1.getElementAt(
 								initseries1start).getData()));
-				initseries1start++;
+				initseries1start=(indexit1.hasNext())?	(Integer.parseInt(indexit1.next())):-1;
 			}
 			// 保存模式线段 initseries1
-			initseries1.add(linpos.A_start, Double.parseDouble(dataitems1
-					.getElementAt(linpos.A_start).getData()));
+			//此时initseries1start=linpos.A_start+1
+			while(initseries1start<linpos.A_end){
+				initseries1start=(indexit1.hasNext())?	(Integer.parseInt(indexit1.next())):-1;//跳过模式线段中间的点
+			}
+		/*	initseries1.add(linpos.A_start, Double.parseDouble(dataitems1
+					.getElementAt(linpos.A_start).getData()));*/
+			
 			initseries1.add(linpos.A_end, Double.parseDouble(dataitems1
 					.getElementAt(linpos.A_end).getData()));
-			initseries1start = linpos.A_end;
-
+			initseries1start=(indexit1.hasNext())?	(Integer.parseInt(indexit1.next())):-1;;//此时initseriesstart=linpos.A_end+1
 			// 遍历曲线2 的 模式线段前的原始线段，保存进initseries2
-			while (initseries2start < linpos.B_start) {
+			while (initseries2start <= linpos.B_start) {
 				initseries2.add(
 						initseries2start,
 						Double.parseDouble(dataitems2.getElementAt(
 								initseries2start).getData()));
-				initseries2start++;
+				//initseries2start++;
+				initseries2start=(indexit2.hasNext())?	(Integer.parseInt(indexit2.next())):-1;//
 			}
 			// 保存模式线段 initseries2
-			initseries2.add(linpos.B_start, Double.parseDouble(dataitems2
-					.getElementAt(linpos.B_start).getData()));
+			while(initseries2start<linpos.B_end){
+				initseries2start=(indexit2.hasNext())?	(Integer.parseInt(indexit2.next())):-1;//跳过模式线段中间的点
+			}
+		
+			//initseries2start=(indexit2.hasNext())?	(Integer.parseInt(indexit2.next())):-1;//此时initseriesstart就是linpos.B_start
 			initseries2.add(linpos.B_end, Double.parseDouble(dataitems2
 					.getElementAt(linpos.B_end).getData()));
-			initseries2start = linpos.B_end;
+			//initseries2start = linpos.B_end;
+			initseries2start=(indexit2.hasNext())?	(Integer.parseInt(indexit2.next())):-1;//此时initseriesstart就是linpos.B_end
 		}
 
 		// 功能：结束
