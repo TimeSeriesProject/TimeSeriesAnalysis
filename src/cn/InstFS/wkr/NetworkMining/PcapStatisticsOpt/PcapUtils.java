@@ -338,15 +338,26 @@ class RouteGen implements Callable {
                 this.TTL = TTL;
             }
 
+            //必须重写compareTo，equals和hashcode可以不用重写
+            @Override
             public int compareTo(NodeAndTTL arg0) {
-                return TTL.compareTo(arg0.TTL);
+                if (node == arg0.node) {
+                    if (TTL == arg0.TTL) {
+                        return 0;
+                    } else {
+                        return TTL < arg0.TTL ? -1 : 1;
+                    }
+                } else {
+                    return node.compareTo(arg0.node);
+                }
             }
         }
-        ArrayList<NodeAndTTL> ttlList = new ArrayList<NodeAndTTL>();
+        TreeSet<NodeAndTTL> ttlList = new TreeSet<NodeAndTTL>();
 
         Collections.sort(datas);
 //        System.out.println("size: " + datas.size());
 
+        //从头遍历，将添加过的记录打上标签即可，遍历时首先判断标签
         for (int i = 0; i < datas.size(); i++) {
 
             //将要删除的PcapData添加进来，最后删除，若遍历的过程中删除，则会出现后面的PcapData前移，导致下一次遍历忽略掉一个PcapData
@@ -368,7 +379,7 @@ class RouteGen implements Callable {
                     continue;
                 }
                 if ((double) data.getTime_s() + data.getTime_ms() / 1000000.0 >
-                        first.getTime_s() + first.getTime_ms() / 1000000.0 + 2.0) {
+                        first.getTime_s() + first.getTime_ms() / 1000000.0 + 1.5) {
 //                    System.out.println("11111");
                      break;
                 } else if (data.getFlags() == 0x02 && first.getFlags() == 0x02) {
@@ -394,15 +405,17 @@ class RouteGen implements Callable {
 //                    System.out.println("5555");
                 }
             }
-//            System.out.println("写文件");
 
             updateRecords(first);
             StringBuilder sb = new StringBuilder();
             sb.append(String.valueOf(first.getTime_s())).append(",").append(first.getSrcIP()).append(",").
                     append(first.getDstIP()).append(",").append(first.getTraffic()).append(",").append(num);
-            Collections.sort(ttlList);
-            for (int k = 0; k < ttlList.size(); k++)
-                sb.append(",").append(ttlList.get(k).node).append(":").append(ttlList.get(k).TTL);
+//            Collections.sort(ttlList);
+//            for (int k = 0; k < ttlList.size(); k++)
+//                sb.append(",").append(ttlList.get(k).node).append(":").append(ttlList.get(k).TTL);
+            for (NodeAndTTL nodeAndTTL : ttlList) {
+                sb.append(",").append(nodeAndTTL.node).append(":").append(nodeAndTTL.TTL);
+            }
             bw.write(sb.toString());
             bw.newLine();
             ttlList.clear();
