@@ -481,7 +481,7 @@ public class Client {
                 DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
                 length = dis.read(sendBuffer, 0, sendBuffer.length);
                 while (length > 0) {
-                    clientInit.sendInt(length);
+                    clientInit.sendInt(length);//发送length是为了最后length为-1，作为结束的判断，因此每次都要发送length
                     clientInit.sendByte(sendBuffer, 0, length);
                     length = dis.read(sendBuffer, 0, sendBuffer.length);
                 }
