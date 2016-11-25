@@ -2,7 +2,7 @@ package cn.InstFS.wkr.NetworkMining.PcapStatisticsOpt;
 
 import java.io.*;
 import java.nio.MappedByteBuffer;
-import java.util.ArrayList;
+import java.util.*;
 
 
 /**
@@ -35,6 +35,9 @@ public class PcapRouteGen {
             is.get(buffer_1);
             data.setTTL(64 - buffer_1[0]);
 
+            is.get(buffer_1);
+            data.setProtocol(buffer_1[0]);
+
             is.get(buffer_4);
             data.setSrcIP(byteArrayToIP(buffer_4, sb));
             sb.delete(0, sb.length());
@@ -52,6 +55,19 @@ public class PcapRouteGen {
 
             is.get(buffer_2);
             data.setDstPort(byteArrayToPort(buffer_2, 0));
+
+
+            //若是TCP协议，则添加TCP的一些东西
+            if (data.getProtocol() == 6) {
+                is.get(buffer_4);
+                data.setSeq(byteArrayToInt(buffer_4, 0));//seq
+
+                is.get(buffer_4);
+                data.setAck(byteArrayToInt(buffer_4, 0));//ack
+
+                is.get(buffer_1);
+                data.setFlags(buffer_1[0]);//flags
+            }
 
             is.get(buffer_4);
             length = byteArrayToInt(buffer_4, 0);
