@@ -8,15 +8,17 @@ import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleL
 /**
  * Created by xzbang on 2016/1/18.
  */
-public class DPCluster {
+public class DPCluster2 {
 
     private double t = 0.1;//用于确定参数截断距离dc
     private double centerLine = -1.0;//聚类中心划界线，为 -1 时通过函数computeCenterLine自动确定
+    private double distanceLine = 0.0;//数据点到类中心的距离界限，大于distanceline则是异常点
     private int way = 1;//聚类中心线自动确定方法选择( 1:高斯 or 2:间隔 )
     private double gaosi = 3;//聚类中心线自动确定方法选择高斯分布方法时有效，表示中心线距离均值gaosi倍标准差
     private double alpha = 0.2 ;//聚类中心线自动确定方法选择差距大小方法时有效，表示前后2个gamma大小的差距比
+    private double disLine = 0.6;//数据点到类中心的距离的80%为正常点
     private int maxCluster = 5;//限定最多有多少类
-    private boolean multiOrMin = true;//求gamma时采用相乘或求最小的方式(true表示相乘，false表示求最小)
+    private boolean multiOrMin = false;//求gamma时采用相乘或求最小的方式(true表示相乘，false表示求最小)
 
     private double dc;//截断距离，通过参数t和函数computeDc确定
     private int N;//数据点个数
@@ -38,12 +40,15 @@ public class DPCluster {
     private TreeMap<Integer,Integer> belongClusterCenter = new TreeMap<Integer, Integer>();
     private TreeSet<Integer> clusterCenters = new TreeSet<Integer>();//聚类中心
     private TreeSet<Integer> outliers = new TreeSet<Integer>();//异常点
-
-    public DPCluster(double[][] distancesInput){
+    
+    //各个数据点到中心点的最短距离
+    private TreeMap<Integer, Double> distancesToCenter = new TreeMap<Integer, Double>();
+    
+    public DPCluster2(double[][] distancesInput){
         this.distancesInput = distancesInput;
     }
 
-    public DPCluster(double[][] distancesInput,AssociationRuleLineParams arp){
+    public DPCluster2(double[][] distancesInput,AssociationRuleLineParams arp){
         this.distancesInput = distancesInput;
         if(arp != null){
     	   t = arp.getT();
@@ -55,7 +60,7 @@ public class DPCluster {
     	   multiOrMin = arp.isMultiOrMin();
         }
     }
-    public DPCluster(double[][] distancesInput,TreeMap<Integer,Linear> linears,AssociationRuleLineParams arp){
+    public DPCluster2(double[][] distancesInput,TreeMap<Integer,Linear> linears,AssociationRuleLineParams arp){
         this.distancesInput = distancesInput;
         this.linears = linears;
         if(arp != null){
@@ -68,7 +73,7 @@ public class DPCluster {
     	   multiOrMin = arp.isMultiOrMin();
         }
     }
-    public DPCluster(double[][] distancesInput,double centerLine,double t){
+    public DPCluster2(double[][] distancesInput,double centerLine,double t){
         this.distancesInput = distancesInput;
         this.centerLine = centerLine;
         this.t=t;
@@ -85,7 +90,7 @@ public class DPCluster {
         computeRHO();
         System.out.println("RHO值计算完毕！");
         
-        //计算比当前样本密度大且距离当前样本点最近的距离delta,并初步进行聚类
+        //计算比当前样本密度大且距离当前样本点最近的距离delta
         computeDELTA();
         System.out.println("DELTA值计算完毕！");
         
@@ -97,10 +102,18 @@ public class DPCluster {
         computeBEITA();
         System.out.println("BEITA值计算完毕！");
         
-        
+        //确定聚类中心
         computeCenters();
-//        transformCenter();//修改类中心格式，把类中心数据改为属于哪一类。
-        System.out.println("聚类中心与异常点划分完毕！centerLine="+centerLine);
+        System.out.println("类中心点计算完毕！centerLine="+centerLine);
+        
+        //根据聚类中心进行聚类
+        ClusterwithCenter();
+        System.out.println("根据类中心点聚类完毕");
+        //根据各个数据点到类中心的最小距离分布来找出异常点
+        findOutliers();
+        System.out.println("异常点划分完毕！distanceLine="+distanceLine);
+        
+        //输出聚类结果
         System.out.println("各个map中的数据条数：\n--RHO: "+RHO.size()+"\n--DELTA: "+DELTA.size()
                 +"\n--GAMMA: "+GAMMA.size()+"\n--clusterCenters: "+clusterCenters.size()
                 +"\n--outliers: "+outliers.size());
@@ -191,43 +204,6 @@ public class DPCluster {
      * 计算DELTA值，并根据其中获取DELTA时相应的数据点确定归属聚类中心
      * 计算离当前样本点密度大的且离当前样本点最近的距离delta
      */
-    /*private void computeDELTA(){
-        int size = distances.size();
-        for(int x = size-1;x>=0;x--){
-            double delta = -1.0;
-            int belongCC = -1;
-            double d = distances.get(x);
-            for(int y = size-1;y>=0;y--){   //感觉有问题，待确认
-                double e = distances.get(y);
-                if(d==e)break;
-                int i = RHO.get(d),j = RHO.get(e);
-                double distance = 0.0;
-                if(i>j) 
-                	distance = completeDistances.get(j).get(i);
-                else 
-                	distance = completeDistances.get(i).get(j);
-                
-                if(delta == -1.0||distance < delta){
-                    delta = distance;
-                    if(distance<=dc)
-                    	belongCC=j;
-                }
-            }
-            if(delta==-1.0){
-                HashMap<Integer,Double> firstDists = completeDistances.get(RHO.get(d));
-                double max = 0.0;
-                for(int z : firstDists.keySet()){
-                    
-                	if(firstDists.get(z)>max)
-                    	max=firstDists.get(z);
-                }
-                delta = max;
-            }
-            DELTA.put(RHO.get(d),delta);
-            belongClusterCenter.put(RHO.get(d),belongCC);
-        }
-        distances = null;       //释放内存；
-    }*/
     private void computeDELTA(){
         int size = distances.size();
         for(int x = size-1;x>=0;x--){
@@ -246,8 +222,8 @@ public class DPCluster {
                 
                 if(delta == -1.0||distance < delta){
                     delta = distance;
-                    if(distance<=dc)
-                    	belongCC=j;
+                    /*if(distance<=dc)
+                    	belongCC=j;*/
                 }
             }
             //处理第一个点x=size-1
@@ -262,7 +238,7 @@ public class DPCluster {
                 delta = max;
             }
             DELTA.put(RHO.get(d),delta);
-            belongClusterCenter.put(RHO.get(d),belongCC);
+//            belongClusterCenter.put(RHO.get(d),belongCC);
         }
         distances = null;       //释放内存；
     }
@@ -339,27 +315,8 @@ public class DPCluster {
         //将一部分潜在聚类中心划分为异常点
         for(int i : GAMMA.keySet()){
             double gamma = GAMMA.get(i);
-            int belongCC = belongClusterCenter.get(i);
-            if(gamma>=centerLine&&belongCC==-1)
-            	clusterCenters.add(i);
-            else if(gamma<centerLine&&belongCC==-1){
-                outliers.add(i);
-                belongClusterCenter.put(i,-2);
-            }
-        }
-        //将未识别为潜在聚类中心但归属聚类中心为异常点的数据点判定为异常点，将其他点映射到聚类中心
-        for(int i : GAMMA.keySet()){
-            int belongCC = belongClusterCenter.get(i);
-            if(belongCC<0)continue;
-            while(belongClusterCenter.get(belongCC)>=0){
-                belongCC = belongClusterCenter.get(belongCC);
-            }
-            if(belongClusterCenter.get(belongCC)==-2){
-                belongClusterCenter.put(i,-2);
-                outliers.add(i);
-            }else{
-                belongClusterCenter.put(i,belongCC);
-            }
+            if(gamma>=centerLine)
+            	clusterCenters.add(i);           
         }
     }
 
@@ -381,26 +338,6 @@ public class DPCluster {
             stdvar = Math.sqrt(squareSum / size - mean * mean);
             centerLine = mean + gaosi * stdvar;
         }
-        /*else{
-//            int size = GAMMA.size()/20;
-        	//不是很懂这么做的原因
-//            int size = 100;
-            int size = 50;
-            int[] bucket = new int[size+1];
-            for(int i : GAMMA.keySet()){
-                bucket[(int)Math.ceil(GAMMA.get(i)*size)]++;
-            }
-            int sum=0,i=0;
-            while(i<=size){
-                if(bucket[i]!=0){
-                    sum+=bucket[i];
-                    i++;
-                }else{
-                    break;
-                }
-            }
-            centerLine = (i*1.0)/size;
-        }*/
         else{
         	List<Double> gammaList = new ArrayList<Double>();
         	for(int i:GAMMA.keySet()){
@@ -419,7 +356,65 @@ public class DPCluster {
         	centerLine = centerLine<0 ? gammaList.get(maxCluster) : centerLine;
         }
     }
-
+    /**
+     * 根据聚类中心来聚类，计算点到各个聚类中心的最短距离，离哪个类中心距离最短则聚类到哪个类中
+     */
+    public void ClusterwithCenter(){
+    	for(int i : linears.keySet()){
+    		Iterator<Integer> it = clusterCenters.iterator();
+    		double dmin = Double.MAX_VALUE;
+    		double distance = 0.0;
+    		while(it.hasNext()){
+    			int center = it.next();
+    			if (i < center) {
+    				distance = completeDistances.get(i).get(center);
+                } else if (i > center) {
+                    distance = completeDistances.get(center).get(i);
+                } else if(i==center){
+                    belongClusterCenter.put(i, center);
+                    distancesToCenter.put(i, 0.0);
+                    continue;
+                }
+    			if(distance<dmin){
+    				dmin = distance;
+    				belongClusterCenter.put(i, center);
+    				distancesToCenter.put(i, dmin);
+    			}
+    		}
+    		
+    	}
+    }
+    /**
+     * 根据各个数据点到中心点的最短距离分布来找出异常点
+     * */
+    public void findOutliers(){
+    	//高斯方式确定距离的界限
+    	/*double sum = 0.0, squareSum = 0.0, mean = 0.0, stdvar = 0.0;
+        int size = GAMMA.size();
+        for (int i : GAMMA.keySet()) {
+            sum += GAMMA.get(i);
+            squareSum += (GAMMA.get(i) * GAMMA.get(i));
+        }
+        mean = sum / size;
+        stdvar = Math.sqrt(squareSum / size - mean * mean);
+        centerLine = mean + gaosi * stdvar;*/
+        
+    	//用百分比的方式确定异常点
+        List<Double> distanceList = new ArrayList<Double>();
+        for(int i:distancesToCenter.keySet()){
+        	distanceList.add(distancesToCenter.get(i));
+        }
+        Collections.sort(distanceList);
+        int line = (int) (disLine*distanceList.size());	
+        distanceLine = distanceList.get(line);
+//        distanceLine = 0.1;
+        for(int i : linears.keySet()){
+        	if(distancesToCenter.get(i)>distanceLine){
+        		belongClusterCenter.put(i, -2);
+        		outliers.add(i);
+        	}
+        }
+    }
     /**
      * 查找与key对应的直线最近的直线编号
      * @param key
@@ -528,4 +523,13 @@ public class DPCluster {
     public void setT(double t) {
         this.t = t;
     }
+
+	public TreeMap<Integer, Double> getDistancesToCenter() {
+		return distancesToCenter;
+	}
+
+	public void setDistancesToCenter(TreeMap<Integer, Double> distancesToCenter) {
+		this.distancesToCenter = distancesToCenter;
+	}
+    
 }

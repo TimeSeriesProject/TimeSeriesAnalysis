@@ -106,11 +106,12 @@ public class ClusterWrapper {
         normalize();
         computeDistancesInput();
 //        DPCluster dpCluster = new DPCluster(distancesInput,arp);
-        DPCluster dpCluster = new DPCluster(distancesInput,linears,arp);
+        DPCluster2 dpCluster = new DPCluster2(distancesInput,linears,arp);
         dpCluster.run(); 
         Map<Integer, Integer> clusterMap = dpCluster.getBelongClusterCenter();
         //用于测试：绘制gamma的散点图
-        GAMMA  = dpCluster.getGAMMA();
+//        GAMMA  = dpCluster.getGAMMA();
+        GAMMA = dpCluster.getDistancesToCenter();
         //测试完毕
         return clusterMap;
     }

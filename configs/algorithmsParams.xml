@@ -98,7 +98,7 @@
             <gaosi>2</gaosi>
 	    <alpha>0.2</alpha>
 	    <maxCluster>5</maxCluster>
-            <multiOriMin>false</multiOriMin>
+            <multiOrMin>true</multiOrMin>
         </associationRuleLineParams>
         <!-- 相似度 -->
         <associationRuleSimilarityParams>

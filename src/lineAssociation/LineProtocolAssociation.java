@@ -100,7 +100,7 @@ public class LineProtocolAssociation {
 		        ClusterWrapper clusterWrapper = new ClusterWrapper(linears,null);
 //		        DPCluster dpCluster = clusterWrapper.run();
 //		        Map<Integer,Integer> map = dpCluster.getBelongClusterCenter();
-		        Map<Integer,Integer> map = clusterWrapper.run2();
+		        Map<Integer,Integer> map = clusterWrapper.run();
 		        System.out.println("DPCluster聚类算法计算完毕！");
 		        System.out.println("***************************************************");
 		        ProtocolLineData pld = new ProtocolLineData(proDataList.get(i).getProtocolName(),map);

@@ -109,7 +109,7 @@ public class ProtocolAssociationLine {
 		        ClusterWrapper clusterWrapper_i = new ClusterWrapper(linears,arp);
 //		        DPCluster dpCluster_i = clusterWrapper_i.run();
 //		        Map<Integer,Integer> map_i = dpCluster_i.getBelongClusterCenter();
-		        Map<Integer,Integer> map_i = clusterWrapper_i.run2();
+		        Map<Integer,Integer> map_i = clusterWrapper_i.run();
 		        TreeMap<Integer,SymbolNode> symbols_i = getSymbols(map_i,i); 
 		        linesList.add(symbols_i);
 		        System.out.println("DPCluster聚类算法计算完毕！");
