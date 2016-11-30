@@ -31,7 +31,8 @@ public class GlobalConfig {
     private String pcapParseDisParamPath;//分布式pcap解析参数文件路径
     private String serverParamPath;//分布式配置路径
     private String clientParamPath;//客户端配置路径
-    
+    private String portParamPath;//所有端口（协议）路径
+
     public String getLoggerPath() {
 		return loggerPath;
 	}
@@ -78,6 +79,7 @@ public class GlobalConfig {
         pcapParseDisParamPath = config.getChildText("pcapParseDisParamsParamsPath");
         serverParamPath = config.getChildText("serverParamsParamsPath");
         clientParamPath = config.getChildText("clientParamsParamsPath");
+        portParamPath = config.getChildText("portParamPath");
     }
 
     public String getConfigPath() {
@@ -182,6 +184,14 @@ public class GlobalConfig {
 
     public void setClientParamPath(String clientParamPath) {
         this.clientParamPath = clientParamPath;
+    }
+
+    public String getPortParamPath() {
+        return portParamPath;
+    }
+
+    public void setPortParamPath(String portParamPath) {
+        this.portParamPath = portParamPath;
     }
 
     public static void main (String[] args) {

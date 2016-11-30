@@ -412,13 +412,13 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				
 				/***********************测试******************/
 				//用于测试，绘制线段的角度和长度的散点图
-				JFreeChart jf2 = ChartPanelShowFI.createChart2(rslt.getRetSM().getSegPatterns(),rslt.getRetSM().getFrequentItem());
+				/*JFreeChart jf2 = ChartPanelShowFI.createChart2(rslt.getRetSM().getSegPatterns(),rslt.getRetSM().getFrequentItem());
 				ChartPanel chartpanel2 = new ChartPanel(jf2);
-				add(chartpanel2, BorderLayout.WEST);
+				add(chartpanel2, BorderLayout.WEST);*/
 				//用于测试，绘制GAMMA的散点图
-				JFreeChart jf3 = ChartPanelShowFI.createChart3(rslt.getRetSM().getGAMMA());
+				/*JFreeChart jf3 = ChartPanelShowFI.createChart3(rslt.getRetSM().getGAMMA());
 				ChartPanel chartpanel3 = new ChartPanel(jf3);
-				add(chartpanel3, BorderLayout.EAST);
+				add(chartpanel3, BorderLayout.EAST);*/
 				/*********************测试结束*********************/
 			} else {
 				int[] temp = new int[10];

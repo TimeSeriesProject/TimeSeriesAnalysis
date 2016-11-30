@@ -98,7 +98,7 @@
             <gaosi>2</gaosi>
 	    <alpha>0.2</alpha>
 	    <maxCluster>5</maxCluster>
-            <multiOriMin>false</multiOriMin>
+            <multiOrMin>true</multiOrMin>
         </associationRuleLineParams>
         <!-- 相似度 -->
         <associationRuleSimilarityParams>
@@ -133,4 +133,19 @@
         <pcapPath>E:\pcap</pcapPath>
         <outputPath>E:\57data</outputPath>
     </clientParams>
+    <!-- 端口 -->
+    <portParams>
+        <port>9</port>
+        <port>10</port>
+        <port>11</port>
+        <port>402</port>
+        <port>403</port>
+        <port>404</port>
+        <port>405</port>
+        <port>406</port>
+        <port>407</port>
+        <port>408</port>
+        <port>409</port>
+        <port>410</port>
+    </portParams>
 </algorithmsParams>

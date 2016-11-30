@@ -15,9 +15,10 @@ public class Similarity {
 //        return getXiao2Distance(l1, l2);
 //        return getXiao3Distance(l1, l2);
 //        return getXiao4Distance(l1, l2);
+//        return getThetaAndLenghtDistance(l1,l2);
 //        return getThetaAndLenghtDistance2(l1,l2);
-        return getThetaAndLenghtDistance(l1,l2);
-//        return getMaxDistance(l1, l2);
+//    	  return getThetaAndLenghtDistance3(l1,l2);
+        return getMaxDistance(l1, l2);
 //        return getSigmoidDistance(l1,l2);
 //        return getXiao5Distance(l1, l2);
 //        return getSinDistance(l1,l2);
@@ -55,12 +56,28 @@ public class Similarity {
         	}else{
         		dis = (len2-len1)/len2;
         	}
-        	if(l1.normTheta>l2.normTheta){
-        		theta = (l1.normTheta-l2.normTheta)/l1.normTheta;
-        	}else {
-				theta = (l2.normTheta-l1.normTheta)/l2.normTheta;
-			}
         	return Math.abs(l1.normTheta-l2.normTheta)+dis;
+    	}else{
+    		return 1.0;
+    	}
+    }
+    private static double getThetaAndLenghtDistance3(Linear l1,Linear l2){
+    	if(l1.normTheta*l2.normTheta>0){
+    		double len1 = Math.sqrt(Math.pow(l1.normHspan, 2)+Math.pow(l1.normSpan, 2));
+        	double len2 = Math.sqrt(Math.pow(l2.normHspan, 2)+Math.pow(l2.normSpan, 2));
+        	double dis = 0.0;
+        	double theta = 0.0;
+        	if(len1>len2){
+        		dis = (len1-len2)/len1;
+        	}else{
+        		dis = (len2-len1)/len2;
+        	}
+        	if(l1.normTheta>l2.normTheta){
+        		theta = (l1.normTheta-l2.normTheta)/Math.abs(l1.normTheta);
+        	}else {
+				theta = (l2.normTheta-l1.normTheta)/Math.abs(l2.normTheta);
+			}
+        	return 0.3*theta+0.7*dis;
     	}else{
     		return 1.0;
     	}
@@ -69,7 +86,7 @@ public class Similarity {
     	if(l1.normTheta*l2.normTheta>0){
     		double len1 = Math.sqrt(Math.pow(l1.normHspan, 2)+Math.pow(l1.normSpan, 2));
         	double len2 = Math.sqrt(Math.pow(l2.normHspan, 2)+Math.pow(l2.normSpan, 2));
-        	return 0.7*Math.abs(l1.normTheta-l2.normTheta)+0.3*Math.abs(len1-len2);
+        	return 0.5*Math.abs(l1.normTheta-l2.normTheta)+0.5*Math.abs(len1-len2);
     	}else{
     		return 1.0;
     	}

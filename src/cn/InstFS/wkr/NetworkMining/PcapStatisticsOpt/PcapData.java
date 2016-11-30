@@ -8,7 +8,15 @@ public class PcapData implements Comparable {
     private int traffic;
     private int TTL;
     private String srcIP;
-    private String pcapFile;
+    private String dstIP;
+    private int srcPort;
+    private int dstPort;
+    private String pcapFile;//文件名
+    private int protocol;//协议，17（UDP）还是6（TCP）
+    private int flags;//标志，TCP才有。判断是否是SYN、ACK等三次握手的帧
+    private int seq;//TCP的seq值,初始化，防止UDP判断出错
+    private int ack;//TCP的ack值
+    private int geted = 0;//是否遍历过，1代表遍历过，0代表没有
 
     public int getTraffic() {
         return traffic;
@@ -58,9 +66,6 @@ public class PcapData implements Comparable {
         this.dstPort = dstPort;
     }
 
-    private String dstIP;
-    private int srcPort;
-    private int dstPort;
 
     public long getTime_s() {
         return time_s;
@@ -92,6 +97,46 @@ public class PcapData implements Comparable {
 
     public void setLength(int length) {
         this.length = length;
+    }
+
+    public int getAck() {
+        return ack;
+    }
+
+    public void setAck(int ack) {
+        this.ack = ack;
+    }
+
+    public int getFlags() {
+        return flags;
+    }
+
+    public void setFlags(int flags) {
+        this.flags = flags;
+    }
+
+    public int getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(int protocol) {
+        this.protocol = protocol;
+    }
+
+    public int getSeq() {
+        return seq;
+    }
+
+    public void setSeq(int seq) {
+        this.seq = seq;
+    }
+
+    public int getGeted() {
+        return geted;
+    }
+
+    public void setGeted(int geted) {
+        this.geted = geted;
     }
 
     @Override

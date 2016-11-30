@@ -8,6 +8,7 @@ import cn.InstFS.wkr.NetworkMining.Params.DistributeParams.ServerParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.*;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.Params.PcapParseParams.PcapParseParams;
+import cn.InstFS.wkr.NetworkMining.Params.PortParams.PortParams;
 import cn.InstFS.wkr.NetworkMining.Params.PredictionAlgorithmParams.ARIMAParams;
 import cn.InstFS.wkr.NetworkMining.Params.PredictionAlgorithmParams.NeuralNetworkParams;
 import cn.InstFS.wkr.NetworkMining.Params.SMParams.SMParam;
@@ -47,6 +48,7 @@ public class ParamsAPI {
 	private PcapParseDisParams pcapParseDisParams;
 	private ServerParams serverParams;
 	private ClientParams clientParams;
+	private PortParams portParams;
 	/**
 	 * 异常检测参数
 	 * LYH
@@ -154,6 +156,19 @@ public class ParamsAPI {
 
 	public void setClientParams(ClientParams clientParams) {
 		this.clientParams = clientParams;
+	}
+
+	public PortParams getPortParams() {
+		if (portParams == null) {
+			String portParamsPath = GlobalConfig.getInstance().getPortParamPath();
+			Element portParam = getRootElement(portParamsPath);
+			portParams = new PortParams(portParam);
+		}
+		return portParams;
+	}
+
+	public void setPortParams(PortParams portParams) {
+		this.portParams = portParams;
 	}
 
 	public ParamsOM getPom() {

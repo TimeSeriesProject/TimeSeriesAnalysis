@@ -177,6 +177,7 @@ class RouteGen implements Callable {
     private long position;
     private long part;
     private String fileName;
+    private HashSet<Integer> ports = ParamsAPI.getInstance().getPortParams().getPorts();
 
     String path;
     String outpath;
@@ -195,8 +196,18 @@ class RouteGen implements Callable {
     }
 
     private void updateRecords(PcapData pre) {
-        RecordKey tmpKey1 = new RecordKey(pre.getSrcIP(), pre.getDstIP(), pre.getDstPort(), pre.getTime_s() / 3600);
-        RecordKey tmpKey2 = new RecordKey(pre.getDstIP(), pre.getSrcIP(), pre.getDstPort(), pre.getTime_s() / 3600);
+        //直接判断发送和接收端口是否有一个符合要求
+        int port;
+        if (ports.contains(pre.getDstPort())) {
+            port = pre.getDstPort();
+        } else if (ports.contains(pre.getSrcPort())) {
+            port = pre.getSrcPort();
+        } else {
+            throw new NullPointerException("端口错误");
+        }
+
+        RecordKey tmpKey1 = new RecordKey(pre.getSrcIP(), pre.getDstIP(), port, pre.getTime_s() / 3600);
+        RecordKey tmpKey2 = new RecordKey(pre.getDstIP(), pre.getSrcIP(), port, pre.getTime_s() / 3600);
 //    	System.out.println(trafficRecords);
         if (!trafficRecords.containsKey(tmpKey1)) {
             trafficRecords.put(tmpKey1, 0);
@@ -212,8 +223,28 @@ class RouteGen implements Callable {
         comRecords.put(tmpKey2, comRecords.get(tmpKey2) + 1);
     }
 
-    private void gen() throws IOException {
-        System.out.println("进入gen...");
+//    private void updateTCPRecords(PcapData pre) {
+//        TCPRecordKey tmpKey1 = new TCPRecordKey(pre.getSrcIP(), pre.getDstIP(),
+//                pre.getDstPort(), pre.getTime_s() / 3600, pre.getFlags(), pre.getSeq(), pre.getAck());
+//        TCPRecordKey tmpKey2 = new TCPRecordKey(pre.getDstIP(), pre.getSrcIP(),
+//                pre.getDstPort(), pre.getTime_s() / 3600, pre.getFlags(), pre.getSeq(), pre.getAck());
+////    	System.out.println(trafficRecords);
+//        if (!TCPTrafficRecords.containsKey(tmpKey1)) {
+//            TCPTrafficRecords.put(tmpKey1, 0);
+//            TCPComRecords.put(tmpKey1, 0);
+//        }
+//        if (!TCPTrafficRecords.containsKey(tmpKey2)) {
+//            TCPTrafficRecords.put(tmpKey2, 0);
+//            TCPComRecords.put(tmpKey2, 0);
+//        }
+//        TCPTrafficRecords.put(tmpKey1, TCPTrafficRecords.get(tmpKey1) + pre.getTraffic());
+//        TCPTrafficRecords.put(tmpKey2, TCPTrafficRecords.get(tmpKey2) + pre.getTraffic());
+//        TCPComRecords.put(tmpKey1, TCPComRecords.get(tmpKey1) + 1);
+//        TCPComRecords.put(tmpKey2, TCPComRecords.get(tmpKey2) + 1);
+//    }
+
+    private void genUDP() throws IOException {
+        System.out.println("进入genUDP...");
         File f = new File(path);
         String file = f.getName();
         int index = file.lastIndexOf(".");
@@ -311,6 +342,105 @@ class RouteGen implements Callable {
         bw.close();
     }
 
+
+    //遍历重写
+    private void genTCP() throws IOException {
+        System.out.println("进入genTCP...");
+        File f = new File(path);
+        String file = f.getName();
+        int index = file.lastIndexOf(".");
+        file = file.substring(0, index);
+        OutputStreamWriter o = new OutputStreamWriter(new FileOutputStream(outpath + "\\route" + "\\" + file + ".csv"), "UTF-8");
+        BufferedWriter bw = new BufferedWriter(o);
+        PcapData first = null;
+        String curLine;
+        curLine = "Time(S),srcIP,dstIP,traffic,hops,path";
+        bw.write(curLine);
+        bw.newLine();
+        int num = 0;//跳数
+
+        //保存0-4:0,13-2:0,13-3:1...
+        class NodeAndTTL implements Comparable<NodeAndTTL> {
+            String node;
+            Integer TTL;
+
+            NodeAndTTL(String node, Integer TTL) {
+                this.node = node;
+                this.TTL = TTL;
+            }
+
+            //必须重写compareTo，equals和hashcode可以不用重写
+            @Override
+            public int compareTo(NodeAndTTL arg0) {
+                if (node == arg0.node) {
+                    if (TTL == arg0.TTL) {
+                        return 0;
+                    } else {
+                        return TTL < arg0.TTL ? -1 : 1;
+                    }
+                } else {
+                    return node.compareTo(arg0.node);
+                }
+            }
+        }
+        TreeSet<NodeAndTTL> ttlList = new TreeSet<NodeAndTTL>();
+
+        Collections.sort(datas);
+//        System.out.println("size: " + datas.size());
+
+        //从头遍历，将添加过的记录打上标签即可，遍历时首先判断标签
+        for (int i = 0; i < datas.size(); i++) {
+            first = datas.get(i);
+            if (first.getGeted() == 1) {
+                continue;
+            }
+            first.setGeted(1);
+            ttlList.add(new NodeAndTTL(first.getPcapFile(), first.getTTL()));
+            num++;
+            //遍历2s内的数据，找到同一个包的数据并添加
+            for (int j = i + 1; j < datas.size(); j++) {
+                PcapData data = datas.get(j);
+                if (data.getGeted() == 1) {
+                    continue;
+                }
+                if ((double) data.getTime_s() + data.getTime_ms() / 1000000.0 >
+                        first.getTime_s() + first.getTime_ms() / 1000000.0 + 1.5) {
+                     break;
+                } else if (data.getFlags() == 0x02 && first.getFlags() == 0x02) {
+                    data.setGeted(1);
+                    ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
+                    num++;
+                } else if (data.getFlags() == 0x12 && first.getFlags() == 0x12) {
+                    data.setGeted(1);
+                    ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
+                    num++;
+                } else if (data.getFlags() == 0x10 && first.getFlags() == 0x10 && data.getSeq() == first.getSeq() &&
+                        data.getAck() == first.getAck() && data.getTraffic() == first.getTraffic()) {
+                    data.setGeted(1);
+                    ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
+                    num++;
+                } else {
+                }
+            }
+
+            updateRecords(first);
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.valueOf(first.getTime_s())).append(",").append(first.getSrcIP()).append(",").
+                    append(first.getDstIP()).append(",").append(first.getTraffic()).append(",").append(num);
+
+            for (NodeAndTTL nodeAndTTL : ttlList) {
+                sb.append(",").append(nodeAndTTL.node).append(":").append(nodeAndTTL.TTL);
+            }
+            bw.write(sb.toString());
+            bw.newLine();
+            ttlList.clear();
+            num = 0;
+        }
+        bw.flush();
+        bw.close();
+
+    }
+
     //初始
 //    public Boolean call() {
 //        try {
@@ -391,7 +521,11 @@ class RouteGen implements Callable {
                 fc.close();
             }
 
-            gen();
+            if (datas.get(0).getProtocol() == 17) {
+                genUDP();
+            } else if (datas.get(0).getProtocol() == 6) {
+                genTCP();
+            }
             datas = null;
             System.gc();
             pcapUtils.setGenedRouteNum(pcapUtils.getGenedRouteNum() + 1);
@@ -1165,13 +1299,13 @@ public class PcapUtils {
         getTaskMap(allTimes);//得到map
     }
 
-    //得到需要解析的文件的时间、外加对应文件map
+    //得到需要解析的文件的时间、外加对应文件map，可以获取文件第一行作为起始时间
     public void genTimeList(String fpath, boolean parseAll, TreeMap<Long, ArrayList<File>> allTimes) {
         File ff = new File(fpath);
         if (parseAll) {
             if (ff.isFile()) {
-                if (allTimes.containsKey(ff.lastModified())) {
-                    allTimes.get(ff.lastModified()).add(ff);//若时间相同，则会覆盖！！！因此改为ArrayList<File>
+                if (allTimes.containsKey(ff.lastModified())) {//得到最近修改的时间，可以创建函数，得到文件第一行的时间，即起始时间
+                    allTimes.get(ff.lastModified()).add(ff);//若时间相同，则会覆盖！！！改为ArrayList<File>
                 } else {
                     allTimes.put(ff.lastModified(), new ArrayList<File>());
                     allTimes.get(ff.lastModified()).add(ff);

@@ -1603,7 +1603,7 @@ public class ChartPanelShowFI extends JPanel {
     /******************************绘制GAMMA散点图***************************/
     public static JFreeChart createChart3(TreeMap<Integer,Double> GAMMA){
     	XYDataset xydataset = createDatasetGamma(GAMMA);
-    	JFreeChart jfreeChart = ChartFactory.createScatterPlot("GAMMA显示图","i", "GAMMA",  xydataset);
+    	JFreeChart jfreeChart = ChartFactory.createScatterPlot("DistanceToCenter显示图","i", "distance",  xydataset);
     	XYPlot xyplot = (XYPlot) jfreeChart.getPlot();
         NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
         numberaxis.setAutoRangeIncludesZero(false);
