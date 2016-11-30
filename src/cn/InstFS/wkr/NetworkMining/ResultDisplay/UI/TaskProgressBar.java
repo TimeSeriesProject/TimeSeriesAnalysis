@@ -39,7 +39,7 @@ public class TaskProgressBar extends JPanel
                     Thread.sleep(random.nextInt(1000));
                 } catch (InterruptedException ignore) {}
                 progress = taskProgress.getTaskComplete();
-                setProgress(Math.min(progress, taskNum));
+                setProgress(Math.min(100*progress/taskNum, 100));
             }
             return null;
         }
@@ -121,10 +121,12 @@ public class TaskProgressBar extends JPanel
     public void propertyChange(PropertyChangeEvent evt) {
         if ("progress" == evt.getPropertyName()) {
             int progress = (Integer) evt.getNewValue();
-            progressBar.setValue(progress);
-            progressBar.setString(taskProgress.getPhase() +" " + String.format("%d%%", 100 * progress / taskProgress.getTaskComNum()));
+            int taskComplete = taskProgress.getTaskComplete();
+            progressBar.setValue(taskComplete);
+            progressBar.setString(taskProgress.getPhase() +" " + String.format("%d%%", progress));
+//            progressBar.setString(taskProgress.getPhase() +" " + String.format("%d%%", 100 * progress / taskProgress.getTaskComNum()));
             taskOutput.append(String.format(
-                    "Completed %d/%d of task.\n", task.getProgress(), taskProgress.getTaskComNum()));
+                    "Completed %d/%d of task.\n", taskComplete, taskProgress.getTaskComNum()));
         }
     }
 
