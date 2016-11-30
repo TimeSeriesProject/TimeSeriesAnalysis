@@ -177,6 +177,7 @@ class RouteGen implements Callable {
     private long position;
     private long part;
     private String fileName;
+    private HashSet<Integer> ports = ParamsAPI.getInstance().getPortParams().getPorts();
 
     String path;
     String outpath;
@@ -195,8 +196,18 @@ class RouteGen implements Callable {
     }
 
     private void updateRecords(PcapData pre) {
-        RecordKey tmpKey1 = new RecordKey(pre.getSrcIP(), pre.getDstIP(), pre.getDstPort(), pre.getTime_s() / 3600);
-        RecordKey tmpKey2 = new RecordKey(pre.getDstIP(), pre.getSrcIP(), pre.getDstPort(), pre.getTime_s() / 3600);
+        //直接判断发送和接收端口是否有一个符合要求
+        int port;
+        if (ports.contains(pre.getDstPort())) {
+            port = pre.getDstPort();
+        } else if (ports.contains(pre.getSrcPort())) {
+            port = pre.getSrcPort();
+        } else {
+            throw new NullPointerException("端口错误");
+        }
+
+        RecordKey tmpKey1 = new RecordKey(pre.getSrcIP(), pre.getDstIP(), port, pre.getTime_s() / 3600);
+        RecordKey tmpKey2 = new RecordKey(pre.getDstIP(), pre.getSrcIP(), port, pre.getTime_s() / 3600);
 //    	System.out.println(trafficRecords);
         if (!trafficRecords.containsKey(tmpKey1)) {
             trafficRecords.put(tmpKey1, 0);
@@ -211,6 +222,26 @@ class RouteGen implements Callable {
         comRecords.put(tmpKey1, comRecords.get(tmpKey1) + 1);
         comRecords.put(tmpKey2, comRecords.get(tmpKey2) + 1);
     }
+
+//    private void updateTCPRecords(PcapData pre) {
+//        TCPRecordKey tmpKey1 = new TCPRecordKey(pre.getSrcIP(), pre.getDstIP(),
+//                pre.getDstPort(), pre.getTime_s() / 3600, pre.getFlags(), pre.getSeq(), pre.getAck());
+//        TCPRecordKey tmpKey2 = new TCPRecordKey(pre.getDstIP(), pre.getSrcIP(),
+//                pre.getDstPort(), pre.getTime_s() / 3600, pre.getFlags(), pre.getSeq(), pre.getAck());
+////    	System.out.println(trafficRecords);
+//        if (!TCPTrafficRecords.containsKey(tmpKey1)) {
+//            TCPTrafficRecords.put(tmpKey1, 0);
+//            TCPComRecords.put(tmpKey1, 0);
+//        }
+//        if (!TCPTrafficRecords.containsKey(tmpKey2)) {
+//            TCPTrafficRecords.put(tmpKey2, 0);
+//            TCPComRecords.put(tmpKey2, 0);
+//        }
+//        TCPTrafficRecords.put(tmpKey1, TCPTrafficRecords.get(tmpKey1) + pre.getTraffic());
+//        TCPTrafficRecords.put(tmpKey2, TCPTrafficRecords.get(tmpKey2) + pre.getTraffic());
+//        TCPComRecords.put(tmpKey1, TCPComRecords.get(tmpKey1) + 1);
+//        TCPComRecords.put(tmpKey2, TCPComRecords.get(tmpKey2) + 1);
+//    }
 
     private void genUDP() throws IOException {
         System.out.println("进入genUDP...");
@@ -359,9 +390,6 @@ class RouteGen implements Callable {
 
         //从头遍历，将添加过的记录打上标签即可，遍历时首先判断标签
         for (int i = 0; i < datas.size(); i++) {
-
-            //将要删除的PcapData添加进来，最后删除，若遍历的过程中删除，则会出现后面的PcapData前移，导致下一次遍历忽略掉一个PcapData
-//            ArrayList<PcapData> toRemove = new ArrayList<PcapData>();
             first = datas.get(i);
             if (first.getGeted() == 1) {
                 continue;
@@ -369,40 +397,29 @@ class RouteGen implements Callable {
             first.setGeted(1);
             ttlList.add(new NodeAndTTL(first.getPcapFile(), first.getTTL()));
             num++;
-//            toRemove.add(first);
             //遍历2s内的数据，找到同一个包的数据并添加
             for (int j = i + 1; j < datas.size(); j++) {
-//                System.out.println("进入for");
                 PcapData data = datas.get(j);
                 if (data.getGeted() == 1) {
-//                    System.out.println("00000");
                     continue;
                 }
                 if ((double) data.getTime_s() + data.getTime_ms() / 1000000.0 >
                         first.getTime_s() + first.getTime_ms() / 1000000.0 + 1.5) {
-//                    System.out.println("11111");
                      break;
                 } else if (data.getFlags() == 0x02 && first.getFlags() == 0x02) {
-//                    System.out.println("22222");
                     data.setGeted(1);
                     ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
                     num++;
-//                    toRemove.add(first);
                 } else if (data.getFlags() == 0x12 && first.getFlags() == 0x12) {
-//                    System.out.println("333333");
                     data.setGeted(1);
                     ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
                     num++;
-//                    toRemove.add(first);
                 } else if (data.getFlags() == 0x10 && first.getFlags() == 0x10 && data.getSeq() == first.getSeq() &&
                         data.getAck() == first.getAck() && data.getTraffic() == first.getTraffic()) {
-//                    System.out.println("444444");
                     data.setGeted(1);
                     ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
                     num++;
-//                    toRemove.add(first);
                 } else {
-//                    System.out.println("5555");
                 }
             }
 
@@ -410,9 +427,7 @@ class RouteGen implements Callable {
             StringBuilder sb = new StringBuilder();
             sb.append(String.valueOf(first.getTime_s())).append(",").append(first.getSrcIP()).append(",").
                     append(first.getDstIP()).append(",").append(first.getTraffic()).append(",").append(num);
-//            Collections.sort(ttlList);
-//            for (int k = 0; k < ttlList.size(); k++)
-//                sb.append(",").append(ttlList.get(k).node).append(":").append(ttlList.get(k).TTL);
+
             for (NodeAndTTL nodeAndTTL : ttlList) {
                 sb.append(",").append(nodeAndTTL.node).append(":").append(nodeAndTTL.TTL);
             }
@@ -420,9 +435,6 @@ class RouteGen implements Callable {
             bw.newLine();
             ttlList.clear();
             num = 0;
-//            for (int i = 0; i < toRemove.size(); i++) {
-//                datas.remove(toRemove.get(i));
-//            }
         }
         bw.flush();
         bw.close();
@@ -1262,16 +1274,16 @@ public class PcapUtils {
         long e = System.currentTimeMillis();
         System.out.println("时间4：" + (e - d) / 1000);
 
-//        status = Status.PARSEBYDAY;
-//        setParsebydaySum(3);
-//        parseByDay = new ParseByDay(outpath, outpath, date);
-//        parseByDay.initDataByDay();
-//        parseByDay.parseNode();
-//        setParsebydayNum(1);
-//        parseByDay.parseRoute();
-//        setParsebydayNum(2);
-//        parseByDay.parseTraffic();
-//        setParsebydayNum(3);
+        status = Status.PARSEBYDAY;
+        setParsebydaySum(3);
+        parseByDay = new ParseByDay(outpath, outpath, date);
+        parseByDay.initDataByDay();
+        parseByDay.parseNode();
+        setParsebydayNum(1);
+        parseByDay.parseRoute();
+        setParsebydayNum(2);
+        parseByDay.parseTraffic();
+        setParsebydayNum(3);
         System.out.println("解析结束");
         long f = System.currentTimeMillis();
         System.out.println("时间5：" + (f - e) / 1000);

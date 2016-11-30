@@ -13,5 +13,6 @@
     <serverParamsParamsPath>serverParams</serverParamsParamsPath>
     <pcapParseDisParamsParamsPath>pcapParseDisParams</pcapParseDisParamsParamsPath>
     <clientParamsParamsPath>clientParams</clientParamsParamsPath>
+    <portParamPath>portParams</portParamPath>
 
 </config>

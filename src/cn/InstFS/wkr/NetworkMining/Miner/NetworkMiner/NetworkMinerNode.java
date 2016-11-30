@@ -6,6 +6,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import common.ErrorLogger;
+
 import lineAssociation.ClusterWrapper;
 import lineAssociation.DPCluster;
 import lineAssociation.Linear;
@@ -71,6 +73,12 @@ public class NetworkMinerNode implements INetworkMiner{
 		this.taskCombination=taskCombination;
 		results = new MinerResults(this);
 		Over=new IsOver();
+		
+		ErrorLogger.log("taskCombination information");
+		ErrorLogger.log("range:",taskCombination.getRange());
+		ErrorLogger.log("protocol:",taskCombination.getProtocol());
+		ErrorLogger.log("MinerType:",taskCombination.getMinerType().toString());
+		ErrorLogger.log("MiningObjec:",taskCombination.getMiningObject());
 	}
 	
 	@Override
@@ -83,6 +91,7 @@ public class NetworkMinerNode implements INetworkMiner{
 			MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
 			results.setRetNode(resultNode);
 
+			ErrorLogger.log(taskCombination.getRange()+","+taskCombination.getMiningObject()+","+taskCombination.getMinerType(),"结果已存在");
 			TaskProgress taskProgress = TaskProgress.getInstance();
 			taskProgress.increaseComplete();
 			return false;
@@ -217,11 +226,14 @@ class NodeTimerTask extends TimerTask{
 		
 		isRunning = true;
 		// 读取数据
+		ErrorLogger.log(taskCombination.getRange()+","+taskCombination.getMiningObject()+","+taskCombination.getMinerType(),"调用PMDetect");
+		ErrorLogger.log("\t tasks",taskCombination.getTasks().toString());
 		PMDetect(taskCombination.getDataItems(),taskCombination.getTasks());
 	}
 	
 	private void PMDetect(DataItems dataItems,List<TaskElement>tasks){
 
+		
 		DataItems clusterItems=null;
 		DataItems oriDataItems=dataItems;
 		SequencePatternsDontSplit sequencePattern=null;

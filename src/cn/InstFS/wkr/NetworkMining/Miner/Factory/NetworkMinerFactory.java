@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import common.ErrorLogger;
+
 import cn.InstFS.wkr.NetworkMining.DataInputs.CWNetworkReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.IReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
@@ -464,7 +466,9 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			if(!entry.getKey().getMinerType().equals(minerType)||!entry.getKey().getMiningObject()
 					.equals(miningObject.toString())||entry.getValue().isOver())
 				continue;
+			ErrorLogger.log(entry.getKey().getRange()+","+entry.getKey().getMiningObject()+","+entry.getKey().getMinerType(),entry.getValue().toString());
 			entry.getValue().start();
+			
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {

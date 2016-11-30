@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import common.ErrorLogger;
+
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
@@ -195,6 +197,7 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 					taskCombination.setName();
 					taskCombination.setMinerType(MinerType.MiningType_SinglenodeOrNodePair);
 					TaskElement.add1Task(taskCombination, false);
+					ErrorLogger.log(ip,"data.size:"+dataItems.data.size()+" time.size:"+dataItems.time.size()+" lenth:"+dataItems.getLength());
 				}
 			}
 		}else if(taskRange.toString().equals(TaskRange.NodePairRange.toString())){
