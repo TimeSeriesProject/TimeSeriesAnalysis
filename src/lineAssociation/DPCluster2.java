@@ -12,7 +12,7 @@ public class DPCluster2 {
 
     private double t = 0.1;//用于确定参数截断距离dc
     private double centerLine = -1.0;//聚类中心划界线，为 -1 时通过函数computeCenterLine自动确定
-    private double distanceLine = 0.0;//数据点到类中心的距离界限，大于distanceline则是异常点
+    private double distanceLine = 0.5;//数据点到类中心的距离界限，大于distanceline则是异常点
     private int way = 1;//聚类中心线自动确定方法选择( 1:高斯 or 2:间隔 )
     private double gaosi = 3;//聚类中心线自动确定方法选择高斯分布方法时有效，表示中心线距离均值gaosi倍标准差
     private double alpha = 0.2 ;//聚类中心线自动确定方法选择差距大小方法时有效，表示前后2个gamma大小的差距比
