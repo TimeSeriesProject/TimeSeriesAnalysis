@@ -75,6 +75,8 @@ public class SMForecast implements IMinerFM{
 				calendar.setTime(lastDate);
 				for(String item:forecastPattern){
 					SegPattern segPattern=patternCentriods.get(item);
+					if(segPattern == null)
+						continue;
 					int span=(int)(segPattern.getLength()*Math.cos(segPattern.getAngle())); 
 					double angle=segPattern.getAngle();
 					for(int i=1;i<=span;i++){
