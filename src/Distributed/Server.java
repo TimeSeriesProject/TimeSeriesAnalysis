@@ -13,6 +13,7 @@ import cn.InstFS.wkr.NetworkMining.UIs.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPath;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import common.ErrorLogger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -266,6 +267,7 @@ public class Server {
                         if (count == tempList.size()) {
                             if (existed) {
                                 System.out.println("singlenode1存在结果");
+                                ErrorLogger.log(tempList.get(0).getRange()+","+tempList.get(0).getMiningObject()+","+tempList.get(0).getMinerType(),"结果已存在");
                                 singleNodeResultMaps.put(MiningObject.MiningObject_Times.toString(), singleNodeTimes);//存结果
                                 isExisted = true;
                                 awakeNode();
@@ -299,6 +301,7 @@ public class Server {
                         if (count == tempList.size()) {
                             if (existed) {
                                 System.out.println("singlenode2存在结果");
+                                ErrorLogger.log(tempList.get(0).getRange()+","+tempList.get(0).getMiningObject()+","+tempList.get(0).getMinerType(),"结果已存在");
                                 singleNodeResultMaps.put(MiningObject.MiningObject_Traffic.toString(), singleNodeTraffic);//存结果
                                 isExisted = true;
                                 awakeNode();
@@ -330,6 +333,7 @@ public class Server {
                         if (count == tempList.size()) {
                             if (existed) {
                                 System.out.println("singlenode3存在结果");
+                                ErrorLogger.log(tempList.get(0).getRange()+","+tempList.get(0).getMiningObject()+","+tempList.get(0).getMinerType(),"结果已存在");
                                 singleNodeResultMaps.put(MiningObject.MiningObject_NodeDisapearEmerge.toString(), singleNodeDisapearEmerge);//存结果
                                 isExisted = true;
                                 awakeNode();
@@ -365,6 +369,7 @@ public class Server {
                         }
                         if (count == tempList.size()) {
                             if (existed) {
+                                ErrorLogger.log(tempList.get(0).getRange()+","+tempList.get(0).getMiningObject()+","+tempList.get(0).getMinerType(),"结果已存在");
                                 nodePairResultMaps.put(MiningObject.MiningObject_Times.toString(), nodePairTimes);//存结果
                                 isExisted = true;
                                 awakeNode();
@@ -396,6 +401,7 @@ public class Server {
                         if (count == tempList.size()) {
                             if (existed) {
                                 System.out.println("nodepair存在结果");
+                                ErrorLogger.log(tempList.get(0).getRange()+","+tempList.get(0).getMiningObject()+","+tempList.get(0).getMinerType(),"结果已存在");
                                 nodePairResultMaps.put(MiningObject.MiningObject_Traffic.toString(), nodePairTraffic);//存结果
                                 isExisted = true;
                                 awakeNode();
@@ -430,6 +436,7 @@ public class Server {
                     if (count == tempList.size()) {
                         if (existed) {
                             System.out.println("protocol存在结果");
+                            ErrorLogger.log(tempList.get(0).getRange()+","+tempList.get(0).getMiningObject()+","+tempList.get(0).getMinerType(),"结果已存在");
                             protocolResultMaps = protocolTraffic;//存结果
                             isExisted = true;
                             awakeProtocol();
@@ -463,6 +470,7 @@ public class Server {
                     }
                     if (count == tempList.size()) {
                         if (existed) {
+                            ErrorLogger.log(tempList.get(0).getRange()+","+tempList.get(0).getMiningObject()+","+tempList.get(0).getMinerType(),"结果已存在");
                             pathResultMaps.put(MiningObject.MiningObject_Times.toString(), pathTimes);//存结果
                             isExisted = true;
                             awakePath();
@@ -493,6 +501,7 @@ public class Server {
                     }
                     if (count == tempList.size()) {
                         if (existed) {
+                            ErrorLogger.log(tempList.get(0).getRange()+","+tempList.get(0).getMiningObject()+","+tempList.get(0).getMinerType(),"结果已存在");
                             pathResultMaps.put(MiningObject.MiningObject_Traffic.toString(), pathTraffic);//存结果
                             isExisted = true;
                             awakePath();
@@ -520,6 +529,7 @@ public class Server {
                         }
                     }
                     if (count == tempList.size()) {
+                        ErrorLogger.log(tempList.get(0).getRange()+","+tempList.get(0).getMiningObject()+","+tempList.get(0).getMinerType(),"结果已存在");
                         networkResultMaps.put(MiningObject.MiningObject_Cluster.toString(), networkCluster);//存结果
                         isExisted = true;
                         awakeNet();
@@ -547,6 +557,7 @@ public class Server {
                     }
                     if (count == tempList.size()) {
                         if (existed) {
+                            ErrorLogger.log(tempList.get(0).getRange()+","+tempList.get(0).getMiningObject()+","+tempList.get(0).getMinerType(),"结果已存在");
                             networkResultMaps.put(MiningObject.MiningObject_Diameter.toString(), networkDiameter);//存结果
                             isExisted = true;
                             awakeNet();

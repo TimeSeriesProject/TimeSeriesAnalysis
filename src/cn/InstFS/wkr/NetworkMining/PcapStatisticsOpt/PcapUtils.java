@@ -369,7 +369,7 @@ class RouteGen implements Callable {
                 this.TTL = TTL;
             }
 
-            //必须重写compareTo，equals和hashcode可以不用重写
+            //必须重写compareTo，equals和hashcode可以不用重写,因为使用treeset，只用ttl判断会导致相同ttl、不同node覆盖
             @Override
             public int compareTo(NodeAndTTL arg0) {
                 if (node == arg0.node) {
@@ -406,16 +406,16 @@ class RouteGen implements Callable {
                 if ((double) data.getTime_s() + data.getTime_ms() / 1000000.0 >
                         first.getTime_s() + first.getTime_ms() / 1000000.0 + 1.5) {
                      break;
-                } else if (data.getFlags() == 0x02 && first.getFlags() == 0x02) {
+                } else if (data.getFlags() == 0x02 && first.getFlags() == 0x02) {//SYN
                     data.setGeted(1);
                     ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
                     num++;
-                } else if (data.getFlags() == 0x12 && first.getFlags() == 0x12) {
+                } else if (data.getFlags() == 0x12 && first.getFlags() == 0x12) {//SYN&&ACK
                     data.setGeted(1);
                     ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
                     num++;
                 } else if (data.getFlags() == 0x10 && first.getFlags() == 0x10 && data.getSeq() == first.getSeq() &&
-                        data.getAck() == first.getAck() && data.getTraffic() == first.getTraffic()) {
+                        data.getAck() == first.getAck() && data.getTraffic() == first.getTraffic()) {//ACK（第三次握手和发送数据）
                     data.setGeted(1);
                     ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
                     num++;

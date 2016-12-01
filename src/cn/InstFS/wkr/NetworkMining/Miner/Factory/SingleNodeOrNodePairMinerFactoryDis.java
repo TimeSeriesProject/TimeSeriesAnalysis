@@ -5,6 +5,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import common.ErrorLogger;
 
 
 import java.io.File;
@@ -196,6 +197,7 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
                     taskCombination.setName();
                     taskCombination.setMinerType(MinerType.MiningType_SinglenodeOrNodePair);
                     TaskCombinationList.addTaskOnly(taskCombination, false);
+                    ErrorLogger.log(ip,"data.size:"+dataItems.data.size()+" time.size:"+dataItems.time.size()+" lenth:"+dataItems.getLength());
                 }
             }
         }else if(taskRange.toString().equals(TaskRange.NodePairRange.toString())){
