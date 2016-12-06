@@ -11,7 +11,7 @@ public enum MiningMethod {
 	MiningMethods_OutliesMining("序列异常检测"),
 	MiningMethods_PredictionMining("时间序列预测"),
 	MiningMethods_Statistics("统计图"),
-	MiningMethods_PartialCycle("部分周期发现"),
+	MiningMethods_PartialCycle("局部周期发现"),
 	MiningMethods_None("无");
 	
 	private String value;
