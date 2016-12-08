@@ -176,6 +176,7 @@ public class win10_window extends JFrame {
 
     public void mineSingleNode()
     {
+        long a = System.currentTimeMillis();
         singleNoderesultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
@@ -238,12 +239,14 @@ public class win10_window extends JFrame {
 
 
         isSingleNodeMined=true;
-
+        long b = System.currentTimeMillis();
+        System.out.println("单机版单节点挖掘完毕，用时：" + (b - a) / 1000);
 
     }
 
     public void mineSingleNodeDis(String str)
     {
+        long a = System.currentTimeMillis();
         ArrayList<String> list = new ArrayList<String>();//统计任务总个数singleNoderesultMaps.clear();
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
@@ -265,6 +268,8 @@ public class win10_window extends JFrame {
         }
 
         isDisSingleNodeMined=true;
+        long b = System.currentTimeMillis();
+        System.out.println("分布式单节点挖掘完毕，用时：" + (b - a) / 1000);
     }
 
     public void mineNodePair()

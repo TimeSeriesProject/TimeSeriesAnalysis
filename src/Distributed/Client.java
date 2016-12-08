@@ -238,7 +238,7 @@ public class Client {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } finally {
-                clientInit.close();
+                clientInit.closeTask();
             }
         }
     }
@@ -325,12 +325,12 @@ public class Client {
                     }
                 }
             } catch (IOException e) {
-                System.out.println("客户端关闭");
+                System.out.println("pcap客户端关闭");
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } finally {
-                clientInit.close();
+                clientInit.closePcap();
             }
         }
 
@@ -522,6 +522,15 @@ class ClientInit {
     public void close(){
         clientConnectServerMsg.close();
         clientConnectServerObject.close();
+        pcapClientConnectServerMsg.close();
+    }
+
+    public void closeTask(){
+        clientConnectServerMsg.close();
+        clientConnectServerObject.close();
+    }
+
+    public void closePcap(){
         pcapClientConnectServerMsg.close();
     }
 

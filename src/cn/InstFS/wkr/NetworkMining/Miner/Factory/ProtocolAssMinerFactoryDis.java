@@ -254,6 +254,7 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
 
     //有待解决，总共36个
     public int getCount(ArrayList<String> list){
+
         File dataDirectory=new File(dataPath);
         nodePairReader reader=new nodePairReader();
         int granularity= Integer.parseInt(getGranularity());
@@ -265,9 +266,42 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
                 //由于数据都存在ip文件夹下，所以应以文件夹目录作为参数进行传递
                 //按天读取文件，所以只接受目录
                 if(dataDirs[i].isDirectory())
-                    list.add("");
+                    addTask2(dataDirs[i].getAbsoluteFile(),granularity,reader, list);
             }
         }
+        addIpPairTask2(granularity, reader, list);
         return list.size();
+    }
+
+    private void addTask2(File file,int granularity,nodePairReader reader, ArrayList<String> list){
+        String ip=file.getName();//.substring(0, file.getName().lastIndexOf("."));
+        System.out.println("ip:"+ip);
+        parseFile(file.getAbsoluteFile(),reader);
+        list.add("");
+        eachProtocolItems.clear();
+    }
+
+    private void addIpPairTask2(int granularity, nodePairReader reader,ArrayList<String> list) {
+
+        Set<String> set = new HashSet<String>();
+        Iterator<String> iter_i = rawDataList.keySet().iterator();
+        while(iter_i.hasNext()) {
+
+            String ip_i = iter_i.next();
+            set.add(ip_i);
+            if(rawDataList.get(ip_i).data.size() == 0)
+                continue;
+            Iterator<String> iter_j = rawDataList.keySet().iterator();
+            while(iter_j.hasNext()) {
+
+                String ip_j = iter_j.next();
+                if(set.contains(ip_j))
+                    continue;
+                if(rawDataList.get(ip_j).data.size() == 0)
+                    continue;
+                list.add("");
+            }
+        }
+        rawDataList.clear();
     }
 }

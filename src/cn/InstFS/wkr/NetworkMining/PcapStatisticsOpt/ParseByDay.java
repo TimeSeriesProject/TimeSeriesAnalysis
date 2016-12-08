@@ -216,7 +216,7 @@ class NodeGen implements Callable {
                 bwMap.get(count).write(curLine);
                 bwMap.get(count).newLine();
             } else {
-                bwMap.get(count).write(curLine.replace(curLine.split(",")[0], String.valueOf(Long.valueOf(time) - count * 24)));
+                bwMap.get(count).write(curLine.replaceFirst(curLine.split(",")[0], String.valueOf(Long.valueOf(time) - count * 24)));
                 bwMap.get(count).newLine();
             }
 
@@ -276,7 +276,7 @@ class RouteGenerate implements Callable {
                 bwMap.get(count).write(curLine);
                 bwMap.get(count).newLine();
             } else {
-                bwMap.get(count).write(curLine.replace(curLine.split(",")[0], String.valueOf(Long.valueOf(time) - count * 86400)));
+                bwMap.get(count).write(curLine.replaceFirst(curLine.split(",")[0], String.valueOf(Long.valueOf(time) - count * 86400)));
                 bwMap.get(count).newLine();
             }
 
@@ -333,7 +333,7 @@ class TrafficGen implements Callable {
                 bwMap.get(count).write(curLine);
                 bwMap.get(count).newLine();
             } else {
-                bwMap.get(count).write(curLine.replace(curLine.split(",")[0], String.valueOf(Long.valueOf(time) - count * 24)));
+                bwMap.get(count).write(curLine.replaceFirst(curLine.split(",")[0], String.valueOf(Long.valueOf(time) - count * 24)));
                 bwMap.get(count).newLine();
             }
 

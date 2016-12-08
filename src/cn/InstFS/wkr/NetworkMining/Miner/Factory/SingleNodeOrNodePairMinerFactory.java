@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import common.ErrorLogger;
+
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
@@ -195,6 +197,7 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 					taskCombination.setName();
 					taskCombination.setMinerType(MinerType.MiningType_SinglenodeOrNodePair);
 					TaskElement.add1Task(taskCombination, false);
+					ErrorLogger.log(ip,"data.size:"+dataItems.data.size()+" time.size:"+dataItems.time.size()+" lenth:"+dataItems.getLength());
 				}
 			}
 		}else if(taskRange.toString().equals(TaskRange.NodePairRange.toString())){
@@ -283,9 +286,9 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 			task.setComments("挖掘  "+ipOrPair+" 上,协议"+protocol+"的统计");
 			break;
 		case MiningMethods_PartialCycle:
-			name=ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_部分周期_auto";
+			name=ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_局部周期_auto";
 			task.setTaskName(name);
-			task.setComments("挖掘  "+ipOrPair+" 上,协议为"+protocol+"的部分周期");
+			task.setComments("挖掘  "+ipOrPair+" 上,协议为"+protocol+"的局部周期");
 			break;
 		case MiningMethods_PredictionMining:
 			name=ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_预测_auto";

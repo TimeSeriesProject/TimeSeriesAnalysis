@@ -90,92 +90,92 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 	/**
 	 * Create the panel.
 	 */
-	private PanelShowResultsPartialCycle() {
-		BorderLayout Layout=new BorderLayout();
-		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{450, 0};
-//		gridBagLayout.rowHeights = new int[] {0, 1, 0};
-		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
-/*		Button b=new Button();
-		b.setLabel("a Buttom");
-		this.add(b);*/
-
-		//初始化控制器
-		//LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(data,0.9,0.75,3);
-		// map=dtw.getResult().getPartialCyclePos();
-		int modelnum=map.keySet().size();	
-		 jfreechart = createChart(createDataset(data,map));
-		 
-		plot=jfreechart.getXYPlot();
-		//plot.getRenderer().setBaseShape(null);
-		
-		//initModel();
-		PaintPeriodLine();
-		PaintDomainMarker();
-		
-		
-		ChartPanel chartpanel = new ChartPanel(jfreechart);
-		//1
-/*		JPanel controlPanel=new JPanel();
-		controlPanel.setLayout(new FlowLayout());*/
-
-		
-		setLayout(Layout);
-				this.add(chartpanel);
-				//2
-	//	this.add(controlPanel,BorderLayout.SOUTH);
-		Object[] s = map.keySet().toArray();
-		
-		for(int i=0;i<modelnum;i++){
-			ArrayList<NodeSection> list=map.get(s[i]);
-			java.util.Iterator<NodeSection> it=list.iterator();
-			String str = new String();
-			while(it.hasNext()){
-				NodeSection section=it.next();
-				str=str+"("+section.begin+","+section.end+")";
-			}
-			//3
-/*			JLabel jlabel=new JLabel("周期："+s[i]+" 区间："+str+".");
-			controlPanel.add(jlabel);*/
-		}
-		 
-/*				//读取模式生成int[]
-		Object[] s = map.keySet().toArray();
-		int[] model=new int[modelnum];
-		for (int i = 0; i < modelnum; i++)
-		{
-			model[i] = Integer.parseInt("" + s[i]);
-			final JCheckBox b=new JCheckBox("周期："+model[i]);
-			controlPanel.add(b);
-			b.addItemListener(new ItemListener(){
-
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					// TODO Auto-generated method stub
-					if(b.isSelected()){
-						List serieslist=XYSeriesCollection.getSeries();
-						java.util.Iterator it2=serieslist.iterator();
-						while(it2.hasNext()){
-							XYSeries xyseries=(XYSeries) it2.next();
-							if(xyseries.equals(b.getName().split(":")[1])){
-								selectionSeries.addSeries(xyseries);
-							}
-						}
-						//selectionSeries
-						
-					}else{
-						XYSeries xyseries=selectionSeries.getSeries( b.getName().split(":")[1] );
-						selectionSeries.removeSeries(xyseries);
-					}
-				}
-				
-			});
-			
-			//System.out.println("model:" + Integer.parseInt("" + s[i])+" count"+modelcount[i]);
-		}*/
-		
-	}
+//	private PanelShowResultsPartialCycle() {
+//		BorderLayout Layout=new BorderLayout();
+//		GridBagLayout gridBagLayout = new GridBagLayout();
+//		gridBagLayout.columnWidths = new int[]{450, 0};
+////		gridBagLayout.rowHeights = new int[] {0, 1, 0};
+//		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+//		gridBagLayout.rowWeights = new double[]{1.0, 0.0, 1.0};
+///*		Button b=new Button();
+//		b.setLabel("a Buttom");
+//		this.add(b);*/
+//
+//		//初始化控制器
+//		//LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(data,0.9,0.75,3);
+//		// map=dtw.getResult().getPartialCyclePos();
+//		int modelnum=map.keySet().size();	
+//		 jfreechart = createChart(createDataset(data,map));
+//		 
+//		plot=jfreechart.getXYPlot();
+//		//plot.getRenderer().setBaseShape(null);
+//		
+//		//initModel();
+//		PaintPeriodLine();
+//		PaintDomainMarker();
+//		
+//		
+//		ChartPanel chartpanel = new ChartPanel(jfreechart);
+//		//1
+///*		JPanel controlPanel=new JPanel();
+//		controlPanel.setLayout(new FlowLayout());*/
+//
+//		
+//		setLayout(Layout);
+//				this.add(chartpanel);
+//				//2
+//	//	this.add(controlPanel,BorderLayout.SOUTH);
+//		Object[] s = map.keySet().toArray();
+//		
+//		for(int i=0;i<modelnum;i++){
+//			ArrayList<NodeSection> list=map.get(s[i]);
+//			java.util.Iterator<NodeSection> it=list.iterator();
+//			String str = new String();
+//			while(it.hasNext()){
+//				NodeSection section=it.next();
+//				str=str+"("+section.begin+","+section.end+")";
+//			}
+//			//3
+///*			JLabel jlabel=new JLabel("周期："+s[i]+" 区间："+str+".");
+//			controlPanel.add(jlabel);*/
+//		}
+//		 
+///*				//读取模式生成int[]
+//		Object[] s = map.keySet().toArray();
+//		int[] model=new int[modelnum];
+//		for (int i = 0; i < modelnum; i++)
+//		{
+//			model[i] = Integer.parseInt("" + s[i]);
+//			final JCheckBox b=new JCheckBox("周期："+model[i]);
+//			controlPanel.add(b);
+//			b.addItemListener(new ItemListener(){
+//
+//				@Override
+//				public void itemStateChanged(ItemEvent e) {
+//					// TODO Auto-generated method stub
+//					if(b.isSelected()){
+//						List serieslist=XYSeriesCollection.getSeries();
+//						java.util.Iterator it2=serieslist.iterator();
+//						while(it2.hasNext()){
+//							XYSeries xyseries=(XYSeries) it2.next();
+//							if(xyseries.equals(b.getName().split(":")[1])){
+//								selectionSeries.addSeries(xyseries);
+//							}
+//						}
+//						//selectionSeries
+//						
+//					}else{
+//						XYSeries xyseries=selectionSeries.getSeries( b.getName().split(":")[1] );
+//						selectionSeries.removeSeries(xyseries);
+//					}
+//				}
+//				
+//			});
+//			
+//			//System.out.println("model:" + Integer.parseInt("" + s[i])+" count"+modelcount[i]);
+//		}*/
+//		
+//	}
 	
 	private void PaintPeriodLine() {
 		// TODO Auto-generated method stub
@@ -335,9 +335,9 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 		
 	}
 	
-	private static JFreeChart createChart(XYDataset xydataset)
+	private  JFreeChart createChart(XYDataset xydataset)
 	{
-		JFreeChart jfreechart = ChartFactory.createXYLineChart("时间序列", "time", "data", xydataset, PlotOrientation.VERTICAL, true, true, false);
+		JFreeChart jfreechart = ChartFactory.createXYLineChart("局部周期发现", "时间",miner.getTask().getMiningObject(), xydataset, PlotOrientation.VERTICAL, true, true, false);
 		XYPlot xyplot = (XYPlot)jfreechart.getPlot();
 		NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
 		numberaxis.setAutoRangeIncludesZero(false);
