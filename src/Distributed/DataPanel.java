@@ -1,6 +1,7 @@
 package Distributed;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -216,8 +217,8 @@ public class DataPanel extends JPanel {
                                         System.out.println("进入......");
                                         client.startConnect();
                                         if (client.isConnected()) {
-                                            new Thread(client.new ReceiveServerMsg()).start();
-                                            new Thread(client.new ExecuteTask()).start();
+                                            new Thread(client.new ExecuteTaskClient()).start();
+                                            new Thread(client.new ParsePcapClient()).start();
                                         }
                                     }
                                 };
@@ -266,6 +267,17 @@ public class DataPanel extends JPanel {
     public void sendLog(String str) {
         getLogContent().append(str + "\n");
         getLogContent().setCaretPosition(getLogContent().getText().length());//滚动条自动滚动
+    }
+
+    public void changeLog(String str) {
+        try {
+            int start = getLogContent().getLineStartOffset(getLogContent().getLineCount() - 1);//得到最后一行起始位置
+            int end = getLogContent().getLineEndOffset(getLogContent().getLineCount() - 1);//得到最后一行结束位置
+            getLogContent().replaceRange(str, start, end);
+            getLogContent().paintImmediately(this.getBounds());//刷新
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
     }
 
 }

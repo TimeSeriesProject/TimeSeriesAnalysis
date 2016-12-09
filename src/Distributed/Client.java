@@ -41,7 +41,7 @@ public class Client {
 //    public static void main(String[] args) {
 //        Client client = new Client();
 //        client.startConnect();
-//        new Thread(client.new ReceiveServerMsg()).start();
+//        new Thread(client.new ExecuteTaskClient()).start();
 //    }
 
     public Client(DataPanel dataPanel, String IP, int port, String filePath, String outPath) {
@@ -125,7 +125,7 @@ public class Client {
     }
 
     //接收信息封装
-    class ReceiveServerMsg implements Runnable {
+    class ExecuteTaskClient implements Runnable {
         TaskCombination taskCombination;
         long a;
         long b;
@@ -243,8 +243,12 @@ public class Client {
         }
     }
 
+    class Sum{
+        long sumLen = 0L;
+    }
+
     //pcapClient
-    class ExecuteTask implements Runnable {
+    class ParsePcapClient implements Runnable {
         private String tasks;
         private String tasks2;
         private PcapUtils pcapUtils;
@@ -275,7 +279,7 @@ public class Client {
                         pcapUtils = new PcapUtils();
                         dataPanel.sendLog("正在执行First2Step");
                         pcapUtils.First2Step(fileList, outPath + part1);//执行前两步每次在不同的文件夹下保存结果
-                        dataPanel.sendLog("First2Step执行完毕");
+                        dataPanel.sendLog("First2Step执行完毕，等待将生成的文件传回服务端");
                         System.out.println("执行完毕");
                         clientInit.sendPcapMsg(tasks);//将tasks返回，服务端判断是否存在此文件
                         String str = clientInit.receiveStr();
@@ -283,8 +287,11 @@ public class Client {
                             System.out.println("absent...");
                             //返回结果
                             sendAllResult(outPath + part1);
-                            dataPanel.sendLog("结果已返回");
+                            dataPanel.sendLog("");//传输结束后换行
+                            dataPanel.sendLog("生成的文件已返回服务端");
                         } else {
+                            dataPanel.sendLog("文件已传输：100%");
+                            dataPanel.sendLog("生成的文件已返回服务端");
                             continue;
                         }
                     } else if (taskFlag.equals("Last")) {
@@ -309,7 +316,7 @@ public class Client {
                         pcapUtils = new PcapUtils();
                         dataPanel.sendLog("正在执行Last2Step");
                         pcapUtils.Last2Step(fileList, outPath + part2);
-                        dataPanel.sendLog("Last2Step执行完毕");
+                        dataPanel.sendLog("Last2Step执行完毕，等待将生成的文件传回服务端");
                         System.out.println("执行完毕");
                         clientInit.sendPcapMsg(tasks2);
                         String str = clientInit.receiveStr();
@@ -317,8 +324,11 @@ public class Client {
                             System.out.println("absent...");
                             //返回结果
                             sendAllResult(outPath + part2);
-                            dataPanel.sendLog("结果已返回");
+                            dataPanel.sendLog("");//传输结束后换行
+                            dataPanel.sendLog("生成的文件已返回服务端");
                         } else {
+                            dataPanel.sendLog("文件已传输：100%");
+                            dataPanel.sendLog("生成的文件已返回服务端");
                             continue;
                         }
 
@@ -405,15 +415,16 @@ public class Client {
 
 
         private void sendAllResult(String outPath) throws IOException {
+            Sum sum = new Sum();
             File file = new File(outPath);
             if (file.isFile()) {
                 return;
             } else if (file.isDirectory()) {
                 File[] files = file.listFiles();
-                getFolderTotalLen(outPath);
+                getFolderTotalLen(outPath);//得到发送文件总长度
                 clientInit.sendLong(totalLen);
                 for (File f : files) {
-                    sendResult(f.getAbsolutePath());
+                    sendResult(f.getAbsolutePath(), sum);
                 }
             }
             clientInit.sendPcapMsg("endTransmit");
@@ -425,25 +436,25 @@ public class Client {
             index = folderPath.length() - folderName.length();
         }
 
-        private void sendResult(String folderPath) throws IOException {
+        private void sendResult(String folderPath, Sum sum) throws IOException {
             File folder = new File(folderPath);
-            //暂时写死routesrc
+            //暂时写死routesrc，Last过程中不发送foutesrc
             if (!(folder.getName().equals("routesrc") && taskFlag.equals("Last"))) {
                 preprocess(folder);//得到绝对路径、文件名、index
 //            System.out.println("fPath: " + folderPath + "fName: " + folderName + "index: " + index);
                 if (folder.isFile()) {
 //                totalLen = folder.length();
 //                clientInit.sendLong(totalLen);//sendAllResult中发送，保证发送一次
-                    sendFile(folder);
+                    sendFile(folder, sum);
                 } else {
 //                getFolderTotalLen(outPath);//得到totalLen
 //                clientInit.sendLong(totalLen);//sendAllResult中发送，保证发送一次
-                    sendFolder(folder);
+                    sendFolder(folder, sum);
                 }
             }
         }
 
-        private void sendFolder(File folder) {
+        private void sendFolder(File folder, Sum sum) {
             String selectFolderPath = folder.getAbsolutePath().substring(index);//选择的文件夹名字：routesrc或node
             try {
                 clientInit.sendPcapMsg("sendFolder");
@@ -463,14 +474,14 @@ public class Client {
             }
             //转换为foreach
             for (File file : listFile) {
-                sendFile(file);
+                sendFile(file, sum);
             }
             for (File file : listFolder) {
-                sendFolder(file);
+                sendFolder(file, sum);
             }
         }
 
-        private void sendFile(File file) {
+        private void sendFile(File file, Sum sum) {
             byte[] sendBuffer = new byte[BUF_LEN];
             int length;
             try {
@@ -481,9 +492,12 @@ public class Client {
                 DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
                 length = dis.read(sendBuffer, 0, sendBuffer.length);
                 while (length > 0) {
-                    clientInit.sendInt(length);//发送length是为了最后length为-1，作为结束的判断，因此每次都要发送length
+                    clientInit.sendInt(length);//发送length是为了最后length为-1，作为结束的判断，因此每次都要发送length，否则发送方断开，接收方报错
+                    sum.sumLen += length;
                     clientInit.sendByte(sendBuffer, 0, length);
                     length = dis.read(sendBuffer, 0, sendBuffer.length);
+                    dataPanel.changeLog("文件已传输：" + ((sum.sumLen * 100) / totalLen) + "%");
+                    System.out.println("文件已传输：" + ((sum.sumLen * 100) / totalLen) + "%");
                 }
                 clientInit.sendInt(length);
                 dis.close();
@@ -503,7 +517,8 @@ public class Client {
             for (File file : files) {
                 if (file.isFile()) {
                     this.totalLen += file.length();
-                } else if (file.isDirectory()) {
+                } else if (file.isDirectory() &&
+                        !(file.getName().equals("routesrc") && taskFlag.equals("Last"))) {//第二次不发送routesrc，因此略过
                     getFileLen(file);
                 }
             }
