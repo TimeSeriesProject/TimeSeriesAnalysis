@@ -75,8 +75,9 @@ public class ProtocolAssociationLine {
 		{
 			String ip = ip_iter.next();
 			mr_fp_l.setIp(ip);
-			List<ProtocolDataItems> proDataList2 = ip_proData.get(ip);
-			List<ProtocolDataItems> proDataList = compressData(proDataList2);
+			List<ProtocolDataItems> proDataList = ip_proData.get(ip);
+			//压缩数据
+			proDataList = compressData(proDataList);
 			
 			List<TreeMap<Integer,SymbolNode>> linesList = new ArrayList<TreeMap<Integer,SymbolNode>>();
 			List<DataItems> lineList = new ArrayList<DataItems>();
@@ -304,9 +305,9 @@ public class ProtocolAssociationLine {
 		for(int i = 0;i < proDataList.size();i++)
 		{
 			ProtocolDataItems pdi = proDataList.get(i);
-			if(pdi.dataItems.getLength() > 400)
+			if(pdi.dataItems.getLength() > 800)
 			{
-				int len = pdi.dataItems.getLength()/200;
+				int len = pdi.dataItems.getLength()/400;
 				
 				DataItems newData = new DataItems();
 				for(int j = 0;j < pdi.dataItems.getLength();j += len)
@@ -318,7 +319,7 @@ public class ProtocolAssociationLine {
 //						trafficSum += Integer.parseInt(pdi.dataItems.data.get(k));
 						trafficSum += Double.parseDouble(pdi.dataItems.data.get(k));
 					}
-					newData.add1Data(pdi.dataItems.time.get(j), trafficSum+"");
+					newData.add1Data(pdi.dataItems.time.get(j), (trafficSum*1.0/len)+"");
 				}
 				ProtocolDataItems new_pdi = new ProtocolDataItems(pdi.protocolName,newData);
 				compressData.add(new_pdi);
