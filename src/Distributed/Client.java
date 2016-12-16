@@ -283,6 +283,7 @@ public class Client {
                         System.out.println("执行完毕");
                         clientInit.sendPcapMsg(tasks);//将tasks返回，服务端判断是否存在此文件
                         String str = clientInit.receiveStr();
+                        dataPanel.changeLog("文件已传输：" + "0%");
                         if (str.equals("Absent")) {
                             System.out.println("absent...");
                             //返回结果
@@ -320,6 +321,7 @@ public class Client {
                         System.out.println("执行完毕");
                         clientInit.sendPcapMsg(tasks2);
                         String str = clientInit.receiveStr();
+                        dataPanel.changeLog("文件已传输：" + "0%");
                         if (str.equals("Absent")) {
                             System.out.println("absent...");
                             //返回结果
