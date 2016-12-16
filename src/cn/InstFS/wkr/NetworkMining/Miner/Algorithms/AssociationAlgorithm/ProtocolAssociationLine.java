@@ -74,6 +74,7 @@ public class ProtocolAssociationLine {
 		while(ip_iter.hasNext())
 		{
 			String ip = ip_iter.next();
+			
 			mr_fp_l.setIp(ip);
 			List<ProtocolDataItems> proDataList = ip_proData.get(ip);
 			//压缩数据
@@ -84,6 +85,7 @@ public class ProtocolAssociationLine {
 			linesPosList = new ArrayList<TreeMap<Integer,Linear>>();
 			for(int i = 0;i < proDataList.size();i++)
 			{
+				System.out.println("ip:"+ip+"  端口："+proDataList.get(i).getProtocolName());
 				TreeMap<Integer,Double> sourceData_i = convertDataToTreeMap(proDataList.get(i));
 				System.out.println("开始运行自底向上线段拟合算法！");
 //				System.out.println("***"+sourceData_i);
@@ -137,7 +139,8 @@ public class ProtocolAssociationLine {
 					
 					System.out.println(findRules.rulesSet.size());
 					
-					HashMap<String,ArrayList<LinePos>> mapAB = new HashMap<String,ArrayList<LinePos>>();  //记录序列1与序列2 各个关联符号所在的位置 A,B表示在哪个序列上，12表示序列的比较顺序
+					//记录序列1与序列2 各个关联符号所在的位置 A,B表示在哪个序列上，12表示序列的比较顺序
+					HashMap<String,ArrayList<LinePos>> mapAB = new HashMap<String,ArrayList<LinePos>>();  
 					HashMap<String,ArrayList<LinePos>> mapBA = new HashMap<String,ArrayList<LinePos>>();
 					
 					int symbol = 1;
@@ -147,9 +150,9 @@ public class ProtocolAssociationLine {
 						symbol++;
 						sum_confidence += rule.con;
 						ArrayList<LinePos> alp = new ArrayList<LinePos>();
-						if(rule.after.belong_series == i)
+						if(rule.after.belong_series == i)   //子节点
 						{
-							System.out.println(rule.parent_node_time_map);
+//							System.out.println(rule.parent_node_time_map);
 							for(int father :rule.parent_node_time_map.keySet()){
 								
 								
@@ -194,8 +197,8 @@ public class ProtocolAssociationLine {
 					pp.setConfidence(sum_confidence/(symbol-1));
 					pp.setMapAB(mapAB);
 					pp.setMapBA(mapBA);
-					pp.setLineDataItems1(lineList.get(i));
-					pp.setLineDataItems2(lineList.get(j));
+					pp.setLineDataItems1(lineList.get(j));
+					pp.setLineDataItems2(lineList.get(i));
 					resultList.add(pp);
 					
 					if(max_confidence < pp.confidence)
