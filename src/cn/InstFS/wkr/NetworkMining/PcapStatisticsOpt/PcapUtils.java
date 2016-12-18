@@ -203,7 +203,7 @@ class RouteGen implements Callable {
         } else if (ports.contains(pre.getSrcPort())) {
             port = pre.getSrcPort();
         } else {
-            throw new NullPointerException("端口错误");
+            throw new NullPointerException("端口错误");//一定要在call中catch，否则不显示提示
         }
 
         RecordKey tmpKey1 = new RecordKey(pre.getSrcIP(), pre.getDstIP(), port, pre.getTime_s() / 3600);
@@ -532,7 +532,10 @@ class RouteGen implements Callable {
             System.out.println("getGenedRouteNum()" + pcapUtils.getGenedRouteNum());
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
+        } catch (NullPointerException e) {//一定要catch，否则无法显示，因为 exec.submit(temp)，没有得到NullPointerException
+            e.printStackTrace();
+        }
+        finally {
             try {
                 if (fc != null) {
                     fc.close();
@@ -1244,13 +1247,13 @@ public class PcapUtils {
         deleteFile(outpath + "\\routesrc");
         folder.mkdirs();
 
-        folder = new File(outpath + "\\route");
+        folder = new File(outpath + "/route");
         suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
 
-        folder = new File(outpath + "\\node");
+        folder = new File(outpath + "/node");
         suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
 
-        folder = new File(outpath + "\\traffic");
+        folder = new File(outpath + "/traffic");
         suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
         System.out.println("当前状态： " + status);
         System.out.println("parsepcap开始");

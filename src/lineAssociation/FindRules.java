@@ -2,6 +2,8 @@ package lineAssociation;
 
 import java.util.*;
 
+import org.junit.Assert;
+
 /**
  * Created by xzbang on 2016/3/15.
  */
@@ -35,10 +37,11 @@ public class FindRules {
         for(int key:symbolSeries.keySet()){
         	sum += symbolSeries.get(key).size();
         }
-        tnum = (int) Math.ceil(sum/symbolSeries.size());   //评分序列长度
+        tnum = (int) Math.ceil(sum/symbolSeries.size());   //平均序列长度
         minsupnum = (int) Math.ceil(tnum*0.05);            //支持度计数阈值
         minsup = minsupnum*1.0/tnum;                    //支持度阈值
         
+        System.out.format("序列平均长度：%d  支持度计数阈值：%d  支持度百分比阈值：%f", tnum,minsupnum,minsup);
     }
 
     public void run(){
@@ -70,6 +73,7 @@ public class FindRules {
                 }
             }
         }
+        int SymbolNodeSupCount = 0;
         //删除
         for(int i : treeSeries.keySet()){
             TreeMap<Integer, SymbolNode> isymbol = symbolSeries.get(i);
@@ -83,13 +87,22 @@ public class FindRules {
                     }
                     delete.add(symbolNode);
                 }else{
-                    symbolNodeSup.put(symbolNode,childtree.support_num);
+                    symbolNodeSup.put(symbolNode,childtree.support_num);   //可能后面的symbolNode会跟前面的SymbolNode重复
+                    SymbolNodeSupCount++;
                 }
             }
             for(SymbolNode symbolNode : delete){
                 itree.children_list.remove(symbolNode);
             }
         }
+        Assert.assertTrue(SymbolNodeSupCount == symbolNodeSup.size());
+        
+        if(SymbolNodeSupCount != symbolNodeSup.size())
+        {
+        	 System.out.println("理论包含的频繁项数为："+SymbolNodeSupCount+" 实际的频繁项为："+symbolNodeSup.size());
+        	 System.exit(0);
+        }
+       
     }
 
     /**
@@ -153,7 +166,8 @@ public class FindRules {
                         double con = jchTree.support_num*1.0/ichildTree.support_num;
 //                        if(con < mincon)delete.add(jsymbolNode);//不能基于置信度进行剪枝
                         if(con >= mincon){
-                            double inf = con*tnum/symbolNodeSup.get(jsymbolNode);
+//                            double inf = con*tnum/symbolNodeSup.get(jsymbolNode);   //兴趣度指标公式有问题2016/12/14
+                            double inf = con - (symbolNodeSup.get(jsymbolNode)*1.0/tnum);  
 //                            if(inf<mininf)delete.add(jsymbolNode);//不能基于兴趣度进行剪枝
                             if(inf >= mininf){
                                 ArrayList<SymbolNode> before = new ArrayList<SymbolNode>(jchTree.parent_symbol_list);

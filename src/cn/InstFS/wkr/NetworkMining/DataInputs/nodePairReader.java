@@ -1503,7 +1503,7 @@ public class nodePairReader implements IReader {
 		/**
 		 * 读取文件时间段
 		 */
-		if(isReadBetween==false)
+		if(isReadBetween)
 		{
 			long startTime=Long.MAX_VALUE;
 			long endTime =0;
@@ -1542,7 +1542,7 @@ public class nodePairReader implements IReader {
 		/**
 		 * timeSpan是相对小时数，start是相对小时数,time是绝对时间
 		 */
-		
+		System.out.println("startDay:"+startDay+" endDay:"+endDay);
 		for (int k = 0; fileDay <= endDay; k++) {
 			String fileName = fileDay+".txt";
 			Logger.log("当前处理文件", fileName);
@@ -1565,7 +1565,7 @@ public class nodePairReader implements IReader {
 				int timeSpan=Integer.parseInt(items[0]) + 24*k;			 
 				Date time=parseTime(timeSpan*3600, startDay);
 				/*读取时间区间数据*/
-				if(isReadBetween==true){
+				if(isReadBetween){
 					if(time.compareTo(date1)<0||time.compareTo(date2)>0){
 						continue;
 					}
@@ -1595,18 +1595,18 @@ public class nodePairReader implements IReader {
 						
 						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
 						//中间如果没有数据，补零至当前时间，也就是当前时间流量已初始化为0
-						while(dataItems.getLength()<=timeSpan-start)
+						while(dataItems.getLength() <= timeSpan-start)
 						{
-							int j=dataItems.getLength();  //j为新增数据点的下标
+							int j = dataItems.getLength();  //j为新增数据点的下标
 							dataItems.add1Data(parseTime((j+start)*3600, startDay), "0");
 						}
-						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
 						
 						//合并同一个IP，同一个协议的通信的流量要合并
-						
-						int traffic=Integer.parseInt(dataItem.getData());
+						int index = dataItems.getTime().indexOf(time);
+						int traffic=Integer.parseInt(dataItems.getData().get(index));
 						int addTraffic=Integer.parseInt(proAndTraffic[1]);
-						dataItems.getData().set(dataItems.getLength()-1,(traffic+addTraffic)+"");
+						
+						dataItems.getData().set(index,(traffic+addTraffic)+"");
 							
 					}else{
 						
@@ -1623,6 +1623,12 @@ public class nodePairReader implements IReader {
 				}
 			}
 			fileDay += 86400000; // 下一天的文件名时间戳
+		}
+		Iterator<String> port_iter = protocolDataItems.keySet().iterator();
+		while(port_iter.hasNext()) {
+			
+			String port = port_iter.next();
+			System.out.println("端口 "+port+" 包含的数据点数为："+protocolDataItems.get(port).getLength());
 		}
 		System.out.println("readEachProtocolTrafficDataItems 调用结束");
 		return protocolDataItems;
@@ -2281,12 +2287,12 @@ public class nodePairReader implements IReader {
 		Logger.log("isReadBetween",String.valueOf(isReadBetween));
 		Logger.log("startTime",date1.toString());
 		Logger.log("endTime",date2.toString());
-		System.out.println("readEachIpPairProtocolTrafficDataItems.....");
+		System.out.println("readIpSumTraffic.....");
 		DataItems SumDataItems = new DataItems();
 		/**
 		 * 读取文件时间段
 		 */
-		if(isReadBetween == false)
+		if(isReadBetween)
 		{
 			long startTime = Long.MAX_VALUE;
 			long endTime = 0;
@@ -2364,7 +2370,7 @@ public class nodePairReader implements IReader {
 				int currentTrffic = 0;
 				for(String protocol:eachProtocol){
 					String[] proAndTraffic=protocol.split(":");
-					if(proAndTraffic.length <= 1)
+					if(proAndTraffic.length < 1)
 						continue;
 					currentTrffic += Integer.parseInt(proAndTraffic[1]); //traffic
 				}
@@ -2375,6 +2381,8 @@ public class nodePairReader implements IReader {
 			}
 			fileDay += 86400000; // 下一天的文件名时间戳
 		}
+		System.out.println("该IP下包含数据点的个数为："+SumDataItems.getLength());
+		System.out.println(SumDataItems.getData().toString());
 		return SumDataItems;
 	
 	}
