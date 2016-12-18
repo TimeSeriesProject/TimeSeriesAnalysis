@@ -1,45 +1,5 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
-/* ===========================================================
- * JFreeChart : a free chart library for the Java(tm) platform
- * ===========================================================
- *
- * (C) Copyright 2000-2013, by Object Refinery Limited and Contributors.
- *
- * Project Info:  http://www.jfree.org/jfreechart/index.html
- *
- * This library is free software; you can redistribute it and/or modify it 
- * under the terms of the GNU Lesser General Public License as published by 
- * the Free Software Foundation; either version 2.1 of the License, or 
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public 
- * License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
- * USA.  
- *
- * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
- * Other names may be trademarks of their respective owners.]
- *
- * ---------------------
- * SWTTimeSeriesDemo.java
- * ---------------------
- * (C) Copyright 2006-2009, by Object Refinery Limited and Contributors.
- *
- * Original Author:  David Gilbert (for Object Refinery Limited);
- * Contributor(s):   Henry Proudhon (henry.proudhon AT ensmp.fr);
- *
- * Changes
- * -------
- * 30-Jan-2007 : New class derived from TimeSeriesDemo.java (HP);
- * 
- */
-
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -116,6 +76,11 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalP
 import associationRules.LinePos;
 import associationRules.ProtoclPair;
 
+/**
+ * 
+ * @author 顺
+ *
+ */
 public class TimeSeriesChart1 extends Composite {
 
 	public Group controller = null;
@@ -128,7 +93,7 @@ public class TimeSeriesChart1 extends Composite {
 	Map<String, ArrayList<double[]>> modelDataset;
 	Map<String, Color> modelColor;
 
-	XYDataset normalizationDataset;
+	XYDataset normalizationDataset;//
 
 	JFreeChart chart;
 
@@ -140,19 +105,20 @@ public class TimeSeriesChart1 extends Composite {
 		String protocol2 = pp.getProtocol2();
 		final JScrollBar scroller;
 		// 归一化两条曲线，只显示线段化得数据点
-		
-		
+
 		final DataItems dataitems1 = DataItemsNormalization(pp.getDataItems1(),
 				1);
 		final DataItems dataitems2 = DataItemsNormalization(pp.getDataItems2(),
 				0);
 
 		// 原始序列数据集
-		XYDataset initialDataset = createNormalDataset(pp.getDataItems1(),
-				pp.getDataItems2(), protocol1, protocol2);
+		DataItems d1 = pp.getDataItems1();
+		DataItems d2 = pp.getDataItems2();
+		XYDataset initialDataset = createNormalDataset(d1, d2, protocol1,
+				protocol2);
 		// 创建关联挖掘图表的数据集，包含两条原始序列和模式序列数据
-		createLineDataset(dataitems1, dataitems2,pp.getLineDataItems1(),pp.getLineDataItems2(), protocol1, protocol2,
-				pp.getMapAB());
+		createLineDataset(dataitems1, dataitems2, pp.getLineDataItems2(),
+				pp.getLineDataItems1(), protocol1, protocol2, pp.getMapAB());
 
 		// 创建原始图
 		String chartname = "时间序列";
@@ -484,9 +450,14 @@ public class TimeSeriesChart1 extends Composite {
 	 * @param mapAB
 	 *            保存每个模式的所有线段集合
 	 */
-	public void createLineDataset(DataItems dataitems1, DataItems dataitems2,DataItems indexdataitems1,DataItems indexdataitems2,
+	public void createLineDataset(DataItems dataitems1, DataItems dataitems2,
+			DataItems indexdataitems1, DataItems indexdataitems2,
 			String protocol1, String protocol2,
-			Map<String, ArrayList<LinePos>> mapAB) {
+			Map<String, ArrayList<LinePos>> initmapAB) {
+
+		Map<String, ArrayList<LinePos>> mapAB = new HashMap<String, ArrayList<LinePos>>();
+		mapAB.putAll(initmapAB);
+
 		// 获取模式的种类个数、
 		int modelcount = mapAB.keySet().size();
 		if (modelcount == 0)
@@ -532,7 +503,7 @@ public class TimeSeriesChart1 extends Composite {
 			String se = (String) e.getKey();
 			ArrayList<double[]> aModelIndex = new ArrayList<double[]>();
 			ArrayList<LinePos> s = SegmentDataMerging(mapAB.get(se));//
-			mapit.remove();
+			mapit.remove();// ///?????
 			CopyMapAB.put(se, s);
 
 			Iterator it = s.iterator();
@@ -604,51 +575,64 @@ public class TimeSeriesChart1 extends Composite {
 
 		// 功能：遍历allModelList，保存模式线段线段化后的结果
 		Iterator itall = allModelList.iterator();
-		Iterator<String> indexit1=indexdataitems1.data.iterator();
-		Iterator<String> indexit2=indexdataitems2.data.iterator();
-		initseries1start=(indexit1.hasNext())?	(Integer.parseInt(indexit1.next())):-1;
-		initseries2start=(indexit2.hasNext())?(Integer.parseInt(indexit2.next())):-1;
-		while (itall.hasNext() && (initseries1start>=0) && (initseries2start>=0) ) {
+		Iterator<String> indexit1 = indexdataitems1.data.iterator();
+		Iterator<String> indexit2 = indexdataitems2.data.iterator();
+		initseries1start = (indexit1.hasNext()) ? (Integer.parseInt(indexit1
+				.next())) : -1;
+		initseries2start = (indexit2.hasNext()) ? (Integer.parseInt(indexit2
+				.next())) : -1;
+		while (itall.hasNext() && (initseries1start >= 0)
+				&& (initseries2start >= 0)) {
 			LinePos linpos = (LinePos) itall.next();
 			// 遍历曲线1 的 模式线段前的原始线段，保存进initseries1
-			
-			while (initseries1start <=linpos.A_start ) {
+
+			while (initseries1start <= linpos.A_start) {
 				initseries1.add(
 						initseries1start,
 						Double.parseDouble(dataitems1.getElementAt(
 								initseries1start).getData()));
-				initseries1start=(indexit1.hasNext())?	(Integer.parseInt(indexit1.next())):-1;
+				initseries1start = (indexit1.hasNext()) ? (Integer
+						.parseInt(indexit1.next())) : -1;
 			}
 			// 保存模式线段 initseries1
-			//此时initseries1start=linpos.A_start+1
-			while(initseries1start<linpos.A_end){
-				initseries1start=(indexit1.hasNext())?	(Integer.parseInt(indexit1.next())):-1;//跳过模式线段中间的点
+			// 此时initseries1start=linpos.A_start+1
+			while (initseries1start < linpos.A_end) {
+				initseries1start = (indexit1.hasNext()) ? (Integer
+						.parseInt(indexit1.next())) : -1;// 跳过模式线段中间的点
 			}
-		/*	initseries1.add(linpos.A_start, Double.parseDouble(dataitems1
-					.getElementAt(linpos.A_start).getData()));*/
-			
+			/*
+			 * initseries1.add(linpos.A_start, Double.parseDouble(dataitems1
+			 * .getElementAt(linpos.A_start).getData()));
+			 */
+
 			initseries1.add(linpos.A_end, Double.parseDouble(dataitems1
 					.getElementAt(linpos.A_end).getData()));
-			initseries1start=(indexit1.hasNext())?	(Integer.parseInt(indexit1.next())):-1;;//此时initseriesstart=linpos.A_end+1
+			initseries1start = (indexit1.hasNext()) ? (Integer
+					.parseInt(indexit1.next())) : -1;
+			;// 此时initseriesstart=linpos.A_end+1
 			// 遍历曲线2 的 模式线段前的原始线段，保存进initseries2
 			while (initseries2start <= linpos.B_start) {
 				initseries2.add(
 						initseries2start,
 						Double.parseDouble(dataitems2.getElementAt(
 								initseries2start).getData()));
-				//initseries2start++;
-				initseries2start=(indexit2.hasNext())?	(Integer.parseInt(indexit2.next())):-1;//
+				// initseries2start++;
+				initseries2start = (indexit2.hasNext()) ? (Integer
+						.parseInt(indexit2.next())) : -1;//
 			}
 			// 保存模式线段 initseries2
-			while(initseries2start<linpos.B_end){
-				initseries2start=(indexit2.hasNext())?	(Integer.parseInt(indexit2.next())):-1;//跳过模式线段中间的点
+			while (initseries2start < linpos.B_end) {
+				initseries2start = (indexit2.hasNext()) ? (Integer
+						.parseInt(indexit2.next())) : -1;// 跳过模式线段中间的点
 			}
-		
-			//initseries2start=(indexit2.hasNext())?	(Integer.parseInt(indexit2.next())):-1;//此时initseriesstart就是linpos.B_start
+
+			// initseries2start=(indexit2.hasNext())?
+			// (Integer.parseInt(indexit2.next())):-1;//此时initseriesstart就是linpos.B_start
 			initseries2.add(linpos.B_end, Double.parseDouble(dataitems2
 					.getElementAt(linpos.B_end).getData()));
-			//initseries2start = linpos.B_end;
-			initseries2start=(indexit2.hasNext())?	(Integer.parseInt(indexit2.next())):-1;//此时initseriesstart就是linpos.B_end
+			// initseries2start = linpos.B_end;
+			initseries2start = (indexit2.hasNext()) ? (Integer
+					.parseInt(indexit2.next())) : -1;// 此时initseriesstart就是linpos.B_end
 		}
 
 		// 功能：结束
@@ -665,7 +649,9 @@ public class TimeSeriesChart1 extends Composite {
 	}
 
 	/**
-	 * @功能：模式线段合并，即对线段的ArrayList<LinePos> 按照开始点进行排序，然后将[t1,t2][t2,t3]这种模式合并成[t1,t3]
+	 * @功能：模式线段合并，即对线段的ArrayList<LinePos> 
+	 *                                    按照开始点进行排序，然后将[t1,t2][t2,t3]这种模式合并成[t1,t3
+	 *                                    ]
 	 * 
 	 * 
 	 */
