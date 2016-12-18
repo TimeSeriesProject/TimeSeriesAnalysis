@@ -6,6 +6,8 @@ import java.util.Date;
 import cn.InstFS.wkr.NetworkMining.DataInputs.CWNetworkReader;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 
@@ -118,15 +120,17 @@ public class NetworkFactory extends MinerFactorySettings {
 		task.setDiscreteMethod(DiscreteMethod.None);
 		task.setMiningMethod(method);
 		String name=mingObj+method.toString();
-		
+
+		AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningTypes_WholeNetwork, taskRange);
+
 		switch (method) {
 		case MiningMethods_OutliesMining:
-			task.setMiningAlgo(MiningAlgo.MiningAlgo_Muitidimensional);
+			task.setMiningAlgo(chooser.getOmAlgo());
 			task.setTaskName(name);
 			task.setComments("挖掘  "+mingObj+" 的异常");
 			break;
 		case MiningMethods_PeriodicityMining:
-			task.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
+			task.setMiningAlgo(chooser.getPmAlgo());
 			task.setTaskName(name);
 			task.setComments("挖掘  "+mingObj+ "的周期规律");
 			break;
@@ -139,6 +143,7 @@ public class NetworkFactory extends MinerFactorySettings {
 			task.setComments("挖掘  "+mingObj+" 的统计量");
 			break;
 		case MiningMethods_PredictionMining:
+			task.setMiningAlgo(chooser.getFmAlgo());
 			task.setTaskName(name);
 			task.setComments("预测  " + mingObj+ "的未来趋势");
 			break;

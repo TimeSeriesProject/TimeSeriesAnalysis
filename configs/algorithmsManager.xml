@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- 算法选择 -->
+<algorithmsManager>
+    <minerType type="节点与链路规律挖掘">
+        <taskRange range="SingleNodeRange">
+            <miningMethod method="周期模式发现">
+                <custom flag="true">
+                    <miningAlgo>ERP距离周期检测算法</miningAlgo>
+                </custom>
+            </miningMethod>
+            <miningMethod method="序列异常检测">
+                <custom flag="false">
+                    <miningAlgo>高斯滑动窗口异常检测</miningAlgo>
+                </custom>
+            </miningMethod>
+            <miningMethod method="时间序列预测">
+                <custom flag="false">
+                    <miningAlgo></miningAlgo>
+                </custom>
+            </miningMethod>
+        </taskRange>
+        <taskRange range="NodePairRange">
+            <miningMethod method="周期模式发现">
+                <custom flag="true">
+                    <miningAlgo>ERP距离周期检测算法</miningAlgo>
+                </custom>
+            </miningMethod>
+            <miningMethod method="序列异常检测">
+                <custom flag="false">
+                    <miningAlgo>高斯滑动窗口异常检测</miningAlgo>
+                </custom>
+            </miningMethod>
+            <miningMethod method="时间序列预测">
+                <custom flag="false">
+                    <miningAlgo></miningAlgo>
+                </custom>
+            </miningMethod>
+        </taskRange>
+    </minerType>
+    <minerType type="网络结构规律挖掘">
+        <miningMethod method="周期模式发现">
+            <custom flag="false">
+                <miningAlgo>ERP距离周期检测算法</miningAlgo>
+            </custom>
+        </miningMethod>
+        <miningMethod method="序列异常检测">
+            <custom flag="false">
+                <miningAlgo>高斯滑动窗口异常检测</miningAlgo>
+            </custom>
+        </miningMethod>
+        <miningMethod method="时间序列预测">
+            <custom flag="false">
+                <miningAlgo></miningAlgo>
+            </custom>
+        </miningMethod>
+    </minerType>
+    <minerType type="多元时间序列规律挖掘">
+        <miningMethod method="多元序列相似度挖掘">
+            <custom flag="false">
+                <miningAlgo>DTW相似度多元序列关联</miningAlgo>
+            </custom>
+        </miningMethod>
+        <miningMethod method="多元时间序列挖掘">
+            <custom flag="false">
+                <miningAlgo>线段化多元序列关联</miningAlgo>
+            </custom>
+        </miningMethod>
+    </minerType>
+    <minerType type="承载路径规律挖掘">
+        <miningMethod method="周期模式发现">
+            <custom flag="false">
+                <miningAlgo>ERP距离周期检测算法</miningAlgo>
+            </custom>
+        </miningMethod>
+        <miningMethod method="序列异常检测">
+            <custom flag="false">
+                <miningAlgo>高斯滑动窗口异常检测</miningAlgo>
+            </custom>
+        </miningMethod>
+        <miningMethod method="时间序列预测">
+            <custom flag="false">
+                <miningAlgo></miningAlgo>
+            </custom>
+        </miningMethod>
+    </minerType>
+</algorithmsManager>

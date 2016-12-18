@@ -175,12 +175,22 @@ class ProtocolMinerTask extends TimerTask{
 				results.setRetProtocol(protocolAssResult);
 				break;
 			case MiningMethods_SimilarityMining:
-				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_SimilarityProtocolASS)){
-					ProtocolAssociation pa=new ProtocolAssociation(eachProtocolItems, 
-							ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleSimilarityParams()
+				if (task.getMiningAlgo() != null) {
+					switch (task.getMiningAlgo()) {
+						case MiningAlgo_SimilarityProtocolASS:
+							ProtocolAssociation pa=new ProtocolAssociation(eachProtocolItems,
+									ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleSimilarityParams()
 							);
-					protocolAssResult.setRetSim(pa.miningAssociation());
-				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_RtreeProtocolASS)){
+							protocolAssResult.setRetSim(pa.miningAssociation());
+							break;
+						case MiningAlgo_RtreeProtocolASS:
+							ProtocolAssRtree rTreePa=new ProtocolAssRtree(eachProtocolItems); //没有参数,不需要调用带参的构造函数
+							protocolAssResult.setRetSim(rTreePa.miningAssociation());
+							break;
+						default:
+							throw new RuntimeException("方法不存在!");
+					}
+				} else { // 默认Rtree
 					ProtocolAssRtree rTreePa=new ProtocolAssRtree(eachProtocolItems); //没有参数,不需要调用带参的构造函数
 					protocolAssResult.setRetSim(rTreePa.miningAssociation());
 				}

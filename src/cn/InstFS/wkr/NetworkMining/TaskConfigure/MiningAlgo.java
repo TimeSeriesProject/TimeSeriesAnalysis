@@ -3,17 +3,25 @@ package cn.InstFS.wkr.NetworkMining.TaskConfigure;
 import javax.lang.model.element.Element;
 
 public enum MiningAlgo {
+	// 周期
 	MiningAlgo_averageEntropyPM("平均熵周期检测算法"),
 	MiningAlgo_ERPDistencePM("ERP距离周期检测算法"),
+	//
 	MiningAlgo_ARTSA("AR模型序列分析"),
 	MiningAlgo_ERPDistTSA("ERP模型序列分析"),
+	// 异常
 	MiningAlgo_FastFourier("FFT异常检测"),
 	MiningAlgo_GaussDetection("高斯滑动窗口异常检测"),
 	MiningAlgo_Muitidimensional("基于混合高斯的异常检测"),
 	MiningAlgo_TEOTSA("TEO线段异常检测"),
+	// 预测
 	MiningAlgo_NeuralNetworkTSA("神经网络预测"),
 	MiningAlgo_ARIMATSA("ARIMA模型预测"),
+
+	// 多业务关联
 	MiningAlgo_LineProtocolASS("线段化多元序列关联"),
+
+	// 多元序列相似度挖掘
 	MiningAlgo_SimilarityProtocolASS("DTW相似度多元序列关联"),
 	MiningAlgo_RtreeProtocolASS("Rtree相似度多元序列关联"),
 	MiningAlgo_NULL("无");

@@ -265,16 +265,25 @@ class NodeTimerTask extends TimerTask{
 			dimension = Math.max(task.getDiscreteDimension(), dataItems.getDiscretizedDimension());
 			IMinerPM pmMethod=null;
 			IMinerOM tsaMethod=null;
+			IMinerFM forecastMethod = null;
 			switch (task.getMiningMethod()) {
 			case MiningMethods_PeriodicityMining:
 				PMparam pMparam = ParamsAPI.getInstance().getParamsPeriodMiner().getPmparam();
-				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_averageEntropyPM)){
-					pmMethod=new averageEntropyPM(task, dimension,pMparam);//添加参数
-				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
-					pmMethod=new ERPDistencePM(pMparam);
-				}else{
-					throw new RuntimeException("方法不存在！");
+				if (task.getMiningAlgo()!= null ) { // 不为空时，自定义算法，否则自动选择
+					switch (task.getMiningAlgo()) {
+						case MiningAlgo_averageEntropyPM:
+							pmMethod = new averageEntropyPM(task, dimension,pMparam);//添加参数
+							break;
+						case MiningAlgo_ERPDistencePM:
+							pmMethod=new ERPDistencePM(pMparam);
+							break;
+						default:
+							throw new RuntimeException("方法不存在！");
+					}
+				} else { // 周期检测默认ERP
+					pmMethod = new ERPDistencePM(pMparam);
 				}
+
 				pmMethod.setOriginDataItems(dataItems);
 				if(task.getDiscreteMethod().equals(DiscreteMethod.None))
 		    		dataItems=DataPretreatment.normalization(dataItems);
@@ -305,8 +314,8 @@ class NodeTimerTask extends TimerTask{
 							//tsaMethod = new FastFourierOutliesDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(false);
 						}
-					}*/ 
-					
+					}*/
+
 					/*else {
 						if(results.getRetNode().getRetStatistics().getComplex() < 1.9){
 							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
@@ -335,51 +344,56 @@ class NodeTimerTask extends TimerTask{
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_PredictionMining:
-				MinerResultsPM resultsPM = results.getRetNode().getRetPM();
-				if (resultsPM.getHasPeriod()) { // 若有周期性
-					DataItems predictItems = new DataItems();
-					DataItems periodDi = resultsPM.getDistributePeriod();
-
-					Calendar calendar=Calendar.getInstance();
-					calendar.setTime(dataItems.getLastTime());
-					int len = dataItems.getLength();
-					for(int i = 0; i< periodDi.getLength()/2; i++){
-						int index = (int) ((i+len) % resultsPM.getPeriod());
-						calendar.add(Calendar.SECOND, task.getGranularity());
-						predictItems.add1Data(calendar.getTime(), periodDi.getData().get(index)+"");
+				if (task.getMiningAlgo() != null) {
+					switch (task.getMiningAlgo()) {
+						case MiningAlgo_NeuralNetworkTSA:
+							forecastMethod =new NeuralNetwork(dataItems, task,
+									ParamsAPI.getInstance().getParamsPrediction().getNnp());
+							break;
+						case MiningAlgo_ARIMATSA:
+							forecastMethod =new ARIMATSA(task, dataItems,
+							ParamsAPI.getInstance().getParamsPrediction().getAp());
+							break;
+						default:
+							throw new RuntimeException("方法不存在！");
 					}
+					System.out.println(task.getTaskName()+" forecast start");
+					forecastMethod.TimeSeriesAnalysis();
+					System.out.println(task.getTaskName()+" forecast over");
+					setForecastResult(results, forecastMethod);
+				} else {
+					MinerResultsPM resultsPM = results.getRetNode().getRetPM();
+					if (resultsPM.getHasPeriod()) { // 若有周期性
+						DataItems predictItems = new DataItems();
+						DataItems periodDi = resultsPM.getDistributePeriod();
 
-					results.getRetNode().getRetFM().setPredictItems(predictItems);
-				} /*else if (task.getMiningObject().equals("结点出现消失")){	// 无周期的结点出现消失规律应用神经网络挖掘
-					NeuralNetwork forecast=new NeuralNetwork(dataItems, task,
-							ParamsAPI.getInstance().getParamsPrediction().getNnp());
-					System.out.println(task.getTaskName()+" forecast start");
-					forecast.TimeSeriesAnalysis();
-					System.out.println(task.getTaskName()+" forecast over");
-					setForecastResult(results, forecast);
-				} *//*else {
-					NeuralNetwork forecast=new NeuralNetwork(dataItems, task,
-							ParamsAPI.getInstance().getParamsPrediction().getNnp());
-					System.out.println(task.getTaskName()+" forecast start");
-					forecast.TimeSeriesAnalysis();
-					System.out.println(task.getTaskName()+" forecast over");
-					setForecastResult(results, forecast);
-				}*/else{
-					SMForecast forecast=new SMForecast(clusterItems, sequencePattern.getPatterns(),
-							sequencePattern.getPatternsSupDegree(), WavCluster.clusterCentroids,
-							task, oriDataItems);
-					System.out.println(task.getTaskName()+" forecast start");
-					forecast.TimeSeriesAnalysis();
-					System.out.println(task.getTaskName()+" forecast over");
-					if(forecast.getPredictItems()==null||forecast.getPredictItems().getLength()<=0){
-						NeuralNetwork workforecast=new NeuralNetwork(dataItems, task,
-								ParamsAPI.getInstance().getParamsPrediction().getNnp());
+						Calendar calendar=Calendar.getInstance();
+						calendar.setTime(dataItems.getLastTime());
+						int len = dataItems.getLength();
+						for(int i = 0; i< periodDi.getLength()/2; i++){
+							int index = (int) ((i+len) % resultsPM.getPeriod());
+							calendar.add(Calendar.SECOND, task.getGranularity());
+							predictItems.add1Data(calendar.getTime(), periodDi.getData().get(index)+"");
+						}
+
+						results.getRetNode().getRetFM().setPredictItems(predictItems);
+					} else{
+						SMForecast forecast=new SMForecast(clusterItems, sequencePattern.getPatterns(),
+								sequencePattern.getPatternsSupDegree(), WavCluster.clusterCentroids,
+								task, oriDataItems);
 						System.out.println(task.getTaskName()+" forecast start");
-						workforecast.TimeSeriesAnalysis();
+						forecast.TimeSeriesAnalysis();
 						System.out.println(task.getTaskName()+" forecast over");
-						setForecastResult(results, workforecast);
-					}else{
-				    	setForecastResult(results, forecast);
+						if(forecast.getPredictItems()==null||forecast.getPredictItems().getLength()<=0){
+							NeuralNetwork workforecast=new NeuralNetwork(dataItems, task,
+									ParamsAPI.getInstance().getParamsPrediction().getNnp());
+							System.out.println(task.getTaskName()+" forecast start");
+							workforecast.TimeSeriesAnalysis();
+							System.out.println(task.getTaskName()+" forecast over");
+							setForecastResult(results, workforecast);
+						}else{
+							setForecastResult(results, forecast);
+						}
 					}
 				}
 				break;
