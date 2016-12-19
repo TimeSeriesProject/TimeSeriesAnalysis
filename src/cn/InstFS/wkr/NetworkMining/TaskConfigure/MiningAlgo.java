@@ -11,9 +11,10 @@ public enum MiningAlgo {
 	MiningAlgo_ERPDistTSA("ERP模型序列分析"),
 	// 异常
 	MiningAlgo_FastFourier("FFT异常检测"),
-	MiningAlgo_GaussDetection("高斯滑动窗口异常检测"),
+	MiningAlgo_GaussDetection("高斯滑动窗口异常检测"), // 对应AnormalyDetection算法
 	MiningAlgo_Muitidimensional("基于混合高斯的异常检测"),
-	MiningAlgo_TEOTSA("TEO线段异常检测"),
+//	MiningAlgo_TEOTSA("TEO线段异常检测"),
+	MiningAlgo_NodeOutlierDetection("高斯异常检测"), // 对应GaussianOutlierDetection
 	// 预测
 	MiningAlgo_NeuralNetworkTSA("神经网络预测"),
 	MiningAlgo_ARIMATSA("ARIMA模型预测"),
@@ -51,8 +52,6 @@ public enum MiningAlgo {
 			return MiningAlgo_Muitidimensional;
 		}else if(str.equals(MiningAlgo_NeuralNetworkTSA.toString())){
 			return MiningAlgo_NeuralNetworkTSA;
-		}else if(str.equals(MiningAlgo_TEOTSA.toString())){
-			return MiningAlgo_TEOTSA;
 		}else if(str.equals(MiningAlgo_ARIMATSA.toString())){
 			return MiningAlgo_ARIMATSA;
 		}else{

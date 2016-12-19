@@ -265,18 +265,31 @@ class PathTimerTask extends TimerTask{
 					case MiningMethods_OutliesMining:
 						IMinerOM omMethod = null;
 						MinerResultsOM retOM = new MinerResultsOM();
-												
-						/*if(retPathPM.get(name).getHasPeriod()){
+						if (task.getMiningAlgo()!= null ) { // 不为空时，自定义算法，否则自动选择
+							switch (task.getMiningAlgo()) {
+								case MiningAlgo_GaussDetection:
+									omMethod = new AnormalyDetection(dataItems);
+									retOM.setIslinkDegree(false);
+									break;
+								case MiningAlgo_FastFourier:
+									omMethod=new FastFourierOutliesDetection(dataItems);
+									retOM.setIslinkDegree(false);
+									break;
+								case MiningAlgo_Muitidimensional:
+									omMethod = new MultidimensionalOutlineDetection(dataItems);
+									retOM.setIslinkDegree(true);
+									break;
+								case MiningAlgo_NodeOutlierDetection:
+									omMethod = new GaussianOutlierDetection(dataItems);
+									retOM.setIslinkDegree(true);
+									break;
+								default:
+									throw new RuntimeException("方法不存在！");
+							}
+						} else {
 							omMethod = new MultidimensionalOutlineDetection(newItem);
 							retOM.setIslinkDegree(true);
-						}else if(!retPathPM.get(name).getHasPeriod()){
-							omMethod = new AnormalyDetection(newItem);
-							retOM.setIslinkDegree(false);
-						}else {
-							System.out.println("方法不存在");
-						}*/	
-						omMethod = new MultidimensionalOutlineDetection(newItem);
-						retOM.setIslinkDegree(true);
+						}
 						
 						omMethod.TimeSeriesAnalysis();
 						setOMResults(retOM, omMethod);
