@@ -503,7 +503,7 @@ public class TimeSeriesChart1 extends Composite {
 			String se = (String) e.getKey();
 			ArrayList<double[]> aModelIndex = new ArrayList<double[]>();
 			ArrayList<LinePos> s = SegmentDataMerging(mapAB.get(se));//
-			mapit.remove();// ///?????
+			mapit.remove();// 
 			CopyMapAB.put(se, s);
 
 			Iterator it = s.iterator();
@@ -586,7 +586,7 @@ public class TimeSeriesChart1 extends Composite {
 			LinePos linpos = (LinePos) itall.next();
 			// 遍历曲线1 的 模式线段前的原始线段，保存进initseries1
 
-			while (initseries1start <= linpos.A_start) {
+			while (initseries1start < linpos.A_start) {
 				initseries1.add(
 						initseries1start,
 						Double.parseDouble(dataitems1.getElementAt(
@@ -594,6 +594,8 @@ public class TimeSeriesChart1 extends Composite {
 				initseries1start = (indexit1.hasNext()) ? (Integer
 						.parseInt(indexit1.next())) : -1;
 			}
+			initseries1.add(linpos.A_start, Double.parseDouble(dataitems1
+					.getElementAt(linpos.A_start).getData()));
 			// 保存模式线段 initseries1
 			// 此时initseries1start=linpos.A_start+1
 			while (initseries1start < linpos.A_end) {
@@ -604,14 +606,14 @@ public class TimeSeriesChart1 extends Composite {
 			 * initseries1.add(linpos.A_start, Double.parseDouble(dataitems1
 			 * .getElementAt(linpos.A_start).getData()));
 			 */
-
+			
 			initseries1.add(linpos.A_end, Double.parseDouble(dataitems1
 					.getElementAt(linpos.A_end).getData()));
-			initseries1start = (indexit1.hasNext()) ? (Integer
-					.parseInt(indexit1.next())) : -1;
+			
+			//initseries1start = linpos.A_end;
 			;// 此时initseriesstart=linpos.A_end+1
 			// 遍历曲线2 的 模式线段前的原始线段，保存进initseries2
-			while (initseries2start <= linpos.B_start) {
+			while (initseries2start < linpos.B_start) {
 				initseries2.add(
 						initseries2start,
 						Double.parseDouble(dataitems2.getElementAt(
@@ -620,6 +622,8 @@ public class TimeSeriesChart1 extends Composite {
 				initseries2start = (indexit2.hasNext()) ? (Integer
 						.parseInt(indexit2.next())) : -1;//
 			}
+			initseries2.add(linpos.B_start, Double.parseDouble(dataitems2
+					.getElementAt(linpos.B_start).getData()));
 			// 保存模式线段 initseries2
 			while (initseries2start < linpos.B_end) {
 				initseries2start = (indexit2.hasNext()) ? (Integer
@@ -631,8 +635,7 @@ public class TimeSeriesChart1 extends Composite {
 			initseries2.add(linpos.B_end, Double.parseDouble(dataitems2
 					.getElementAt(linpos.B_end).getData()));
 			// initseries2start = linpos.B_end;
-			initseries2start = (indexit2.hasNext()) ? (Integer
-					.parseInt(indexit2.next())) : -1;// 此时initseriesstart就是linpos.B_end
+			//initseries2start =linpos.B_end;// 此时initseriesstart就是linpos.B_end
 		}
 
 		// 功能：结束
