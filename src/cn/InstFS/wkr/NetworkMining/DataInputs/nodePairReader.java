@@ -1525,7 +1525,9 @@ public class nodePairReader implements IReader {
 				System.out.println("No file!");
 				return protocolDataItems;
 			}
-			
+			if(startTime == endTime) {
+				endTime += 86400000;
+			}
 			date1 = new Date(startTime);
 			date2 = new Date(endTime);
 		}
@@ -1542,8 +1544,9 @@ public class nodePairReader implements IReader {
 		/**
 		 * timeSpan是相对小时数，start是相对小时数,time是绝对时间
 		 */
+		boolean onlyOneFile = true;
 		System.out.println("startDay:"+startDay+" endDay:"+endDay);
-		for (int k = 0; fileDay <= endDay; k++) {
+		for (int k = 0; fileDay <= endDay; k++,onlyOneFile = false) {
 			String fileName = fileDay+".txt";
 			Logger.log("当前处理文件", fileName);
 			File file = new File(filePath+"\\"+ fileName);
@@ -1565,7 +1568,7 @@ public class nodePairReader implements IReader {
 				int timeSpan=Integer.parseInt(items[0]) + 24*k;			 
 				Date time=parseTime(timeSpan*3600, startDay);
 				/*读取时间区间数据*/
-				if(isReadBetween){
+				if(!onlyOneFile && isReadBetween){
 					if(time.compareTo(date1)<0||time.compareTo(date2)>0){
 						continue;
 					}
@@ -1603,8 +1606,8 @@ public class nodePairReader implements IReader {
 						
 						//合并同一个IP，同一个协议的通信的流量要合并
 						int index = dataItems.getTime().indexOf(time);
-						int traffic=Integer.parseInt(dataItems.getData().get(index));
-						int addTraffic=Integer.parseInt(proAndTraffic[1]);
+						double traffic=Double.parseDouble(dataItems.getData().get(index));
+						double  addTraffic=Double.parseDouble(proAndTraffic[1]);
 						
 						dataItems.getData().set(index,(traffic+addTraffic)+"");
 							
@@ -2314,7 +2317,10 @@ public class nodePairReader implements IReader {
 				System.out.println("No file!");
 				return SumDataItems;
 			}
-			
+			if(startTime == endTime) {
+				
+				endTime += 86400000;
+			}
 			date1 = new Date(startTime);
 			date2 = new Date(endTime);
 		}
@@ -2367,15 +2373,15 @@ public class nodePairReader implements IReader {
 					SumDataItems.add1Data(parseTime((j+start)*3600, startDay), "0");
 				}
 				//对所有端口进行求和
-				int currentTrffic = 0;
+				double currentTrffic = 0;
 				for(String protocol:eachProtocol){
 					String[] proAndTraffic=protocol.split(":");
 					if(proAndTraffic.length < 1)
 						continue;
-					currentTrffic += Integer.parseInt(proAndTraffic[1]); //traffic
+					currentTrffic += Double.parseDouble(proAndTraffic[1]); //traffic
 				}
 				int index = SumDataItems.time.indexOf(time);
-				int lastTraffic = Integer.parseInt(SumDataItems.data.get(index));
+				double lastTraffic = Double.parseDouble(SumDataItems.data.get(index));
 				
 				SumDataItems.data.set(index,String.valueOf(currentTrffic+lastTraffic));
 			}

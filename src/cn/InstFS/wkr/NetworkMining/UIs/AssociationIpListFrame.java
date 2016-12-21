@@ -203,7 +203,7 @@ public class AssociationIpListFrame extends JFrame {
     
 	private void createTable()
 	{
-		String data[][]=new String[resultList.size()][3];
+		String data[][]=new String[resultList.size()][4];
 		for(int i=0;i<resultList.size();i++)
 		{
 			TaskCombination taskCom = resultList.get(i).getKey();
@@ -215,10 +215,11 @@ public class AssociationIpListFrame extends JFrame {
 				System.out.println("i:"+i);
 			data[i][0]= results.getIp();
 			data[i][1]= String.format("%5.3f",results.getConfidence());
-			data[i][2]=String.format("%5d",results.protocolPairList.size());
+			data[i][2]= String.format("%5.3f",results.getInf());
+			data[i][3]=String.format("%5d",results.protocolPairList.size());
 			
 		}
-	    String colNames[]={"ip","置信度","关联协议对数目"};
+	    String colNames[]={"ip","最大置信度","最大兴趣度","关联协议对数目"};
 	   
 	 
 	    DefaultTableModel model=new DefaultTableModel(data,colNames){

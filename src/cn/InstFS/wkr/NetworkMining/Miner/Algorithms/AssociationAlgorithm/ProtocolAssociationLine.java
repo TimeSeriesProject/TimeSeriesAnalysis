@@ -118,7 +118,7 @@ public class ProtocolAssociationLine {
 		        System.out.println("DPCluster聚类算法计算完毕！");
 		        System.out.println("***************************************************");
 			}
-			double max_confidence = 0.0;
+			double max_confidence = 0.0,max_inf = 0.0;
 			List<ProtoclPair> resultList = new ArrayList<ProtoclPair>();
 			for(int i = 0;i < linesList.size();i++)
 			{
@@ -145,10 +145,12 @@ public class ProtocolAssociationLine {
 					
 					int symbol = 1;
 					double sum_confidence = 0;
+					double sum_inf = 0.0;
 					for(Rule rule : findRules.rulesSet){
 						
 						symbol++;
 						sum_confidence += rule.con;
+						sum_inf += rule.inf;
 						ArrayList<LinePos> alp = new ArrayList<LinePos>();
 						if(rule.after.belong_series == i)   //子节点
 						{
@@ -194,20 +196,27 @@ public class ProtocolAssociationLine {
 						}
 						
 					}
+					pp.setInf(sum_inf/findRules.rulesSet.size());
 					pp.setConfidence(sum_confidence/(symbol-1));
 					pp.setMapAB(mapAB);
 					pp.setMapBA(mapBA);
 					pp.setLineDataItems1(lineList.get(j));
 					pp.setLineDataItems2(lineList.get(i));
 					resultList.add(pp);
-					
+					System.out.println(proDataList.get(i).getProtocolName()+" 与"+proDataList.get(j).getProtocolName()+"的置信度为："+
+							sum_confidence/(symbol-1)+" 兴趣度为："+sum_inf/findRules.rulesSet.size());
 					if(max_confidence < pp.confidence)
 						max_confidence = pp.confidence;
+					if(max_inf < pp.inf) {
+						max_inf = pp.inf;
+					}
 					symbolSeries.remove(j);
+					
 					System.out.println("*********************一轮结束****************************");
 				}
 			}
 			mr_fp_l.setConfidence(max_confidence);
+			mr_fp_l.setInf(max_inf);
 			mr_fp_l.protocolPairList = resultList;
 			mr_fp_l.setLinesList(linesPosList);
 			//找序列的关联信息

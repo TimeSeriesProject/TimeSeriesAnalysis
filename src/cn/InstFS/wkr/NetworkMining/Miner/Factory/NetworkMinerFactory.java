@@ -331,7 +331,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						allMiners.put(task, minerSim);
 					}
 					else {
-						System.out.println("对应任务没有完成。");
+						System.out.println("MiningMethods_SimilarityMining 对应任务没有完成。");
 					}
 						
 					break;
@@ -346,7 +346,9 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						minerFPLine.getResults().setInputData(taskCombination.getDataItems());
 						allMiners.put(task, minerFPLine);
 					}
-					
+					else {
+						System.out.println("MiningMethods_FrequenceItemMining 对应任务没有完成");
+					}
 					break;
 				default:
 					break;
@@ -513,7 +515,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 							break;
 						case MiningType_ProtocolAssociation:
 							retPro.put(task, miner.getResults().getRetProtocol());
-							//System.out.println(task.getName()+" has over");
+							System.out.println(task.getName()+" has over");
 							break;
 						case MiningType_Path:
 							retPath.put(task, miner.getResults().getRetPath());
