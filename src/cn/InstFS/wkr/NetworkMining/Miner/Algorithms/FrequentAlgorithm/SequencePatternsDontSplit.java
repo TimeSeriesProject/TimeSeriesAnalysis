@@ -46,13 +46,14 @@ public class SequencePatternsDontSplit {
 	private double threshold;
 	private boolean hasFreItems=false;
 
+	HashMap<String, Double> itemRatio;  //记录每个项的支持度 2016/12/21 添加
 	public SequencePatternsDontSplit(ParamsSM paramsSM) {
 		
 		this.winSize=paramsSM.getSMparam().getSizeWindow();
 		this.stepSize=paramsSM.getSMparam().getStepWindow();
 		this.threshold=paramsSM.getSMparam().getMinSupport();
 		patternsSupDegree=new HashMap<ArrayList<String>, Integer>();
-		
+		itemRatio = new HashMap<String, Double>();
 	}
 	public SequencePatternsDontSplit(DataItems dataItems, TaskElement task,
 			List<ArrayList<String>> patterns,ParamsSM paramsSM) {
@@ -60,6 +61,7 @@ public class SequencePatternsDontSplit {
 		this.task = task;
 		this.patterns = patterns;
 		patternsSupDegree=new HashMap<ArrayList<String>, Integer>();
+		itemRatio = new HashMap<String, Double>();
 		
 		this.winSize=paramsSM.getSMparam().getSizeWindow();
 		this.stepSize=paramsSM.getSMparam().getStepWindow();
@@ -120,11 +122,16 @@ public class SequencePatternsDontSplit {
 		for(int i = 0;i < sequenceResult.size();i++)
 		{
 			int degree=supportDegree.get(sequenceResult.get(i));
+			double support = 0.0;
+			if(itemRatio.containsKey(sequenceResult.get(i))) {
+				support = itemRatio.get(sequenceResult.get(i));
+			}
+				
 			ArrayList<String> items = new ArrayList<String>();
 			String[] sample = sequenceResult.get(i).split(",");
 			for(int j = 0;j < sample.length;j++)
 			{
-				items.add(sample[j]);
+				items.add(sample[j]+","+String.valueOf(support));
 			}
 			patternResult.add(items);
 			patternsSupDegree.put(items,degree);
@@ -202,11 +209,13 @@ public class SequencePatternsDontSplit {
 			}
 			
 		}
+		
 		if(asi_list.size()*1.0 > thresh)
 		{
 			hasFreItems=true;
 			position.put(first_item+","+last_item, asi_list);
 			supportDegree.put(first_item+","+last_item, asi_list.size());
+			itemRatio.put(first_item+","+last_item, asi_list.size()*1.0/ps.size());
 			return true;
 		}
 		return false;
@@ -249,10 +258,11 @@ public class SequencePatternsDontSplit {
 				len = index + item.length();
 				labelPosition.add(index);
 			}
-			if(labelPosition.size()>= thresh)
+			itemRatio.put(item, labelPosition.size()*1.0/dataItems.getLength());
+			if(labelPosition.size() >= thresh) {
 				position.put(item, labelPosition);
-			else
-			{
+			}
+			else {
 				basicSequence.remove(i);
 				i--;
 				if(i < 0)
