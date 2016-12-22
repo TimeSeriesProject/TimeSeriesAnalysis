@@ -152,7 +152,7 @@ public class TaskElement extends JDialog implements Serializable, Comparable<Tas
 		TSAExample1.setFilterCondition("流量>100");
 		TSAExample1.setGranularity(3600);
 		TSAExample1.setMiningMethod(MiningMethod.MiningMethods_OutliesMining);
-		TSAExample1.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
+//		TSAExample1.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
 		TSAExample1.setDataSource("File");
 		TSAExample1.setSourcePath("./configs/real-1-37.csv");
 		TSAExample1.setDiscreteMethod(DiscreteMethod.None);
