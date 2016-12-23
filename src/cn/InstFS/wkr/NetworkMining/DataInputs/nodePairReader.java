@@ -1616,10 +1616,10 @@ public class nodePairReader implements IReader {
 						
 						DataItems dataItems=new DataItems();
 						//补第一个数据之前的0
-						for(int i=start;i<timeSpan;i++)
+						/*for(int i=start;i<timeSpan;i++)
 						{
 							dataItems.add1Data(parseTime(i*3600, startDay), "0");
-						}
+						}*/
 						dataItems.add1Data(time, proAndTraffic[1]);
 						protocolDataItems.put(proAndTraffic[0], dataItems);
 					}
@@ -1742,7 +1742,7 @@ public class nodePairReader implements IReader {
 			while((line=textUtils.readByrow())!=null){
 //				System.out.println(line);
 				String[] items=line.split(",");
-				int timeSpan=Integer.parseInt(items[0]) + 24*k;
+				int timeSpan=Integer.parseInt(items[0]) + 24*k; // 距离配置起始日startDay的小时数
 				Date time=parseTime(timeSpan*3600, startDay);
 //				System.out.println(timeSpan*3600*1000);
 //				long xyz = timeSpan*1000*3600 + startDay;
@@ -1770,7 +1770,7 @@ public class nodePairReader implements IReader {
 							System.out.println("异常文件path:"+filePath+"\\"+ fileName);
 							throw new RuntimeException("读入文件发生时间错位");
 						}
-						else if(dataItem.getTime().before(time)){
+						else if(dataItem.getTime().before(time)){ // 比与原有DataItems最后项时间点更后，则中间时间点次数补0
 							Date addtime=DataPretreatment.getDateAfter(dataItem.getTime(),3600*1000);
 							while(!addtime.toString().equals(time.toString())&&addtime.before(time)){
 								dataItems.add1Data(addtime,"0");
@@ -1778,19 +1778,19 @@ public class nodePairReader implements IReader {
 							}
 							dataItems.add1Data(addtime, proAndTraffic[2]);
 						}
-						else{
+						else{ // 与原有DataItems最后项为同一小时时间点，则次数相加
 							int times=Integer.parseInt(dataItem.getData());
 							//int addTimes=Integer.parseInt(proAndTraffic[2]);
 							int addTimes=Integer.parseInt(proAndTraffic[2]);
 							dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
 							
 						}
-					}else{
+					}else{ // 首次添加该协议
 						DataItems dataItems=new DataItems();
-						for(int i=start;i<timeSpan;i++)
+						/*for(int i=start;i<timeSpan;i++) // 设定起始时间与真实有数据时间之间补0
 						{
 							dataItems.add1Data(parseTime(start, startDay), "0");
-						}
+						}*/
 						dataItems.add1Data(time, proAndTraffic[2]);
 						protocolDataItems.put(protocol, dataItems);
 					}
@@ -1934,20 +1934,20 @@ public class nodePairReader implements IReader {
 //							for(int i=indexs.get(0);i>start;i--){
 //								dataItems.add1Data(parseTime((timeSpan-i)*3600), "0");
 //							}
-							for(int i=start;i<timeSpan;i++)
+							/*for(int i=start;i<timeSpan;i++)
 							{
 								dataItems.add1Data(parseTime(i,startDay), "0");
-							}
+							}*/
 							dataItems.add1Data(time, proAndTraffic[1]);
 							protocolDataItems.put(proAndTraffic[0], dataItems);
 						}
 					}else{
 						Map<String, DataItems> dataItemsMap=new HashMap<String, DataItems>();
 						DataItems dataItems=new DataItems();
-						for(int i=start;i<timeSpan;i++)
+						/*for(int i=start;i<timeSpan;i++)
 						{
 							dataItems.add1Data(parseTime(i,startDay), "0");
-						}
+						}*/
 						dataItems.add1Data(time, proAndTraffic[1]);
 						dataItemsMap.put(proAndTraffic[0], dataItems);
 						ipPairProtocolDataItems.put(ipPair, dataItemsMap);
@@ -2090,10 +2090,10 @@ public class nodePairReader implements IReader {
 //							for(int i=rows-1;i>=0;i--){
 //								dataItems.add1Data(parseTime(timeSpan-i), "0");
 //							}
-							for(int i=start;i<timeSpan;i++)
+							/*for(int i=start;i<timeSpan;i++)
 							{
 								dataItems.add1Data(parseTime(i,startDay), "0");
-							}
+							}*/
 							dataItems.add1Data(time, proAndTraffic[2]);
 							protocolDataItems.put(proAndTraffic[0], dataItems);
 						}
@@ -2103,10 +2103,10 @@ public class nodePairReader implements IReader {
 //						for(int i=indexs.get(0);i>start;i--){
 //							dataItems.add1Data(parseTime((timeSpan-i)*3600), "0");
 //						}
-						for(int i=start;i<timeSpan;i++)
+						/*for(int i=start;i<timeSpan;i++)
 						{
 							dataItems.add1Data(parseTime(i,startDay), "0");
-						}
+						}*/
 						dataItems.add1Data(time, proAndTraffic[2]);
 						dataItemsMap.put(proAndTraffic[0], dataItems);
 						ipPairProtocolDataItems.put(ipPair, dataItemsMap);

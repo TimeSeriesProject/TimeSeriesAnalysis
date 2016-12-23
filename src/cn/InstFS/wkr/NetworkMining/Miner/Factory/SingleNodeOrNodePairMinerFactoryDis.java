@@ -3,6 +3,8 @@ package cn.InstFS.wkr.NetworkMining.Miner.Factory;
 import Distributed.TaskCombinationList;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import common.ErrorLogger;
@@ -261,16 +263,18 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
         task.setRange(ipOrPair.replace('-', ','));
         task.setDiscreteMethod(DiscreteMethod.None);
         task.setMiningMethod(method);
+
+        AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_SinglenodeOrNodePair, taskRange);
         String name=null;
         switch (method) {
             case MiningMethods_OutliesMining:
-                task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
+                task.setMiningAlgo(chooser.getOmAlgo());
                 name=ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_异常检测_auto";
                 task.setTaskName(name);
                 task.setComments("挖掘  "+ipOrPair+" 上,协议"+protocol+"的异常");
                 break;
             case MiningMethods_PeriodicityMining:
-                task.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
+                task.setMiningAlgo(chooser.getPmAlgo());
                 name = ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_周期挖掘_auto";
                 task.setTaskName(name);
                 task.setComments("挖掘  "+ipOrPair+",粒度为"+granularity+"s 的协议"+protocol+"的周期规律");
@@ -291,6 +295,7 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
                 task.setComments("挖掘  "+ipOrPair+" 上,协议为"+protocol+"的局部周期");
                 break;
             case MiningMethods_PredictionMining:
+                task.setMiningAlgo(chooser.getFmAlgo());
                 name=ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_预测_auto";
                 task.setTaskName(name);
                 task.setComments("预测  "+ipOrPair+" 上,协议为"+protocol+"的未来趋势");

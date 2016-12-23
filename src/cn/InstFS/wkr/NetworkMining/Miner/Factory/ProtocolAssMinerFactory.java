@@ -150,16 +150,18 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 		task.setRange(ip);
 		task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
 		task.setDiscreteMethod(DiscreteMethod.None);
+
+		AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_ProtocolAssociation, taskRange);
 		String name;
 		switch (method) {
 		case MiningMethods_FrequenceItemMining:
-			task.setMiningAlgo(MiningAlgo.MiningAlgo_LineProtocolASS);
+			task.setMiningAlgo(chooser.getProAssAlgo());
 			name = ip+"之间关联规则挖掘";
 			task.setTaskName(name);
 			task.setComments(ip+"之间关于 "+miningObject.toString()+" 的多元关联规律");
 			break;
 		case MiningMethods_SimilarityMining:
-			task.setMiningAlgo(MiningAlgo.MiningAlgo_RtreeProtocolASS);
+			task.setMiningAlgo(chooser.getSimAlgo());
 			name = ip+"之间关联规则挖掘";
 			task.setTaskName(name);
 			task.setComments(ip+"之间关于 "+miningObject.toString()+" 的相似度挖掘");
