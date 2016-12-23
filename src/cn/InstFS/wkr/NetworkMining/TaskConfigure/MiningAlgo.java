@@ -38,11 +38,11 @@ public enum MiningAlgo {
 	}
 	
 	public static MiningAlgo fromString(String str){
-		if (str.equals(MiningAlgo_averageEntropyPM.toString()))
+		if (str.equals(MiningAlgo_averageEntropyPM.toString())) // 周期
 			return MiningAlgo_averageEntropyPM;
 		else if (str.equals(MiningAlgo_ERPDistencePM.toString()))
 			return MiningAlgo_ERPDistencePM;
-		else if(str.equals(MiningAlgo_ARTSA.toString())){
+		else if(str.equals(MiningAlgo_ARTSA.toString())){ // 异常
 			return MiningAlgo_ARTSA;
 		}else if(str.equals(MiningAlgo_FastFourier.toString())){
 			return MiningAlgo_FastFourier;
@@ -50,11 +50,20 @@ public enum MiningAlgo {
 			return MiningAlgo_GaussDetection;
 		}else if(str.equals(MiningAlgo_Muitidimensional.toString())){
 			return MiningAlgo_Muitidimensional;
-		}else if(str.equals(MiningAlgo_NeuralNetworkTSA.toString())){
+		} else if (str.equals(MiningAlgo_NodeOutlierDetection.toString())) {
+			return MiningAlgo_NodeOutlierDetection;
+		}else if(str.equals(MiningAlgo_NeuralNetworkTSA.toString())){ //预测
 			return MiningAlgo_NeuralNetworkTSA;
 		}else if(str.equals(MiningAlgo_ARIMATSA.toString())){
 			return MiningAlgo_ARIMATSA;
-		}else{
+		}else if (str.equals(MiningAlgo_LineProtocolASS.toString())) {// 多业务关联
+			return MiningAlgo_LineProtocolASS;
+		} else if (str.equals(MiningAlgo_SimilarityProtocolASS.toString())){// 多元序列相似度
+			return MiningAlgo_SimilarityProtocolASS;
+		} else if (str.equals(MiningAlgo_RtreeProtocolASS.toString())) {
+			return MiningAlgo_RtreeProtocolASS;
+		}
+		else{
 			return MiningAlgo_NULL;
 		}
 	}
