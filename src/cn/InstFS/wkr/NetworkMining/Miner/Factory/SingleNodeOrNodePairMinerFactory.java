@@ -30,8 +30,8 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	
 	private SingleNodeOrNodePairMinerFactory(String minertype){
 		super(minertype);
-		dataPath = GlobalConfig.getInstance().getDataPath() + "\\traffic";
-		rootPath = GlobalConfig.getInstance().getDataPath() + "\\node";
+		dataPath = GlobalConfig.getInstance().getDataPath();
+		rootPath = GlobalConfig.getInstance().getDataPath();
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Times);
 		miningObjectList.add(MiningObject.MiningObject_Traffic);
@@ -95,10 +95,10 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 		File dataDirectory = null;
 		if(MiningObject.MiningObject_NodeDisapearEmerge.toString().equals(miningObject.toString()))
 		{
-			dataDirectory = new File(rootPath);
+			dataDirectory = new File(rootPath + "\\node");
 		}
 		else{
-			dataDirectory = new File(dataPath);
+			dataDirectory = new File(dataPath + "\\traffic");
 		}
 		
 		nodePairReader reader=new nodePairReader();

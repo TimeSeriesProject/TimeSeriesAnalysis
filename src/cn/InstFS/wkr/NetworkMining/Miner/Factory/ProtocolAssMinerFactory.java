@@ -30,7 +30,7 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 	public static Map<String,DataItems> rawDataList;
 	ProtocolAssMinerFactory(){
 		super(MinerType.MiningType_ProtocolAssociation.toString());
-		dataPath = GlobalConfig.getInstance().getDataPath() + "\\trafficDiff";
+		dataPath = GlobalConfig.getInstance().getDataPath();
 
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Traffic);
@@ -84,7 +84,7 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 	}
 	
 	public void detect(){
-		File dataDirectory=new File(dataPath);
+		File dataDirectory=new File(dataPath + "\\traffic");
 		nodePairReader reader=new nodePairReader();
 		int granularity= Integer.parseInt(getGranularity());
 		if(dataDirectory.isFile()){

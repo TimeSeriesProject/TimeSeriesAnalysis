@@ -9,9 +9,6 @@ import java.util.Map.Entry;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import Distributed.TaskCombinationList;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
-import weka.gui.beans.Startable;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -29,7 +26,7 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
 
     ProtocolAssMinerFactoryDis(){
         super(MinerType.MiningType_ProtocolAssociation.toString());
-        dataPath = GlobalConfig.getInstance().getDataPath() + "\\trafficDiff";
+        dataPath = GlobalConfig.getInstance().getDataPath();
 
         List<MiningObject> miningObjectList = this.getMiningObjectList();
         miningObjectList.add(MiningObject.MiningObject_Traffic);
@@ -83,7 +80,7 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
     }
 
     public void detect(){
-        File dataDirectory=new File(dataPath);
+        File dataDirectory=new File(dataPath + "\\traffic");
         nodePairReader reader=new nodePairReader();
         int granularity= Integer.parseInt(getGranularity());
         if(dataDirectory.isFile()){
@@ -263,7 +260,7 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
     //有待解决，总共36个
     public int getCount(ArrayList<String> list){
 
-        File dataDirectory=new File(dataPath);
+        File dataDirectory=new File(dataPath + "\\traffic");
         nodePairReader reader=new nodePairReader();
         int granularity= Integer.parseInt(getGranularity());
         if(dataDirectory.isFile()){

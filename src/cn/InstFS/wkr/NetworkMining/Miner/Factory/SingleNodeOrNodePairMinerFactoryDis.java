@@ -7,8 +7,6 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
-import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import common.ErrorLogger;
 
 
@@ -32,8 +30,8 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
 
     private SingleNodeOrNodePairMinerFactoryDis(String minertype){
         super(minertype);
-        dataPath = GlobalConfig.getInstance().getDataPath() + "\\traffic";
-        rootPath = GlobalConfig.getInstance().getDataPath() + "\\node";
+        dataPath = GlobalConfig.getInstance().getDataPath();
+        rootPath = GlobalConfig.getInstance().getDataPath();
         List<MiningObject> miningObjectList = this.getMiningObjectList();
         miningObjectList.add(MiningObject.MiningObject_Times);
         miningObjectList.add(MiningObject.MiningObject_Traffic);
@@ -97,10 +95,10 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
         File dataDirectory = null;
         if(MiningObject.MiningObject_NodeDisapearEmerge.toString().equals(miningObject.toString()))
         {
-            dataDirectory = new File(rootPath);
+            dataDirectory = new File(rootPath + "\\node");
         }
         else{
-            dataDirectory = new File(dataPath);
+            dataDirectory = new File(dataPath + "\\traffic");
         }
 
         nodePairReader reader=new nodePairReader();
@@ -269,8 +267,6 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
         AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_SinglenodeOrNodePair, taskRange);
         String name=null;
 
-        AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_SinglenodeOrNodePair, taskRange);
-
         switch (method) {
             case MiningMethods_OutliesMining:
                 task.setMiningAlgo(chooser.getOmAlgo());
@@ -339,10 +335,10 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
         File dataDirectory = null;
         if(MiningObject.MiningObject_NodeDisapearEmerge.toString().equals(miningObject.toString()))
         {
-            dataDirectory = new File(rootPath);
+            dataDirectory = new File(rootPath + "\\node");
         }
         else{
-            dataDirectory = new File(dataPath);
+            dataDirectory = new File(dataPath + "\\traffic");
         }
 
         nodePairReader reader=new nodePairReader();

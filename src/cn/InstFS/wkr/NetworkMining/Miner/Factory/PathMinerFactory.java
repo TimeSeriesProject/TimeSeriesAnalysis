@@ -25,7 +25,7 @@ public class PathMinerFactory extends MinerFactorySettings{
 	
 	private PathMinerFactory(){
 		super(MinerType.MiningType_Path.toString());
-		dataPath = GlobalConfig.getInstance().getDataPath() + "\\route";
+		dataPath = GlobalConfig.getInstance().getDataPath();
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Times);
 		miningObjectList.add(MiningObject.MiningObject_Traffic);
@@ -75,7 +75,7 @@ public class PathMinerFactory extends MinerFactorySettings{
 			return;
 		isMining=true;
 		
-		File dataDirectory=new File(dataPath);
+		File dataDirectory=new File(dataPath + "\\route");
 		nodePairReader reader=new nodePairReader();
 		if(dataDirectory.isFile()){
 			parseFile(dataDirectory,reader);

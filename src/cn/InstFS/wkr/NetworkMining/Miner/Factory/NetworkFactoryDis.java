@@ -48,7 +48,7 @@ public class NetworkFactoryDis extends MinerFactorySettings {
     }
     NetworkFactoryDis(){
         super(MinerType.MiningTypes_WholeNetwork.toString());
-        dataPath = GlobalConfig.getInstance().getDataPath() + "\\route";
+        dataPath = GlobalConfig.getInstance().getDataPath();
         List<MiningObject> miningObjectList = this.getMiningObjectList();
         miningObjectList.add(MiningObject.MiningObject_Cluster);
         miningObjectList.add(MiningObject.MiningObject_Diameter);
@@ -73,7 +73,7 @@ public class NetworkFactoryDis extends MinerFactorySettings {
             return;
         isMining=true;
         TaskElement task = new TaskElement();
-        task.setSourcePath(dataPath);
+        task.setSourcePath(dataPath + "\\route");
         int granularity = Integer.parseInt(this.getGranularity());
         task.setGranularity(granularity);
         task.setMiningObject(miningObject.toString());
