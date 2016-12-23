@@ -6,7 +6,8 @@ package cn.InstFS.wkr.NetworkMining.Miner.Factory;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
-
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import Distributed.TaskCombinationList;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
@@ -214,15 +215,18 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
         task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
         task.setDiscreteMethod(DiscreteMethod.None);
         String name;
+
+        AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_ProtocolAssociation, taskRange);
+
         switch (method) {
             case MiningMethods_FrequenceItemMining:
-                task.setMiningAlgo(MiningAlgo.MiningAlgo_LineProtocolASS);
+                task.setMiningAlgo(chooser.getProAssAlgo());
                 name=ip+"_多元时间序列挖掘"+miningObject.toString()+"_auto";
                 task.setTaskName(name);
                 task.setComments("挖掘  ip为"+ip+" 序列上"+miningObject.toString()+"的多元关联规律");
                 break;
             case MiningMethods_SimilarityMining:
-                task.setMiningAlgo(MiningAlgo.MiningAlgo_RtreeProtocolASS);
+                task.setMiningAlgo(chooser.getSimAlgo());
                 name=ip+"_时间序列相似度挖掘"+miningObject.toString()+"_auto";
                 task.setTaskName(name);
                 task.setComments("挖掘  ip为"+ip+" 序列上"+miningObject.toString()+"的相似度挖掘");

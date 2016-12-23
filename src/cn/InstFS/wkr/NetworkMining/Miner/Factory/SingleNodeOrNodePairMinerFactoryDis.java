@@ -7,6 +7,8 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import common.ErrorLogger;
 
 
@@ -266,6 +268,9 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
 
         AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_SinglenodeOrNodePair, taskRange);
         String name=null;
+
+        AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_SinglenodeOrNodePair, taskRange);
+
         switch (method) {
             case MiningMethods_OutliesMining:
                 task.setMiningAlgo(chooser.getOmAlgo());
