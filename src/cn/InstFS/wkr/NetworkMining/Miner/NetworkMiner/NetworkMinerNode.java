@@ -339,6 +339,20 @@ class NodeTimerTask extends TimerTask{
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_PredictionMining:
+				List<Date> time = dataItems.getTime();
+				List<String> data = dataItems.getData();
+				List<Date> tTime = new ArrayList<>();
+				List<String> tData = new ArrayList<>();
+
+				for (int i=0; i<dataItems.getLength()-20; i++) {
+					tTime.add(time.get(i));
+					tData.add(data.get(i));
+				}
+				DataItems tDataItems = new DataItems();
+				tDataItems.setData(tData);
+				tDataItems.setTime(tTime);
+				dataItems = tDataItems;
+
 				if (task.getMiningAlgo() != null) {
 					switch (task.getMiningAlgo()) {
 						case MiningAlgo_NeuralNetworkTSA:
