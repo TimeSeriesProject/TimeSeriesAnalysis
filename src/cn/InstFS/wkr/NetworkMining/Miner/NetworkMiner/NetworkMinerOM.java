@@ -169,7 +169,7 @@ class OMTimerTask extends TimerTask{
 			((FastFourierOutliesDetection)tsaMethod).setVarK(2.5);
 		}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_GaussDetection)){
 			tsaMethod=new AnormalyDetection(dataItems);
-		}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_TEOTSA)) {
+		}else if (task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_Muitidimensional)) {
 			//tsaMethod=new TEOPartern(dataItems, 4, 4, 7);
 			//tsaMethod=new MultidimensionalOutlineDetection(dataItems);
 			tsaMethod=new PointPatternDetection(dataItems,2,10);

@@ -266,16 +266,25 @@ class NodeTimerTask extends TimerTask{
 			dimension = Math.max(task.getDiscreteDimension(), dataItems.getDiscretizedDimension());
 			IMinerPM pmMethod=null;
 			IMinerOM tsaMethod=null;
+			IMinerFM forecastMethod = null;
 			switch (task.getMiningMethod()) {
 			case MiningMethods_PeriodicityMining:
 				PMparam pMparam = ParamsAPI.getInstance().getParamsPeriodMiner().getPmparam();
-				if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_averageEntropyPM)){
-					pmMethod=new averageEntropyPM(task, dimension,pMparam);//添加参数
-				}else if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
-					pmMethod=new ERPDistencePM(pMparam);
-				}else{
-					throw new RuntimeException("方法不存在！");
+				if (task.getMiningAlgo()!= null ) { // 不为空时，自定义算法，否则自动选择
+					switch (task.getMiningAlgo()) {
+						case MiningAlgo_averageEntropyPM:
+							pmMethod = new averageEntropyPM(task, dimension,pMparam);//添加参数
+							break;
+						case MiningAlgo_ERPDistencePM:
+							pmMethod=new ERPDistencePM(pMparam);
+							break;
+						default:
+							throw new RuntimeException("方法不存在！");
+					}
+				} else { // 周期检测默认ERP
+					pmMethod = new ERPDistencePM(pMparam);
 				}
+
 				pmMethod.setOriginDataItems(dataItems);
 				if(task.getDiscreteMethod().equals(DiscreteMethod.None))
 		    		dataItems=DataPretreatment.normalization(dataItems);
@@ -284,54 +293,64 @@ class NodeTimerTask extends TimerTask{
 				setPMResults(results, pmMethod);
 				break;
 			case MiningMethods_OutliesMining:
-				if(task.getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())){
-					tsaMethod = new GaussianOutlierDetection(dataItems);
-					results.getRetNode().getRetOM().setIslinkDegree(true);
-				}else {				
-					if(results.getRetNode().getRetPM().getHasPeriod()){
-						tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+				if (task.getMiningAlgo()!= null ) { // 不为空时，自定义算法，否则自动选择
+					switch (task.getMiningAlgo()) {
+						case MiningAlgo_GaussDetection:
+							tsaMethod = new AnormalyDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(false);
+							break;
+						case MiningAlgo_FastFourier:
+							tsaMethod=new FastFourierOutliesDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(false);
+							break;
+						case MiningAlgo_Muitidimensional:
+							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(true);
+							break;
+						case MiningAlgo_NodeOutlierDetection:
+							tsaMethod = new GaussianOutlierDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(true);
+							break;
+						default:
+							throw new RuntimeException("方法不存在！");
+					}
+				} else { // 异常检测默认
+					if(task.getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())){
+						tsaMethod = new GaussianOutlierDetection(dataItems);
 						results.getRetNode().getRetOM().setIslinkDegree(true);
-						tsaMethod.TimeSeriesAnalysis();
-						setOMResults(results, tsaMethod);
-						/*************************异常算法测试结果输出**********************/
-						String retPath = "result/outlierTest2.txt";
-						OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
-						outliersTest.evaluatIndicator2();
-						outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
-						System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());
-						/*****************************测试结束************************/
-					}else{
-//						tsaMethod = new AnormalyDetection(dataItems);
-						tsaMethod = new AnomalyGaussVerification(dataItems);
-						results.getRetNode().getRetOM().setIslinkDegree(false);
-						tsaMethod.TimeSeriesAnalysis();
-						setOMResults(results, tsaMethod);
-						/*************************异常算法测试结果输出**********************/
-						String retPath = "result/outlierTest.txt";
-						OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
-						outliersTest.evaluatIndicator();
-						outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
-						System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());
-						/*****************************测试结束************************/
+					}else {
+						if(results.getRetNode().getRetPM().getHasPeriod()){
+							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(true);
+							tsaMethod.TimeSeriesAnalysis();
+							setOMResults(results, tsaMethod);
+							/*************************异常算法测试结果输出**********************/
+							String retPath = "result/outlierTest2.txt";
+							OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
+							outliersTest.evaluatIndicator2();
+							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
+							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());
+							/*****************************测试结束************************/
+						}else{
+							tsaMethod = new AnormalyDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(false);
+							tsaMethod.TimeSeriesAnalysis();
+							setOMResults(results, tsaMethod);
+							/*************************异常算法测试结果输出**********************/
+							String retPath = "result/outlierTest.txt";
+							OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
+							outliersTest.evaluatIndicator();
+							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
+							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());
+							/*****************************测试结束************************/
+						}
+
 					}
 					
 				}
 								
 				/*tsaMethod.TimeSeriesAnalysis();
 				setOMResults(results, tsaMethod);*/
-				
-				/*************************异常算法测试结果输出**********************/
-				/*String retPath = null;
-				if(results.getRetNode().getRetPM().getHasPeriod()){
-					retPath = "result/outlierTest.txt";
-				}else{
-					retPath = "result/outlierTest2.txt";
-				}
-				OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
-				outliersTest.evaluatIndicator();
-				outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
-				System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
-				/*****************************测试结束************************/
 				break;
 			case MiningMethods_Statistics:
 
@@ -341,51 +360,70 @@ class NodeTimerTask extends TimerTask{
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_PredictionMining:
-				MinerResultsPM resultsPM = results.getRetNode().getRetPM();
-				if (resultsPM.getHasPeriod()) { // 若有周期性
-					DataItems predictItems = new DataItems();
-					DataItems periodDi = resultsPM.getDistributePeriod();
+				List<Date> time = dataItems.getTime();
+				List<String> data = dataItems.getData();
+				List<Date> tTime = new ArrayList<>();
+				List<String> tData = new ArrayList<>();
 
-					Calendar calendar=Calendar.getInstance();
-					calendar.setTime(dataItems.getLastTime());
-					int len = dataItems.getLength();
-					for(int i = 0; i< periodDi.getLength()/2; i++){
-						int index = (int) ((i+len) % resultsPM.getPeriod());
-						calendar.add(Calendar.SECOND, task.getGranularity());
-						predictItems.add1Data(calendar.getTime(), periodDi.getData().get(index)+"");
+				for (int i=0; i<dataItems.getLength()-20; i++) {
+					tTime.add(time.get(i));
+					tData.add(data.get(i));
+				}
+				DataItems tDataItems = new DataItems();
+				tDataItems.setData(tData);
+				tDataItems.setTime(tTime);
+				dataItems = tDataItems;
+
+				if (task.getMiningAlgo() != null) {
+					switch (task.getMiningAlgo()) {
+						case MiningAlgo_NeuralNetworkTSA:
+							forecastMethod =new NeuralNetwork(dataItems, task,
+									ParamsAPI.getInstance().getParamsPrediction().getNnp());
+							break;
+						case MiningAlgo_ARIMATSA:
+							forecastMethod =new ARIMATSA(task, dataItems,
+							ParamsAPI.getInstance().getParamsPrediction().getAp());
+							break;
+						default:
+							throw new RuntimeException("方法不存在！");
 					}
+					System.out.println(task.getTaskName()+" forecast start");
+					forecastMethod.TimeSeriesAnalysis();
+					System.out.println(task.getTaskName()+" forecast over");
+					setForecastResult(results, forecastMethod);
+				} else {
+					MinerResultsPM resultsPM = results.getRetNode().getRetPM();
+					if (resultsPM.getHasPeriod()) { // 若有周期性
+						DataItems predictItems = new DataItems();
+						DataItems periodDi = resultsPM.getDistributePeriod();
 
-					results.getRetNode().getRetFM().setPredictItems(predictItems);
-				} /*else if (task.getMiningObject().equals("结点出现消失")){	// 无周期的结点出现消失规律应用神经网络挖掘
-					NeuralNetwork forecast=new NeuralNetwork(dataItems, task,
-							ParamsAPI.getInstance().getParamsPrediction().getNnp());
-					System.out.println(task.getTaskName()+" forecast start");
-					forecast.TimeSeriesAnalysis();
-					System.out.println(task.getTaskName()+" forecast over");
-					setForecastResult(results, forecast);
-				} *//*else {
-					NeuralNetwork forecast=new NeuralNetwork(dataItems, task,
-							ParamsAPI.getInstance().getParamsPrediction().getNnp());
-					System.out.println(task.getTaskName()+" forecast start");
-					forecast.TimeSeriesAnalysis();
-					System.out.println(task.getTaskName()+" forecast over");
-					setForecastResult(results, forecast);
-				}*/else{
-					SMForecast forecast=new SMForecast(clusterItems, sequencePattern.getPatterns(),
-							sequencePattern.getPatternsSupDegree(), WavCluster.clusterCentroids,
-							task, oriDataItems);
-					System.out.println(task.getTaskName()+" forecast start");
-					forecast.TimeSeriesAnalysis();
-					System.out.println(task.getTaskName()+" forecast over");
-					if(forecast.getPredictItems()==null||forecast.getPredictItems().getLength()<=0){
-						NeuralNetwork workforecast=new NeuralNetwork(dataItems, task,
-								ParamsAPI.getInstance().getParamsPrediction().getNnp());
+						Calendar calendar=Calendar.getInstance();
+						calendar.setTime(dataItems.getLastTime());
+						int len = dataItems.getLength();
+						for(int i = 0; i< periodDi.getLength()/2; i++){
+							int index = (int) ((i+len) % resultsPM.getPeriod());
+							calendar.add(Calendar.SECOND, task.getGranularity());
+							predictItems.add1Data(calendar.getTime(), periodDi.getData().get(index)+"");
+						}
+
+						results.getRetNode().getRetFM().setPredictItems(predictItems);
+					} else{
+						SMForecast forecast=new SMForecast(clusterItems, sequencePattern.getPatterns(),
+								sequencePattern.getPatternsSupDegree(), WavCluster.clusterCentroids,
+								task, oriDataItems);
 						System.out.println(task.getTaskName()+" forecast start");
-						workforecast.TimeSeriesAnalysis();
+						forecast.TimeSeriesAnalysis();
 						System.out.println(task.getTaskName()+" forecast over");
-						setForecastResult(results, workforecast);
-					}else{
-				    	setForecastResult(results, forecast);
+						if(forecast.getPredictItems()==null||forecast.getPredictItems().getLength()<=0){
+							NeuralNetwork workforecast=new NeuralNetwork(dataItems, task,
+									ParamsAPI.getInstance().getParamsPrediction().getNnp());
+							System.out.println(task.getTaskName()+" forecast start");
+							workforecast.TimeSeriesAnalysis();
+							System.out.println(task.getTaskName()+" forecast over");
+							setForecastResult(results, workforecast);
+						}else{
+							setForecastResult(results, forecast);
+						}
 					}
 				}
 				break;

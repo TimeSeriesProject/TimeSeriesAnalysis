@@ -3,6 +3,8 @@ package cn.InstFS.wkr.NetworkMining.Miner.Factory;
 import Distributed.TaskCombinationList;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 
@@ -22,7 +24,7 @@ public class PathMinerFactoryDis extends MinerFactorySettings{
 
     private PathMinerFactoryDis(){
         super(MinerType.MiningType_Path.toString());
-        dataPath = GlobalConfig.getInstance().getDataPath() + "\\route";
+        dataPath = GlobalConfig.getInstance().getDataPath();
         List<MiningObject> miningObjectList = this.getMiningObjectList();
         miningObjectList.add(MiningObject.MiningObject_Times);
         miningObjectList.add(MiningObject.MiningObject_Traffic);
@@ -72,7 +74,7 @@ public class PathMinerFactoryDis extends MinerFactorySettings{
             return;
         isMining=true;
 
-        File dataDirectory=new File(dataPath);
+        File dataDirectory=new File(dataPath + "\\route");
         nodePairReader reader=new nodePairReader();
         if(dataDirectory.isFile()){
             parseFile(dataDirectory,reader);
@@ -131,16 +133,18 @@ public class PathMinerFactoryDis extends MinerFactorySettings{
         task.setRange(fileName.substring(0, fileName.lastIndexOf(".")));
         task.setGranularity(Integer.parseInt(getGranularity()));
 
+        AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_Path, taskRange);
+
         String taskName = null;
         switch (method) {
             case MiningMethods_PeriodicityMining:
-                task.setMiningAlgo(MiningAlgo.MiningAlgo_ERPDistencePM);
+                task.setMiningAlgo(chooser.getPmAlgo());
                 taskName = fileName + "_路径_"+miningObject.toString()+"_周期挖掘_auto";
                 task.setTaskName(taskName);
                 task.setComments("ip为"+file.getName()+"的路径"+miningObject.toString()+"周期规律挖掘");
                 break;
             case MiningMethods_OutliesMining:
-                task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
+                task.setMiningAlgo(chooser.getOmAlgo());
                 taskName = fileName + "_路径_" + miningObject.toString() + "_异常检测_auto";
                 task.setTaskName(taskName);
                 task.setComments("ip为"+file.getName()+"的路径"+ miningObject.toString()+"异常检测");
@@ -151,6 +155,7 @@ public class PathMinerFactoryDis extends MinerFactorySettings{
                 task.setComments("ip为"+file.getName()+"的路径"+ miningObject.toString()+"统计");
                 break;
             case MiningMethods_PredictionMining:
+                task.setMiningAlgo(chooser.getFmAlgo());
                 taskName = fileName + "路径" + miningObject.toString() + "_预测_auto";
                 task.setTaskName(taskName);
                 task.setComments("ip为"+file.getName()+"的路径"+ miningObject.toString()+"预测");
@@ -221,7 +226,7 @@ public class PathMinerFactoryDis extends MinerFactorySettings{
             return list.size();
         isMining=true;
 
-        File dataDirectory=new File(dataPath);
+        File dataDirectory=new File(dataPath + "\\route");
         nodePairReader reader=new nodePairReader();
         if(dataDirectory.isFile()){
             parseFile2(dataDirectory,reader,list);

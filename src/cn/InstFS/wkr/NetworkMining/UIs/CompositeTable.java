@@ -120,7 +120,7 @@ public class CompositeTable extends Composite {
 
 		});
 		// ������ͷ�ַ�
-		final String[] tableheader = { "序号", "协议名", "协议名", "置信度" };
+		final String[] tableheader = { "序号", "协议名", "协议名", "置信度","兴趣度" };
 		// TableSorter tablesorter=new TableSorter();
 		for (int i = 0; i < tableheader.length; i++) {
 			final TableColumn c1 = new TableColumn(table, SWT.None);
@@ -141,7 +141,7 @@ public class CompositeTable extends Composite {
 			final TableItem t = new TableItem(table, SWT.None);
 			t.setText(new String[] { "" + (countIndex++),
 					"" + temp.getProtocol1(), "" + temp.getProtocol2(),
-					"" + temp.confidence });
+					"" + temp.confidence,""+temp.getInf() });
 			// t.addListener(SWT.Selection, listener);
 		}
 

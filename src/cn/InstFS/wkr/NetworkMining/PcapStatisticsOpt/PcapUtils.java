@@ -203,7 +203,7 @@ class RouteGen implements Callable {
         } else if (ports.contains(pre.getSrcPort())) {
             port = pre.getSrcPort();
         } else {
-            throw new NullPointerException("端口错误");
+            throw new NullPointerException("端口错误");//一定要在call中catch，否则不显示提示
         }
 
         RecordKey tmpKey1 = new RecordKey(pre.getSrcIP(), pre.getDstIP(), port, pre.getTime_s() / 3600);
@@ -369,7 +369,7 @@ class RouteGen implements Callable {
                 this.TTL = TTL;
             }
 
-            //必须重写compareTo，equals和hashcode可以不用重写
+            //必须重写compareTo，equals和hashcode可以不用重写,因为使用treeset，只用ttl判断会导致相同ttl、不同node覆盖
             @Override
             public int compareTo(NodeAndTTL arg0) {
                 if (node == arg0.node) {
@@ -406,16 +406,16 @@ class RouteGen implements Callable {
                 if ((double) data.getTime_s() + data.getTime_ms() / 1000000.0 >
                         first.getTime_s() + first.getTime_ms() / 1000000.0 + 1.5) {
                      break;
-                } else if (data.getFlags() == 0x02 && first.getFlags() == 0x02) {
+                } else if (data.getFlags() == 0x02 && first.getFlags() == 0x02) {//SYN
                     data.setGeted(1);
                     ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
                     num++;
-                } else if (data.getFlags() == 0x12 && first.getFlags() == 0x12) {
+                } else if (data.getFlags() == 0x12 && first.getFlags() == 0x12) {//SYN&&ACK
                     data.setGeted(1);
                     ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
                     num++;
                 } else if (data.getFlags() == 0x10 && first.getFlags() == 0x10 && data.getSeq() == first.getSeq() &&
-                        data.getAck() == first.getAck() && data.getTraffic() == first.getTraffic()) {
+                        data.getAck() == first.getAck() && data.getTraffic() == first.getTraffic()) {//ACK（第三次握手和发送数据）
                     data.setGeted(1);
                     ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
                     num++;
@@ -532,7 +532,10 @@ class RouteGen implements Callable {
             System.out.println("getGenedRouteNum()" + pcapUtils.getGenedRouteNum());
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
+        } catch (NullPointerException e) {//一定要catch，否则无法显示，因为 exec.submit(temp)，没有得到NullPointerException
+            e.printStackTrace();
+        }
+        finally {
             try {
                 if (fc != null) {
                     fc.close();
@@ -1244,13 +1247,13 @@ public class PcapUtils {
         deleteFile(outpath + "\\routesrc");
         folder.mkdirs();
 
-        folder = new File(outpath + "\\route");
+        folder = new File(outpath + "/route");
         suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
 
-        folder = new File(outpath + "\\node");
+        folder = new File(outpath + "/node");
         suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
 
-        folder = new File(outpath + "\\traffic");
+        folder = new File(outpath + "/traffic");
         suc = (folder.exists() && folder.isDirectory()) ? true : folder.mkdirs();
         System.out.println("当前状态： " + status);
         System.out.println("parsepcap开始");

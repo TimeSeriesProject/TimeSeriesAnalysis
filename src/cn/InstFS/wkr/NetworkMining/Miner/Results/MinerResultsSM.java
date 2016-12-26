@@ -73,16 +73,22 @@ public class MinerResultsSM implements Serializable {
 	public void setPatters(List<ArrayList<String>> items){
 		patterns=new DataItems();
 		List<String> data=new ArrayList<String>();
+		List<Double> support = new ArrayList<>();
 		StringBuilder sb=new StringBuilder();
 		for(List<String> itemList:items){
+			double itemSupport = 0; // 频繁项支持度
 			for(String item:itemList){
-				sb.append(",").append(item);
+				String[] s = item.split(",");
+				sb.append(",").append(s[0]);
+				itemSupport = Double.parseDouble(s[1]);
 			}
 			sb.deleteCharAt(0);
 			data.add(sb.toString());
+			support.add(itemSupport);
 			sb.delete(0, sb.length());
 		}
 		patterns.setData(data);
+		patterns.setProb(support);
 	}
 
 	public double getRecallRatio() {

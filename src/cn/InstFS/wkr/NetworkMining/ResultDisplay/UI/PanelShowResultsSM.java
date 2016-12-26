@@ -17,6 +17,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.INetworkMiner;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.NetworkMinerSM;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResults;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.junit.Assert;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
@@ -235,6 +236,8 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 					}
 					DataItem di = new DataItem();
 					di.setData(tempString);
+					int index = freqPatterns.getData().indexOf(tempString);
+					di.setProb(freqPatterns.getProb().get(index));
 					freqResult.add1Data(di);
 
 					freqPatternsListTemp.removeAll(deletedPatterns);
@@ -286,6 +289,16 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 					modeList.put(key, nor_data_List);
 					key--;
 				}
+
+				final JPanel southPanel = new JPanel();
+				southPanel.setLayout(new BorderLayout());
+
+				DescriptiveStatistics statistics=new DescriptiveStatistics();
+				for(double data:freqPatterns.getProb()){
+					statistics.addValue(data);
+				}
+				double mean=statistics.getMean();
+				southPanel.add(new JLabel("平均支持度: " + String.format("%.2f",mean), JLabel.CENTER),BorderLayout.CENTER);
 
 				final JPanel checkboxPanel = new JPanel();
 				//设置监听复选框。
@@ -358,8 +371,10 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				for(int i=0;i<modeList.size();i++)
 				{
 					if(i<10) {
-						box.add(checkboxArr.get(i));
-						checkboxPanel.add(checkboxArr.get(i));
+						JCheckBox cb = new JCheckBox("模式"+ (i+1) +" "+ freqPatternsList.get(i)
+								+" 支持度"+ String.format("%.2f",freqPatterns.getProb().get(i)) );
+						box.add(cb);
+						checkboxPanel.add(cb);
 						checkboxPanel.add(labelArr.get(i));
 					}
 					else
@@ -376,9 +391,13 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				remove(chart1);
 				chartpanel.setMouseWheelEnabled(true);
 				add(chartpanel, BorderLayout.CENTER);
+
+				southPanel.add(checkboxPanel,BorderLayout.SOUTH);
+				add(southPanel, BorderLayout.SOUTH);
 				repaint();
 				validate();
-				add(checkboxPanel, BorderLayout.SOUTH);
+
+
 				//设置监听器
 				for (int j = 0; j < box.size(); j++) {
 					box.get(j).addActionListener(new ActionListener() {
@@ -399,7 +418,9 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 							add(granulartiyPanel, BorderLayout.NORTH);
 							chartpanel1.setMouseWheelEnabled(true);
 							add(chartpanel1, BorderLayout.CENTER);
-							add(checkboxPanel, BorderLayout.SOUTH);
+
+							southPanel.add(checkboxPanel, BorderLayout.SOUTH);
+							add(southPanel, BorderLayout.SOUTH);
 							
 							repaint();
 							validate();

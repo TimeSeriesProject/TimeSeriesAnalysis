@@ -17,6 +17,8 @@ public class MinerResultsFP_Line implements Serializable {
 
 	String ip = "";
 	double confidence = 0.0;
+	double inf = 0.0;
+	
 	public List<ProtoclPair> protocolPairList = null;
 	List<TreeMap<Integer,Linear>> linesList = new ArrayList<TreeMap<Integer,Linear>>();
 	public void setIp(String p){
@@ -24,6 +26,12 @@ public class MinerResultsFP_Line implements Serializable {
 	}
 	public void setConfidence(double d){
 		confidence = d;
+	}
+	public double getInf() {
+		return inf;
+	}
+	public void setInf(double inf) {
+		this.inf = inf;
 	}
 	public void setProtocolPairList( List<ProtoclPair> list){
 		protocolPairList = list;

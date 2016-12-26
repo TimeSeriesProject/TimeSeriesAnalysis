@@ -331,7 +331,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						allMiners.put(task, minerSim);
 					}
 					else {
-						System.out.println("对应任务没有完成。");
+						System.out.println("MiningMethods_SimilarityMining 对应任务没有完成。");
 					}
 						
 					break;
@@ -346,7 +346,9 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						minerFPLine.getResults().setInputData(taskCombination.getDataItems());
 						allMiners.put(task, minerFPLine);
 					}
-					
+					else {
+						System.out.println("MiningMethods_FrequenceItemMining 对应任务没有完成");
+					}
 					break;
 				default:
 					break;
@@ -513,7 +515,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 							break;
 						case MiningType_ProtocolAssociation:
 							retPro.put(task, miner.getResults().getRetProtocol());
-							//System.out.println(task.getName()+" has over");
+							System.out.println(task.getName()+" has over");
 							break;
 						case MiningType_Path:
 							retPath.put(task, miner.getResults().getRetPath());
@@ -592,6 +594,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 	private void taskAdd2allMiner(TaskCombination taskCombination, HashMap<TaskCombination, ?> resultsMap) {
 		if (resultsMap.get(taskCombination) instanceof MinerNodeResults) {
 			MinerNodeResults results = (MinerNodeResults) resultsMap.get(taskCombination);
+			TaskElement periodTask = null;
 			TaskElement partialCycleTask = null;
 			for (TaskElement task : taskCombination.getTasks()) {
 				switch (task.getMiningMethod()) {
@@ -606,6 +609,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						allMiners.put(task, minerOM);
 						break;
 					case MiningMethods_PeriodicityMining:
+						periodTask = task;
 						NetworkMinerPM minerPM = new NetworkMinerPM(task, null);
 						minerPM.getResults().setRetPM(results.getRetPM());
 						minerPM.isOver.setIsover(true);
@@ -651,7 +655,11 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						break;
 				}
 			}
-			if (results.getRetPM().getHasPeriod()) {
+			if (results.getRetPM().getHasPeriod()) { // 有周期，删去局部周期任务
+				taskCombination.getTasks().remove(partialCycleTask);
+			} else if (results.getRetPartialCycle().isHasPartialCycle()) { // 有局部周期，删去周期
+				taskCombination.getTasks().remove(periodTask);
+			} else { // 都没有，保留周期任务
 				taskCombination.getTasks().remove(partialCycleTask);
 			}
 		} else if (resultsMap.get(taskCombination) instanceof MinerResultsPath){

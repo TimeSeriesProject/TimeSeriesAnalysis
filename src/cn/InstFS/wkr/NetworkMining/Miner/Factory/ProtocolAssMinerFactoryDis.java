@@ -6,9 +6,9 @@ package cn.InstFS.wkr.NetworkMining.Miner.Factory;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
-
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import Distributed.TaskCombinationList;
-import weka.gui.beans.Startable;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
@@ -26,7 +26,7 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
 
     ProtocolAssMinerFactoryDis(){
         super(MinerType.MiningType_ProtocolAssociation.toString());
-        dataPath = GlobalConfig.getInstance().getDataPath() + "\\trafficDiff";
+        dataPath = GlobalConfig.getInstance().getDataPath();
 
         List<MiningObject> miningObjectList = this.getMiningObjectList();
         miningObjectList.add(MiningObject.MiningObject_Traffic);
@@ -80,7 +80,7 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
     }
 
     public void detect(){
-        File dataDirectory=new File(dataPath);
+        File dataDirectory=new File(dataPath + "\\traffic");
         nodePairReader reader=new nodePairReader();
         int granularity= Integer.parseInt(getGranularity());
         if(dataDirectory.isFile()){
@@ -147,16 +147,18 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
         task.setRange(ip);
         task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
         task.setDiscreteMethod(DiscreteMethod.None);
+        AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_ProtocolAssociation, taskRange);
+
         String name;
         switch (method) {
             case MiningMethods_FrequenceItemMining:
-                task.setMiningAlgo(MiningAlgo.MiningAlgo_LineProtocolASS);
+                task.setMiningAlgo(chooser.getProAssAlgo());
                 name = ip+"之间关联规则挖掘";
                 task.setTaskName(name);
                 task.setComments(ip+"之间关于 "+miningObject.toString()+" 的多元关联规律");
                 break;
             case MiningMethods_SimilarityMining:
-                task.setMiningAlgo(MiningAlgo.MiningAlgo_RtreeProtocolASS);
+                task.setMiningAlgo(chooser.getSimAlgo());
                 name = ip+"之间关联规则挖掘";
                 task.setTaskName(name);
                 task.setComments(ip+"之间关于 "+miningObject.toString()+" 的相似度挖掘");
@@ -210,15 +212,18 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
         task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
         task.setDiscreteMethod(DiscreteMethod.None);
         String name;
+
+        AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_ProtocolAssociation, taskRange);
+
         switch (method) {
             case MiningMethods_FrequenceItemMining:
-                task.setMiningAlgo(MiningAlgo.MiningAlgo_LineProtocolASS);
+                task.setMiningAlgo(chooser.getProAssAlgo());
                 name=ip+"_多元时间序列挖掘"+miningObject.toString()+"_auto";
                 task.setTaskName(name);
                 task.setComments("挖掘  ip为"+ip+" 序列上"+miningObject.toString()+"的多元关联规律");
                 break;
             case MiningMethods_SimilarityMining:
-                task.setMiningAlgo(MiningAlgo.MiningAlgo_RtreeProtocolASS);
+                task.setMiningAlgo(chooser.getSimAlgo());
                 name=ip+"_时间序列相似度挖掘"+miningObject.toString()+"_auto";
                 task.setTaskName(name);
                 task.setComments("挖掘  ip为"+ip+" 序列上"+miningObject.toString()+"的相似度挖掘");
@@ -254,7 +259,8 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
 
     //有待解决，总共36个
     public int getCount(ArrayList<String> list){
-        File dataDirectory=new File(dataPath);
+
+        File dataDirectory=new File(dataPath + "\\traffic");
         nodePairReader reader=new nodePairReader();
         int granularity= Integer.parseInt(getGranularity());
         if(dataDirectory.isFile()){
@@ -265,9 +271,42 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
                 //由于数据都存在ip文件夹下，所以应以文件夹目录作为参数进行传递
                 //按天读取文件，所以只接受目录
                 if(dataDirs[i].isDirectory())
-                    list.add("");
+                    addTask2(dataDirs[i].getAbsoluteFile(),granularity,reader, list);
             }
         }
+        addIpPairTask2(granularity, reader, list);
         return list.size();
+    }
+
+    private void addTask2(File file,int granularity,nodePairReader reader, ArrayList<String> list){
+        String ip=file.getName();//.substring(0, file.getName().lastIndexOf("."));
+        System.out.println("ip:"+ip);
+        parseFile(file.getAbsoluteFile(),reader);
+        list.add("");
+        eachProtocolItems.clear();
+    }
+
+    private void addIpPairTask2(int granularity, nodePairReader reader,ArrayList<String> list) {
+
+        Set<String> set = new HashSet<String>();
+        Iterator<String> iter_i = rawDataList.keySet().iterator();
+        while(iter_i.hasNext()) {
+
+            String ip_i = iter_i.next();
+            set.add(ip_i);
+            if(rawDataList.get(ip_i).data.size() == 0)
+                continue;
+            Iterator<String> iter_j = rawDataList.keySet().iterator();
+            while(iter_j.hasNext()) {
+
+                String ip_j = iter_j.next();
+                if(set.contains(ip_j))
+                    continue;
+                if(rawDataList.get(ip_j).data.size() == 0)
+                    continue;
+                list.add("");
+            }
+        }
+        rawDataList.clear();
     }
 }

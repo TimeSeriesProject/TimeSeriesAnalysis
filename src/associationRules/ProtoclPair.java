@@ -11,6 +11,8 @@ public class ProtoclPair implements Serializable{
 	String protocol1 = "";
 	String protocol2 = "";
 	public double confidence = 0.0;
+	public double inf = 0.0;
+
 	DataItems dataItems1 = null;  //包括协议1和协议2的原始序列
 	DataItems dataItems2 = null;  //包括协议1和协议2的原始序列
 	
@@ -44,7 +46,13 @@ public class ProtoclPair implements Serializable{
 	public void setDataItems2(DataItems dataItems2) {
 		this.dataItems2 = dataItems2;
 	}
-	
+	public double getInf() {
+		return inf;
+	}
+	public void setInf(double inf) {
+		this.inf = inf;
+	}
+
 	
 	Map<String, ArrayList<LinePos>> mapAB = null;  //记录序列1与序列2 各个关联符号所在的位置 A,B表示在哪个序列上，12表示序列的比较顺序
 	

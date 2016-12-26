@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
@@ -18,6 +19,7 @@ import org.apache.commons.math3.transform.TransformType;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPartialCycle;
+
 
 public class LocalPeriod{
 	DataItems dataItems = new DataItems();//原始数据
@@ -30,6 +32,8 @@ public class LocalPeriod{
 	private int minPeriod=20;
 	private int maxPeriod=300;
 	private int preSimNum=-1;
+	private double stdev;  //序列标准差
+	private double mean;
 	private Set<Integer> cycleCandidate =new TreeSet<Integer>();
 	public LocalPeriod(){}
 	public LocalPeriod(DataItems di,double threshold,int longestPeriod){
@@ -40,6 +44,7 @@ public class LocalPeriod{
 		//FourierFilter();
 		run();
 	}
+
 	public void FourierFilter()
 	{
 		
@@ -147,8 +152,9 @@ public class LocalPeriod{
 				if(i+len>=array.length)
 					break;
 				double dif = Math.abs((array[i]-array[i+len]));
-				double  relativeError = 2*dif/(array[i]+array[i+len]+0.000000001);
-				if((relativeError<0.20 )/*&&dif/avg<0.8*/)
+				double  relativeError = 2*dif/(array[i]+array[i+len]+0.000001);
+				double stderror= dif/(stdev+0.000001);
+				if((relativeError<0.20 &&stderror<1)/*&&dif/avg<0.8*/)
 				{
 					simBestNum++;
 					if(i==start)
@@ -170,8 +176,9 @@ public class LocalPeriod{
 				if(i+len>=array.length)
 					break;
 				double dif = Math.abs((array[i]-array[i+len]));
-				double  relativeError = 2*dif/(array[i]+array[i+len]+0.000000001);
-				if((relativeError<0.20 )/*&&dif/avg<0.8*/)
+				double  relativeError = 2*dif/(array[i]+array[i+len]+0.000001);
+				double stderror= dif/(stdev+0.000001);
+				if(relativeError<0.15 &&stderror<1/*&&dif/avg<0.8*/)
 				{
 					
 					if(i==start)
@@ -195,7 +202,7 @@ public class LocalPeriod{
 //			if(relativeError<0.2)
 //				headSimNum++;
 //		}
-		if(1.0*simBestNum/len>0.80 )
+		if(1.0*simBestNum/len>0.85 )
 		{
 			
 			return true;
@@ -277,10 +284,22 @@ public class LocalPeriod{
 	}
 	public void run(){
 		double array[]= new double [dataItems.getLength()];
+		
+		
+		//归一化
+		DescriptiveStatistics statistics=new DescriptiveStatistics();
 		for(int i=0;i<dataItems.getLength();i++)
 		{
-			array[i]=Double.parseDouble(dataItems.getElementAt(i).getData());
+			statistics.addValue(Double.parseDouble(dataItems.getElementAt(i).getData()));
 		}
+		stdev=statistics.getStandardDeviation();
+		mean=statistics.getMean();
+		
+		for(int i=0;i<dataItems.getLength();i++)
+		{
+			array[i]=(Double.parseDouble(dataItems.getElementAt(i).getData()));
+		}
+		
 		ArrayList<NodeSection> sectionList = new ArrayList<NodeSection>();
 	//	ArrayList<NodeSection> newSectionList = new ArrayList<NodeSection>();
 		boolean [] flag = new boolean[dataItems.getLength()];

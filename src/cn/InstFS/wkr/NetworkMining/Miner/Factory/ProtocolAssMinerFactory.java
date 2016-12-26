@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import weka.gui.beans.Startable;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
@@ -28,7 +30,7 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 	public static Map<String,DataItems> rawDataList;
 	ProtocolAssMinerFactory(){
 		super(MinerType.MiningType_ProtocolAssociation.toString());
-		dataPath = GlobalConfig.getInstance().getDataPath() + "\\trafficDiff";
+		dataPath = GlobalConfig.getInstance().getDataPath();
 
 		List<MiningObject> miningObjectList = this.getMiningObjectList();
 		miningObjectList.add(MiningObject.MiningObject_Traffic);
@@ -82,7 +84,7 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 	}
 	
 	public void detect(){
-		File dataDirectory=new File(dataPath);
+		File dataDirectory=new File(dataPath + "\\traffic");
 		nodePairReader reader=new nodePairReader();
 		int granularity= Integer.parseInt(getGranularity());
 		if(dataDirectory.isFile()){
@@ -148,16 +150,18 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 		task.setRange(ip);
 		task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
 		task.setDiscreteMethod(DiscreteMethod.None);
+
+		AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_ProtocolAssociation, taskRange);
 		String name;
 		switch (method) {
 		case MiningMethods_FrequenceItemMining:
-			task.setMiningAlgo(MiningAlgo.MiningAlgo_LineProtocolASS);
+			task.setMiningAlgo(chooser.getProAssAlgo());
 			name = ip+"之间关联规则挖掘";
 			task.setTaskName(name);
 			task.setComments(ip+"之间关于 "+miningObject.toString()+" 的多元关联规律");
 			break;
 		case MiningMethods_SimilarityMining:
-			task.setMiningAlgo(MiningAlgo.MiningAlgo_RtreeProtocolASS);
+			task.setMiningAlgo(chooser.getSimAlgo());
 			name = ip+"之间关联规则挖掘";
 			task.setTaskName(name);
 			task.setComments(ip+"之间关于 "+miningObject.toString()+" 的相似度挖掘");
@@ -212,15 +216,18 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 		task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
 		task.setDiscreteMethod(DiscreteMethod.None);
 		String name;
+
+		AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_ProtocolAssociation, taskRange);
+
 		switch (method) {
 		case MiningMethods_FrequenceItemMining:
-			task.setMiningAlgo(MiningAlgo.MiningAlgo_LineProtocolASS);
+			task.setMiningAlgo(chooser.getProAssAlgo());
 			name=ip+"_多元时间序列挖掘"+miningObject.toString()+"_auto";
 			task.setTaskName(name);
 			task.setComments("挖掘  ip为"+ip+" 序列上"+miningObject.toString()+"的多元关联规律");
 			break;
 		case MiningMethods_SimilarityMining:
-			task.setMiningAlgo(MiningAlgo.MiningAlgo_RtreeProtocolASS);
+			task.setMiningAlgo(chooser.getSimAlgo());
 			name=ip+"_时间序列相似度挖掘"+miningObject.toString()+"_auto";
 			task.setTaskName(name);
 			task.setComments("挖掘  ip为"+ip+" 序列上"+miningObject.toString()+"的相似度挖掘");

@@ -8,12 +8,14 @@ import java.util.concurrent.TimeUnit;
 
 import WaveletUtil.PointPatternDetection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.*;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.ARIMATSA;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.NeuralNetwork;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.GaussianOutlierDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.averageEntropyPM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.MinerFactorySettings;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.PathMinerFactory;
@@ -234,10 +236,20 @@ class PathTimerTask extends TimerTask{
 					case MiningMethods_PeriodicityMining:
 						IMinerPM pmMethod = null;
 						PMparam pMparam = ParamsAPI.getInstance().getParamsPeriodMiner().getPmparam();
-						if(task.getMiningAlgo().equals(MiningAlgo.MiningAlgo_ERPDistencePM)){
-							pmMethod=new ERPDistencePM(pMparam);
-						}else{
-							throw new RuntimeException("方法不存在！");
+						if (task.getMiningAlgo()!= null ) { // 不为空时，自定义算法，否则自动选择
+							switch (task.getMiningAlgo()) {
+								case MiningAlgo_averageEntropyPM:
+									int dimension = Math.max(task.getDiscreteDimension(), newItem.getDiscretizedDimension());
+									pmMethod = new averageEntropyPM(task, dimension,pMparam);//添加参数
+									break;
+								case MiningAlgo_ERPDistencePM:
+									pmMethod=new ERPDistencePM(pMparam);
+									break;
+								default:
+									throw new RuntimeException("方法不存在！");
+							}
+						} else { // 周期检测默认ERP
+							pmMethod = new ERPDistencePM(pMparam);
 						}
 						pmMethod.setDataItems(newItem);
 						pmMethod.setOriginDataItems(newItem);
@@ -253,18 +265,31 @@ class PathTimerTask extends TimerTask{
 					case MiningMethods_OutliesMining:
 						IMinerOM omMethod = null;
 						MinerResultsOM retOM = new MinerResultsOM();
-												
-						/*if(retPathPM.get(name).getHasPeriod()){
+						if (task.getMiningAlgo()!= null ) { // 不为空时，自定义算法，否则自动选择
+							switch (task.getMiningAlgo()) {
+								case MiningAlgo_GaussDetection:
+									omMethod = new AnormalyDetection(dataItems);
+									retOM.setIslinkDegree(false);
+									break;
+								case MiningAlgo_FastFourier:
+									omMethod=new FastFourierOutliesDetection(dataItems);
+									retOM.setIslinkDegree(false);
+									break;
+								case MiningAlgo_Muitidimensional:
+									omMethod = new MultidimensionalOutlineDetection(dataItems);
+									retOM.setIslinkDegree(true);
+									break;
+								case MiningAlgo_NodeOutlierDetection:
+									omMethod = new GaussianOutlierDetection(dataItems);
+									retOM.setIslinkDegree(true);
+									break;
+								default:
+									throw new RuntimeException("方法不存在！");
+							}
+						} else {
 							omMethod = new MultidimensionalOutlineDetection(newItem);
 							retOM.setIslinkDegree(true);
-						}else if(!retPathPM.get(name).getHasPeriod()){
-							omMethod = new AnormalyDetection(newItem);
-							retOM.setIslinkDegree(false);
-						}else {
-							System.out.println("方法不存在");
-						}*/	
-						omMethod = new MultidimensionalOutlineDetection(newItem);
-						retOM.setIslinkDegree(true);
+						}
 						
 						omMethod.TimeSeriesAnalysis();
 						setOMResults(retOM, omMethod);
@@ -274,8 +299,23 @@ class PathTimerTask extends TimerTask{
 						IMinerFM forecast = null;
 						MinerResultsFM retFM = new MinerResultsFM();
 
-						forecast=new NeuralNetwork(newItem, task,
-								ParamsAPI.getInstance().getParamsPrediction().getNnp());
+						if (task.getMiningAlgo() != null) {
+							switch (task.getMiningAlgo()) {
+								case MiningAlgo_NeuralNetworkTSA:
+									forecast =new NeuralNetwork(dataItems, task,
+											ParamsAPI.getInstance().getParamsPrediction().getNnp());
+									break;
+								case MiningAlgo_ARIMATSA:
+									forecast =new ARIMATSA(task, dataItems,
+											ParamsAPI.getInstance().getParamsPrediction().getAp());
+									break;
+								default:
+									throw new RuntimeException("方法不存在！");
+							}
+						} else {
+							forecast=new NeuralNetwork(newItem, task,
+									ParamsAPI.getInstance().getParamsPrediction().getNnp());
+						}
 						System.out.println(task.getTaskName()+" forecast start");
 						forecast.TimeSeriesAnalysis();
 						System.out.println(task.getTaskName()+" forecast over");

@@ -74,15 +74,18 @@ public class ProtocolAssociationLine {
 		while(ip_iter.hasNext())
 		{
 			String ip = ip_iter.next();
+			
 			mr_fp_l.setIp(ip);
-			List<ProtocolDataItems> proDataList2 = ip_proData.get(ip);
-			List<ProtocolDataItems> proDataList = compressData(proDataList2);
+			List<ProtocolDataItems> proDataList = ip_proData.get(ip);
+			//压缩数据
+			proDataList = compressData(proDataList);
 			
 			List<TreeMap<Integer,SymbolNode>> linesList = new ArrayList<TreeMap<Integer,SymbolNode>>();
 			List<DataItems> lineList = new ArrayList<DataItems>();
 			linesPosList = new ArrayList<TreeMap<Integer,Linear>>();
 			for(int i = 0;i < proDataList.size();i++)
 			{
+				System.out.println("ip:"+ip+"  端口："+proDataList.get(i).getProtocolName());
 				TreeMap<Integer,Double> sourceData_i = convertDataToTreeMap(proDataList.get(i));
 				System.out.println("开始运行自底向上线段拟合算法！");
 //				System.out.println("***"+sourceData_i);
@@ -115,7 +118,7 @@ public class ProtocolAssociationLine {
 		        System.out.println("DPCluster聚类算法计算完毕！");
 		        System.out.println("***************************************************");
 			}
-			double max_confidence = 0.0;
+			double max_confidence = 0.0,max_inf = 0.0;
 			List<ProtoclPair> resultList = new ArrayList<ProtoclPair>();
 			for(int i = 0;i < linesList.size();i++)
 			{
@@ -136,19 +139,22 @@ public class ProtocolAssociationLine {
 					
 					System.out.println(findRules.rulesSet.size());
 					
-					HashMap<String,ArrayList<LinePos>> mapAB = new HashMap<String,ArrayList<LinePos>>();  //记录序列1与序列2 各个关联符号所在的位置 A,B表示在哪个序列上，12表示序列的比较顺序
+					//记录序列1与序列2 各个关联符号所在的位置 A,B表示在哪个序列上，12表示序列的比较顺序
+					HashMap<String,ArrayList<LinePos>> mapAB = new HashMap<String,ArrayList<LinePos>>();  
 					HashMap<String,ArrayList<LinePos>> mapBA = new HashMap<String,ArrayList<LinePos>>();
 					
 					int symbol = 1;
 					double sum_confidence = 0;
+					double sum_inf = 0.0;
 					for(Rule rule : findRules.rulesSet){
 						
 						symbol++;
 						sum_confidence += rule.con;
+						sum_inf += rule.inf;
 						ArrayList<LinePos> alp = new ArrayList<LinePos>();
-						if(rule.after.belong_series == i)
+						if(rule.after.belong_series == i)   //子节点
 						{
-							System.out.println(rule.parent_node_time_map);
+//							System.out.println(rule.parent_node_time_map);
 							for(int father :rule.parent_node_time_map.keySet()){
 								
 								
@@ -190,20 +196,27 @@ public class ProtocolAssociationLine {
 						}
 						
 					}
+					pp.setInf(sum_inf/findRules.rulesSet.size());
 					pp.setConfidence(sum_confidence/(symbol-1));
 					pp.setMapAB(mapAB);
 					pp.setMapBA(mapBA);
-					pp.setLineDataItems1(lineList.get(i));
-					pp.setLineDataItems2(lineList.get(j));
+					pp.setLineDataItems1(lineList.get(j));
+					pp.setLineDataItems2(lineList.get(i));
 					resultList.add(pp);
-					
+					System.out.println(proDataList.get(i).getProtocolName()+" 与"+proDataList.get(j).getProtocolName()+"的置信度为："+
+							sum_confidence/(symbol-1)+" 兴趣度为："+sum_inf/findRules.rulesSet.size());
 					if(max_confidence < pp.confidence)
 						max_confidence = pp.confidence;
+					if(max_inf < pp.inf) {
+						max_inf = pp.inf;
+					}
 					symbolSeries.remove(j);
+					
 					System.out.println("*********************一轮结束****************************");
 				}
 			}
 			mr_fp_l.setConfidence(max_confidence);
+			mr_fp_l.setInf(max_inf);
 			mr_fp_l.protocolPairList = resultList;
 			mr_fp_l.setLinesList(linesPosList);
 			//找序列的关联信息
@@ -304,9 +317,9 @@ public class ProtocolAssociationLine {
 		for(int i = 0;i < proDataList.size();i++)
 		{
 			ProtocolDataItems pdi = proDataList.get(i);
-			if(pdi.dataItems.getLength() > 400)
+			if(pdi.dataItems.getLength() > 800)
 			{
-				int len = pdi.dataItems.getLength()/200;
+				int len = pdi.dataItems.getLength()/400;
 				
 				DataItems newData = new DataItems();
 				for(int j = 0;j < pdi.dataItems.getLength();j += len)
@@ -318,7 +331,7 @@ public class ProtocolAssociationLine {
 //						trafficSum += Integer.parseInt(pdi.dataItems.data.get(k));
 						trafficSum += Double.parseDouble(pdi.dataItems.data.get(k));
 					}
-					newData.add1Data(pdi.dataItems.time.get(j), trafficSum+"");
+					newData.add1Data(pdi.dataItems.time.get(j), (trafficSum*1.0/len)+"");
 				}
 				ProtocolDataItems new_pdi = new ProtocolDataItems(pdi.protocolName,newData);
 				compressData.add(new_pdi);
