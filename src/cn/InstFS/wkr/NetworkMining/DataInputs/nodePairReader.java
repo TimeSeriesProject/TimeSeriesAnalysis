@@ -1604,8 +1604,10 @@ public class nodePairReader implements IReader {
 						
 						//合并同一个IP，同一个协议的通信的流量要合并
 						
-						int traffic=Integer.parseInt(dataItem.getData());
-						int addTraffic=Integer.parseInt(proAndTraffic[1]);
+//						int traffic=Integer.parseInt(dataItem.getData());
+//						int addTraffic=Integer.parseInt(proAndTraffic[1]);
+						double traffic=Double.parseDouble(dataItem.getData());
+						double addTraffic=Double.parseDouble(proAndTraffic[1]);
 						dataItems.getData().set(dataItems.getLength()-1,(traffic+addTraffic)+"");
 							
 					}else{

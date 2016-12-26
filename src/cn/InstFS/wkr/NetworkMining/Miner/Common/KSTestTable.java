@@ -88,7 +88,7 @@ public class KSTestTable {
         
         if(x<=40){
         	D = table[x][y];
-        }else if(x>41){
+        }else if(x>40){
         	D = table[x][y]/Math.sqrt(n);
         }
         return D;

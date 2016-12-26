@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
@@ -14,6 +15,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.KolmogorovSmirnovChec
  */
 public class NormalDistributionTest {
     private double[] arr;
+    private List<Double> list = new ArrayList<Double>();
     private double mean;
     private double stdeviation;
     private final static double CONFIDENCE = 0.01;//显著性水平。取值为0.01, 0.02, 0.05, 0.1, 0.2
@@ -35,6 +37,23 @@ public class NormalDistributionTest {
             stdeviation = 0.0001;
         }
         distribution = new NormalDistribution(mean, stdeviation);
+    } 
+    public NormalDistributionTest(List<Double> list,double K){
+    	this.K = K;
+    	arr = new double[list.size()];
+    	for (int i=0;i<list.size();i++) {
+            arr[i] = list.get(i);
+        }
+    	DescriptiveStatistics statistics = new DescriptiveStatistics();
+        for (int i=0;i<list.size();i++) {
+            statistics.addValue(list.get(i));
+        }
+        mean = statistics.getMean();
+        stdeviation = statistics.getStandardDeviation();
+        if(stdeviation <= 0){
+            stdeviation = 0.0001;
+        }
+        distribution = new NormalDistribution(mean, stdeviation);        
     }    
     public boolean isNormalDistri(){
     	KolmogorovSmirnovCheckout ks = new KolmogorovSmirnovCheckout();
