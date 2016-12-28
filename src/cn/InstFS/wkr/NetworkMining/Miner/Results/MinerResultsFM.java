@@ -7,6 +7,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
 
 public class MinerResultsFM implements Serializable{
+	private static final long serialVersionUID = -8469758172370123899L;
 	ParamsTSA params;	// 或者 java.util.Properties params;
 	
 	private DataItems predictItems;

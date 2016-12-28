@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MinerResultsOM implements Serializable{
+	private static final long serialVersionUID = -8828528843058891106L;
 	ParamsTSA params;	// 或者 java.util.Properties params;
 	
 	private DataItems outliers; //异常点

@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class ProtocolAssociationResult implements Serializable {
 
+	private static final long serialVersionUID = 5635413685898465318L;
 	public int alogrithmType = 1;   // 为0，说明是包含支持度参数的关联规则挖掘方法 ，为1，说明是连段挖掘方法
 	String protocol1 = "";
 	String protocol2 = "";

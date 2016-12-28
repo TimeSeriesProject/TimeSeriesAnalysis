@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.util.Date;
 
 public class ParamsFP extends IParamsNetworkMining implements Serializable {
+    private static final long serialVersionUID = -1461476256988261856L;
     //高斯滑动窗口模型算法参数
     private double minSupport;	// 最小支持度
     private int sizeWindow;	// 时间窗长	（单位为秒）

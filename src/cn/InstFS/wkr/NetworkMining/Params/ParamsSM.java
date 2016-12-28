@@ -8,7 +8,8 @@ import cn.InstFS.wkr.NetworkMining.Params.SMParams.SMParam;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 
 public class ParamsSM extends IParamsNetworkMining implements Serializable{
-	
+
+	private static final long serialVersionUID = -2942434236056873651L;
 	private SMParam smparam;
 	public ParamsSM(){}
 	public SMParam getSMparam() {
