@@ -110,7 +110,7 @@
 
     <!-- pcap解析参数 -->
     <pcapParseParams>
-        <pcapPath>D:\pcap</pcapPath>
+        <pcapPath>D:\pcapn</pcapPath>
         <outputPath>D:\out</outputPath>
         <parseAll>true</parseAll>
     </pcapParseParams>
@@ -122,7 +122,7 @@
 
     <!-- 分布式pcap解析参数 -->
     <pcapParseDisParams>
-        <pcapPath>D:\pcap</pcapPath>
+        <pcapPath>D:\pcapn</pcapPath>
         <outputPath>D:\out</outputPath>
     </pcapParseDisParams>
 
@@ -130,7 +130,7 @@
     <clientParams>
         <ip>127.0.0.1</ip>
         <port>7777</port>
-        <pcapPath>E:\pcap</pcapPath>
+        <pcapPath>E:\pcapn</pcapPath>
         <outputPath>E:\57data</outputPath>
     </clientParams>
     <!-- 端口 -->
