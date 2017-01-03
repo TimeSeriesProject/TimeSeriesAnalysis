@@ -305,11 +305,11 @@ public class Client {
                         part2 = getPart2(tasks2);//得到10.0.0.1_10.0.0.2
                         System.out.println("part2: " + part2);
                         //删除已存在的所有文件
-                        File ff = new File(outPath + part2);
-                        if (ff.exists() && ff.isDirectory()) {
-                            System.out.println("删除文件last");
-                            deleteFile(outPath + part2);
-                        }
+//                        File ff = new File(outPath + part2);
+//                        if (ff.exists() && ff.isDirectory()) {
+//                            System.out.println("删除文件last");
+//                            deleteFile(outPath + part2);
+//                        }
                         receiveResult(outPath + part2);//得到E:/57data/10.0.0.1_10.0.0.2
                         System.out.println("结束接收");
                         fileList.clear();
@@ -560,7 +560,7 @@ class ClientInit {
         Socket socket3 = null;
         final DataPanel dataPanel1 = dataPanel;
 
-        //先启动客户端，不断尝试连接服务端
+        //先启动客户端，不断尝试连接服务端，间隔5s
         while (flag) {
             try {
                 socket1 = new Socket(IP, port);
@@ -590,7 +590,7 @@ class ClientInit {
                         socket1 = null;
                         socket2 = null;
                         socket3 = null;
-                        Thread.sleep(10000);
+                        Thread.sleep(5000);
                     } else {
                         break;
                     }
