@@ -179,7 +179,7 @@ public class MiningResultsFile {
     private String generateResultPath(String paramFile) {
         String md5 = null;
         try {
-            md5 = Md5Util.fileMD5("configs/algorithmsParams.xml");
+            md5 = Md5Util.fileMD5("configs/algorithmsParams.xml","configs/algorithmsManager.xml");
             System.out.println(md5);
         } catch (IOException e) {
             e.printStackTrace();
@@ -198,6 +198,7 @@ public class MiningResultsFile {
                 //将算法参数文件复制入该目录
                 try {
                     Files.copy(new File("configs/algorithmsParams.xml").toPath(),new File(dataPath+"/algorithmsParams.xml").toPath());
+                    Files.copy(new File("configs/algorithmsManager.xml").toPath(),new File(dataPath+"/algorithmsManager.xml").toPath());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
