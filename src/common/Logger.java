@@ -18,6 +18,10 @@ public class Logger {
 	public Logger(){
 		
 		loggerPath = GlobalConfig.getInstance().getLoggerPath();
+		File file = new File(loggerPath);
+		if (!file.exists()) {
+			file.mkdirs();
+		}
 		try {
 			writer = new FileWriter(new File(loggerPath+File.separator+System.currentTimeMillis()+".txt"));
 		} catch (IOException e) {
