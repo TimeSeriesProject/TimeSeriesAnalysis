@@ -16,6 +16,7 @@ public class ErrorLogger {
 		
 		loggerPath = GlobalConfig.getInstance().getLoggerPath();
 		File file = new File(loggerPath);
+
 		if (!file.exists()) {
 			file.mkdirs();
 		}

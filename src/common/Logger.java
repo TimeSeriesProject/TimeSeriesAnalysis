@@ -19,6 +19,7 @@ public class Logger {
 		
 		loggerPath = GlobalConfig.getInstance().getLoggerPath();
 		File file = new File(loggerPath);
+
 		if (!file.exists()) {
 			file.mkdirs();
 		}
