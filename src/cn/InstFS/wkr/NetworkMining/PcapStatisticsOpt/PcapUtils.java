@@ -959,7 +959,7 @@ public class PcapUtils {
         status = Status.PARSE;
         System.out.println(status);
         System.out.println("parseSum " + parseSum);
-        ExecutorService exec = Executors.newFixedThreadPool(4);
+        ExecutorService exec = Executors.newFixedThreadPool(50);
         ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
         for (int i = 0; i < fileList.size(); i++) {
             File file = fileList.get(i);
@@ -1001,7 +1001,7 @@ public class PcapUtils {
         status = Status.PARSE;
         System.out.println(status);
         System.out.println("parseSum " + parseSum);
-        ExecutorService exec = Executors.newFixedThreadPool(4);
+        ExecutorService exec = Executors.newFixedThreadPool(50);
         ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
         for (int i = 0; i < fileList.size(); i++) {
             File file = fileList.get(i);

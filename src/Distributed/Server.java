@@ -1070,8 +1070,8 @@ public class Server {
                     substring(file.getParent().lastIndexOf("\\") + 1)).toString();//得到文件parent E:\ppp\9中的9
             String name = new StringBuilder().append(file.getAbsolutePath().
                     substring(file.getParent().lastIndexOf("\\") + 1)).toString();//得到9\9-1.pcap .etc
-            System.out.println("key: " + key);
-            System.out.println("name:  " + name);
+//            System.out.println("key: " + key);
+//            System.out.println("name:  " + name);
             if (tasksMap.containsKey(key)) {
                 tasksMap.get(key).append(name).append(DELIMITER);
             } else {
