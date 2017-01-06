@@ -15,6 +15,11 @@ public class ErrorLogger {
 	public ErrorLogger(){
 		
 		loggerPath = GlobalConfig.getInstance().getLoggerPath();
+		File file = new File(loggerPath);
+
+		if (!file.exists()) {
+			file.mkdirs();
+		}
 		try {
 			writer = new FileWriter(new File(loggerPath+File.separator+"errorLog"+System.currentTimeMillis()+".txt"));
 		} catch (IOException e) {

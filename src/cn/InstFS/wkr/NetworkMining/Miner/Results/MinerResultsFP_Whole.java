@@ -7,6 +7,7 @@ import associationRules.ProtocolAssociationResult;
 
 public class MinerResultsFP_Whole implements Serializable{
 
+	private static final long serialVersionUID = 1133793413125579068L;
 	double confidence = 0.0;
 	String ip = "";
 	List<ProtocolAssociationResult> protocolPairList = null;

@@ -221,7 +221,7 @@ public class PanelDisplayBaseTask extends JPanel implements ITaskDisplayer{
             else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_OutliesMining))
             {
             	task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-            	task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
+            	task.setMiningAlgo(MiningAlgo.MiningAlgo_Muitidimensional);
             	task.setGranularity(3600);
             	task.setDiscreteMethod(DiscreteMethod.None);
             	task.setRange("10.0.1.1,10.0.1.2");
@@ -229,7 +229,7 @@ public class PanelDisplayBaseTask extends JPanel implements ITaskDisplayer{
             else if(task.getMiningMethod().equals(MiningMethod.MiningMethods_PredictionMining))
             {
             	task.setAggregateMethod(AggregateMethod.Aggregate_SUM);
-            	task.setMiningAlgo(MiningAlgo.MiningAlgo_TEOTSA);
+            	task.setMiningAlgo(MiningAlgo.MiningAlgo_Muitidimensional);
             	task.setGranularity(3600);
             	task.setDiscreteMethod(DiscreteMethod.None);
             	task.setRange("10.0.1.1,10.0.1.2");

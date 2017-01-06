@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.util.Date;
 
 public class ParamsTSA extends IParamsNetworkMining implements Serializable {
+	private static final long serialVersionUID = -7527726149997612975L;
 	//高斯滑动窗口模型算法参数
 	private int initWindowSize = 10;//初始窗口大小
     private int maxWindowSize = 30;//最大窗口大小

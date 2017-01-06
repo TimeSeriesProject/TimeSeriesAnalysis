@@ -3,6 +3,7 @@ package cn.InstFS.wkr.NetworkMining.DataInputs;
 import java.io.Serializable;
 
 public class SegPattern implements Serializable{
+	private static final long serialVersionUID = -8008501536410402091L;
 	private double height;
 	private double length;
 	private double angle; //计算角度

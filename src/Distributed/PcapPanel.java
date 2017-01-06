@@ -164,18 +164,19 @@ public class PcapPanel extends JPanel {
                                 Runnable runnable = new Runnable() {
                                     @Override
                                     public void run() {
-                                        System.out.println("进入......");
+                                        long a = System.currentTimeMillis();
+//                                        System.out.println("进入......");
                                         Server.getInstance().initPcap(PcapPanel.this, inText.getText().trim(), outText.getText().trim());
                                         DisParams.setPcapPathDis(inText.getText().trim());
                                         DisParams.setOutputPathDis(outText.getText().trim());
                                         DisParams.setParseAll(parseAll);
                                         Server.getInstance().getPcapTaskNum(inText.getText().trim(), parseAll);
-                                        System.out.println("longlist任务个数： " + Server.getInstance().getTasks().size());
+//                                        System.out.println("longlist任务个数： " + Server.getInstance().getTasks().size());
                                         for (Map.Entry<Long, ArrayList<File>> entry : Server.getInstance().getTasks().entrySet()) {
-                                            for (int i = 0; i < entry.getValue().size(); i++) {
-                                                System.out.println("time: " + entry.getKey());
-                                                System.out.println("list: " + entry.getValue().get(i));
-                                            }
+//                                            for (int i = 0; i < entry.getValue().size(); i++) {
+//                                                System.out.println("time: " + entry.getKey());
+//                                                System.out.println("list: " + entry.getValue().get(i));
+//                                            }
                                             Server.getInstance().genTasks(entry.getKey(), entry.getValue());
                                             Server.getInstance().awakePcap();
                                             Server.getInstance().setIsPcapRunning(true);
@@ -183,6 +184,8 @@ public class PcapPanel extends JPanel {
                                             Server.getInstance().awaitList();
                                             System.out.println("结束等待，进行下一次");
                                         }
+                                        long b = System.currentTimeMillis();
+                                        System.out.println("pcap总时间： " + (b - a));
 
                                     }
                                 };

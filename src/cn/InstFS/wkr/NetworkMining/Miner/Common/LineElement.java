@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class LineElement implements Serializable {
 
+	private static final long serialVersionUID = -5758781028695303493L;
 	int label = 0;
 	int start = 0;
 	int end = 0;

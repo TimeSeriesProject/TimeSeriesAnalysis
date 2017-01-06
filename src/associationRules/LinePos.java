@@ -3,7 +3,8 @@ package associationRules;
 import java.io.Serializable;
 
 public class LinePos implements Serializable{
-	
+
+	private static final long serialVersionUID = 1877256115524617390L;
 	double confidence = 0.0;
 	public int A_start = 0;
 	public int A_end = 0;

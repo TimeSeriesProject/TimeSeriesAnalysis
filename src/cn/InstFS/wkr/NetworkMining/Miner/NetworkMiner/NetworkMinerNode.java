@@ -7,11 +7,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import common.ErrorLogger;
-
 import lineAssociation.ClusterWrapper;
 import lineAssociation.DPCluster;
 import lineAssociation.Linear;
 import lineAssociation.SymbolNode;
+import PropertyTest.OutlinesTest.OutliersTest;
 import WaveletUtil.PointPatternDetection;
 import WaveletUtil.SAXPartternDetection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
@@ -28,6 +28,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.ARIMATSA;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.NeuralNetwork;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.ForcastAlgorithm.SMForecast;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.FrequentAlgorithm.SequencePatternsDontSplit;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnomalyGaussVerification;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.GaussianOutlierDetection;
@@ -321,13 +322,33 @@ class NodeTimerTask extends TimerTask{
 						if(results.getRetNode().getRetPM().getHasPeriod()){
 							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(true);
+							/*tsaMethod.TimeSeriesAnalysis();
+							setOMResults(results, tsaMethod);*/
+							/*************************异常算法测试结果输出**********************/
+							/*String retPath = "result/outlierTest2.txt";
+							OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
+							outliersTest.evaluatIndicator2();
+							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
+							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
+							/*****************************测试结束************************/
 						}else{
 							tsaMethod = new AnormalyDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(false);
+							/*tsaMethod.TimeSeriesAnalysis();
+							setOMResults(results, tsaMethod);*/
+							/*************************异常算法测试结果输出**********************/
+							/*String retPath = "result/outlierTest.txt";
+							OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
+							outliersTest.evaluatIndicator();
+							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
+							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
+							/*****************************测试结束************************/
 						}
-					}
-				}
 
+					}
+					
+				}
+								
 				tsaMethod.TimeSeriesAnalysis();
 				setOMResults(results, tsaMethod);
 				break;
@@ -409,7 +430,8 @@ class NodeTimerTask extends TimerTask{
 			case MiningMethods_SequenceMining:
 				
 				ParamsSM paramsSM = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
-				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
+//				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
+				PointSegment segment=new PointSegment(dataItems, 4);
 //				LinePattern segment = new LinePattern(dataItems, 0.06);
 				List<PatternMent> segPatterns=segment.getPatterns();
 				

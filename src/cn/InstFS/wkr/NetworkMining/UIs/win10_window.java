@@ -571,6 +571,7 @@ public class win10_window extends JFrame {
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
+                        long a = System.currentTimeMillis();
                         List<MiningObject> miningObjectList;
                         TaskProgressBar bar = (TaskProgressBar) newContentPane;
                         /* 网络结构任务 */
@@ -704,6 +705,8 @@ public class win10_window extends JFrame {
                             TaskProgress.getInstance().clear();
                             isProtocolAssMined = true;
                         }
+                        long b = System.currentTimeMillis();
+                        System.out.println("总时间 " + (b - a));
                     }
                 };
                 new Thread(runnable).start();
@@ -730,6 +733,7 @@ public class win10_window extends JFrame {
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
+                        long a = System.currentTimeMillis();
                         /* 网络结构任务 */
                         if (!isDisNetworkStructureMined) {
                             mineNetworkStructorDis("网络结构： ");
@@ -754,6 +758,8 @@ public class win10_window extends JFrame {
                         if (!isDisProtocolAssMined) {
                             mineProtocolAssDis("多业务： ");
                         }
+                        long b = System.currentTimeMillis();
+                        System.out.println("总时间 " + (b - a));
                     }
                 };
                 new Thread(runnable).start();

@@ -5,6 +5,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import java.io.Serializable;
 
 public class MinerNodeResults implements Serializable{
+	private static final long serialVersionUID = -5211605816802818178L;
 	private DataItems di;
 	private MinerResultsStatistics retStatistics;
 	private MinerResultsPM retPM;

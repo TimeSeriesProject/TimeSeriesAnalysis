@@ -2,21 +2,26 @@ package cn.InstFS.wkr.NetworkMining.Results;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * @author Arbor vlinyq@gmail.com
  * @version 2016/10/10
  */
 public class Md5Util {
-    public static String fileMD5(String inputFile) throws IOException {
+    public static String fileMD5(String... inputFile) throws IOException {
 
         // 缓冲区大小（这个可以抽出一个参数）
 
         int bufferSize = 256 * 1024;
 
+        Vector<InputStream >vector = new Vector<InputStream>();
         FileInputStream fileInputStream = null;
 
         DigestInputStream digestInputStream = null;
@@ -28,9 +33,13 @@ public class Md5Util {
             MessageDigest messageDigest =MessageDigest.getInstance("MD5");
 
             // 使用DigestInputStream
-            fileInputStream = new FileInputStream(inputFile);
+            for (String s: inputFile) {
+                vector.addElement(new FileInputStream(s));
+            }
+            Enumeration<InputStream> enumeration = vector.elements();
+            SequenceInputStream mergeStream = new SequenceInputStream(enumeration);
 
-            digestInputStream = new DigestInputStream(fileInputStream,messageDigest);
+            digestInputStream = new DigestInputStream(mergeStream,messageDigest);
 
             // read的过程中进行MD5处理，直到读完文件
             byte[] buffer =new byte[bufferSize];
@@ -104,7 +113,7 @@ public class Md5Util {
 
     public static void main(String args[]) {
         try {
-            String md5 = fileMD5("configs/algorithmsParams.xml");
+            String md5 = fileMD5("configs/algorithmsParams.xml","configs/algorithmsManager.xml");
             System.out.println(md5);
         } catch (IOException e) {
             e.printStackTrace();

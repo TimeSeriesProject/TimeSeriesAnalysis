@@ -16,7 +16,8 @@ import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMSAXPartternParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMTEOParams;
 
 public class ParamsOM extends IParamsNetworkMining implements Serializable {
-     
+
+    private static final long serialVersionUID = -5159733188004157048L;
     OMGuassianParams omGuassianParams = null;
     OMFastFourierParams omFastFourierParams = null;
     OMPiontPatternParams omPiontPatternParams = null;

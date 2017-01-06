@@ -22,8 +22,8 @@ import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
  * Created by xzbang on 2015/3/24.
  */
 public class AnormalyDetection implements IMinerOM {
-    private static int initWindowSize = 30;
-    private static int maxWindowSize = 60;
+    private static int initWindowSize = 60;
+    private static int maxWindowSize = 200;
     private static int expWindowSize = 3;
     private static double k=3.0; //高斯距离阈值 (x-u)/sigma > k 则x点是异常点（暂时没用到）
     private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
@@ -57,21 +57,22 @@ public class AnormalyDetection implements IMinerOM {
     	if(di==null){
     		return;
     	}
-    	HashMap<Long,Long> slice = new HashMap<Long, Long>(); //原始数据，map<i,data>
+    	HashMap<Long,Double> slice = new HashMap<Long, Double>(); //原始数据，map<i,data>
     	List<String> data = di.data;
     	List<Date> time = di.time;
     	outlies = new DataItems();
     	int size = time.size();
     	for(int i = 0;i < size;i++){
-    		slice.put((long)i, Math.round(Double.parseDouble(data.get(i))));
+//    		slice.put((long)i, Math.round(Double.parseDouble(data.get(i))));
+    		slice.put((long)i, Double.parseDouble(data.get(i)));
     	}
-//    	detect(slice);
-    	detect1(slice);
+    	detect(slice);
+//    	detect1(slice);
      	outDegree = mapToDegree(degreeMap);
      	outlies = genOutline(outDegree);
     }
     
-    public void detect(HashMap<Long,Long> slice){
+    public void detect(HashMap<Long,Double> slice){
         if(slice == null){
             return;
         }
@@ -96,13 +97,14 @@ public class AnormalyDetection implements IMinerOM {
                 }
                 NormalDistributionTest normalDistributionTest = new NormalDistributionTest(data,k);
                 if(!normalDistributionTest.isNormalDistri()){
-                    nowWindowSize+=expWindowSize;
+                	index += expWindowSize;
+                	nowWindowSize+=expWindowSize;
                 }else{
                     if(slice.get((long) index)!=null){
                         double target = (double)slice.get((long) index);
                         if(!normalDistributionTest.isDawnToThisDistri(target)){
                             //outlier.put((long) index,slice.get((long) index));
-                            slice.put((long)index, (long)normalDistributionTest.getMean());
+                            slice.put((long)index, normalDistributionTest.getMean());
                         }
                         double mean = normalDistributionTest.getMean();                        
                         double stv;
@@ -127,7 +129,7 @@ public class AnormalyDetection implements IMinerOM {
      * 滑动高斯检测，滑动窗口不重叠
      * 
      * */
-    public void  detect1(HashMap<Long,Long> slice){
+    public void  detect1(HashMap<Long,Double> slice){
         if(slice == null){
             return ;
         }
@@ -166,7 +168,7 @@ public class AnormalyDetection implements IMinerOM {
 						double target = (double)slice.get((long)i);
 	                    if(!normalDistributionTest.isDawnToThisDistri(target)){
 //	                        outlier.put((long)i,slice.get((long)i));
-	                        slice.put((long)i, (long)normalDistributionTest.getMean());
+	                        slice.put((long)i, normalDistributionTest.getMean());
 	                    }
 	                    double distance = Math.abs(data[i-index+nowWindowSize] - mean)/stv;
 	                    distance = distance>5 ? 1 : distance/5;
@@ -199,7 +201,7 @@ public class AnormalyDetection implements IMinerOM {
         outDegree = mapToDegree(degreeMap);
        
     }
-    private long getmaxKey(HashMap<Long, Long> slice) {
+    private long getmaxKey(HashMap<Long, Double> slice) {
         Iterator<Long> iterator = slice.keySet().iterator();
         long max = 0;
         while(iterator.hasNext()){
@@ -237,7 +239,7 @@ public class AnormalyDetection implements IMinerOM {
 		int len = degree.size();
 		Collections.sort(list);
 		Collections.reverse(list);
-		double d = list.get((int)(len*0.02));
+		double d = list.get((int)(len*0.01));
 		//threshold = threshold>0.45 ? threshold : 0.45;
 		for(int i=(int)(len*0.02);i>0;i--){
 			if(list.get(i)<0.5){				

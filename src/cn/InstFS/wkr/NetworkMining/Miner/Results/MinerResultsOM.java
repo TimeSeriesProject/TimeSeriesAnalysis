@@ -8,9 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MinerResultsOM implements Serializable{
+	private static final long serialVersionUID = -8828528843058891106L;
 	ParamsTSA params;	// 或者 java.util.Properties params;
 	
-	private DataItems outlies; //异常点
+	private DataItems outliers; //异常点
 	private DataItems outDegree = new DataItems(); //异常度
 	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
 	private boolean islinkDegree=false;
@@ -18,10 +19,10 @@ public class MinerResultsOM implements Serializable{
 	private int confidence;
 	
 	public DataItems getOutlies() {
-		return outlies;
+		return outliers;
 	}
-	public void setOutlies(DataItems outlies) {
-		this.outlies = outlies;
+	public void setOutlies(DataItems outliers) {
+		this.outliers = outliers;
 	}
 	public ParamsTSA getParamsTSA(){
 		return this.params;

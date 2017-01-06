@@ -18,6 +18,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 
 public class MinerResultsSM implements Serializable {
+	private static final long serialVersionUID = 5785762420800813715L;
 	ParamsSM params;
 	private DataItems data_curTime;
 	private DataItems forcasts_curTime;

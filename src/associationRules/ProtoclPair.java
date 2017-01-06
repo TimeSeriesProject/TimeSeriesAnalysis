@@ -7,7 +7,8 @@ import java.util.Map;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
 public class ProtoclPair implements Serializable{
-	
+
+	private static final long serialVersionUID = -8998663956862390321L;
 	String protocol1 = "";
 	String protocol2 = "";
 	public double confidence = 0.0;

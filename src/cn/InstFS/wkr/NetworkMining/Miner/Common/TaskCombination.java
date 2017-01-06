@@ -11,6 +11,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
 public class TaskCombination implements Serializable{
+	private static final long serialVersionUID = 8921339693179963422L;
 	private List<TaskElement> tasks;
 	private DataItems dataItems;
 	private HashMap<String, HashMap<String, DataItems>> eachIpProtocolItems;

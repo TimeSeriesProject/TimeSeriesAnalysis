@@ -12,7 +12,8 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.NodeSe
 
 
 public class MinerResultsPartialCycle implements Serializable{
-	
+
+	private static final long serialVersionUID = 368631734358883761L;
 	boolean hasPartialCycle;
 	/*
 	 * 存储部分周期的起始点与循环节的长度Map<Integer,ArrayList<NodeSection>> map
