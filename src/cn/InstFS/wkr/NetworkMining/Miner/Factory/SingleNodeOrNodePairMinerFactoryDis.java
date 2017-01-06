@@ -187,6 +187,8 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
                     taskCombination.getTasks().add(generateTask(taskRange, granularity,
                             dataFile,protocol, ip,MiningMethod.MiningMethods_PartialCycle));
                     taskCombination.getTasks().add(generateTask(taskRange, granularity,
+                            dataFile, protocol, ip, MiningMethod.MiningMethods_PartialPeriod));
+                    taskCombination.getTasks().add(generateTask(taskRange, granularity,
                             dataFile, protocol, ip, MiningMethod.MiningMethods_OutliesMining));
                     taskCombination.getTasks().add(generateTask(taskRange, granularity,
                             dataFile, protocol, ip, MiningMethod.MiningMethods_SequenceMining));
@@ -294,6 +296,11 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
                 name=ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_局部周期_auto";
                 task.setTaskName(name);
                 task.setComments("挖掘  "+ipOrPair+" 上,协议为"+protocol+"的局部周期");
+                break;
+            case MiningMethods_PartialPeriod:
+                name=ipOrPair+"_"+protocol+"_"+granularity+"_"+miningObject.toString()+"_部分周期_auto";
+                task.setTaskName(name);
+                task.setComments("挖掘  "+ipOrPair+" 上,协议为"+protocol+"的部分周期");
                 break;
             case MiningMethods_PredictionMining:
                 task.setMiningAlgo(chooser.getFmAlgo());
