@@ -70,6 +70,8 @@ public class PanelShowAllResults extends JPanel implements ITaskDisplayer, ITask
 			panel = new PanelShowResultsStatistics(task);
 		else if(miningMethodName.equals(MiningMethod.MiningMethods_PartialCycle))
 			panel = new PanelShowResultsPartialCycle(task);
+		else if (miningMethodName.equals(MiningMethod.MiningMethods_PartialPeriod))
+			panel = new PanelShowResultsPartialPeriod(task);
 		if (panel != null){
 			add((JPanel)panel, task.getTaskName());
 			allPanels.put(task, panel);

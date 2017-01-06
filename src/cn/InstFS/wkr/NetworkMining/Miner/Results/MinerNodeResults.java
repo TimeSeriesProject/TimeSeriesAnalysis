@@ -10,7 +10,8 @@ public class MinerNodeResults implements Serializable{
 	private MinerResultsPM retPM;
 	private MinerResultsOM retOM;
 	private MinerResultsSM retSM;
-	private MinerResultsPartialCycle retPartialCycle;
+	private MinerResultsPartialCycle retPartialCycle; //局部周期
+	private MinerResultsPartialPeriod retPartialPeriod; //部分周期
 	public MinerNodeResults(){
 		retStatistics=new MinerResultsStatistics();
 		retPM=new MinerResultsPM();
@@ -18,6 +19,7 @@ public class MinerNodeResults implements Serializable{
 		retSM=new MinerResultsSM();
 		retPartialCycle = new MinerResultsPartialCycle();
 		retFM=new MinerResultsFM();
+		retPartialPeriod = new MinerResultsPartialPeriod();
 	}
 
 	public MinerResultsStatistics getRetStatistics() {
@@ -66,6 +68,14 @@ public class MinerNodeResults implements Serializable{
 
 	public void setRetFM(MinerResultsFM retFM) {
 		this.retFM = retFM;
+	}
+
+	public MinerResultsPartialPeriod getRetPartialPeriod() {
+		return retPartialPeriod;
+	}
+
+	public void setRetPartialPeriod(MinerResultsPartialPeriod retPartialPeriod) {
+		this.retPartialPeriod = retPartialPeriod;
 	}
 
 	public DataItems getOriDataItems() {

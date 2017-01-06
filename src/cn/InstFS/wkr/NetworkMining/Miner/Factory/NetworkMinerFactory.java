@@ -644,6 +644,13 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						partialCycle.getResults().setInputData(results.getOriDataItems());
 						allMiners.put(task, partialCycle);
 						break;
+					case MiningMethods_PartialPeriod:
+						NetworkMinerPartialPeriod partialPeriod = new NetworkMinerPartialPeriod(task,null);
+						partialPeriod.getResults().setRetPartialPeriod(results.getRetPartialPeriod());
+						partialPeriod.isOver.setIsover(true);
+						partialPeriod.getResults().setInputData(results.getOriDataItems());
+						allMiners.put(task, partialPeriod);
+						break;
 					case MiningMethods_PredictionMining:
 						NetworkMinerFM fm=new NetworkMinerFM(task, null);
 						fm.getResults().setRetFM(results.getRetFM());
