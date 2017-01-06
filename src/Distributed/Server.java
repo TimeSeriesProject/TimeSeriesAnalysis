@@ -129,7 +129,7 @@ public class Server {
     private HashMap<Long, ArrayList<File>> tasks = new HashMap<Long, ArrayList<File>>();//日期，filelist 得到对应时间的文件列表
 
 
-    private Lock recLock = new ReentrantLock(true);//接收结果
+    private Lock recLock = new ReentrantLock(true);//接收结果，改为公平锁
 //    private Lock sendLock = new ReentrantLock();
     private Lock recLock2 = new ReentrantLock(true);//接收结果和第一步要分开，否则出bug
 //    private Lock sendLock2 = new ReentrantLock();
