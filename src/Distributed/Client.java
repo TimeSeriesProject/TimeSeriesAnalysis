@@ -305,11 +305,11 @@ public class Client {
                         part2 = getPart2(tasks2);//得到10.0.0.1_10.0.0.2
                         System.out.println("part2: " + part2);
                         //删除已存在的所有文件
-//                        File ff = new File(outPath + part2);
-//                        if (ff.exists() && ff.isDirectory()) {
-//                            System.out.println("删除文件last");
-//                            deleteFile(outPath + part2);
-//                        }
+                        File ff = new File(outPath + part2);
+                        if (ff.exists() && ff.isDirectory()) {
+                            System.out.println("删除文件last");
+                            deleteFile(outPath + part2);
+                        }
                         receiveResult(outPath + part2);//得到E:/57data/10.0.0.1_10.0.0.2
                         System.out.println("结束接收");
                         fileList.clear();

@@ -118,10 +118,10 @@ public class Server {
 //    private String fileName;
     private int index;
     private int BUF_LEN = 5 * 1024 * 1024;
-    private AtomicInteger pcapCount1 = new AtomicInteger(0);//发送次数
-    private AtomicInteger pcapCount2 = new AtomicInteger(0);//发送次数
-    private AtomicInteger recCount = new AtomicInteger(0);//接收到的个数
-    private AtomicInteger recCount2 = new AtomicInteger(0);
+    private int pcapCount1 = 0;//发送次数
+    private int pcapCount2 = 0;//发送次数
+    private int recCount = 0;//接收到的个数
+    private int recCount2 = 0;
     private int tasksCount = 0;
     private String date;
     private ParseByDay parseByDay;
@@ -130,9 +130,9 @@ public class Server {
 
 
     private Lock recLock = new ReentrantLock(true);//接收结果，改为公平锁
-//    private Lock sendLock = new ReentrantLock();
+    private Lock sendLock = new ReentrantLock();
     private Lock recLock2 = new ReentrantLock(true);//接收结果和第一步要分开，否则出bug
-//    private Lock sendLock2 = new ReentrantLock();
+    private Lock sendLock2 = new ReentrantLock();
 
 //    private Lock updateMapLock1 = new ReentrantLock();
 //    private Lock updateMapLock2 = new ReentrantLock();
@@ -1052,10 +1052,10 @@ public class Server {
         tasksMap = new HashMap<String, StringBuilder>();
         swapMap = new HashMap<String, String>();//文件名\r\n,路由号
         swapMap2 = new HashMap<String, String>();//routesrc/1.1_1.2, 1.1_1.2
-        pcapCount1 = new AtomicInteger(0);//发送次数
-        pcapCount2 = new AtomicInteger(0);//发送次数
-        recCount = new AtomicInteger(0);
-        recCount2 = new AtomicInteger(0);
+        pcapCount1 = 0;//发送次数
+        pcapCount2 = 0;//发送次数
+        recCount = 0;
+        recCount2 = 0;
         combineAndDelete = false;
         combineAndDelete2 = false;
         date = getDate(time);//得到最小时间
@@ -1870,7 +1870,7 @@ public class Server {
                             pcapLock.unlock();
                         }
                     }
-                    pcapPanel.getBar().setValue(recCount.get());
+                    pcapPanel.getBar().setValue(recCount);
                     pcapPanel.getBar().setMaximum(allTasks.size());//进度条最大
                     pcapPanel.getjLabel().setText("阶段 1/3");
                     long a = System.currentTimeMillis();
@@ -1880,17 +1880,17 @@ public class Server {
                         userClient.sendMsg("First");
                         if (dataFromClient.equals("Ready")) {
 //                            pcapCount1 < 或 =两种情况，只发送一次
-//                            sendLock.lock();//将全部过程锁起
-//                            try {
-                            int tempNum;//作为发送任务的临时变量
-                            if ((tempNum = pcapCount1.getAndIncrement()) < allTasks.size()) {
+                            sendLock.lock();//将全部过程锁起
+                            try {
+//                            int tempNum;//作为发送任务的临时变量
+                                if (pcapCount1 < allTasks.size()) {
 //                                pcapCount1 += 1;
 //                                sendLock.unlock();
-                                userClient.sendTask(allTasks.get(tempNum));
-                                System.out.println("第" + tempNum + "次已发送" + allTasks.size());
-//                                pcapCount1 += 1;
-                                System.out.println("下一次发送：" + (tempNum + 1));
-                            } else {
+                                    userClient.sendTask(allTasks.get(pcapCount1));
+                                    System.out.println("第" + pcapCount1 + "次已发送" + allTasks.size());
+                                    pcapCount1 += 1;
+                                    System.out.println("下一次发送：" + (pcapCount1 + 1));
+                                } else {
 //                                sendLock.unlock();
 
 //                                updateMapLock1.lock();
@@ -1916,10 +1916,10 @@ public class Server {
 //                                } finally {
 //                                    updateMapLock1.unlock();
 //                                }
+                                }
+                            } finally {
+                                sendLock.unlock();
                             }
-//                            } finally {
-//                                sendLock.unlock();
-//                            }
                         }
 
                         //接收结果
@@ -1936,15 +1936,15 @@ public class Server {
 
                                 if (status.equals("Absent")) {
                                     status = null;
-                                    if (recCount.getAndIncrement() < tasksCount) {
+                                    if (recCount < tasksCount) {
                                         finalFolderPath = outPath;
                                         //接收文件
                                         receiveResult(finalFolderPath);
                                         updateMap(task);
-//                                        recCount += 1;
-                                        pcapPanel.getBar().setValue(recCount.get());
+                                        recCount += 1;
+                                        pcapPanel.getBar().setValue(recCount);
                                         pcapPanel.getjLabel().setText("阶段 1/3");
-                                        if (recCount.get() == tasksCount) {
+                                        if (recCount == tasksCount) {
 //                                    userClient.close();
                                             System.out.println("运行结束");
                                             comAndDel.lock();
@@ -1970,9 +1970,9 @@ public class Server {
                                     }
                                 } else if (status.equals("Existent")) {
                                     status = null;
-                                    if (recCount.get() < tasksCount) {
+                                    if (recCount < tasksCount) {
                                         continue;
-                                    } else if (recCount.get() == tasksCount) {
+                                    } else if (recCount == tasksCount) {
                                         comAndDel.lock();
                                         try {
                                             if (!combineAndDelete) {
@@ -2024,7 +2024,7 @@ public class Server {
                     }
 
                     tasksCount = allTasks2.size();
-                    pcapPanel.getBar().setValue(recCount2.get());
+                    pcapPanel.getBar().setValue(recCount2);
                     pcapPanel.getBar().setMaximum(tasksCount);//进度条最大
                     pcapPanel.getjLabel().setText("阶段 2/3");
                     //执行后2步
@@ -2034,16 +2034,16 @@ public class Server {
                         userClient.sendMsg("Last");
                         if (dataFromClient.equals("Ready")) {
 //                            pcapCount1 < 或 =两种情况，只发送一次
-//                            sendLock2.lock();
-//                            try {
-                            int tempNum;//作为发送任务的临时变量
-                            if ((tempNum = pcapCount2.getAndIncrement()) < allTasks2.size()) {
-                                userClient.sendTask(allTasks2.get(tempNum));
-                                System.out.println("第" + tempNum + "次已发送" + allTasks2.size());
-                                sendFileTask(allTasks2.get(tempNum).split(DELIMITER)[0]);//发送单个文件,routesrc/10.0.0.1_10.0.0.2.bin
+                            sendLock2.lock();
+                            try {
+//                            int tempNum;//作为发送任务的临时变量
+                                if (pcapCount2 < allTasks2.size()) {
+                                    userClient.sendTask(allTasks2.get(pcapCount2));
+                                    System.out.println("第" + pcapCount2 + "次已发送" + allTasks2.size());
+                                    sendFileTask(allTasks2.get(pcapCount2).split(DELIMITER)[0]);//发送单个文件,routesrc/10.0.0.1_10.0.0.2.bin
 //                                pcapCount2 += 1;
-                                System.out.println("下一次发送：" + (tempNum + 1));
-                            } else {
+                                    System.out.println("下一次发送：" + (pcapCount2 + 1));
+                                } else {
 
 //                                updateMapLock2.lock();
 //                                try {
@@ -2069,10 +2069,10 @@ public class Server {
 //                                } finally {
 //                                    updateMapLock2.unlock();
 //                                }
+                                }
+                            } finally {
+                                sendLock2.unlock();
                             }
-//                            } finally {
-//                                sendLock2.unlock();
-//                            }
                         }
 
                         //接收结果
@@ -2092,15 +2092,15 @@ public class Server {
 
                                 if (status.equals("Absent")) {
                                     status = null;
-                                    if (recCount2.getAndIncrement() < tasksCount) {
+                                    if (recCount2 < tasksCount) {
                                         finalFolderPath = outPath;
                                         //接收文件
                                         receiveResult2(finalFolderPath);
                                         updateMap2(task2);
-//                                        recCount2 += 1;
-                                        pcapPanel.getBar().setValue(recCount2.get());
+                                        recCount2 += 1;
+                                        pcapPanel.getBar().setValue(recCount2);
                                         pcapPanel.getjLabel().setText("阶段 2/3");
-                                        if (recCount2.get() == tasksCount) {
+                                        if (recCount2 == tasksCount) {
                                             comAndDel.lock();
                                             try {
                                                 if (!combineAndDelete2) {
@@ -2136,9 +2136,9 @@ public class Server {
                                     }
                                 } else if (status.equals("Existent")) {
                                     status = null;
-                                    if (recCount2.get() < tasksCount) {
+                                    if (recCount2 < tasksCount) {
                                         continue;
-                                    } else if (recCount2.get() == tasksCount) {
+                                    } else if (recCount2 == tasksCount) {
                                         comAndDel.lock();
                                         try {
                                             if (!combineAndDelete2) {
@@ -2208,8 +2208,8 @@ public class Server {
                             recLock2.unlock();
                         }
                     }
-                    System.out.println("本次执行完毕，进行到第" + recCount2.get() + "  Thread: " + Thread.currentThread().getName());
-                    if (recCount2.get() >= taskCount) {
+                    System.out.println("本次执行完毕，进行到第" + recCount2 + "  Thread: " + Thread.currentThread().getName());
+                    if (recCount2 >= taskCount) {
                         if (threadNum.decrementAndGet() == 0) {
                             System.out.println("threadNum: " + threadNum.get());
                             awakeList();//唤起等待，开始下一次任务
