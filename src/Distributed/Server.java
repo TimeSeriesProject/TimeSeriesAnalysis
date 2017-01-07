@@ -2041,7 +2041,7 @@ public class Server {
                                     userClient.sendTask(allTasks2.get(pcapCount2));
                                     System.out.println("第" + pcapCount2 + "次已发送" + allTasks2.size());
                                     sendFileTask(allTasks2.get(pcapCount2).split(DELIMITER)[0]);//发送单个文件,routesrc/10.0.0.1_10.0.0.2.bin
-//                                pcapCount2 += 1;
+                                    pcapCount2 += 1;
                                     System.out.println("下一次发送：" + (pcapCount2 + 1));
                                 } else {
 
