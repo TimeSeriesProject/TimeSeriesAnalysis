@@ -11,25 +11,40 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialPeriodAlgorithm.Pair;
  */
 public class MinerResultsPartialPeriod implements Serializable {
 	private static final long serialVersionUID = 151721725783244513L;
-	public Map<String, ArrayList<Pair>> result;
-
+	public Map<String, ArrayList<Pair>> positionResult;
+	public Map<String, Double> periodResult;
 	boolean hasPartialPeriod;
-
-	public MinerResultsPartialPeriod(Map<String, ArrayList<Pair>> result) {
+	
+	public MinerResultsPartialPeriod(Map<String, ArrayList<Pair>> result,Map<String, Double> periodResult) {
 		super();
-		this.result = result;
+		this.positionResult = result;
+		this.periodResult=periodResult;
 	}
 
 	public MinerResultsPartialPeriod() {
 		super();
 	}
+	
 
-	public Map<String, ArrayList<Pair>> getResult() {
-		return result;
+	public Map<String, ArrayList<Pair>> getPositionResult() {
+		return positionResult;
 	}
 
-	public void setResult(Map<String, ArrayList<Pair>> result) {
-		this.result = result;
+	public void setPositionResult(Map<String, ArrayList<Pair>> positionResult) {
+		this.positionResult = positionResult;
+	}
+
+	public Map<String, Double> getPeriodResult() {
+		return periodResult;
+	}
+
+	public void setPeriodResult(Map<String,Double> periodResult) {
+		this.periodResult = periodResult;
+	}
+
+	public void setResult(Map<String, ArrayList<Pair>> result,Map<String,Double> periodResult) {
+		this.positionResult = result;
+		this.periodResult= periodResult;
 	}
 
 	public boolean isHasPartialPeriod() {

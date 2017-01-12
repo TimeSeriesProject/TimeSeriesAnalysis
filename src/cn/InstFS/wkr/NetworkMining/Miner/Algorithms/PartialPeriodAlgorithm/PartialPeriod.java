@@ -20,14 +20,14 @@ public class PartialPeriod {
 	double threshold=0.15;
 	// DataItems data;// 原始序列
 
-	Map<String, ArrayList<Pair>> periodPointRecord;// 统计周期出现的位置，String为(频繁项+前两个数据点)
-	Map<String, Double> periodRecord;// 统计周期
+	Map<String, ArrayList<Pair>> positionResult;// 统计周期出现的位置，String为(频繁项+前两个数据点)
+	Map<String, Double> periodResult;// 统计周期
 
 	public PartialPeriod(Map<String, ArrayList<Pair>> frequentmap,double threshold) {
 		this.frequentmap = frequentmap;
 		this.threshold=threshold;
-		periodRecord = new HashMap<String, Double>();
-		periodPointRecord = new HashMap<String, ArrayList<Pair>>();
+		periodResult = new HashMap<String, Double>();
+		positionResult = new HashMap<String, ArrayList<Pair>>();
 	}
 
 	/**
@@ -115,9 +115,9 @@ public class PartialPeriod {
 							}
 						} else {
 							// 找到了部分周期，记录周期和周期位置，更新搜索表
-							this.periodRecord.put(entry.getKey() + ":" + i
+							this.periodResult.put(entry.getKey() + ":" + i
 									+ ":" + j, period);
-							this.periodPointRecord.put(
+							this.positionResult.put(
 									entry.getKey() + ":" + i + ":" + j,
 									exchangeIntegerListToPairList(
 											positionIndex, list));
@@ -131,12 +131,12 @@ public class PartialPeriod {
 								}
 							}
 							// 打印记录
-							for (Entry<String, Double> entry1 : periodRecord
+							for (Entry<String, Double> entry1 : periodResult
 									.entrySet()) {
 
 								System.out.println("模式 = " + entry1.getKey()
 										+ ", 周期 = " + entry.getValue());
-								Iterator<Pair> it = this.periodPointRecord.get(
+								Iterator<Pair> it = this.positionResult.get(
 										entry1.getKey()).iterator();
 								System.out.println("起始位置： ");
 								while (it.hasNext()) {
@@ -150,7 +150,7 @@ public class PartialPeriod {
 			}
 			// System.out.println();
 		}
-		return periodPointRecord;
+		return positionResult;
 	}
 
 	public void diaplayMap(Map<String, ArrayList<Pair>> map) {
@@ -197,6 +197,14 @@ public class PartialPeriod {
 		double t1 = a > b ? a : b;
 		double t2 = t / t1;
 		return t2 > threshold ? false : true;
+	}
+	
+	public Map<String, ArrayList<Pair>> getPositionResult() {
+		return positionResult;
+	}
+
+	public Map<String, Double> getPeriodResult() {
+		return periodResult;
 	}
 
 	public static void main(String[] args) {

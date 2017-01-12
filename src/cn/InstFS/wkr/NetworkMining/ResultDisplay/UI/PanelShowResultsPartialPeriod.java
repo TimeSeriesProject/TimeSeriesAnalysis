@@ -47,7 +47,8 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 	org.jfree.data.xy.XYSeriesCollection XYSeriesCollection = null;
 	XYSeriesCollection selectionSeries = null;
 	JFreeChart jfreechart;
-	Map<String, ArrayList<Pair>> resultMap;
+	Map<String, ArrayList<Pair>> positionMap;
+	Map<String, Double> periodMap;
 	XYPlot plot = null;
 
 	boolean displayed = false;
@@ -62,31 +63,35 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 		miner.setResultsDisplayer(this);
 	}
 
-
 	/**
 	 * 画标记线分割周期
 	 */
 	private void PaintDomainMarker(DataItems data,
-			Map<String, ArrayList<Pair>> map, XYPlot plot) {
+			Map<String, ArrayList<Pair>> positionMap, Map<String, Double> periodMap,XYPlot plot) {
 		// 部分周期序列
-		if (map == null || map == null)
+		if (positionMap == null || positionMap == null)
 			return;
-		for (Map.Entry<String, ArrayList<Pair>> entry : map.entrySet()) {
+		for (Map.Entry<String, ArrayList<Pair>> entry : positionMap.entrySet()) {
 			Iterator<Pair> it = entry.getValue().iterator();
-
-			ValueMarker valuemarker = new ValueMarker(it.hasNext() ? it.next()
-					.getBegin() : 0);
+			int begin = it.hasNext() ? it.next().getBegin() : 0;
+			ValueMarker valuemarker = new ValueMarker(begin);
 			valuemarker.setPaint(new Color(100, 100, 100, 250));
 			valuemarker.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
 					BasicStroke.JOIN_BEVEL, 0, new float[] { 10, 4 }, 0));
 			plot.addDomainMarker(valuemarker);
-
-			ValueMarker valuemarkerEnd = new ValueMarker(entry.getValue()
-					.size() == 0 ? 0 : entry.getValue()
-					.get(entry.getValue().size() - 1).getEnd());
+			double period=periodMap.get(entry.getKey());
+			int end = (entry.getValue().size() == 0 ? 0 : entry.getValue()
+					.get(entry.getValue().size() - 1).getBegin())+(int)Math.floor(period);
+			ValueMarker valuemarkerEnd = new ValueMarker(end);
 			valuemarkerEnd.setPaint(new Color(100, 100, 100, 250));
 			valuemarkerEnd.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
 					BasicStroke.JOIN_BEVEL, 0, new float[] { 10, 4 }, 0));
+			// 画出周期标注
+			XYPointerAnnotation xypointerannotation1 = new XYPointerAnnotation(
+					("周期：" + periodMap.get(entry.getKey()) + " 区间：[" + begin+","+end+"]"), (begin+end)/2, Double.parseDouble(data
+							.getElementAt((begin+end)/2).getData()), -3.14 / 2);
+			//xypointerannotation1.set
+			plot.addAnnotation(xypointerannotation1);
 			plot.addDomainMarker(valuemarkerEnd);
 		}
 
@@ -124,9 +129,9 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 		XYSeriesCollection XYSeriesCollection = new XYSeriesCollection();
 
 		// 部分周期序列
-		int modelnum=1;
+		int modelnum = 1;
 		for (Map.Entry<String, ArrayList<Pair>> entry : map.entrySet()) {
-			XYSeries xyseries = new XYSeries("模式："+(modelnum++));
+			XYSeries xyseries = new XYSeries("模式：" + (modelnum++));
 			//
 			Iterator<Pair> it = entry.getValue().iterator();
 			while (it.hasNext()) {
@@ -137,7 +142,7 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 				}
 				xyseries.add(p.getEnd() + 1, null);// 避免部分周期因为在同一个数据集中间连起来
 			}
-				XYSeriesCollection.addSeries(xyseries);
+			XYSeriesCollection.addSeries(xyseries);
 		}
 		// 原始序列
 		for (int i = 0; i < data.getLength(); i++) {
@@ -166,7 +171,7 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 		xylineandshaperenderer
 				.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
 		xylineandshaperenderer.setDefaultEntityRadius(6);
-		 xylineandshaperenderer.setShapesVisible(false);
+		xylineandshaperenderer.setShapesVisible(false);
 		xyplot.setRenderer(xylineandshaperenderer);
 		jfreechart.getLegend().setVisible(true);
 		return jfreechart;
@@ -206,10 +211,11 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 		gridBagLayout.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
 		gridBagLayout.rowWeights = new double[] { 1.0, 0.0, 1.0 };
 
-		resultMap = rets.getRetPartialPeriod().getResult();
-		jfreechart = createChart(createDataset(data, resultMap));
+		positionMap = rets.getRetPartialPeriod().getPositionResult();
+		periodMap=rets.getRetPartialPeriod().getPeriodResult();
+		jfreechart = createChart(createDataset(data, positionMap));
 		plot = jfreechart.getXYPlot();
-		PaintDomainMarker(data, resultMap, plot);
+		PaintDomainMarker(data, positionMap,periodMap, plot);
 
 		ChartPanel chartpanel = new ChartPanel(jfreechart);
 		setLayout(Layout);

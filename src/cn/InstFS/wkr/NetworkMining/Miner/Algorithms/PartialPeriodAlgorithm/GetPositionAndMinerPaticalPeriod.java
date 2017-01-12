@@ -19,14 +19,15 @@ public class GetPositionAndMinerPaticalPeriod {
 	List<ArrayList<String>> patterns;
 	List<LineElement> lineElements;
 	Map<String, ArrayList<Pair>> fresult;
-	Map<String, ArrayList<Pair>> result;
+	Map<String, ArrayList<Pair>> positionResult;
+	Map<String, Double> periodResult;
 	double threshold;//距离相似度阈值
 	
 
 	public GetPositionAndMinerPaticalPeriod(List<ArrayList<String>> patterns,
 			List<LineElement> lineElements,double threshold) {
 		fresult = new HashMap<String, ArrayList<Pair>>();
-		result = new HashMap<String, ArrayList<Pair>>();
+		positionResult = new HashMap<String, ArrayList<Pair>>();
 		this.patterns = patterns;
 		this.lineElements = lineElements;
 		this.threshold=threshold;
@@ -48,8 +49,9 @@ public class GetPositionAndMinerPaticalPeriod {
 		}
 		PartialPeriod particalPeriod = new PartialPeriod(fresult,threshold);
 
-		result = particalPeriod.run();
-
+		particalPeriod.run();
+		positionResult = particalPeriod.getPositionResult();
+		periodResult=particalPeriod.getPeriodResult();
 	}
 
 	/**
@@ -112,7 +114,8 @@ public class GetPositionAndMinerPaticalPeriod {
 	public MinerResultsPartialPeriod getResult() {
 		// TODO Auto-generated method stub
 		MinerResultsPartialPeriod minerResultsPartialPeriod = new MinerResultsPartialPeriod();
-		minerResultsPartialPeriod.setResult(result);
+		minerResultsPartialPeriod.setPositionResult(positionResult);
+		minerResultsPartialPeriod.setPeriodResult(periodResult);
 		return minerResultsPartialPeriod;
 	}
 }
