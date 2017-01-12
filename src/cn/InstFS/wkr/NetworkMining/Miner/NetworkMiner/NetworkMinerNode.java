@@ -537,17 +537,13 @@ class NodeTimerTask extends TimerTask{
 
 					//setFrequentResults(results, sequencePattern,frequentItem2, lineElements2,segPatterns2,dpCluster2.GAMMA);
 					List<ArrayList<String>> patterns=sequencePattern.getPatterns();
-					GetPositionAndMinerPaticalPeriod gpampp=new GetPositionAndMinerPaticalPeriod(patterns,lineElements2);
+					GetPositionAndMinerPaticalPeriod gpampp=new GetPositionAndMinerPaticalPeriod(patterns,lineElements2,0.15);
 					//写入结果
 					//gpampp.setPaticalPeriodResult(results);
 					if(gpampp.getResult()==null){
 						System.out.println("部分周期挖掘结果为空");
 					}
 					results.getRetNode().setRetPartialPeriod(gpampp.getResult());
-					Map<String, ArrayList<Pair>> networkresulit =results.getRetNode().getRetPartialPeriod().getResult();
-					if(networkresulit==null){
-						System.out.println("networkresulit is null!!");
-					}
 				}
 				System.out.println("部分周期挖掘结束");
 				break;
