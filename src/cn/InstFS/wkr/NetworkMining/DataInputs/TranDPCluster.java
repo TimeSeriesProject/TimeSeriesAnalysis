@@ -24,6 +24,18 @@ public class TranDPCluster {
 		this.segPatterns = segPatterns;
 		run();
 	}
+	
+	public TranDPCluster(DataItems dataItems,List<PatternMent> segPatterns,AssociationRuleLineParams arp,boolean hasHeight){
+		
+		this.dataItems = dataItems;
+		this.segPatterns = segPatterns;
+		if(hasHeight){
+			run3();
+		}else{
+			run();
+		}
+		
+	}
 	public void run(){
 		/*修改线段数据格式*/
 		linears = TranLinears();
@@ -32,6 +44,19 @@ public class TranDPCluster {
 		System.out.println("开始运行DPCluster聚类算法！");
 		ClusterWrapper clusterWrapper = new ClusterWrapper(linears,ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams());
 		Map<Integer,Integer> map = clusterWrapper.run();
+		GAMMA = clusterWrapper.GAMMA;
+		System.out.println("DPCluster聚类算法计算完毕！");
+		/*聚类结果*/
+		clusterItems = tranClusterMap(map); //线段起始时间:类中心
+	}
+	public void run3(){
+		/*修改线段数据格式*/
+		linears = TranLinears();
+		
+		/*开始DPC聚类*/
+		System.out.println("开始运行DPCluster聚类算法！");
+		ClusterWrapper clusterWrapper = new ClusterWrapper(linears,ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams());
+		Map<Integer,Integer> map = clusterWrapper.run3();
 		GAMMA = clusterWrapper.GAMMA;
 		System.out.println("DPCluster聚类算法计算完毕！");
 		/*聚类结果*/

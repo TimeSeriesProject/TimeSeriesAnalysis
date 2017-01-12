@@ -40,6 +40,18 @@ public class Similarity {
     		return 1.0;
     	}
     }
+    /**
+     * @author 顺
+     * @param l1
+     * @param l2
+     * @return
+     */
+    public static double getHeightDistance(Linear l1,Linear l2){
+    	double heigh1 = (l1.hspan+l1.startValue);
+    	double heigh2 = l2.hspan+l2.startValue;
+    	return Math.abs(heigh1-heigh2);
+    }
+    
     private static double getLenghtMahattanDistance(Linear l1,Linear l2){
     	double len1 = Math.sqrt(Math.pow(l1.normHspan, 2)+Math.pow(l1.normSpan, 2));
     	double len2 = Math.sqrt(Math.pow(l2.normHspan, 2)+Math.pow(l2.normSpan, 2));
