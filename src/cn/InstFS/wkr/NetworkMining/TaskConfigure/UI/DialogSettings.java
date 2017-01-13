@@ -75,9 +75,9 @@ public class DialogSettings extends JDialog {
         JPanel dateTimePane = addDateTimePicker();
         topPane.add(dateTimePane);
 
-        topPane.add(labelTaskRange);
+        /*topPane.add(labelTaskRange);
         fieldTaskRange.setEditable(false);
-        topPane.add(fieldTaskRange);
+        topPane.add(fieldTaskRange);*/
 
         topPane.add(labelMiningObject);
         JPanel cbPane = addMiningObjectCB(settings.getMiningObjectList());
@@ -233,7 +233,7 @@ public class DialogSettings extends JDialog {
     public void setData(MinerFactorySettings data) {
         dataPath.setText(data.getDataPath());
         fieldGranularity.setText(data.getGranularity());
-        fieldTaskRange.setText(data.getTaskRange().toString());
+        /*fieldTaskRange.setText(data.getTaskRange().toString());*/
         granularityComboBox.setSelectedItem(Integer.parseInt(data.getGranularity()) / 3600 +"");
     }
 

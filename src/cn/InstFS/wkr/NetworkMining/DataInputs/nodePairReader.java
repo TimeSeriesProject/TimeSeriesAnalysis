@@ -1503,7 +1503,7 @@ public class nodePairReader implements IReader {
 		/**
 		 * 读取文件时间段
 		 */
-		if(isReadBetween)
+		if(!isReadBetween)
 		{
 			long startTime=Long.MAX_VALUE;
 			long endTime =0;
@@ -1544,9 +1544,9 @@ public class nodePairReader implements IReader {
 		/**
 		 * timeSpan是相对小时数，start是相对小时数,time是绝对时间
 		 */
-		boolean onlyOneFile = true;
+//		boolean onlyOneFile = true;
 		System.out.println("startDay:"+startDay+" endDay:"+endDay);
-		for (int k = 0; fileDay <= endDay; k++,onlyOneFile = false) {
+		for (int k = 0; fileDay <= endDay; k++) {
 			String fileName = fileDay+".txt";
 			Logger.log("当前处理文件", fileName);
 			File file = new File(filePath+"\\"+ fileName);
@@ -1568,7 +1568,7 @@ public class nodePairReader implements IReader {
 				int timeSpan=Integer.parseInt(items[0]) + 24*k;			 
 				Date time=parseTime(timeSpan*3600, startDay);
 				/*读取时间区间数据*/
-				if(!onlyOneFile && isReadBetween){
+				if(isReadBetween){
 					if(time.compareTo(date1)<0||time.compareTo(date2)>0){
 						continue;
 					}
@@ -2295,7 +2295,7 @@ public class nodePairReader implements IReader {
 		/**
 		 * 读取文件时间段
 		 */
-		if(isReadBetween)
+		if(!isReadBetween)
 		{
 			long startTime = Long.MAX_VALUE;
 			long endTime = 0;
