@@ -1,7 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- 算法选择 -->
+<!--
+使用方式说明
+1. minerType代表不同挖掘任务类型，其中节点、链路属同一minerType且由taskRange进行区分
+2. minerType的子元素miningMethod代表不同挖掘方法，包括周期、异常、预测等
+3. custom的flag属性 设置为true时为自定义算法，此时对应的挖掘任务将采用miningAlgo中指定的算法; 否则依照系统默认算法进行挖掘
+4. 只可对flag、miningAlgo的值进行修改
+-->
+
+<!--
+算法可选值
+
+周期模式发现算法：平均熵周期检测算法,ERP距离周期检测算法
+
+序列异常检测算法：FFT异常检测、高斯滑动窗口异常检测、基于混合高斯的异常检测
+
+时间序列预测算法：神经网络预测、ARIMA模型预测
+
+多元序列相似度挖掘算法： DTW相似度多元序列关联、Rtree相似度多元序列关联
+
+-->
 <algorithmsManager>
     <minerType type="节点与链路规律挖掘">
+        <!-- 节点任务 -->
         <taskRange range="SingleNodeRange">
             <miningMethod method="周期模式发现">
                 <custom flag="true">
@@ -19,6 +40,8 @@
                 </custom>
             </miningMethod>
         </taskRange>
+
+        <!-- 链路任务 -->
         <taskRange range="NodePairRange">
             <miningMethod method="周期模式发现">
                 <custom flag="true">
