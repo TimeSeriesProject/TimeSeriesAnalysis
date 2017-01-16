@@ -33,6 +33,12 @@ public class PartialPeriod {
 	/**
 	 * @功能：发现潜在的部分周期
 	 */
+	void run2() {
+		
+	}
+	/**
+	 * @功能：发现潜在的部分周期
+	 */
 	Map<String, ArrayList<Pair>> run() {
 
 		for (Map.Entry<String, ArrayList<Pair>> entry : frequentmap.entrySet()) {
@@ -115,6 +121,7 @@ public class PartialPeriod {
 							}
 						} else {
 							// 找到了部分周期，记录周期和周期位置，更新搜索表
+							hasParticalPeriod=false;
 							this.periodResult.put(entry.getKey() + ":" + i
 									+ ":" + j, period);
 							this.positionResult.put(
@@ -122,20 +129,31 @@ public class PartialPeriod {
 									exchangeIntegerListToPairList(
 											positionIndex, list));
 							// this.diaplayMap(periodPointRecord);
+							System.out.println("模式 = " + entry.getKey() +" "+i+":"+"j"
+									+ ", 周期 = " + period);
+							
 
-							// 跟新表
+							// 跟新表1 
 							for (int index1 = 0; index1 < list.size(); index1++) {
 								for (int index2 = index1 + 1; index2 < list
 										.size(); index2++) {
 									t[list.get(index1)][list.get(index2)] = 1;
 								}
 							}
+							list.removeAll(list);// 
+							// 跟新表：搜索表每行只要有一个为1，其他全为1
+/*							for (int index1 = 0; index1 < list.size(); index1++) {
+								for (int index2 = 0; index2 < list
+										.size(); index2++) {
+									t[list.get(index1)][index2] = 1;
+								}
+							}*/
 							// 打印记录
-							for (Entry<String, Double> entry1 : periodResult
+/*							for (Entry<String, Double> entry1 : periodResult
 									.entrySet()) {
-
+								
 								System.out.println("模式 = " + entry1.getKey()
-										+ ", 周期 = " + entry.getValue());
+										+ ", 周期 = " + this.periodResult.get(entry1.getKey()));
 								Iterator<Pair> it = this.positionResult.get(
 										entry1.getKey()).iterator();
 								System.out.println("起始位置： ");
@@ -143,7 +161,7 @@ public class PartialPeriod {
 									System.out.println(it.next().getBegin()
 											+ " ");
 								}
-							}
+							}*/
 						}
 					}
 				}
@@ -213,7 +231,11 @@ public class PartialPeriod {
 		Map<String, ArrayList<Pair>> frequentmap = new HashMap<String, ArrayList<Pair>>();
 		ArrayList<Pair> list = new ArrayList<Pair>();
 
-		int[] a1 = { 268, 461, 867, 1253, 1444, 1783, 1836, 2063 };
+		int[] a1 = { 358 ,
+				856 ,
+				1362 ,
+				1894 ,
+				2376  };
 		for (int i = 0; i < a1.length; i++) {
 			Pair p1 = new Pair(a1[i], 3);
 			list.add(p1);

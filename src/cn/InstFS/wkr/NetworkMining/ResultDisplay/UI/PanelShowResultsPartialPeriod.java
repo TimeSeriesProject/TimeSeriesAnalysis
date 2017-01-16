@@ -121,15 +121,16 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 	 */
 	private static XYDataset createDataset(DataItems data,
 			Map<String, ArrayList<Pair>> map) {
-		if (map == null || data == null) {
+/*		if (map == null || data == null) {
 			System.out.println("部分周期显示：map==null或者data==null");
 			return null;
-		}
+		}*/
 		XYSeries initSeries = new XYSeries("原序列");
 		XYSeriesCollection XYSeriesCollection = new XYSeriesCollection();
 
 		// 部分周期序列
-		int modelnum = 1;
+		if(map!=null){
+				int modelnum = 1;
 		for (Map.Entry<String, ArrayList<Pair>> entry : map.entrySet()) {
 			XYSeries xyseries = new XYSeries("模式：" + (modelnum++));
 			//
@@ -144,6 +145,8 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 			}
 			XYSeriesCollection.addSeries(xyseries);
 		}
+		}
+	
 		// 原始序列
 		for (int i = 0; i < data.getLength(); i++) {
 			DataItem temp = new DataItem();
@@ -161,7 +164,7 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 		XYPlot xyplot = (XYPlot) jfreechart.getPlot();
 		NumberAxis numberaxis = (NumberAxis) xyplot.getRangeAxis();
 		numberaxis.setAutoRangeIncludesZero(false);
-		numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+		//numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		xyplot.setDomainPannable(true);
 		xyplot.setRangePannable(true);
 		XYLineAndShapeRenderer xylineandshaperenderer = new XYLineAndShapeRenderer();
