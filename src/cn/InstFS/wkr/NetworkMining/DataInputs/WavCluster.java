@@ -519,49 +519,7 @@ public class WavCluster {
 	 * @param clusterNum 聚类的类标签数量
 	 * @return 聚类之后的结果
 	 */
-	public static DataItems SelfCluster(DataItems dataItems,int size,int clusterNum,String fileName)
-	{
-		DataItems result = new DataItems();
-		ArrayList<ArrayList<Double>> instances =new ArrayList<ArrayList<Double>>();
-		SimpleKMeans kMeans;
-		DataItem[] dataItemArray = new DataItem[dataItems.getLength()];
-		for(int i=0;i<dataItems.getLength()&&(i+size-1)<dataItems.getLength();i+=size)
-		{
-			ArrayList <Double> vector = new ArrayList<Double>();
-			DataItem dataItem = new DataItem();
-			dataItem.setTime(dataItems.getElementAt(i).getTime());
-			dataItemArray[i/size]= dataItem;
-			for(int j=i;j<i+size;j++)
-			{
-				double value=(Double.valueOf(dataItems.getElementAt(j).getData()));
-				vector.add(value);
-			}
-			instances.add(vector);
-
-		}
-		if(instances.size()==0)
-			return result;
-		kMeans = Kmeans(instances,clusterNum,fileName,true);
-		try
-		{
-			int labels[]=kMeans.getAssignments();
-			
-			for(int i=0;i<labels.length;i++)
-			{
-				
-				DataItem dataItem =new DataItem();	
-				dataItem.setData(String.valueOf(labels[i]));
-				dataItem.setTime(dataItems.getTime().get(i*size));
-				result.add1Data(dataItem);
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-			System.exit(0);
-		}
-		return result;
-	}
+	           
 	
 	
 	/**
@@ -691,6 +649,120 @@ public class WavCluster {
 		}
 		return result;
 	}
+	
+	/**
+	 * 对某段时间序列进行聚类，并返回聚类结果
+	 * @param patterns 聚类元数据
+	 * @param size 每一类时间段的长度
+	 * @param clusterNum 聚类的类标签数量
+	 * @return 聚类之后的结果
+	 */
+	public static DataItems SelfCluster2(List<PatternMent> patterns,DataItems dataItems,int clusterNum,String fileName)
+	{
+		//clusterNum=(int) Math.sqrt(clusterNum);
+		DataItems result = new DataItems();
+		ArrayList<ArrayList<Double>> leninstances =new ArrayList<ArrayList<Double>>();
+		ArrayList<ArrayList<Double>> angleinstances =new ArrayList<ArrayList<Double>>();
+		ArrayList<ArrayList<Double>> highinstances =new ArrayList<ArrayList<Double>>();
+		SimpleKMeans xkMeans;
+		SimpleKMeans ykMeans;
+		SimpleKMeans hkMeans;
+	
+		
+		for(int i=0;i<patterns.size();i++)
+		{
+			PatternMent pattern=patterns.get(i);
+			ArrayList <Double> lenvector = new ArrayList<Double>();//长度向量
+			ArrayList <Double> anglevector = new ArrayList<Double>();//角度向量
+			ArrayList <Double> heightvector = new ArrayList<Double>();//高度向量
+			double xSpan=pattern.getEnd()-pattern.getStart()+1.0;
+			double ySpan=Double.parseDouble(dataItems.getData().get(pattern.getEnd()))-
+					Double.parseDouble(dataItems.getData().get(pattern.getStart()));
+			double hSpan= (Double.parseDouble(dataItems.getData().get(pattern.getEnd()))+
+					Double.parseDouble(dataItems.getData().get(pattern.getStart())))/2;
+			
+			lenvector.add(Math.sqrt(xSpan*xSpan+ySpan*ySpan));
+			heightvector.add(hSpan);
+			if(xSpan==0)
+				anglevector.add(3.14/2);
+			else
+				anglevector.add(Math.atan(ySpan/xSpan));
+			leninstances.add(lenvector);
+			angleinstances.add(anglevector);
+			highinstances.add(heightvector);
+
+		}
+//		if(xinstances.size()==0)
+//			return result;
+		if(leninstances.size()==0)
+			return result;
+		xkMeans = Kmeans(leninstances,clusterNum,fileName,true);//长度聚类
+		ykMeans = Kmeans(angleinstances,6,fileName,true);//角度聚类
+		hkMeans = Kmeans(highinstances,clusterNum,fileName,true);//高度聚类
+		try
+		{
+			int xlabels[]=xkMeans.getAssignments();
+			int ylabels[]=ykMeans.getAssignments();
+			int hlabels[]=hkMeans.getAssignments();
+//			for(int label:labels)
+//				System.out.println(label);
+			
+			Map<String,ArrayList<SegPattern>> patternMap = new HashMap<String,ArrayList<SegPattern>> ();
+			for(int i=0;i<xlabels.length;i++)
+			{
+				//if(xlabels[i]==0)
+				//	System.out.print("label"+" "+i+" "+xlabels[i]+" "+ylabels[i]);
+				
+				DataItem dataItem =new DataItem();	
+				dataItem.setData(String.valueOf(xlabels[i]*1000+hlabels[i]*10+ylabels[i]));//表示属于哪一类
+				
+				dataItem.setTime(dataItems.getTime().get(patterns.get(i).getStart()));
+				
+				result.add1Data(dataItem);
+				SegPattern segPattern = new SegPattern();
+				segPattern.setAngle(angleinstances.get(i).get(0));
+				segPattern.setLength(leninstances.get(i).get(0));
+				segPattern.setHeight(highinstances.get(i).get(0));
+				if(patternMap.containsKey(dataItem.getData()))
+					patternMap.get(dataItem.getData()).add(segPattern);
+				else
+				{
+					ArrayList<SegPattern> list = new ArrayList<SegPattern> ();
+					list.add(segPattern);
+					patternMap.put(dataItem.getData(), list);
+				}
+			}
+			for(Map.Entry<String, ArrayList<SegPattern>> entry:patternMap.entrySet())
+			{
+				ArrayList<SegPattern> list = entry.getValue();
+				SegPattern pattern = new SegPattern();
+				double angleSum=0;
+				double lenSum=0;
+				double heightSum=0;
+				for(int i=0;i<list.size();i++)
+				{
+					angleSum+=list.get(i).getAngle();
+					lenSum  +=list.get(i).getLength();
+					heightSum+=list.get(i).getHeight();
+				}
+				pattern.setAngle(angleSum/list.size());
+				pattern.setLength(lenSum/list.size());
+				pattern.setHeight(heightSum/list.size());
+				clusterCentroids.put(entry.getKey(),pattern);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			System.exit(0);
+		}
+		return result;
+	}
+	
+	
+	
+	
+	
 	
 	/**
 	 * 得到聚类后的结果，以及每个符号对应的原始点序列
