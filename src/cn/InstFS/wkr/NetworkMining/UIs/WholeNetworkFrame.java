@@ -20,6 +20,7 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import common.Logger;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.border.StandardBorderPainter;
 import org.jvnet.substance.painter.StandardGradientPainter;
@@ -93,6 +94,8 @@ public class WholeNetworkFrame extends JFrame{
 	public WholeNetworkFrame(HashMap<String,HashMap<TaskCombination, MinerNodeResults>> argresultMaps)
 	{
 		this.resultMaps=argresultMaps;
+		Logger.log("===============================================================");
+		Logger.log("挖掘结果显示");
 		loadModel();
 		initModel();
 		initialize();

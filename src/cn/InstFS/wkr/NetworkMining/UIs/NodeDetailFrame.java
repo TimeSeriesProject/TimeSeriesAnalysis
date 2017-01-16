@@ -20,6 +20,7 @@ import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningMethod;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
+import common.Logger;
 
 public class NodeDetailFrame extends JFrame{
 
@@ -57,7 +58,7 @@ public class NodeDetailFrame extends JFrame{
 	public NodeDetailFrame(TaskCombination taskCombination)
 	{
 		this.taskCombination=taskCombination;
-		
+		Logger.log("TaskCombination"+ taskCombination.getName() +"详细结果列表显示");
 		initModel();
 		initialize();
 	}

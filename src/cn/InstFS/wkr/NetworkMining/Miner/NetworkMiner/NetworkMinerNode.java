@@ -12,6 +12,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import common.ErrorLogger;
+import common.Logger;
 import lineAssociation.ClusterWrapper;
 import lineAssociation.DPCluster;
 import lineAssociation.Linear;
@@ -80,25 +81,21 @@ public class NetworkMinerNode implements INetworkMiner{
 		this.taskCombination=taskCombination;
 		results = new MinerResults(this);
 		Over=new IsOver();
-		
-		ErrorLogger.log("taskCombination information");
-		ErrorLogger.log("range:",taskCombination.getRange());
-		ErrorLogger.log("protocol:",taskCombination.getProtocol());
-		ErrorLogger.log("MinerType:",taskCombination.getMinerType().toString());
-		ErrorLogger.log("MiningObjec:",taskCombination.getMiningObject());
+
 	}
 	
 	@Override
 	public boolean start() {
 		//System.out.println("PanelShowResultsPM   timer starting");
+		Logger.log("启动TaskCombination"+taskCombination.getName()+"挖掘");
 		MinerFactorySettings settings = getMinerFactorySettings(taskCombination);
 		MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(taskCombination.getMiningObject()));
 		if(resultsFile.hasFile(settings, taskCombination)) { // 已有挖掘结果存储，则不重新启动miner
+			Logger.log("从原存储的挖掘结果中恢复");
 			Over.setIsover(true);
 			MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
 			results.setRetNode(resultNode);
 
-			ErrorLogger.log(taskCombination.getRange()+","+taskCombination.getMiningObject()+","+taskCombination.getMinerType(),"结果已存在");
 			TaskProgress taskProgress = TaskProgress.getInstance();
 			taskProgress.increaseComplete();
 			return false;
@@ -120,6 +117,8 @@ public class NetworkMinerNode implements INetworkMiner{
 			future.get();
 		}catch(Exception e){
 			e.printStackTrace();
+			ErrorLogger.log("TaskCombination "+ taskCombination.getName() +"任务挖掘出错");
+			ErrorLogger.log("异常信息", e.toString());
 			isRunning = false;
 			Over.setIsover(false);
 
@@ -233,8 +232,8 @@ class NodeTimerTask extends TimerTask{
 		
 		isRunning = true;
 		// 读取数据
-		ErrorLogger.log(taskCombination.getRange()+","+taskCombination.getMiningObject()+","+taskCombination.getMinerType(),"调用PMDetect");
-		ErrorLogger.log("\t tasks",taskCombination.getTasks().toString());
+		/*ErrorLogger.log(taskCombination.getRange()+","+taskCombination.getMiningObject()+","+taskCombination.getMinerType(),"调用PMDetect");
+		ErrorLogger.log("\t tasks",taskCombination.getTasks().toString());*/
 		PMDetect(taskCombination.getDataItems(),taskCombination.getTasks());
 	}
 	
@@ -522,6 +521,7 @@ class NodeTimerTask extends TimerTask{
 
 		TaskProgress taskProgress = TaskProgress.getInstance();
 		taskProgress.increaseComplete();
+		Logger.log("TaskCombination"+ taskCombination.getName() + "挖掘完成");
 	}
 	
 	private void setPMResults(MinerResults results,IMinerPM pmMethod){
