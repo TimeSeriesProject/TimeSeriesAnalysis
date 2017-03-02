@@ -115,6 +115,17 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
 
             yName=obName;
 
+            if (!rslt.getRetPath().getHasPeriod()) {
+                JLabel text = new JLabel("所有路径均无周期性",Label.CENTER);
+                panel.add(text,BorderLayout.CENTER);
+                jsp.setViewportView(panel);
+                add(jsp);
+
+                repaint();
+                validate();
+                count++;
+                return;
+            }
 
             for (Map.Entry<String, MinerResultsPM> entry : resultPM.entrySet()) {
                 String pathname = entry.getKey();
