@@ -372,19 +372,11 @@ class RouteGen implements Callable {
             //必须重写compareTo，equals和hashcode可以不用重写,因为使用treeset，只用ttl判断会导致相同ttl、不同node覆盖
             @Override
             public int compareTo(NodeAndTTL arg0) {
-                if (node == arg0.node) {
-                    if (TTL == arg0.TTL) {
-                        return 0;
-                    } else {
-                        return TTL < arg0.TTL ? -1 : 1;
-                    }
-                } else {
-                    return node.compareTo(arg0.node);
-                }
+                return TTL.compareTo(arg0.TTL);
+
             }
         }
-        TreeSet<NodeAndTTL> ttlList = new TreeSet<NodeAndTTL>();
-
+        ArrayList<NodeAndTTL> ttlList = new ArrayList<NodeAndTTL>();
         Collections.sort(datas);
 //        System.out.println("size: " + datas.size());
 
@@ -423,6 +415,7 @@ class RouteGen implements Callable {
                 }
             }
 
+            Collections.sort(ttlList);
             updateRecords(first);
             StringBuilder sb = new StringBuilder();
             sb.append(String.valueOf(first.getTime_s())).append(",").append(first.getSrcIP()).append(",").
