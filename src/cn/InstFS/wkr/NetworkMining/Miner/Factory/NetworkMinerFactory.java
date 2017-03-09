@@ -468,7 +468,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			if(!entry.getKey().getMinerType().equals(minerType)||!entry.getKey().getMiningObject()
 					.equals(miningObject.toString())||entry.getValue().isOver())
 				continue;
-			ErrorLogger.log(entry.getKey().getRange()+","+entry.getKey().getMiningObject()+","+entry.getKey().getMinerType(),entry.getValue().toString());
+//			ErrorLogger.log(entry.getKey().getRange()+","+entry.getKey().getMiningObject()+","+entry.getKey().getMinerType(),entry.getValue().toString());
 			entry.getValue().start();
 			
 			try {

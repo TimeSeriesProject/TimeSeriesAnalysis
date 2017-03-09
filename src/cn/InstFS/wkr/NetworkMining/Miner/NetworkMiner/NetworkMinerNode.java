@@ -12,6 +12,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import common.ErrorLogger;
+import common.ErrorTrace;
 import common.Logger;
 import lineAssociation.ClusterWrapper;
 import lineAssociation.DPCluster;
@@ -119,8 +120,10 @@ public class NetworkMinerNode implements INetworkMiner{
 			future.get();
 		}catch(Exception e){
 			e.printStackTrace();
+			ErrorLogger.log("Error-----------------------------------------------------------");
 			ErrorLogger.log("TaskCombination "+ taskCombination.getName() +"任务挖掘出错");
-			ErrorLogger.log("异常信息", e.toString());
+			ErrorLogger.log("异常信息", ErrorTrace.getTrace(e));
+			ErrorLogger.log("----------------------------------------------------------------");
 			isRunning = false;
 			Over.setIsover(false);
 
