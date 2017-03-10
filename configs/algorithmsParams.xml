@@ -135,7 +135,11 @@
     </clientParams>
     <!-- 端口 -->
     <portParams>
+        <port>80</port>
         <port>9</port>
+        <port>20</port>
+        <port>22</port>
+        <port>25</port>
         <port>10</port>
         <port>11</port>
         <port>402</port>

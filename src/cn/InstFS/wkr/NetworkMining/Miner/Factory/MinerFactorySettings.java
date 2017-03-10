@@ -36,8 +36,8 @@ public abstract class MinerFactorySettings {
         granularityList = GlobalConfig.getInstance().getGranularityList();
         Calendar cal1 = Calendar.getInstance();
         Calendar cal2 = Calendar.getInstance();
-        cal1.set(2016, 4, 1, 2, 0, 0);
-        cal2.set(2016,5,3,3,0,0);
+        cal1.set(2017, 2, 1, 0, 0, 0);
+        cal2.set(2016,4,3,0,0,0);
         startDate = new Date(cal1.getTimeInMillis()/1000 * 1000);
         endDate = new Date(cal2.getTimeInMillis()/1000 * 1000);
     }
