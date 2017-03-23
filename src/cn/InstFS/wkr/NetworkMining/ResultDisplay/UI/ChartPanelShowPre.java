@@ -168,12 +168,12 @@ public class ChartPanelShowPre extends JPanel{
 
         //添加数据值
 
-        xyseries.add(norDataLength-9, Double.parseDouble(abnor.getElementAt(abnor.getLength() - 1).getData()));//预测长度设置
+        xyseries.add(norDataLength-11, Double.parseDouble(abnor.getElementAt(abnor.getLength() - 1).getData()));//预测长度设置
         for (int i = 0; i < length - 1; i++) {
 
             DataItem temp=new DataItem();
             temp=abnor.getElementAt(i);
-            xyseries.add(i+norDataLength-8,Double.parseDouble(temp.getData()));
+            xyseries.add(i+norDataLength-10,Double.parseDouble(temp.getData()));
         }
         xyseriescollection.addSeries(xyseries);
         return xyseriescollection;
