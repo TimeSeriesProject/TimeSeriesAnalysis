@@ -1,5 +1,10 @@
 package cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -14,6 +19,7 @@ import lineAssociation.DPCluster;
 import lineAssociation.Linear;
 import lineAssociation.SymbolNode;
 import PropertyTest.OutlinesTest.OutliersTest;
+import PropertyTest.PredictTest.PredictTest;
 import WaveletUtil.PointPatternDetection;
 import WaveletUtil.SAXPartternDetection;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
@@ -365,29 +371,34 @@ class NodeTimerTask extends TimerTask{
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_PredictionMining:
-				List<Date> time = dataItems.getTime();
-				List<String> data = dataItems.getData();
-				List<Date> tTime = new ArrayList<>();
-				List<String> tData = new ArrayList<>();
-
-				for (int i=0; i<dataItems.getLength()-20; i++) {
-					tTime.add(time.get(i));
-					tData.add(data.get(i));
-				}
-				DataItems tDataItems = new DataItems();
-				tDataItems.setData(tData);
-				tDataItems.setTime(tTime);
-				dataItems = tDataItems;
-
+			    int testsize=8;//测试数据的长度
+				PredictTest predicttest=new PredictTest();
+				DataItems tDataItems=predicttest.getTestpredictData(dataItems);//获得除去后8个数据的实际原始数据段
+				List<String> realtestData=predicttest.getTestRealData(dataItems);//获得原始数据的最后8个数据
 				if (task.getMiningAlgo() != null) {
 					switch (task.getMiningAlgo()) {
 						case MiningAlgo_NeuralNetworkTSA:
-							forecastMethod =new NeuralNetwork(dataItems, task,
+							forecastMethod =new NeuralNetwork(tDataItems, task,
 									ParamsAPI.getInstance().getParamsPrediction().getNnp());
+							
+							
+							//...................................测试开始.............................................//
+							
+							predicttest.resultWrite(forecastMethod.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject());
+							
+							//...................................测试结束.............................................//
 							break;
 						case MiningAlgo_ARIMATSA:
-							forecastMethod =new ARIMATSA(task, dataItems,
+							forecastMethod =new ARIMATSA(task, tDataItems,
 							ParamsAPI.getInstance().getParamsPrediction().getAp());
+							
+							//...................................测试开始.............................................//
+							
+							predicttest.resultWrite(forecastMethod.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject());
+							
+							
+							//...................................测试结束.............................................//
+							
 							break;
 						default:
 							throw new RuntimeException("方法不存在！");
@@ -401,31 +412,48 @@ class NodeTimerTask extends TimerTask{
 					if (resultsPM.getHasPeriod()) { // 若有周期性
 						DataItems predictItems = new DataItems();
 						DataItems periodDi = resultsPM.getDistributePeriod();
-
 						Calendar calendar=Calendar.getInstance();
-						calendar.setTime(dataItems.getLastTime());
-						int len = dataItems.getLength();
-						for(int i = 0; i< periodDi.getLength()/2; i++){
+						calendar.setTime(tDataItems.getLastTime());
+						int len = tDataItems.getLength();
+						//for(int i = 0; i< periodDi.getLength()/2; i++){//
+						for(int i = 0; i< testsize; i++){
 							int index = (int) ((i+len) % resultsPM.getPeriod());
 							calendar.add(Calendar.SECOND, task.getGranularity());
-							predictItems.add1Data(calendar.getTime(), periodDi.getData().get(index)+"");
+							predictItems.add1Data(calendar.getTime(), periodDi.getData().get(index));
 						}
-
+						
+						//...................................测试开始.............................................//
+						
+						predicttest.resultWrite(predictItems.getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject());
+						
+						
+						//...................................测试结束.............................................//
+						
 						results.getRetNode().getRetFM().setPredictItems(predictItems);
 					} else{
 						SMForecast forecast=new SMForecast(clusterItems, sequencePattern.getPatterns(),
 								sequencePattern.getPatternsSupDegree(), WavCluster.clusterCentroids,
-								task, oriDataItems);
+								task, tDataItems);
 						System.out.println(task.getTaskName()+" forecast start");
 						forecast.TimeSeriesAnalysis();
 						System.out.println(task.getTaskName()+" forecast over");
 						if(forecast.getPredictItems()==null||forecast.getPredictItems().getLength()<=0){
-							NeuralNetwork workforecast=new NeuralNetwork(dataItems, task,
+							NeuralNetwork workforecast=new NeuralNetwork(tDataItems, task,
 									ParamsAPI.getInstance().getParamsPrediction().getNnp());
 							System.out.println(task.getTaskName()+" forecast start");
 							workforecast.TimeSeriesAnalysis();
-							System.out.println(task.getTaskName()+" forecast over");
+							//....................................测试任务开始...............................................*//
+							
+							predicttest.resultWrite(workforecast.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject());
+							
+							
+							//..............................测试结束....................................//
+							
+							System.out.println(task.getTaskName());
 							setForecastResult(results, workforecast);
+							
+							
+							
 						}else{
 							setForecastResult(results, forecast);
 						}

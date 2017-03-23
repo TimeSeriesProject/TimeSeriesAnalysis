@@ -72,7 +72,7 @@
     <forecastParams>
         <!-- 神经网络 -->
         <neuralNetworkParams>
-            <predictPeriod>20</predictPeriod>
+            <predictPeriod>8</predictPeriod>
             <momentum>0.1</momentum>
             <learnRate>0.2</learnRate>
             <seed>0</seed>
@@ -80,7 +80,7 @@
         </neuralNetworkParams>
         <!-- ARIMA -->
         <ARIMAParams>
-            <predictPeriod>20</predictPeriod>
+            <predictPeriod>8</predictPeriod>
         </ARIMAParams>
     </forecastParams>
 
