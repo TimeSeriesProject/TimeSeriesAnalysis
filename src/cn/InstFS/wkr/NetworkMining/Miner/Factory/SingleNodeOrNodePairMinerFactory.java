@@ -15,6 +15,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.DataInputs.nodePairReader;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
+import common.Logger;
 
 public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 	private static SingleNodeOrNodePairMinerFactory inst;
@@ -105,6 +106,13 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 //		if(dataDirectory.isFile()){
 //			parseFile(dataDirectory,reader);
 //		}else{
+
+		Logger.log("挖掘类型", getMinerType());
+		Logger.log("挖掘对象", miningObject.toString());
+		Logger.log("源数据读取目录", dataDirectory.getPath());
+		Logger.log("数据读取起止时间", getStartDate().toString() + "--" + getEndDate().toString());
+		Logger.log("数据处理时间粒度", getGranularity()+"s");
+		Logger.log("源数据读取开始");
 		
 		File[] dataDirs=dataDirectory.listFiles();
 		boolean flag = false; // 标记选择的路径是否已到具体节点目录
@@ -148,6 +156,7 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 //				cal2.set(2014,11,20,0,0,0);
 				Date date1 = getStartDate();
 				Date date2 = getEndDate();
+				Logger.log("源数据读取子目录", dataFile.getPath());
 				rawDataItems=reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(),true,date1,date2,3600);
 				
 				break;
@@ -160,11 +169,13 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 				 * **/				
 				Date date3 = getStartDate();
 				Date date4 = getEndDate();
+				Logger.log("源数据读取子目录", dataFile.getPath());
 				rawDataItems=reader.readEachProtocolTimesDataItems(dataFile.getAbsolutePath(),true,date3,date4,3600);
 				break;
 			case MiningObject_NodeDisapearEmerge:
 				Date date5 = getStartDate();
 				Date date6 = getEndDate();
+				Logger.log("源数据读取子目录", dataFile.getPath());
 				rawDataItems = reader.readEachNodeDisapearEmergeDataItems(dataFile.getAbsolutePath(),true,date5,date6,3600);
 				isNodeDisapearEmerge = true;
 //				if(ip.compareTo("4") == 0 ||ip.compareTo("3") == 0 ||ip.compareTo("0") == 0 ||
@@ -175,6 +186,8 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 			default:
 				break;
 			}
+
+			Logger.log("生成挖掘任务集合");
 			for(String protocol:rawDataItems.keySet()){
 				DataItems dataItems=rawDataItems.get(protocol);
 				if(!isDataItemSparse(dataItems) || isNodeDisapearEmerge){
@@ -201,7 +214,8 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 					taskCombination.setName();
 					taskCombination.setMinerType(MinerType.MiningType_SinglenodeOrNodePair);
 					TaskElement.add1Task(taskCombination, false);
-					ErrorLogger.log(ip,"data.size:"+dataItems.data.size()+" time.size:"+dataItems.time.size()+" lenth:"+dataItems.getLength());
+					Logger.log("添加TaskCombination", taskCombination.getName());
+//					ErrorLogger.log(ip,"data.size:"+dataItems.data.size()+" time.size:"+dataItems.time.size()+" lenth:"+dataItems.getLength());
 				}
 			}
 		}else if(taskRange.toString().equals(TaskRange.NodePairRange.toString())){
@@ -212,18 +226,21 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 
 				Date date1 = getStartDate();
 				Date date2 = getEndDate();
+				Logger.log("源数据读取子目录", dataFile.getPath());
 				ipPairRawDataItems=reader.readEachIpPairProtocolTrafficDataItems(dataFile.getAbsolutePath(),true,date1,date2,3600);
 				break;
 			case MiningObject_Times:
 				//ipPairRawDataItems=reader.readEachIpPairProtocolTimesDataItems(dataFile.getAbsolutePath());
 				Date date3 = getStartDate();
 				Date date4 = getEndDate();
+				Logger.log("源数据读取子目录", dataFile.getPath());
 				ipPairRawDataItems=reader.readEachIpPairProtocolTimesDataItems(dataFile.getAbsolutePath(),true,date3,date4,3600);
 				break;
 			default:
 				break;
 			}
-			
+
+			Logger.log("生成挖掘任务集合");
 			for(String ipPair:ipPairRawDataItems.keySet()){
 				Map<String, DataItems> itemsMap=ipPairRawDataItems.get(ipPair);
 				for(String protocol:itemsMap.keySet()){
@@ -248,6 +265,7 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 						taskCombination.setName();
 						taskCombination.setMinerType(MinerType.MiningType_SinglenodeOrNodePair);
 						TaskElement.add1Task(taskCombination, false);
+						Logger.log("添加TaskCombination", taskCombination.getName());
 					}
 				}
 			}

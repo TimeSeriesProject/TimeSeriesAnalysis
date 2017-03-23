@@ -106,11 +106,13 @@ public class DPCluster {
                 +"\n--outliers: "+outliers.size());
         System.out.println("聚类中心:index,theta,lenght):");
         Iterator<Integer> iterator = clusterCenters.iterator();
-        while(iterator.hasNext()){
+/*        while(iterator.hasNext()){
+        	
+     
         	int index = iterator.next();
         	double lenght = Math.sqrt(Math.pow(linears.get(index).normSpan, 2)+Math.pow(linears.get(index).normHspan, 2));
         	System.out.println("("+index+","+linears.get(index).normTheta+","+lenght+")");
-        }
+        }*/
     }
 
     /**
@@ -236,6 +238,12 @@ public class DPCluster {
             double d = distances.get(x);
             for(int y = size-1;y>x;y--){   
                 double e = distances.get(y);
+                
+                
+                
+                
+                
+                
                 if(d==e)break;
                 int i = RHO.get(d),j = RHO.get(e);
                 double distance = 0.0;

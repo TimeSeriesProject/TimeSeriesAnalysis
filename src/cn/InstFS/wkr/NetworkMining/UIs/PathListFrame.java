@@ -9,6 +9,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPath;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 
+import common.Logger;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.border.StandardBorderPainter;
 import org.jvnet.substance.painter.StandardGradientPainter;
@@ -118,6 +119,8 @@ public class PathListFrame extends JFrame{
         this.resultMap = this.resultMaps.get(miningObjectList.get(0));
         System.out.println("resultMap:"+miningObjectList.get(0));
 //        this.resultMap=this.resultMaps.get("通信次数");
+        Logger.log("===============================================================");
+        Logger.log("挖掘结果列表显示");
         loadModel();
         initModel();
         initialize();

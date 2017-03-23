@@ -1,5 +1,6 @@
 package cn.InstFS.wkr.NetworkMining.TaskConfigure;
 
+import common.ErrorLogger;
 import org.jdom.*;
 import org.jdom.input.SAXBuilder;
 
@@ -60,6 +61,8 @@ public class GlobalConfig {
             classElement = document.getRootElement();
         } catch (JDOMException | IOException e) {
             e.printStackTrace();
+            ErrorLogger.log("全局基本配置信息文件读取错误，或因文件不存在或文档结构错误");
+            ErrorLogger.log("文件地址",configPath);
         }
 
         return classElement;

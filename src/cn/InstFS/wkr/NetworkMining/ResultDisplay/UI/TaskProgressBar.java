@@ -4,6 +4,8 @@ package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
  * @author Arbor vlinyq@gmail.com
  * @version 2016/9/13
  */
+import common.Logger;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -29,6 +31,7 @@ public class TaskProgressBar extends JPanel
             taskProgress = TaskProgress.getInstance();
             Random random = new Random();
             int taskNum = taskProgress.getTaskComNum();
+            Logger.log("总任务数", String.valueOf(taskNum));
             progressBar.setMaximum(taskNum);
             int progress = 0;
             //Initialize progress property.
@@ -92,6 +95,8 @@ public class TaskProgressBar extends JPanel
         task = new Task();
         task.addPropertyChangeListener(this);
         task.execute();
+        Logger.log("===============================================================");
+        Logger.log("启动挖掘进度显示");
     }
 
     public void clearBar() {

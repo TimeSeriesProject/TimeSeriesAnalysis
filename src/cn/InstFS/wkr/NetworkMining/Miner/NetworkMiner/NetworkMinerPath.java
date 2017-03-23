@@ -34,6 +34,8 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsSimulation;
 import cn.InstFS.wkr.NetworkMining.UIs.Utils.UtilsUI;
+import common.ErrorLogger;
+import common.ErrorTrace;
 
 public class NetworkMinerPath implements INetworkMiner{
 	private ScheduledExecutorService timer;
@@ -80,6 +82,11 @@ public class NetworkMinerPath implements INetworkMiner{
 		try {
 			future.get();
 		} catch (Exception e) {
+
+			ErrorLogger.log("Error-----------------------------------------------------------");
+			ErrorLogger.log("TaskCombination "+ taskCombination.getName() +"任务挖掘出错");
+			ErrorLogger.log("异常信息", ErrorTrace.getTrace(e));
+			ErrorLogger.log("----------------------------------------------------------------");
 			isRunning=false;
 			Over.setIsover(false);
 

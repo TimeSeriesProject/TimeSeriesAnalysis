@@ -298,7 +298,7 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 					statistics.addValue(data);
 				}
 				double mean=statistics.getMean();
-				southPanel.add(new JLabel("平均支持度: " + String.format("%.2f",mean), JLabel.CENTER),BorderLayout.CENTER);
+				southPanel.add(new JLabel("平均置信度: " + String.format("%.2f",mean), JLabel.CENTER),BorderLayout.CENTER);
 
 				final JPanel checkboxPanel = new JPanel();
 				//设置监听复选框。
@@ -371,8 +371,8 @@ public class PanelShowResultsSM extends JPanel implements IPanelShowResults {
 				for(int i=0;i<modeList.size();i++)
 				{
 					if(i<10) {
-						JCheckBox cb = new JCheckBox("模式"+ (i+1) +" "+ freqPatternsList.get(i)
-								+" 支持度"+ String.format("%.2f",freqPatterns.getProb().get(i)) );
+						JCheckBox cb = new JCheckBox("模式"+ (i+1) +" "
+								+" 置信度"+ String.format("%.2f",freqPatterns.getProb().get(i)) );
 						box.add(cb);
 						checkboxPanel.add(cb);
 						checkboxPanel.add(labelArr.get(i));

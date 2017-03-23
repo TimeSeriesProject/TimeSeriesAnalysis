@@ -15,6 +15,7 @@ import cn.InstFS.wkr.NetworkMining.Params.SMParams.SMParam;
 import cn.InstFS.wkr.NetworkMining.Params.statistics.SeriesStatisticsParam;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.GlobalConfig;
 
+import common.ErrorLogger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -79,6 +80,8 @@ public class ParamsAPI {
 			classElement = document.getRootElement().getChild(algoParams);
 		} catch (JDOMException | IOException e) {
 			e.printStackTrace();
+			ErrorLogger.log("算法参数文件读取错误,或因文件不存在、文档结构不正确等原因");
+			ErrorLogger.log("文件地址","configs/algorithmsParams.xml");
 		}
 
 		return classElement;

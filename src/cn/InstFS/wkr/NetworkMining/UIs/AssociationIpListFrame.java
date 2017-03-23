@@ -33,6 +33,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
+import common.Logger;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.border.StandardBorderPainter;
 import org.jvnet.substance.painter.StandardGradientPainter;
@@ -111,6 +112,8 @@ public class AssociationIpListFrame extends JFrame {
 	public AssociationIpListFrame(HashMap<TaskCombination, MinerProtocolResults> tmpResultMap) {
 		
 		resultMap = tmpResultMap;
+		Logger.log("===============================================================");
+		Logger.log("挖掘结果显示");
 		loadModel();
 		initModel();
 		initialize();

@@ -201,7 +201,7 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
                     taskCombination.setName();
                     taskCombination.setMinerType(MinerType.MiningType_SinglenodeOrNodePair);
                     TaskCombinationList.addTaskOnly(taskCombination, false);
-                    ErrorLogger.log(ip,"data.size:"+dataItems.data.size()+" time.size:"+dataItems.time.size()+" lenth:"+dataItems.getLength());
+//                    ErrorLogger.log(ip,"data.size:"+dataItems.data.size()+" time.size:"+dataItems.time.size()+" lenth:"+dataItems.getLength());
                 }
             }
         }else if(taskRange.toString().equals(TaskRange.NodePairRange.toString())){

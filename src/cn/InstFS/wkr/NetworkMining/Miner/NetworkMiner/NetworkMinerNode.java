@@ -7,6 +7,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import common.ErrorLogger;
+import common.ErrorTrace;
+import common.Logger;
 import lineAssociation.ClusterWrapper;
 import lineAssociation.DPCluster;
 import lineAssociation.Linear;
@@ -37,6 +39,8 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalP
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalPeriodDetectionWitnDTW;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.LocalPeriodMinerERP;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialCycleAlgorithm.PartialCycle;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialPeriodAlgorithm.GetPositionAndMinerPaticalPeriod;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialPeriodAlgorithm.Pair;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.averageEntropyPM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
@@ -74,25 +78,21 @@ public class NetworkMinerNode implements INetworkMiner{
 		this.taskCombination=taskCombination;
 		results = new MinerResults(this);
 		Over=new IsOver();
-		
-		ErrorLogger.log("taskCombination information");
-		ErrorLogger.log("range:",taskCombination.getRange());
-		ErrorLogger.log("protocol:",taskCombination.getProtocol());
-		ErrorLogger.log("MinerType:",taskCombination.getMinerType().toString());
-		ErrorLogger.log("MiningObjec:",taskCombination.getMiningObject());
+
 	}
 	
 	@Override
 	public boolean start() {
 		//System.out.println("PanelShowResultsPM   timer starting");
+		Logger.log("启动TaskCombination"+taskCombination.getName()+"挖掘");
 		MinerFactorySettings settings = getMinerFactorySettings(taskCombination);
 		MiningResultsFile resultsFile = new MiningResultsFile(MiningObject.fromString(taskCombination.getMiningObject()));
 		if(resultsFile.hasFile(settings, taskCombination)) { // 已有挖掘结果存储，则不重新启动miner
+			Logger.log("从原存储的挖掘结果中恢复");
 			Over.setIsover(true);
 			MinerNodeResults resultNode = (MinerNodeResults) resultsFile.file2Result();
 			results.setRetNode(resultNode);
 
-			ErrorLogger.log(taskCombination.getRange()+","+taskCombination.getMiningObject()+","+taskCombination.getMinerType(),"结果已存在");
 			TaskProgress taskProgress = TaskProgress.getInstance();
 			taskProgress.increaseComplete();
 			return false;
@@ -114,6 +114,10 @@ public class NetworkMinerNode implements INetworkMiner{
 			future.get();
 		}catch(Exception e){
 			e.printStackTrace();
+			ErrorLogger.log("Error-----------------------------------------------------------");
+			ErrorLogger.log("TaskCombination "+ taskCombination.getName() +"任务挖掘出错");
+			ErrorLogger.log("异常信息", ErrorTrace.getTrace(e));
+			ErrorLogger.log("----------------------------------------------------------------");
 			isRunning = false;
 			Over.setIsover(false);
 
@@ -227,8 +231,8 @@ class NodeTimerTask extends TimerTask{
 		
 		isRunning = true;
 		// 读取数据
-		ErrorLogger.log(taskCombination.getRange()+","+taskCombination.getMiningObject()+","+taskCombination.getMinerType(),"调用PMDetect");
-		ErrorLogger.log("\t tasks",taskCombination.getTasks().toString());
+		/*ErrorLogger.log(taskCombination.getRange()+","+taskCombination.getMiningObject()+","+taskCombination.getMinerType(),"调用PMDetect");
+		ErrorLogger.log("\t tasks",taskCombination.getTasks().toString());*/
 		PMDetect(taskCombination.getDataItems(),taskCombination.getTasks());
 	}
 	
@@ -240,6 +244,7 @@ class NodeTimerTask extends TimerTask{
 		SequencePatternsDontSplit sequencePattern=null;
 		//results.setInputData(oriDataItems);
 		boolean minePartialCycle = true; // 判断是否挖掘部分周期
+		boolean minePartialPeriod = true; // 判断是否挖掘部分周期
 		for(TaskElement task:tasks){
 			dataItems=oriDataItems;
 			if(!task.getAggregateMethod().equals(AggregateMethod.Aggregate_NONE)){
@@ -462,7 +467,7 @@ class NodeTimerTask extends TimerTask{
 				break;
 			case MiningMethods_PartialCycle:
 				if (results.getRetNode().getRetPM().getHasPeriod()) { // 若有周期性,不挖掘部分周期
-					minePartialCycle = false;
+					minePartialPeriod = false;
 				} else {
 					/*LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
 					results.getRetNode().setRetPartialCycle(dtw.getResult());*/
@@ -478,6 +483,47 @@ class NodeTimerTask extends TimerTask{
 					partialCycle.run();
 				}*/
 				break;
+				
+			case MiningMethods_PartialPeriod:
+				System.out.println("开始进入部分周期挖掘");
+				if (results.getRetNode().getRetPM().isHasPartialPeriod()||results.getRetNode().getRetPM().getHasPeriod()) { // 若有周期性,不挖掘部分周期			
+					minePartialCycle = false;
+				} else {
+					//没有周期和局部周期，才挖掘部分周期			
+					ParamsSM paramsSM2 = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
+//					PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
+					PointSegment segment2=new PointSegment(dataItems, 4);
+//					LinePattern segment = new LinePattern(dataItems, 0.06);
+					List<PatternMent> segPatterns2=segment2.getPatterns();
+					 //DPC聚类
+			        AssociationRuleLineParams arp2 = ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams();
+					TranDPCluster dpCluster2 = new TranDPCluster(dataItems, segPatterns2, arp2,true);
+					clusterItems = dpCluster2.getClusterItems();
+					
+					sequencePattern=new SequencePatternsDontSplit(paramsSM2);
+					sequencePattern.setDataItems(clusterItems);
+					sequencePattern.setTask(task);
+
+					Map<Integer, List<String>>frequentItem2=sequencePattern.
+							printClusterLabelTOLines(clusterItems, dataItems);
+					List<LineElement> lineElements2 = sequencePattern.getLineElement(frequentItem2);
+					sequencePattern.patternMining();
+
+					//setFrequentResults(results, sequencePattern,frequentItem2, lineElements2,segPatterns2,dpCluster2.GAMMA);
+					List<ArrayList<String>> patterns=sequencePattern.getPatterns();
+					GetPositionAndMinerPaticalPeriod gpampp=new GetPositionAndMinerPaticalPeriod(patterns,lineElements2,0.15);
+					//写入结果
+					//gpampp.setPaticalPeriodResult(results);
+					if(gpampp.getResult()==null){
+						System.out.println("部分周期挖掘结果为空");
+					}
+					results.getRetNode().setRetPartialPeriod(gpampp.getResult());
+				}
+				System.out.println("部分周期挖掘结束");
+				break;
+				
+				
+				
 			default:
 				break;
 			}
@@ -494,6 +540,7 @@ class NodeTimerTask extends TimerTask{
 
 		TaskProgress taskProgress = TaskProgress.getInstance();
 		taskProgress.increaseComplete();
+		Logger.log("TaskCombination"+ taskCombination.getName() + "挖掘完成");
 	}
 	
 	private void setPMResults(MinerResults results,IMinerPM pmMethod){
