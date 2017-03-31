@@ -14,6 +14,7 @@ import javax.swing.JSplitPane;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.PanelShowAllResults;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
+import common.Logger;
 
 /**
  * @author Arbor
@@ -26,7 +27,7 @@ public class PathDetailFrame extends JFrame{
     public PathDetailFrame(TaskCombination taskCombination)
     {
         this.taskCombination=taskCombination;
-
+        Logger.log("TaskCombination"+ taskCombination.getName() +"详细结果列表显示");
         initModel();
         initialize();
     }

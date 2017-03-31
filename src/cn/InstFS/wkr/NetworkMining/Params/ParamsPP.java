@@ -10,6 +10,7 @@ import java.util.Date;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.DiscreteMethod;
 
 public class ParamsPP extends IParamsNetworkMining implements Serializable{
+    private static final long serialVersionUID = -6215239678007025066L;
     private Double periodThreshold;  //PP参数，确定周期的平均熵阈值
     public ParamsPP() {
         periodThreshold = 0.2;

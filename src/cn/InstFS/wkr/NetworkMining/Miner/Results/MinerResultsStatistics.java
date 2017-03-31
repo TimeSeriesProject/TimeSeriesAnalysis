@@ -3,6 +3,7 @@ package cn.InstFS.wkr.NetworkMining.Miner.Results;
 import java.io.Serializable;
 
 public class MinerResultsStatistics implements Serializable {
+	private static final long serialVersionUID = 6869036069355348352L;
 	private double mean;
 	private double std;
 	private double complex;

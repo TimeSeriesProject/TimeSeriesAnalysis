@@ -3,6 +3,9 @@ package common;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.GlobalConfig;
@@ -15,6 +18,11 @@ public class ErrorLogger {
 	public ErrorLogger(){
 		
 		loggerPath = GlobalConfig.getInstance().getLoggerPath();
+		File file = new File(loggerPath);
+
+		if (!file.exists()) {
+			file.mkdirs();
+		}
 		try {
 			writer = new FileWriter(new File(loggerPath+File.separator+"errorLog"+System.currentTimeMillis()+".txt"));
 		} catch (IOException e) {
@@ -26,7 +34,8 @@ public class ErrorLogger {
 	public static synchronized void log(String content){
 		
 		try {
-			writer.write(content+"\n");
+			SimpleDateFormat df = new SimpleDateFormat("MMM-dd HH:mm:ss", Locale.ENGLISH);//设置日期格式
+			writer.write(df.format(new Date()) +" "+content+"\n");
 			writer.flush();
 		} catch (IOException e) {
 			
@@ -36,7 +45,8 @@ public class ErrorLogger {
 	public static synchronized void log(String key,String value){
 		
 		try {
-			writer.write(key+":"+value+"\n");
+			SimpleDateFormat df = new SimpleDateFormat("MMM-dd HH:mm:ss", Locale.ENGLISH);
+			writer.write(df.format(new Date()) +" "+key+":"+value+"\n");
 			writer.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -45,8 +55,9 @@ public class ErrorLogger {
 	public static synchronized void log(Map<Object, Object> map){
 		
 		try {
+			SimpleDateFormat df = new SimpleDateFormat("MMM-dd HH:mm:ss", Locale.ENGLISH);
 			for(Object obj : map.keySet()){
-				writer.write(obj+":"+map.get(obj)+"\n");
+				writer.write(df.format(new Date()) +" "+obj+":"+map.get(obj)+"\n");
 			}
 			writer.flush();
 		} catch (IOException e) {

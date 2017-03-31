@@ -12,6 +12,8 @@ import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgressDis;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.UI.*;
+import common.Logger;
+import org.apache.commons.logging.Log;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.border.StandardBorderPainter;
 import org.jvnet.substance.painter.StandardGradientPainter;
@@ -74,6 +76,7 @@ public class win10_window extends JFrame {
     }
 
     public void distribute() {
+        Logger.log("分布式启动");
 //        if (!isDistributed) {
 //            System.out.println("启动分布式");
 //            server = Server.getInstance();
@@ -89,6 +92,7 @@ public class win10_window extends JFrame {
     }
 
     public void single() {
+        Logger.log("启动单机版");
         System.out.println("启动单机版");
         Server.closeServer();//服务关闭
         isDistributed = false;
@@ -209,6 +213,8 @@ public class win10_window extends JFrame {
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
+                        Logger.log("===============================================================");
+                        Logger.log("节点任务挖掘启动");
                         for (MiningObject ob: miningObjectList) {
                             singleNodeMinerFactory.reset();
                             singleNodeMinerFactory.setMiningObject(ob);
@@ -415,6 +421,7 @@ public class win10_window extends JFrame {
     }
 
     private void settingsWholeNetwork() {
+        Logger.log("网络结构规律挖掘配置");
         NetworkMinerFactory.getInstance();
         if (!isDistributed) {
             DialogSettings dialog = new DialogSettings(this, NetworkFactory.getInstance(), "网络结构规律挖掘配置");
@@ -428,6 +435,7 @@ public class win10_window extends JFrame {
     }
 
     private void settingsPath() {
+        Logger.log("承载路径规律挖掘配置");
         NetworkMinerFactory.getInstance();
         if (!isDistributed) {
             DialogSettings dialog = new DialogSettings(this, PathMinerFactory.getInstance(), "承载路径规律挖掘配置");
@@ -441,6 +449,7 @@ public class win10_window extends JFrame {
     }
 
     private void settingsSingleNode() {
+        Logger.log("节点规律挖掘配置");
         NetworkMinerFactory.getInstance();
         if (!isDistributed) {
             SingleNodeOrNodePairMinerFactory.getInstance().setTaskRange(TaskRange.SingleNodeRange);
@@ -467,6 +476,7 @@ public class win10_window extends JFrame {
     }
 
     private void settingsNodePair() {
+        Logger.log("链路规律挖掘配置");
         NetworkMinerFactory.getInstance();
         if (!isDistributed) {
             DialogSettings dialog = new DialogSettings(this, SingleNodeOrNodePairMinerFactory.getPairInstance(), "链路规律挖掘配置");
@@ -481,6 +491,7 @@ public class win10_window extends JFrame {
     }
 
     private void settingsProtocolAss() {
+        Logger.log("多业务关联挖掘配置");
         NetworkMinerFactory.getInstance();
         if (!isDistributed) {
             DialogSettings dialog = new DialogSettings(this, ProtocolAssMinerFactory.getInstance(), "多业务关联挖掘配置");
@@ -571,6 +582,7 @@ public class win10_window extends JFrame {
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
+                        long a = System.currentTimeMillis();
                         List<MiningObject> miningObjectList;
                         TaskProgressBar bar = (TaskProgressBar) newContentPane;
                         /* 网络结构任务 */
@@ -704,6 +716,8 @@ public class win10_window extends JFrame {
                             TaskProgress.getInstance().clear();
                             isProtocolAssMined = true;
                         }
+                        long b = System.currentTimeMillis();
+                        System.out.println("总时间 " + (b - a));
                     }
                 };
                 new Thread(runnable).start();
@@ -730,6 +744,7 @@ public class win10_window extends JFrame {
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
+                        long a = System.currentTimeMillis();
                         /* 网络结构任务 */
                         if (!isDisNetworkStructureMined) {
                             mineNetworkStructorDis("网络结构： ");
@@ -754,6 +769,8 @@ public class win10_window extends JFrame {
                         if (!isDisProtocolAssMined) {
                             mineProtocolAssDis("多业务： ");
                         }
+                        long b = System.currentTimeMillis();
+                        System.out.println("总时间 " + (b - a));
                     }
                 };
                 new Thread(runnable).start();
@@ -799,7 +816,7 @@ public class win10_window extends JFrame {
     {
         //没有任务时初始化
 
-
+        Logger.log("系统启动");
         JFrame.setDefaultLookAndFeelDecorated(true);
         //设置主题
 //         SubstanceLookAndFeel.setCurrentTheme(new SubstanceBottleGreenTheme());

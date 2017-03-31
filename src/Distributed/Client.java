@@ -560,7 +560,7 @@ class ClientInit {
         Socket socket3 = null;
         final DataPanel dataPanel1 = dataPanel;
 
-        //先启动客户端，不断尝试连接服务端
+        //先启动客户端，不断尝试连接服务端，间隔5s
         while (flag) {
             try {
                 socket1 = new Socket(IP, port);
@@ -590,7 +590,7 @@ class ClientInit {
                         socket1 = null;
                         socket2 = null;
                         socket3 = null;
-                        Thread.sleep(10000);
+                        Thread.sleep(5000);
                     } else {
                         break;
                     }

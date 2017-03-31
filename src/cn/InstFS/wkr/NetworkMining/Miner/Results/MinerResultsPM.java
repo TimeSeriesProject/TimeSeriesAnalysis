@@ -8,6 +8,7 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsPM;
 
 public class MinerResultsPM implements Serializable{
+	private static final long serialVersionUID = -7221320183988167714L;
 	boolean hasPeriod;
 	boolean hasPartialPeriod;
 	ParamsPM params;	// 或者 java.util.Properties params;

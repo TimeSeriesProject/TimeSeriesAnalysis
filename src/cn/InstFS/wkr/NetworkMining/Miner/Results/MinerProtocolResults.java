@@ -3,6 +3,7 @@ package cn.InstFS.wkr.NetworkMining.Miner.Results;
 import java.io.Serializable;
 
 public class MinerProtocolResults implements Serializable{
+	private static final long serialVersionUID = 5354154614913026974L;
 	private MinerResultsFP_Line retFP;
 	private MinerResultsFP_Whole retSim;
 	public MinerProtocolResults() {

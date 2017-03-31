@@ -12,6 +12,7 @@ public enum MiningMethod {
 	MiningMethods_PredictionMining("时间序列预测"),
 	MiningMethods_Statistics("统计图"),
 	MiningMethods_PartialCycle("局部周期发现"),
+	MiningMethods_PartialPeriod("部分周期发现"),
 	MiningMethods_None("无");
 	
 	private String value;
@@ -38,6 +39,10 @@ public enum MiningMethod {
 			return MiningMethods_PathProbilityMining;
 		}else if(str.equals(MiningMethods_Statistics.toString()))
 			return MiningMethods_Statistics;
+		else if (str.equals(MiningMethods_PartialCycle.toString()))
+			return MiningMethods_PartialCycle;
+		else if (str.equals(MiningMethods_PartialPeriod.toString()))
+			return MiningMethods_PartialPeriod;
 		else{
 			return MiningMethods_None;
 		}

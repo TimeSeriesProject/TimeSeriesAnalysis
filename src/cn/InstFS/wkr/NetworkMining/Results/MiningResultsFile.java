@@ -3,6 +3,8 @@ package cn.InstFS.wkr.NetworkMining.Results;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.MinerFactorySettings;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningObject;
+import common.ErrorLogger;
+import common.Logger;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -60,6 +62,9 @@ public class MiningResultsFile {
             ObjectInputStream in = new ObjectInputStream(fileIn);
             result = in.readObject();
         }catch (IOException | ClassNotFoundException i) {
+            ErrorLogger.log("已有挖掘结果恢复出错");
+            ErrorLogger.log("恢复自文件",dataPath+fileName);
+            ErrorLogger.log("错误信息", i.toString());
             i.printStackTrace();
         }
         return result;
@@ -74,8 +79,12 @@ public class MiningResultsFile {
             out.writeObject(MinerResults);
             out.close();
             fileOut.close();
+            Logger.log("挖掘结果保存");
             System.out.println("序列化保存");
         } catch (IOException i) {
+            ErrorLogger.log("挖掘结果保存出错");
+            ErrorLogger.log("保存文件信息",dataPath+fileName);
+            ErrorLogger.log("错误信息", i.toString());
             i.printStackTrace();
         }
     }
@@ -179,7 +188,7 @@ public class MiningResultsFile {
     private String generateResultPath(String paramFile) {
         String md5 = null;
         try {
-            md5 = Md5Util.fileMD5("configs/algorithmsParams.xml");
+            md5 = Md5Util.fileMD5("configs/algorithmsParams.xml","configs/algorithmsManager.xml");
             System.out.println(md5);
         } catch (IOException e) {
             e.printStackTrace();
@@ -198,6 +207,7 @@ public class MiningResultsFile {
                 //将算法参数文件复制入该目录
                 try {
                     Files.copy(new File("configs/algorithmsParams.xml").toPath(),new File(dataPath+"/algorithmsParams.xml").toPath());
+                    Files.copy(new File("configs/algorithmsManager.xml").toPath(),new File(dataPath+"/algorithmsManager.xml").toPath());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

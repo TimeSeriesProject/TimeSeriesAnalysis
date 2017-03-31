@@ -13,6 +13,7 @@ import java.util.Set;
 
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
+import common.Logger;
 import weka.gui.beans.Startable;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
@@ -85,6 +86,13 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 	
 	public void detect(){
 		File dataDirectory=new File(dataPath + "\\traffic");
+
+		Logger.log("挖掘类型", getMinerType());
+		Logger.log("挖掘对象", miningObject.toString());
+		Logger.log("源数据读取目录", dataDirectory.getPath());
+		Logger.log("数据读取起止时间", getStartDate().toString() + "--" + getEndDate().toString());
+		Logger.log("数据处理时间粒度", getGranularity()+"s");
+		Logger.log("源数据读取开始");
 		nodePairReader reader=new nodePairReader();
 		int granularity= Integer.parseInt(getGranularity());
 		if(dataDirectory.isFile()){
@@ -136,6 +144,7 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 				taskCombination.setName();
 				taskCombination.setMinerType(MinerType.MiningType_ProtocolAssociation);
 				TaskElement.add1Task(taskCombination, false);
+				Logger.log("添加TaskCombination", taskCombination.getName());
 			}
 		}
 		rawDataList.clear();
@@ -176,6 +185,7 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 		String ip=file.getName();//.substring(0, file.getName().lastIndexOf("."));
 		System.out.println("ip:"+ip);
 		parseFile(file.getAbsoluteFile(),reader);
+		Logger.log("生成挖掘任务集合");
 		TaskCombination taskCombination=new TaskCombination();
 		taskCombination.getTasks().add(
 				generateTask(file,granularity,MiningMethod.MiningMethods_SimilarityMining));
@@ -189,6 +199,7 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 		taskCombination.setName();
 		taskCombination.setMinerType(MinerType.MiningType_ProtocolAssociation);
 		TaskElement.add1Task(taskCombination, false);
+		Logger.log("添加TaskCombination", taskCombination.getName());
 		eachProtocolItems.clear();
 	}
 
@@ -199,6 +210,7 @@ public class ProtocolAssMinerFactory extends MinerFactorySettings {
 //						reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath());
 		Date date1 = getStartDate();
 		Date date2 = getEndDate();
+		Logger.log("源数据读取子目录", dataFile.getPath());
 		HashMap<String, DataItems> rawDataItems = 
 				reader.readEachProtocolTrafficDataItems(dataFile.getAbsolutePath(), true, date1, date2, 3600);
 		eachProtocolItems.put(ip, rawDataItems);

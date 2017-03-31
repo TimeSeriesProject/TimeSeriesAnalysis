@@ -30,6 +30,7 @@ import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 
+import common.Logger;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.border.StandardBorderPainter;
 import org.jvnet.substance.painter.StandardGradientPainter;
@@ -118,6 +119,8 @@ public class NodePairListFrame extends JFrame {
 		ArrayList<String> miningObjectList = new ArrayList<>(resultMaps.keySet());
 		this.resultMap = this.resultMaps.get(miningObjectList.get(0));
 //		this.resultMap=this.resultMaps.get("通信次数");
+		Logger.log("===============================================================");
+		Logger.log("挖掘结果列表显示");
 		loadModel();
 		initModel();
 		initialize();

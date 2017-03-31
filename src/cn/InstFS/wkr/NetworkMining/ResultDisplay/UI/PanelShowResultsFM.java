@@ -183,7 +183,7 @@ public class PanelShowResultsFM extends JPanel implements IPanelShowResults {
             if (predictItems == null) {
                 chart1.displayDataItems(oriItems);
             } else {
-                DataItem lastOriItem = oriItems.getElementAt(oriItems.getLength()-21);
+                DataItem lastOriItem = oriItems.getElementAt(oriItems.getLength()-11);//预测测试长度
                 predictItems.add1Data(lastOriItem);
 
                 JFreeChart jf=ChartPanelShowPre.createChart(oriItems,predictItems,yName);

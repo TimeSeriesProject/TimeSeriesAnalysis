@@ -9,7 +9,8 @@ import java.lang.reflect.Field;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 
 public class ParamsPM extends IParamsNetworkMining implements Serializable{
-	private PMparam pmparam=null;
+    private static final long serialVersionUID = 7245563716842366619L;
+    private PMparam pmparam=null;
 	public ParamsPM(){}
 	public PMparam getPmparam() {
 		return pmparam;

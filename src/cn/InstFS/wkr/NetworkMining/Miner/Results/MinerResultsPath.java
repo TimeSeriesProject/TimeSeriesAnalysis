@@ -6,6 +6,7 @@ import java.util.HashMap;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
 public class MinerResultsPath implements Serializable {
+	private static final long serialVersionUID = -8528003386170818091L;
 	private HashMap<String, MinerResultsPM> retPM;
 	private int minPeriod = 0;
 	private int maxPeriod = 0;

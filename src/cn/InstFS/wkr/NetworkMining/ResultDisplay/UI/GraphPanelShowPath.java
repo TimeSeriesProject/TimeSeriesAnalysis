@@ -24,6 +24,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -83,19 +87,36 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
             add("2,0,8,9,4,5");
             add("3,0,8,4,6");
         }};*/
-        HashMap ip2Vertice = new HashMap<String, Integer>(){
-            {
-                put("10.0.1.2", 1);
-                put("10.0.1.3", 2);
-                put("10.0.1.4", 3);
-                put("10.0.7.2", 0);
-                put("10.0.10.2", 0);
-                put("10.0.13.2", 0);
-                put("10.0.2.2", 5);
-                put("10.0.2.3", 6);
-                put("10.0.2.4", 7);
+        HashMap<String, Integer> ip2Vertice = new HashMap<String, Integer>();
+
+        File file = new File("configs/ip2Vertice.txt");
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String tempString = null;
+            int line = 1;
+            // 一次读入一行，直到读入null为文件结束
+            reader.readLine();
+            while ((tempString = reader.readLine()) != null) {
+                String list[] = tempString.replaceAll(" ","").split(",");
+                String node = list[0];
+                for (int i = 1; i < list.length; i ++) {
+                    ip2Vertice.put(list[i], Integer.parseInt(node));
+                }
+                line++;
             }
-        };
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                }
+            }
+        }
+
 
         int pathIdCount = 1;
         for (String s : pathList){
@@ -419,8 +440,8 @@ class NetworkVertex {
 
     @Override
     public String toString() {
-        /*if (id < 0)
-            return "*";*/
+        if (id < 0)
+            return "*";
         return id+"";
     }
 

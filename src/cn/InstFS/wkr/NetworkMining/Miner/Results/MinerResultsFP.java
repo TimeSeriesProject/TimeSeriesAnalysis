@@ -9,6 +9,7 @@ import java.util.Map;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
 public class MinerResultsFP implements Serializable {
+	private static final long serialVersionUID = 5434964241763689625L;
 	private List<DataItems> originItems;
 	private Map<Integer, List<String>> associateRules;
 	public MinerResultsFP(){

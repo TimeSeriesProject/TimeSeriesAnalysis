@@ -8,6 +8,7 @@ import java.util.List;
 
 import WaveletUtil.generateFeatures;
 import cn.InstFS.wkr.NetworkMining.Params.PredictionAlgorithmParams.NeuralNetworkParams;
+import org.rosuda.REngine.Rserve.RserveException;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -102,7 +103,7 @@ public class NeuralNetwork implements IMinerFM{
 			classifier.setSeed(seed);
 			classifier.setTrainingTime(trianTime);
 			classifier.buildClassifier(trainInstances);
-			
+
 			int[] autoCorrelationIndex=features.getAutoCorrelation();
 			int lastIndex=autoCorrelationIndex[autoCorrelationIndex.length-1];
 			double[] items = new double[trianInstancesNum+testInstanceNum+predictPeriod+lastIndex];
@@ -112,11 +113,11 @@ public class NeuralNetwork implements IMinerFM{
 			for(int i=0;i<(trianInstancesNum+testInstanceNum+lastIndex);i++){
 				items[i]=features.getItems()[i];
 			}
-			
-			
+
+
 			Attribute[] attributes=new Attribute[attrNum];
 			Instances instances=initializeAttribute(attributes);
-			
+
 			for(int i=(trianInstancesNum+testInstanceNum+lastIndex);i<(trianInstancesNum+testInstanceNum+lastIndex+predictPeriod);i++){
 				double[] values=new double[instances.numAttributes()];
 				for(int j=0;j<attrNum-1;j++){
@@ -142,7 +143,9 @@ public class NeuralNetwork implements IMinerFM{
 			dataItems.setData(data);
 			dataItems.setTime(time);
 			setPredictItems(dataItems);
-		} catch (Exception e) {
+		} catch (RserveException e) {
+			throw new RuntimeException(e);
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		

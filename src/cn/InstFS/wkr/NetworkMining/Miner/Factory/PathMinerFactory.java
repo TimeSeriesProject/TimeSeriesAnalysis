@@ -13,6 +13,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
+import common.Logger;
 
 public class PathMinerFactory extends MinerFactorySettings{
 	private static PathMinerFactory inst;
@@ -76,6 +77,13 @@ public class PathMinerFactory extends MinerFactorySettings{
 		isMining=true;
 		
 		File dataDirectory=new File(dataPath + "\\route");
+		Logger.log("挖掘类型", getMinerType());
+		Logger.log("挖掘对象", miningObject.toString());
+		Logger.log("源数据读取目录", dataDirectory.getPath());
+		Logger.log("数据读取起止时间", getStartDate().toString() + "--" + getEndDate().toString());
+		Logger.log("数据处理时间粒度", getGranularity()+"s");
+		Logger.log("源数据读取开始");
+
 		nodePairReader reader=new nodePairReader();
 		if(dataDirectory.isFile()){
 			parseFile(dataDirectory,reader);
@@ -96,6 +104,7 @@ public class PathMinerFactory extends MinerFactorySettings{
 		case MiningObject_Traffic:
 		case MiningObject_Times:
 //			dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString());
+			Logger.log("源数据读取子目录", dataFile.getPath());
 			dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString(), true, getStartDate(), getEndDate());
 			break;
 		default:
@@ -107,7 +116,19 @@ public class PathMinerFactory extends MinerFactorySettings{
 			Entry<String, DataItems> entry=iterator.next();
 			di = entry.getValue();
 		}
-		
+
+		int k = 0;
+		for(Map m:di.getNonNumData()) {
+			if (m.size()!=0) {
+				k++;
+			}
+		}
+		if (k < di.getNonNumData().size() * 0.2) { // 判定为稀疏，不生成taskCombination
+			return;
+		}
+
+
+		Logger.log("生成挖掘任务集合");
 		TaskCombination taskCombination = new TaskCombination();
 		for (MiningMethod methodChecked: this.getMiningMethodsChecked())
 			taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange, methodChecked));
@@ -119,6 +140,7 @@ public class PathMinerFactory extends MinerFactorySettings{
 		taskCombination.setMiningObject(miningObject.toString());
 		taskCombination.setName(MinerType.MiningType_Path);
 		TaskElement.add1Task(taskCombination, false);
+		Logger.log("添加TaskCombination", taskCombination.getName());
 	}
 	
 	private TaskElement generateTask(File file, TaskRange taskRange, MiningMethod method){

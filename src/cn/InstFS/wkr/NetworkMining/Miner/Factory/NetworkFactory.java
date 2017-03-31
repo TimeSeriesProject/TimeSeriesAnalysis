@@ -10,6 +10,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
+import common.Logger;
 
 /**
  * 2015/5/19
@@ -76,6 +77,14 @@ public class NetworkFactory extends MinerFactorySettings {
 		int granularity = Integer.parseInt(this.getGranularity());
 		task.setGranularity(granularity);
 		task.setMiningObject(miningObject.toString());
+
+		Logger.log("挖掘类型", getMinerType());
+		Logger.log("挖掘对象", miningObject.toString());
+		Logger.log("源数据读取目录", dataPath + "\\route");
+		Logger.log("数据读取起止时间", getStartDate().toString() + "--" + getEndDate().toString());
+		Logger.log("数据处理时间粒度", getGranularity()+"s");
+		Logger.log("源数据读取开始");
+
 		CWNetworkReader reader = new CWNetworkReader(task);
 		DataItems dataItems = reader.readInputByText(true,getStartDate(),getEndDate());
 
@@ -90,7 +99,7 @@ public class NetworkFactory extends MinerFactorySettings {
 		task.setDateStart(date1);
 		task.setDateEnd(date2);*/
 //		DataItems dataItems = filtDataItems(alldataItems, task.getDateStart(), task.getDateEnd());
-		
+		Logger.log("生成挖掘任务集合");
 		TaskCombination taskCombination=new TaskCombination();
 		taskCombination.setTaskRange(TaskRange.WholeNetworkRange);
 		taskCombination.setMiningObject(miningObject.toString());
@@ -110,6 +119,7 @@ public class NetworkFactory extends MinerFactorySettings {
 				miningObject.toString(), MiningMethod.MiningMethods_PredictionMining));
 		
 		TaskElement.add1Task(taskCombination, false);
+		Logger.log("添加TaskCombination", taskCombination.getName());
 	}
 	
 	public TaskElement generateTask(int granularity,

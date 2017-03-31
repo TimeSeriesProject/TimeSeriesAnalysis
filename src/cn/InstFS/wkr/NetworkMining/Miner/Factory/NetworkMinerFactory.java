@@ -468,7 +468,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			if(!entry.getKey().getMinerType().equals(minerType)||!entry.getKey().getMiningObject()
 					.equals(miningObject.toString())||entry.getValue().isOver())
 				continue;
-			ErrorLogger.log(entry.getKey().getRange()+","+entry.getKey().getMiningObject()+","+entry.getKey().getMinerType(),entry.getValue().toString());
+//			ErrorLogger.log(entry.getKey().getRange()+","+entry.getKey().getMiningObject()+","+entry.getKey().getMinerType(),entry.getValue().toString());
 			entry.getValue().start();
 			
 			try {
@@ -643,6 +643,13 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						partialCycle.isOver.setIsover(true);
 						partialCycle.getResults().setInputData(results.getOriDataItems());
 						allMiners.put(task, partialCycle);
+						break;
+					case MiningMethods_PartialPeriod:
+						NetworkMinerPartialPeriod partialPeriod = new NetworkMinerPartialPeriod(task,null);
+						partialPeriod.getResults().setRetPartialPeriod(results.getRetPartialPeriod());
+						partialPeriod.isOver.setIsover(true);
+						partialPeriod.getResults().setInputData(results.getOriDataItems());
+						allMiners.put(task, partialPeriod);
 						break;
 					case MiningMethods_PredictionMining:
 						NetworkMinerFM fm=new NetworkMinerFM(task, null);

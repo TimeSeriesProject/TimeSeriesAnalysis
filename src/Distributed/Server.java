@@ -118,10 +118,10 @@ public class Server {
 //    private String fileName;
     private int index;
     private int BUF_LEN = 5 * 1024 * 1024;
-    private AtomicInteger pcapCount1 = new AtomicInteger(0);//发送次数
-    private AtomicInteger pcapCount2 = new AtomicInteger(0);//发送次数
-    private AtomicInteger recCount = new AtomicInteger(0);//接收到的个数
-    private AtomicInteger recCount2 = new AtomicInteger(0);
+    private int pcapCount1 = 0;//发送次数
+    private int pcapCount2 = 0;//发送次数
+    private int recCount = 0;//接收到的个数
+    private int recCount2 = 0;
     private int tasksCount = 0;
     private String date;
     private ParseByDay parseByDay;
@@ -129,10 +129,10 @@ public class Server {
     private HashMap<Long, ArrayList<File>> tasks = new HashMap<Long, ArrayList<File>>();//日期，filelist 得到对应时间的文件列表
 
 
-    private Lock recLock = new ReentrantLock();//接收结果
-//    private Lock sendLock = new ReentrantLock();
-    private Lock recLock2 = new ReentrantLock();//接收结果和第一步要分开，否则出bug
-//    private Lock sendLock2 = new ReentrantLock();
+    private Lock recLock = new ReentrantLock(true);//接收结果，改为公平锁
+    private Lock sendLock = new ReentrantLock();
+    private Lock recLock2 = new ReentrantLock(true);//接收结果和第一步要分开，否则出bug
+    private Lock sendLock2 = new ReentrantLock();
 
 //    private Lock updateMapLock1 = new ReentrantLock();
 //    private Lock updateMapLock2 = new ReentrantLock();
@@ -1052,10 +1052,10 @@ public class Server {
         tasksMap = new HashMap<String, StringBuilder>();
         swapMap = new HashMap<String, String>();//文件名\r\n,路由号
         swapMap2 = new HashMap<String, String>();//routesrc/1.1_1.2, 1.1_1.2
-        pcapCount1 = new AtomicInteger(0);//发送次数
-        pcapCount2 = new AtomicInteger(0);//发送次数
-        recCount = new AtomicInteger(0);
-        recCount2 = new AtomicInteger(0);
+        pcapCount1 = 0;//发送次数
+        pcapCount2 = 0;//发送次数
+        recCount = 0;
+        recCount2 = 0;
         combineAndDelete = false;
         combineAndDelete2 = false;
         date = getDate(time);//得到最小时间
@@ -1070,8 +1070,8 @@ public class Server {
                     substring(file.getParent().lastIndexOf("\\") + 1)).toString();//得到文件parent E:\ppp\9中的9
             String name = new StringBuilder().append(file.getAbsolutePath().
                     substring(file.getParent().lastIndexOf("\\") + 1)).toString();//得到9\9-1.pcap .etc
-            System.out.println("key: " + key);
-            System.out.println("name:  " + name);
+//            System.out.println("key: " + key);
+//            System.out.println("name:  " + name);
             if (tasksMap.containsKey(key)) {
                 tasksMap.get(key).append(name).append(DELIMITER);
             } else {
@@ -1304,7 +1304,6 @@ public class Server {
                                         break;
                                     }
                                     if (temp == allCombinationTasks.size()) {
-                                        System.out.println("空传一次");
                                         userClientObject.sendObject(entry.getKey());
                                     }
                                 }
@@ -1331,77 +1330,86 @@ public class Server {
                                 //单节点
                                 if (taskCombinationResult.getTaskRange().equals(TaskRange.SingleNodeRange)) {
                                     if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Times)) {
-                                        if (singleNodeTimes.size() < allCombinationTasks.size() && singleNodeTimeFlag) {
+                                        if (singleNodeTimes.size() < allCombinationTasks.size()) {
                                             singleNodeTimeFlag = true;
                                             for (int i = 0; i < tempList.size(); i++) {
                                                 if (tempList.get(i).getName().equals(taskCombinationResult.getName())) {
                                                     resultLock.lock();
                                                     try {
-                                                        if (singleNodeTimeFlag) {//第2个以后路到达的最后一个任务先判断，不满足，则直接进行下一次
-                                                            singleNodeTimes.put(tempList.get(i), taskCombinationResult.getMinerNodeResults());
-                                                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
-                                                            MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                                            newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNodeResults());
-                                                            NetworkMinerFactory.getInstance().
-                                                                    showNodeMinersDis(MiningObject.MiningObject_Times, singleNodeTimes);
-                                                            //进度条
-                                                            taskBar(singleNodeTimes.size(), taskProgressDis.getPhase(), totalCount);
-                                                            updateMap(tempList.get(i));//更新状态
-                                                            if (singleNodeTimes.size() == allCombinationTasks.size() && singleNodeTimeFlag) {
-                                                                singleNodeResultMaps.put(MiningObject.MiningObject_Times.toString(), singleNodeTimes);
-                                                                singleNodeTimeFlag = false;//完成，后面未执行完的抛弃
-                                                                setIsRunning(false);
-                                                                setIsPcapRunning(false);
-                                                                isSuspend = true;//最先到达的最后一个任务挂起，其他的直接进行下一次发送
-                                                                awakeNode();
-                                                            }
-                                                        }
-
+                                                        singleNodeTimes.put(tempList.get(i), taskCombinationResult.getMinerNodeResults());
+                                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
+                                                        MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                                                        newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNodeResults());
                                                     } finally {
                                                         resultLock.unlock();
                                                     }
+                                                    updateMap(tempList.get(i));//更新状态
                                                 }
                                             }
+                                            //进度条
+                                            taskBar(singleNodeTimes.size(), taskProgressDis.getPhase(), totalCount);
+                                            resultLock.lock();
+                                            try {
+                                                NetworkMinerFactory.getInstance().
+                                                        showNodeMinersDis(MiningObject.MiningObject_Times, singleNodeTimes);
+                                            } finally {
+                                                resultLock.unlock();
+                                            }
+                                            if (singleNodeTimes.size() == allCombinationTasks.size() && singleNodeTimeFlag) {
+                                                singleNodeResultMaps.put(MiningObject.MiningObject_Times.toString(), singleNodeTimes);
+                                                singleNodeTimeFlag = false;//完成，后面未执行完的抛弃
+                                                setIsRunning(false);
+                                                setIsPcapRunning(false);
+                                                isSuspend = true;
+                                                awakeNode();
+                                            }
+//                                            else {
+//                                                awakeSingleThread();
+//                                            }
                                         } else {
                                             if (!isRunning) {
-                                                isSuspend = true;//隔了很久才来的挂起
+                                                isSuspend = true;
                                             }
                                         }
                                     }
 
                                     if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)) {
-                                        if (singleNodeTraffic.size() < allCombinationTasks.size() && singleNodeTrafficFlag) {
+                                        if (singleNodeTraffic.size() < allCombinationTasks.size()) {
                                             singleNodeTrafficFlag = true;
                                             for (int i = 0; i < tempList.size(); i++) {
                                                 if (tempList.get(i).getName().equals(taskCombinationResult.getName())) {
                                                     resultLock.lock();
                                                     try {
-                                                        if (singleNodeTrafficFlag) {
-                                                            singleNodeTraffic.put(tempList.get(i), taskCombinationResult.getMinerNodeResults());
-                                                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
-                                                            MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                                            newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNodeResults());
-                                                            NetworkMinerFactory.getInstance().
-                                                                    showNodeMinersDis(MiningObject.MiningObject_Traffic, singleNodeTraffic);
-                                                            updateMap(tempList.get(i));//更新状态
-
-                                                            //进度条
-                                                            taskBar(singleNodeTimes.size() + singleNodeTraffic.size(), taskProgressDis.getPhase(), totalCount);
-                                                            if (singleNodeTraffic.size() == allCombinationTasks.size() && singleNodeTrafficFlag) {
-                                                                singleNodeResultMaps.put(MiningObject.MiningObject_Traffic.toString(), singleNodeTraffic);
-                                                                singleNodeTrafficFlag = false;
-                                                                setIsRunning(false);
-                                                                setIsPcapRunning(false);
-                                                                isSuspend = true;
-                                                                awakeNode();
-                                                            }
-                                                        }
+                                                        singleNodeTraffic.put(tempList.get(i), taskCombinationResult.getMinerNodeResults());
+                                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
+                                                        MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                                                        newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNodeResults());
                                                     } finally {
                                                         resultLock.unlock();
                                                     }
+                                                    updateMap(tempList.get(i));//更新状态
                                                 }
                                             }
-
+                                            //进度条
+                                            taskBar(singleNodeTimes.size() + singleNodeTraffic.size(), taskProgressDis.getPhase(), totalCount);
+                                            resultLock.lock();
+                                            try {
+                                                NetworkMinerFactory.getInstance().
+                                                        showNodeMinersDis(MiningObject.MiningObject_Traffic, singleNodeTraffic);
+                                            } finally {
+                                                resultLock.unlock();
+                                            }
+                                            if (singleNodeTraffic.size() == allCombinationTasks.size() && singleNodeTrafficFlag) {
+                                                singleNodeResultMaps.put(MiningObject.MiningObject_Traffic.toString(), singleNodeTraffic);
+                                                singleNodeTrafficFlag = false;
+                                                setIsRunning(false);
+                                                setIsPcapRunning(false);
+                                                isSuspend = true;
+                                                awakeNode();
+                                            }
+//                                            else {
+//                                                awakeSingleThread();
+//                                            }
                                         } else {
                                             if (!isRunning) {
                                                 isSuspend = true;
@@ -1411,39 +1419,42 @@ public class Server {
 
                                     //节点出现消失
                                     if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge)) {
-                                        if (singleNodeDisapearEmerge.size() < allCombinationTasks.size() && singleNodeDisapearEmergeFlag) {
+                                        if (singleNodeDisapearEmerge.size() < allCombinationTasks.size()) {
                                             singleNodeDisapearEmergeFlag = true;
                                             for (int i = 0; i < tempList.size(); i++) {
                                                 if (tempList.get(i).getName().equals(taskCombinationResult.getName())) {
                                                     resultLock.lock();
                                                     try {
-                                                        if (singleNodeDisapearEmergeFlag) {
-                                                            singleNodeDisapearEmerge.put(tempList.get(i), taskCombinationResult.getMinerNodeResults());
-                                                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
-                                                            MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                                            newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNodeResults());
-                                                            NetworkMinerFactory.getInstance().
-                                                                    showNodeMinersDis(MiningObject.MiningObject_NodeDisapearEmerge, singleNodeDisapearEmerge);
-                                                            updateMap(tempList.get(i));//更新状态
-                                                            //进度条
-                                                            taskBar(singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size(), taskProgressDis.getPhase(), totalCount);
-                                                            if (singleNodeDisapearEmerge.size() == allCombinationTasks.size() && singleNodeDisapearEmergeFlag) {
-                                                                System.out.println("进3");
-                                                                singleNodeResultMaps.put(MiningObject.MiningObject_NodeDisapearEmerge.toString(), singleNodeDisapearEmerge);
-                                                                singleNodeDisapearEmergeFlag = false;
-                                                                setIsRunning(false);
-                                                                setIsPcapRunning(false);
-                                                                isSuspend = true;
-                                                                awakeNode();
-                                                            }
-                                                        }
-
+                                                        singleNodeDisapearEmerge.put(tempList.get(i), taskCombinationResult.getMinerNodeResults());
+                                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
+                                                        MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                                                        newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNodeResults());
                                                     } finally {
                                                         resultLock.unlock();
                                                     }
+                                                    updateMap(tempList.get(i));//更新状态
                                                 }
                                             }
-
+                                            //进度条
+                                            taskBar(singleNodeTimes.size() + singleNodeTraffic.size() + singleNodeDisapearEmerge.size(), taskProgressDis.getPhase(), totalCount);
+                                            resultLock.lock();
+                                            try {
+                                                NetworkMinerFactory.getInstance().
+                                                        showNodeMinersDis(MiningObject.MiningObject_NodeDisapearEmerge, singleNodeDisapearEmerge);
+                                            } finally {
+                                                resultLock.unlock();
+                                            }
+                                            if (singleNodeDisapearEmerge.size() == allCombinationTasks.size() && singleNodeDisapearEmergeFlag) {
+                                                singleNodeResultMaps.put(MiningObject.MiningObject_NodeDisapearEmerge.toString(), singleNodeDisapearEmerge);
+                                                singleNodeDisapearEmergeFlag = false;
+                                                setIsRunning(false);
+                                                setIsPcapRunning(false);
+                                                isSuspend = true;
+                                                awakeNode();
+                                            }
+//                                            else {
+//                                                awakeSingleThread();
+//                                            }
                                         }  else {
                                             if (!isRunning) {
                                                 isSuspend = true;
@@ -1454,39 +1465,42 @@ public class Server {
                                 //节点对
                                 if (taskCombinationResult.getTaskRange().equals(TaskRange.NodePairRange)){
                                     if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Times)) {
-                                        if (nodePairTimes.size() < allCombinationTasks.size() && nodePairTimeFlag) {
+                                        if (nodePairTimes.size() < allCombinationTasks.size()) {
                                             nodePairTimeFlag = true;
                                             for (int i = 0; i < tempList.size(); i++) {
                                                 if (tempList.get(i).getName().equals(taskCombinationResult.getName())) {
                                                     resultLock.lock();
                                                     try {
-                                                        if (nodePairTimeFlag) {
-                                                            nodePairTimes.put(tempList.get(i), taskCombinationResult.getMinerNodeResults());
-                                                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
-                                                            MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                                            newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNodeResults());
-
-                                                            updateMap(tempList.get(i));//更新状态
-                                                            //进度条
-                                                            taskBar(nodePairTimes.size(), taskProgressDis.getPhase(), totalCount);
-
-                                                            NetworkMinerFactory.getInstance().
-                                                                    showNodeMinersDis(MiningObject.MiningObject_Times, nodePairTimes);
-                                                            if (nodePairTimes.size() == allCombinationTasks.size() && nodePairTimeFlag) {
-                                                                nodePairResultMaps.put(MiningObject.MiningObject_Times.toString(), nodePairTimes);
-                                                                nodePairTimeFlag = false;//完成，后面未执行完的抛弃
-                                                                setIsRunning(false);
-                                                                setIsPcapRunning(false);
-                                                                isSuspend = true;
-                                                                awakeNode();
-                                                            }
-                                                        }
+                                                        nodePairTimes.put(tempList.get(i), taskCombinationResult.getMinerNodeResults());
+                                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
+                                                        MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                                                        newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNodeResults());
                                                     } finally {
                                                         resultLock.unlock();
                                                     }
+                                                    updateMap(tempList.get(i));//更新状态
                                                 }
                                             }
-
+                                            //进度条
+                                            taskBar(nodePairTimes.size(), taskProgressDis.getPhase(), totalCount);
+                                            resultLock.lock();
+                                            try {
+                                                NetworkMinerFactory.getInstance().
+                                                        showNodeMinersDis(MiningObject.MiningObject_Times, nodePairTimes);
+                                            } finally {
+                                                resultLock.unlock();
+                                            }
+                                            if (nodePairTimes.size() == allCombinationTasks.size() && nodePairTimeFlag) {
+                                                nodePairResultMaps.put(MiningObject.MiningObject_Times.toString(), nodePairTimes);
+                                                nodePairTimeFlag = false;//完成，后面未执行完的抛弃
+                                                setIsRunning(false);
+                                                setIsPcapRunning(false);
+                                                isSuspend = true;
+                                                awakeNode();
+                                            }
+//                                            else {
+//                                                awakeSingleThread();
+//                                            }
                                         } else {
                                             if (!isRunning) {
                                                 isSuspend = true;
@@ -1494,192 +1508,183 @@ public class Server {
                                     }
 
                                     if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)) {
-                                        if (singleNodeTraffic.size() < allCombinationTasks.size() && nodePairTrafficFlag) {
+                                        if (singleNodeTraffic.size() < allCombinationTasks.size()) {
                                             nodePairTrafficFlag = true;
                                             for (int i = 0; i < tempList.size(); i++) {
                                                 if (tempList.get(i).getName().equals(taskCombinationResult.getName())) {
                                                     resultLock.lock();
                                                     try {
-                                                        if (nodePairTrafficFlag) {
-                                                            nodePairTraffic.put(tempList.get(i), taskCombinationResult.getMinerNodeResults());
-                                                            MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
-                                                            MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                                            newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNodeResults());
-
-                                                            updateMap(tempList.get(i));//更新状态
-                                                            //进度条
-                                                            taskBar(nodePairTimes.size() + nodePairTraffic.size(), taskProgressDis.getPhase(), totalCount);
-
-                                                            NetworkMinerFactory.getInstance().
-                                                                    showNodeMinersDis(MiningObject.MiningObject_Traffic, nodePairTraffic);
-
-                                                            if (nodePairTraffic.size() == allCombinationTasks.size() && nodePairTrafficFlag) {
-                                                                nodePairResultMaps.put(MiningObject.MiningObject_Traffic.toString(), nodePairTraffic);
-                                                                nodePairTrafficFlag = false;
-                                                                setIsRunning(false);
-                                                                setIsPcapRunning(false);
-                                                                isSuspend = true;
-                                                                awakeNode();
-                                                            }
-                                                        }
+                                                        nodePairTraffic.put(tempList.get(i), taskCombinationResult.getMinerNodeResults());
+                                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
+                                                        MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                                                        newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNodeResults());
                                                     } finally {
                                                         resultLock.unlock();
                                                     }
+                                                    updateMap(tempList.get(i));//更新状态
                                                 }
                                             }
-
+                                            //进度条
+                                            taskBar(nodePairTimes.size() + nodePairTraffic.size(), taskProgressDis.getPhase(), totalCount);
+                                            resultLock.lock();
+                                            try {
+                                                NetworkMinerFactory.getInstance().
+                                                        showNodeMinersDis(MiningObject.MiningObject_Traffic, nodePairTraffic);
+                                            } finally {
+                                                resultLock.unlock();
+                                            }
+                                            if (nodePairTraffic.size() == allCombinationTasks.size() && nodePairTrafficFlag) {
+                                                nodePairResultMaps.put(MiningObject.MiningObject_Traffic.toString(), nodePairTraffic);
+                                                nodePairTrafficFlag = false;
+                                                setIsRunning(false);
+                                                setIsPcapRunning(false);
+                                                isSuspend = true;
+                                                awakeNode();
+                                            }
 //                                            else {
 //                                                awakeSingleThread();
 //                                            }
                                         } else {
                                             if (!isRunning) {
                                                 isSuspend = true;
-                                            }
-                                        }
+                                            }                                        }
                                     }
                                 }
                                 break;
 
                             case MiningType_ProtocolAssociation:
                                 if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)) {
-                                    if (protocolTraffic.size() < allCombinationTasks.size() && protocolTrafficFlag) {
+                                    if (protocolTraffic.size() < allCombinationTasks.size()) {
                                         protocolTrafficFlag = true;
                                         for (int i = 0; i < tempList.size(); i++) {
                                             if (tempList.get(i).getName().equals(taskCombinationResult.getName())) {
                                                 resultLock.lock();
                                                 try {
-                                                    if (protocolTrafficFlag) {
-                                                        protocolTraffic.put(tempList.get(i), taskCombinationResult.getMinerProtocolResults());
+                                                    protocolTraffic.put(tempList.get(i), taskCombinationResult.getMinerProtocolResults());
                                                             /* 挖掘完成，保存结果文件 */
-                                                        MinerFactorySettings settings = ProtocolAssMinerFactoryDis.getInstance();
-                                                        MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                                        newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerProtocolResults());
-                                                        updateMap(tempList.get(i));//更新状态
-                                                        //进度条
-                                                        taskBar(protocolTraffic.size(), taskProgressDis.getPhase(), totalCount);
-
-                                                        NetworkMinerFactory.getInstance().
-                                                                showProtocolMinersDis(MiningObject.MiningObject_Traffic, protocolTraffic);
-
-                                                        if (protocolTraffic.size() == allCombinationTasks.size() && protocolTrafficFlag) {
-                                                            protocolResultMaps = protocolTraffic;
-                                                            protocolTrafficFlag = false;
-                                                            setIsRunning(false);
-                                                            setIsPcapRunning(false);
-                                                            isSuspend = true;
-                                                            awakeProtocol();
-                                                        }
-                                                    }
+                                                    MinerFactorySettings settings = ProtocolAssMinerFactoryDis.getInstance();
+                                                    MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                                                    newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerProtocolResults());
                                                 } finally {
                                                     resultLock.unlock();
                                                 }
+                                                updateMap(tempList.get(i));//更新状态
                                             }
                                         }
-
+                                        //进度条
+                                        taskBar(protocolTraffic.size(), taskProgressDis.getPhase(), totalCount);
+                                        resultLock.lock();
+                                        try {
+                                            NetworkMinerFactory.getInstance().
+                                                    showProtocolMinersDis(MiningObject.MiningObject_Traffic, protocolTraffic);
+                                        } finally {
+                                            resultLock.unlock();
+                                        }
+                                        if (protocolTraffic.size() == allCombinationTasks.size() && protocolTrafficFlag) {
+                                            protocolResultMaps = protocolTraffic;
+                                            protocolTrafficFlag = false;
+                                            setIsRunning(false);
+                                            setIsPcapRunning(false);
+                                            isSuspend = true;
+                                            awakeProtocol();
+                                        }
 //                                        else {
 //                                            awakeSingleThread();
 //                                        }
                                     } else {
                                         if (!isRunning) {
                                             isSuspend = true;
-                                        }
-                                    }
+                                        }                                    }
                                 }
                                 break;
 
                             case MiningType_Path:
                                 if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Times)) {
-                                    if (pathTimes.size() < allCombinationTasks.size() && pathTimeFlag) {
+                                    if (pathTimes.size() < allCombinationTasks.size()) {
                                         pathTimeFlag = true;
                                         for (int i = 0; i < tempList.size(); i++) {
                                             if (tempList.get(i).getName().equals(taskCombinationResult.getName())) {
                                                 resultLock.lock();
                                                 try {
-                                                    if (pathTimeFlag) {
-                                                        pathTimes.put(tempList.get(i), taskCombinationResult.getMinerResultsPath());
+                                                    pathTimes.put(tempList.get(i), taskCombinationResult.getMinerResultsPath());
                                                             /* 挖掘完成，保存结果文件 */
-                                                        MinerFactorySettings settings = PathMinerFactoryDis.getInstance();
-                                                        MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                                        newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerResultsPath());
-                                                        updateMap(tempList.get(i));//更新状态
-                                                        //进度条
-                                                        taskBar(pathTimes.size(), taskProgressDis.getPhase(), totalCount);
-                                                        resultLock.lock();
-
-                                                        NetworkMinerFactory.getInstance().
-                                                                showPathMinersDis(MiningObject.MiningObject_Times, pathTimes);
-
-                                                        if (pathTimes.size() == allCombinationTasks.size() && pathTimeFlag) {
-                                                            pathResultMaps.put(MiningObject.MiningObject_Times.toString(), pathTimes);//通信次数结果
-                                                            pathTimeFlag = false;//完成，后面未执行完的抛弃
-                                                            setIsRunning(false);
-                                                            setIsPcapRunning(false);
-                                                            isSuspend = true;
-                                                            awakePath();
-                                                        }
-                                                    }
+                                                    MinerFactorySettings settings = PathMinerFactoryDis.getInstance();
+                                                    MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                                                    newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerResultsPath());
                                                 } finally {
                                                     resultLock.unlock();
                                                 }
+                                                updateMap(tempList.get(i));//更新状态
                                             }
                                         }
-
+                                        //进度条
+                                        taskBar(pathTimes.size(), taskProgressDis.getPhase(), totalCount);
+                                        resultLock.lock();
+                                        try {
+                                            NetworkMinerFactory.getInstance().
+                                                    showPathMinersDis(MiningObject.MiningObject_Times, pathTimes);
+                                        } finally {
+                                            resultLock.unlock();
+                                        }
+                                        if (pathTimes.size() == allCombinationTasks.size() && pathTimeFlag) {
+                                            pathResultMaps.put(MiningObject.MiningObject_Times.toString(), pathTimes);//通信次数结果
+                                            pathTimeFlag = false;//完成，后面未执行完的抛弃
+                                            setIsRunning(false);
+                                            setIsPcapRunning(false);
+                                            isSuspend = true;
+                                            awakePath();
+                                        }
 //                                        else {
 //                                            awakeSingleThread();
 //                                        }
                                     } else {
                                         if (!isRunning) {
                                             isSuspend = true;
-                                        }
-                                    }
+                                        }                                    }
                                 }
 
                                 if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)) {
-                                    if (pathTraffic.size() < allCombinationTasks.size() && pathTrafficFlag) {
+                                    if (pathTraffic.size() < allCombinationTasks.size()) {
                                         pathTrafficFlag = true;
                                         for (int i = 0; i < tempList.size(); i++) {
                                             if (tempList.get(i).getName().equals(taskCombinationResult.getName())) {
                                                 resultLock.lock();
                                                 try {
-                                                    if (pathTrafficFlag) {
-                                                        pathTraffic.put(tempList.get(i), taskCombinationResult.getMinerResultsPath());
+                                                    pathTraffic.put(tempList.get(i), taskCombinationResult.getMinerResultsPath());
                                                             /* 挖掘完成，保存结果文件 */
-                                                        MinerFactorySettings settings = PathMinerFactoryDis.getInstance();
-                                                        MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                                        newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerResultsPath());
-                                                        updateMap(tempList.get(i));//更新状态
-                                                        //进度条
-                                                        taskBar(pathTimes.size() + pathTraffic.size(), taskProgressDis.getPhase(), totalCount);
-                                                        resultLock.lock();
-                                                        try {
-                                                            NetworkMinerFactory.getInstance().
-                                                                    showPathMinersDis(MiningObject.MiningObject_Traffic, pathTraffic);
-                                                        } finally {
-                                                            resultLock.unlock();
-                                                        }
-                                                        if (pathTraffic.size() == allCombinationTasks.size() && pathTrafficFlag) {
-                                                            pathResultMaps.put(MiningObject.MiningObject_Traffic.toString(), pathTraffic);
-                                                            pathTrafficFlag = false;
-                                                            setIsRunning(false);
-                                                            setIsPcapRunning(false);
-                                                            isSuspend = true;
-                                                            awakePath();
-                                                        }
-                                                    }
+                                                    MinerFactorySettings settings = PathMinerFactoryDis.getInstance();
+                                                    MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                                                    newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerResultsPath());
                                                 } finally {
                                                     resultLock.unlock();
                                                 }
+                                                updateMap(tempList.get(i));//更新状态
                                             }
                                         }
-
+                                        //进度条
+                                        taskBar(pathTimes.size() + pathTraffic.size(), taskProgressDis.getPhase(), totalCount);
+                                        resultLock.lock();
+                                        try {
+                                            NetworkMinerFactory.getInstance().
+                                                    showPathMinersDis(MiningObject.MiningObject_Traffic, pathTraffic);
+                                        } finally {
+                                            resultLock.unlock();
+                                        }
+                                        if (pathTraffic.size() == allCombinationTasks.size() && pathTrafficFlag) {
+                                            pathResultMaps.put(MiningObject.MiningObject_Traffic.toString(), pathTraffic);
+                                            pathTrafficFlag = false;
+                                            setIsRunning(false);
+                                            setIsPcapRunning(false);
+                                            isSuspend = true;
+                                            awakePath();
+                                        }
 //                                        else {
 //                                            awakeSingleThread();
 //                                        }
                                     } else {
                                         if (!isRunning) {
                                             isSuspend = true;
-                                        }
-                                    }
+                                        }                                    }
                                 }
                                 System.out.println("跳出switch");
                                 break;
@@ -1687,99 +1692,89 @@ public class Server {
                             case MiningTypes_WholeNetwork:
 
                                 if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Cluster)) {
-                                    if (networkCluster.size() < allCombinationTasks.size() && networkClusterFlag) {
+                                    if (networkCluster.size() < allCombinationTasks.size()) {
                                         networkClusterFlag = true;
                                         for (int i = 0; i < tempList.size(); i++) {
                                             if (tempList.get(i).getName().equals(taskCombinationResult.getName())) {
                                                 resultLock.lock();
                                                 try {
-                                                    if (networkClusterFlag) {
-                                                        networkCluster.put(tempList.get(i), taskCombinationResult.getMinerNetworkResults());
-                                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
-                                                        MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                                        newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNetworkResults());
-
-                                                        updateMap(tempList.get(i));//更新状态
-                                                        //进度条
-                                                        taskBar(networkCluster.size(), taskProgressDis.getPhase(), totalCount);
-                                                        resultLock.lock();
-                                                        try {
-                                                            NetworkMinerFactory.getInstance().
-                                                                    showNetWorkMinersDis(MiningObject.MiningObject_Cluster, networkCluster);
-                                                        } finally {
-                                                            resultLock.unlock();
-                                                        }
-                                                        if (networkCluster.size() == allCombinationTasks.size() && networkClusterFlag) {
-                                                            networkResultMaps.put(MiningObject.MiningObject_Cluster.toString(), networkCluster);//通信次数结果
-                                                            networkClusterFlag = false;//完成，后面未执行完的抛弃
-                                                            setIsRunning(false);
-                                                            setIsPcapRunning(false);
-                                                            isSuspend = true;
-                                                            awakeNet();
-                                                        }
-                                                    }
+                                                    networkCluster.put(tempList.get(i), taskCombinationResult.getMinerNetworkResults());
+                                                    MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
+                                                    MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                                                    newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNetworkResults());
                                                 } finally {
                                                     resultLock.unlock();
                                                 }
+                                                updateMap(tempList.get(i));//更新状态
                                             }
                                         }
-
+                                        //进度条
+                                        taskBar(networkCluster.size(), taskProgressDis.getPhase(), totalCount);
+                                        resultLock.lock();
+                                        try {
+                                            NetworkMinerFactory.getInstance().
+                                                    showNetWorkMinersDis(MiningObject.MiningObject_Cluster, networkCluster);
+                                        } finally {
+                                            resultLock.unlock();
+                                        }
+                                        if (networkCluster.size() == allCombinationTasks.size() && networkClusterFlag) {
+                                            networkResultMaps.put(MiningObject.MiningObject_Cluster.toString(), networkCluster);//通信次数结果
+                                            networkClusterFlag = false;//完成，后面未执行完的抛弃
+                                            setIsRunning(false);
+                                            setIsPcapRunning(false);
+                                            isSuspend = true;
+                                            awakeNet();
+                                        }
 //                                        else {
 //                                            awakeSingleThread();
 //                                        }
                                     } else {
                                         if (!isRunning) {
                                             isSuspend = true;
-                                        }
-                                    }
+                                        }                                    }
                                 }
 
                                 if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Diameter)) {
-                                    if (networkDiameter.size() < allCombinationTasks.size() && networkDiameterFlag) {
+                                    if (networkDiameter.size() < allCombinationTasks.size()) {
                                         networkDiameterFlag = true;
                                         for (int i = 0; i < tempList.size(); i++) {
                                             if (tempList.get(i).getName().equals(taskCombinationResult.getName())) {
                                                 resultLock.lock();
                                                 try {
-                                                    if (networkDiameterFlag) {
-                                                        networkDiameter.put(tempList.get(i), taskCombinationResult.getMinerNetworkResults());
-                                                        MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
-                                                        MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
-                                                        newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNetworkResults());
-
-                                                        updateMap(tempList.get(i));//更新状态
-                                                        //进度条
-                                                        taskBar(networkCluster.size() + networkDiameter.size(), taskProgressDis.getPhase(), totalCount);
-                                                        resultLock.lock();
-                                                        try {
-                                                            NetworkMinerFactory.getInstance().
-                                                                    showNetWorkMinersDis(MiningObject.MiningObject_Diameter, networkDiameter);
-                                                        } finally {
-                                                            resultLock.unlock();
-                                                        }
-                                                        if (networkDiameter.size() == allCombinationTasks.size() && networkDiameterFlag) {
-                                                            networkResultMaps.put(MiningObject.MiningObject_Diameter.toString(), networkDiameter);
-                                                            networkDiameterFlag = false;
-                                                            setIsRunning(false);
-                                                            setIsPcapRunning(false);
-                                                            isSuspend = true;
-                                                            awakeNet();
-                                                        }
-                                                    }
+                                                    networkDiameter.put(tempList.get(i), taskCombinationResult.getMinerNetworkResults());
+                                                    MinerFactorySettings settings = NetworkMinerNode.getMinerFactorySettingsDis(tempList.get(i));
+                                                    MiningResultsFile newResultsFile = new MiningResultsFile(MiningObject.fromString(tempList.get(i).getMiningObject()));
+                                                    newResultsFile.result2File(settings, tempList.get(i), taskCombinationResult.getMinerNetworkResults());
                                                 } finally {
                                                     resultLock.unlock();
                                                 }
+                                                updateMap(tempList.get(i));//更新状态
                                             }
                                         }
-
+                                        //进度条
+                                        taskBar(networkCluster.size() + networkDiameter.size(), taskProgressDis.getPhase(), totalCount);
+                                        resultLock.lock();
+                                        try {
+                                            NetworkMinerFactory.getInstance().
+                                                    showNetWorkMinersDis(MiningObject.MiningObject_Diameter, networkDiameter);
+                                        } finally {
+                                            resultLock.unlock();
+                                        }
+                                        if (networkDiameter.size() == allCombinationTasks.size() && networkDiameterFlag) {
+                                            networkResultMaps.put(MiningObject.MiningObject_Diameter.toString(), networkDiameter);
+                                            networkDiameterFlag = false;
+                                            setIsRunning(false);
+                                            setIsPcapRunning(false);
+                                            isSuspend = true;
+                                            awakeNet();
+                                        }
 //                                        else {
 //                                            awakeSingleThread();
 //                                        }
                                     } else {
                                         if (!isRunning) {
                                             isSuspend = true;
-                                        }
-                                    }
+                                        }                                    }
                                 }
                                 System.out.println("跳出nnnnnswitch");
 
@@ -1875,7 +1870,7 @@ public class Server {
                             pcapLock.unlock();
                         }
                     }
-                    pcapPanel.getBar().setValue(recCount.get());
+                    pcapPanel.getBar().setValue(recCount);
                     pcapPanel.getBar().setMaximum(allTasks.size());//进度条最大
                     pcapPanel.getjLabel().setText("阶段 1/3");
                     long a = System.currentTimeMillis();
@@ -1885,17 +1880,17 @@ public class Server {
                         userClient.sendMsg("First");
                         if (dataFromClient.equals("Ready")) {
 //                            pcapCount1 < 或 =两种情况，只发送一次
-//                            sendLock.lock();//将全部过程锁起
-//                            try {
-                            int tempNum;//作为发送任务的临时变量
-                            if ((tempNum = pcapCount1.getAndIncrement()) < allTasks.size()) {
+                            sendLock.lock();//将全部过程锁起
+                            try {
+//                            int tempNum;//作为发送任务的临时变量
+                                if (pcapCount1 < allTasks.size()) {
 //                                pcapCount1 += 1;
 //                                sendLock.unlock();
-                                userClient.sendTask(allTasks.get(tempNum));
-                                System.out.println("第" + tempNum + "次已发送" + allTasks.size());
-//                                pcapCount1 += 1;
-                                System.out.println("下一次发送：" + (tempNum + 1));
-                            } else {
+                                    userClient.sendTask(allTasks.get(pcapCount1));
+                                    System.out.println("第" + pcapCount1 + "次已发送" + allTasks.size());
+                                    pcapCount1 += 1;
+                                    System.out.println("下一次发送：" + (pcapCount1 + 1));
+                                } else {
 //                                sendLock.unlock();
 
 //                                updateMapLock1.lock();
@@ -1921,10 +1916,10 @@ public class Server {
 //                                } finally {
 //                                    updateMapLock1.unlock();
 //                                }
+                                }
+                            } finally {
+                                sendLock.unlock();
                             }
-//                            } finally {
-//                                sendLock.unlock();
-//                            }
                         }
 
                         //接收结果
@@ -1941,15 +1936,15 @@ public class Server {
 
                                 if (status.equals("Absent")) {
                                     status = null;
-                                    if (recCount.getAndIncrement() < tasksCount) {
+                                    if (recCount < tasksCount) {
                                         finalFolderPath = outPath;
                                         //接收文件
                                         receiveResult(finalFolderPath);
                                         updateMap(task);
-//                                        recCount += 1;
-                                        pcapPanel.getBar().setValue(recCount.get());
+                                        recCount += 1;
+                                        pcapPanel.getBar().setValue(recCount);
                                         pcapPanel.getjLabel().setText("阶段 1/3");
-                                        if (recCount.get() == tasksCount) {
+                                        if (recCount == tasksCount) {
 //                                    userClient.close();
                                             System.out.println("运行结束");
                                             comAndDel.lock();
@@ -1975,9 +1970,9 @@ public class Server {
                                     }
                                 } else if (status.equals("Existent")) {
                                     status = null;
-                                    if (recCount.get() < tasksCount) {
+                                    if (recCount < tasksCount) {
                                         continue;
-                                    } else if (recCount.get() == tasksCount) {
+                                    } else if (recCount == tasksCount) {
                                         comAndDel.lock();
                                         try {
                                             if (!combineAndDelete) {
@@ -2029,7 +2024,7 @@ public class Server {
                     }
 
                     tasksCount = allTasks2.size();
-                    pcapPanel.getBar().setValue(recCount2.get());
+                    pcapPanel.getBar().setValue(recCount2);
                     pcapPanel.getBar().setMaximum(tasksCount);//进度条最大
                     pcapPanel.getjLabel().setText("阶段 2/3");
                     //执行后2步
@@ -2039,16 +2034,16 @@ public class Server {
                         userClient.sendMsg("Last");
                         if (dataFromClient.equals("Ready")) {
 //                            pcapCount1 < 或 =两种情况，只发送一次
-//                            sendLock2.lock();
-//                            try {
-                            int tempNum;//作为发送任务的临时变量
-                            if ((tempNum = pcapCount2.getAndIncrement()) < allTasks2.size()) {
-                                userClient.sendTask(allTasks2.get(tempNum));
-                                System.out.println("第" + tempNum + "次已发送" + allTasks2.size());
-                                sendFileTask(allTasks2.get(tempNum).split(DELIMITER)[0]);//发送单个文件,routesrc/10.0.0.1_10.0.0.2.bin
-//                                pcapCount2 += 1;
-                                System.out.println("下一次发送：" + (tempNum + 1));
-                            } else {
+                            sendLock2.lock();
+                            try {
+//                            int tempNum;//作为发送任务的临时变量
+                                if (pcapCount2 < allTasks2.size()) {
+                                    userClient.sendTask(allTasks2.get(pcapCount2));
+                                    System.out.println("第" + pcapCount2 + "次已发送" + allTasks2.size());
+                                    sendFileTask(allTasks2.get(pcapCount2).split(DELIMITER)[0]);//发送单个文件,routesrc/10.0.0.1_10.0.0.2.bin
+                                    pcapCount2 += 1;
+                                    System.out.println("下一次发送：" + (pcapCount2 + 1));
+                                } else {
 
 //                                updateMapLock2.lock();
 //                                try {
@@ -2074,10 +2069,10 @@ public class Server {
 //                                } finally {
 //                                    updateMapLock2.unlock();
 //                                }
+                                }
+                            } finally {
+                                sendLock2.unlock();
                             }
-//                            } finally {
-//                                sendLock2.unlock();
-//                            }
                         }
 
                         //接收结果
@@ -2097,15 +2092,15 @@ public class Server {
 
                                 if (status.equals("Absent")) {
                                     status = null;
-                                    if (recCount2.getAndIncrement() < tasksCount) {
+                                    if (recCount2 < tasksCount) {
                                         finalFolderPath = outPath;
                                         //接收文件
                                         receiveResult2(finalFolderPath);
                                         updateMap2(task2);
-//                                        recCount2 += 1;
-                                        pcapPanel.getBar().setValue(recCount2.get());
+                                        recCount2 += 1;
+                                        pcapPanel.getBar().setValue(recCount2);
                                         pcapPanel.getjLabel().setText("阶段 2/3");
-                                        if (recCount2.get() == tasksCount) {
+                                        if (recCount2 == tasksCount) {
                                             comAndDel.lock();
                                             try {
                                                 if (!combineAndDelete2) {
@@ -2141,9 +2136,9 @@ public class Server {
                                     }
                                 } else if (status.equals("Existent")) {
                                     status = null;
-                                    if (recCount2.get() < tasksCount) {
+                                    if (recCount2 < tasksCount) {
                                         continue;
-                                    } else if (recCount2.get() == tasksCount) {
+                                    } else if (recCount2 == tasksCount) {
                                         comAndDel.lock();
                                         try {
                                             if (!combineAndDelete2) {
@@ -2213,8 +2208,8 @@ public class Server {
                             recLock2.unlock();
                         }
                     }
-                    System.out.println("本次执行完毕，进行到第" + recCount2.get() + "  Thread: " + Thread.currentThread().getName());
-                    if (recCount2.get() >= taskCount) {
+                    System.out.println("本次执行完毕，进行到第" + recCount2 + "  Thread: " + Thread.currentThread().getName());
+                    if (recCount2 >= taskCount) {
                         if (threadNum.decrementAndGet() == 0) {
                             System.out.println("threadNum: " + threadNum.get());
                             awakeList();//唤起等待，开始下一次任务

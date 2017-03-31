@@ -31,6 +31,7 @@ import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
 
 public class TaskElement extends JDialog implements Serializable, Comparable<TaskElement>{
+	private static final long serialVersionUID = 5142999427955570947L;
 	public static String PATH_TO_SAVE_TASKS = "./tasks/";
 	public static List<TaskElement>allTasks ;
 	public static List<TaskCombination> allCombinationTasks;
