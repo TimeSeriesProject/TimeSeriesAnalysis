@@ -359,7 +359,8 @@ class NodeTimerTask extends TimerTask{
 					}
 					
 				}
-								
+				tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+				results.getRetNode().getRetOM().setIslinkDegree(true);				
 				tsaMethod.TimeSeriesAnalysis();
 				setOMResults(results, tsaMethod);
 				break;
