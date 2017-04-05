@@ -371,10 +371,11 @@ class NodeTimerTask extends TimerTask{
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_PredictionMining:
-			    int testsize=8;//测试数据的长度
+			    int testsize=10;//测试数据的长度
+			    MinerResultsPM resultsPM = results.getRetNode().getRetPM();
 				PredictTest predicttest=new PredictTest();
-				DataItems tDataItems=predicttest.getTestpredictData(dataItems);//获得除去后8个数据的实际原始数据段
-				List<String> realtestData=predicttest.getTestRealData(dataItems);//获得原始数据的最后8个数据
+				DataItems tDataItems=predicttest.getTestpredictData(dataItems);//获得除去后10个数据的实际原始数据段
+				List<String> realtestData=predicttest.getTestRealData(dataItems);//获得原始数据的最后10个数据
 				if (task.getMiningAlgo() != null) {
 					switch (task.getMiningAlgo()) {
 						case MiningAlgo_NeuralNetworkTSA:
@@ -384,7 +385,7 @@ class NodeTimerTask extends TimerTask{
 							
 							//...................................测试开始.............................................//
 							
-							predicttest.resultWrite(forecastMethod.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject());
+							predicttest.resultWrite(forecastMethod.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
 							
 							//...................................测试结束.............................................//
 							break;
@@ -394,7 +395,7 @@ class NodeTimerTask extends TimerTask{
 							
 							//...................................测试开始.............................................//
 							
-							predicttest.resultWrite(forecastMethod.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject());
+							predicttest.resultWrite(forecastMethod.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
 							
 							
 							//...................................测试结束.............................................//
@@ -408,7 +409,7 @@ class NodeTimerTask extends TimerTask{
 					System.out.println(task.getTaskName()+" forecast over");
 					setForecastResult(results, forecastMethod);
 				} else {
-					MinerResultsPM resultsPM = results.getRetNode().getRetPM();
+					//MinerResultsPM resultsPM = results.getRetNode().getRetPM();
 					if (resultsPM.getHasPeriod()) { // 若有周期性
 						DataItems predictItems = new DataItems();
 						DataItems periodDi = resultsPM.getDistributePeriod();
@@ -424,7 +425,7 @@ class NodeTimerTask extends TimerTask{
 						
 						//...................................测试开始.............................................//
 						
-						predicttest.resultWrite(predictItems.getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject());
+						predicttest.resultWrite(predictItems.getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
 						
 						
 						//...................................测试结束.............................................//
@@ -444,7 +445,7 @@ class NodeTimerTask extends TimerTask{
 							workforecast.TimeSeriesAnalysis();
 							//....................................测试任务开始...............................................*//
 							
-							predicttest.resultWrite(workforecast.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject());
+							predicttest.resultWrite(workforecast.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
 							
 							
 							//..............................测试结束....................................//
