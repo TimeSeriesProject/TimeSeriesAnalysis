@@ -807,6 +807,7 @@ public class win10_window extends JFrame {
         init();
 //        this.setBounds(0,0,1000,1080);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 //        this.setResizable(false);
 
 //        this.setExtendedState(JFrame.MAXIMIZED_BOTH);

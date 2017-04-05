@@ -471,11 +471,11 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 //			ErrorLogger.log(entry.getKey().getRange()+","+entry.getKey().getMiningObject()+","+entry.getKey().getMinerType(),entry.getValue().toString());
 			entry.getValue().start();
 			
-			try {
+			/*try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			}*/
 		}
 	}
 
