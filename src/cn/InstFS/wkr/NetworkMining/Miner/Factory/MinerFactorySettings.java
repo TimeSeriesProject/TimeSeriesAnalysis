@@ -37,7 +37,7 @@ public abstract class MinerFactorySettings {
         Calendar cal1 = Calendar.getInstance();
         Calendar cal2 = Calendar.getInstance();
 
-        cal1.set(2017, 1, 1, 0, 0, 0);
+        cal1.set(2017, 1, 24, 0, 0, 0);
         cal2.set(2017,6,3,0,0,0);
 
         startDate = new Date(cal1.getTimeInMillis()/1000 * 1000);
