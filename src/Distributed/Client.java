@@ -134,10 +134,11 @@ public class Client {
         public void run() {
             try {
                 while (true) {
-                    System.out.println("开始");
+                    System.out.println("task开始");
                     dataPanel.sendLog("开始");//控制台输出
 //                    sendReady();//先发送Ready
                     clientInit.sendMsg("Ready");//先发送Ready
+                    System.out.println("Task_ready已发送");
                     taskCombination = (TaskCombination) clientInit.receiveObj();//收到要完成的任务class
                     NetworkMinerFactory.getInstance();
                     TaskCombinationList.addListenerOnly(taskCombination, false);
@@ -261,7 +262,7 @@ public class Client {
         public void run() {
             try {
                 while (true) {
-                    System.out.println("开始");
+                    System.out.println("pcap开始");
                     clientInit.sendPcapMsg("Ready");//先发送Ready
                     System.out.println("Pcap_ready已发送");
                     taskFlag = clientInit.receiveStr();//判断执行哪个任务
