@@ -6,6 +6,7 @@ public class PcapData implements Comparable {
     private int pLength;//抓包长度
     private int length;//实际长度
     private int traffic;
+    private int identification;//ip协议中字段，用于判断是否是同一个包
     private int TTL;
     private String srcIP;
     private String dstIP;
@@ -24,6 +25,14 @@ public class PcapData implements Comparable {
 
     public void setTraffic(int traffic) {
         this.traffic = traffic;
+    }
+
+    public int getIdentification() {
+        return identification;
+    }
+
+    public void setIdentification(int identification) {
+        this.identification = identification;
     }
 
     public int getTTL() {

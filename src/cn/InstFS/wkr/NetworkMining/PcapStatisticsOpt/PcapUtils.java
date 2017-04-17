@@ -395,19 +395,25 @@ class RouteGen implements Callable {
                 if (data.getGeted() == 1) {
                     continue;
                 }
+                //0x02、0x12、0x10和0x11这些个状态，出bug是由于0x11没有判断，另外加上identification判断是否是同一个包
                 if ((double) data.getTime_s() + data.getTime_ms() / 1000000.0 >
                         first.getTime_s() + first.getTime_ms() / 1000000.0 + 1.5) {
                      break;
-                } else if (data.getFlags() == 0x02 && first.getFlags() == 0x02) {//SYN
+                } else if (data.getFlags() == 0x02 && first.getFlags() == 0x02 && data.getIdentification() == first.getIdentification()) {//SYN
                     data.setGeted(1);
                     ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
                     num++;
-                } else if (data.getFlags() == 0x12 && first.getFlags() == 0x12) {//SYN&&ACK
+                } else if (data.getFlags() == 0x12 && first.getFlags() == 0x12  && data.getIdentification() == first.getIdentification()) {//SYN&&ACK
+                    data.setGeted(1);
+                    ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
+                    num++;
+                } else if (data.getFlags() == 0x11 && first.getFlags() == 0x11 && data.getIdentification() == first.getIdentification()) {
                     data.setGeted(1);
                     ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
                     num++;
                 } else if (data.getFlags() == 0x10 && first.getFlags() == 0x10 && data.getSeq() == first.getSeq() &&
-                        data.getAck() == first.getAck() && data.getTraffic() == first.getTraffic()) {//ACK（第三次握手和发送数据）
+                        data.getAck() == first.getAck() && data.getTraffic() == first.getTraffic()
+                        && data.getIdentification() == first.getIdentification()) {//ACK（第三次握手和发送数据）
                     data.setGeted(1);
                     ttlList.add(new NodeAndTTL(data.getPcapFile(), data.getTTL()));
                     num++;
@@ -883,7 +889,7 @@ public class PcapUtils {
         long a = System.currentTimeMillis();
         String fpath = "E:\\pcap";
         String outpath = "E:\\out";
-        boolean parseAll = false;
+        boolean parseAll = true;
         PcapUtils pcapUtils = new PcapUtils();
         //pcapUtils.readInput(fpath,1);
         pcapUtils.startParse(fpath, outpath, parseAll);

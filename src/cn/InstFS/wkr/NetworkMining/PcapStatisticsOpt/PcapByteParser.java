@@ -198,9 +198,9 @@ public class PcapByteParser {
         byte[] buffer_20 = new byte[20];
         byte[] buffer = new byte[5000];
 
-        byte[] buffer_common = new byte[24];//分开之前共同的部分
-        byte[] buffer_UDP = new byte[28 + length];//若是UDP，一次写这么多个字节
-        byte[] buffer_TCP = new byte[37 + length];//若是TCP，一次写这么多个字节
+        byte[] buffer_common = new byte[26];//分开之前共同的部分
+        byte[] buffer_UDP = new byte[30 + length];//若是UDP，一次写这么多个字节
+        byte[] buffer_TCP = new byte[39 + length];//若是TCP，一次写这么多个字节
         PcapHeader header = new PcapHeader();
         ArrayList<PcapNode> nodeList = new ArrayList<PcapNode>();
         is.get(buffer_20);
@@ -273,8 +273,12 @@ public class PcapByteParser {
             } else {
                 nodeList.add(node);
             }
-            is.get(buffer_4);//skip in order to get TTL
-            datalength += 4;
+            is.get(buffer_2);//skip in order to get TTL
+            datalength += 2;
+            System.arraycopy(buffer_2, 0, buffer_common, byteLength, buffer_2.length);//写入identification
+            byteLength += 2;
+            is.get(buffer_2);//skip in order to get TTL
+            datalength += 2;
             is.get(buffer_1);
             datalength += 1;
             data.setTTL(64 - buffer_1[0]);//TTL
