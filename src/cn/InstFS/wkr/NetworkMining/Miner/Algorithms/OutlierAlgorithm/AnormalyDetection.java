@@ -27,7 +27,7 @@ public class AnormalyDetection implements IMinerOM {
     private static int expWindowSize = 3;
     private static double k=3.0; //高斯距离阈值 (x-u)/sigma > k 则x点是异常点（暂时没用到）
     private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
-    private double threshold; //异常度阈值（非参数）
+    private double threshold = 0.8; //异常度阈值（非参数）
     private DataItems di;
     private DataItems outlies;
     private DataItems outDegree = new DataItems(); //异常度

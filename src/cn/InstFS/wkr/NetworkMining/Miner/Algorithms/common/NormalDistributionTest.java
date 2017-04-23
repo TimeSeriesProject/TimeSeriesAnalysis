@@ -38,6 +38,22 @@ public class NormalDistributionTest {
         }
         distribution = new NormalDistribution(mean, stdeviation);
     } 
+    public NormalDistributionTest(List<Double> list){
+    	arr = new double[list.size()];
+    	for (int i=0;i<list.size();i++) {
+            arr[i] = list.get(i);
+        }
+    	DescriptiveStatistics statistics = new DescriptiveStatistics();
+        for (int i=0;i<list.size();i++) {
+            statistics.addValue(list.get(i));
+        }
+        mean = statistics.getMean();
+        stdeviation = statistics.getStandardDeviation();
+        if(stdeviation <= 0){
+            stdeviation = 0.0001;
+        }
+        distribution = new NormalDistribution(mean, stdeviation);        
+    }
     public NormalDistributionTest(List<Double> list,double K){
     	this.K = K;
     	arr = new double[list.size()];
