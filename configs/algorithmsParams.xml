@@ -60,11 +60,11 @@
     <!-- 频繁项参数 -->
     <sParams>
         <smParam>
-            <minSupport>5</minSupport>
+            <minSupport>2</minSupport>
             <sizeWindow>10</sizeWindow>
             <stepWindow>1</stepWindow>
-            <splitLeastLen>4</splitLeastLen>
-            <clusterNum>6</clusterNum>
+            <splitLeastLen>16</splitLeastLen>
+            <clusterNum>4</clusterNum>
         </smParam>
     </sParams>
 
@@ -142,7 +142,6 @@
         <port>25</port>
         <port>10</port>
         <port>11</port>
-        <port>402</port>
         <port>403</port>
         <port>404</port>
         <port>405</port>

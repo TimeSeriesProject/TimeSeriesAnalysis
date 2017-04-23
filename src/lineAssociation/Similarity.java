@@ -103,6 +103,13 @@ public class Similarity {
     		return 1.0;
     	}
     }
+
+    /**
+     * 求两线段间最大距离，斜率相乘为负时最大距离为1，否则为斜率之差绝对值、长度之差绝对值中最大值
+     * @param l1
+     * @param l2
+     * @return
+     */
     private static double getMaxDistance(Linear l1,Linear l2){
     	 if(l1.normTheta*l2.normTheta>=0) {
     		 double normLenght1 = Math.sqrt(Math.pow(l1.normSpan, 2)+Math.pow(l1.normHspan, 2));

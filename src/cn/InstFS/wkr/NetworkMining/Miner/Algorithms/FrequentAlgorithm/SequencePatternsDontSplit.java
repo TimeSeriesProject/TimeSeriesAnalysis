@@ -265,8 +265,8 @@ public class SequencePatternsDontSplit {
 			else {
 				basicSequence.remove(i);
 				i--;
-				if(i < 0)
-					i = 0;
+				/*if(i < 0)
+					i = 0;*/
 			}
 		}
 		return position;

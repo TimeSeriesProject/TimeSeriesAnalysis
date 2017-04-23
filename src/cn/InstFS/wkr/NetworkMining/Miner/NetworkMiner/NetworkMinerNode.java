@@ -464,24 +464,24 @@ class NodeTimerTask extends TimerTask{
 			case MiningMethods_SequenceMining:
 				
 				ParamsSM paramsSM = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
-//				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
-				PointSegment segment=new PointSegment(dataItems, 4);
+				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
+//				PointSegment segment=new PointSegment(dataItems, 4);
 //				LinePattern segment = new LinePattern(dataItems, 0.06);
 				List<PatternMent> segPatterns=segment.getPatterns();
 				
 				//kmeans聚类
-		        /*if(task.getPatternNum()==0){
+		        if(task.getPatternNum()==0){
 					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
 							paramsSM.getSMparam().getClusterNum(),task.getTaskName());
 				}else{
 					clusterItems=WavCluster.SelfCluster(segPatterns,dataItems,
 							task.getPatternNum(),task.getTaskName());
-				}*/
+				}
 		        
 		        //DPC聚类
-		        AssociationRuleLineParams arp = ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams();
+		       /* AssociationRuleLineParams arp = ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams();
 				TranDPCluster dpCluster = new TranDPCluster(dataItems, segPatterns, arp);
-				clusterItems = dpCluster.getClusterItems();
+				clusterItems = dpCluster.getClusterItems();*/
 				
 				sequencePattern=new SequencePatternsDontSplit(paramsSM);
 				sequencePattern.setDataItems(clusterItems);
@@ -491,11 +491,11 @@ class NodeTimerTask extends TimerTask{
 						printClusterLabelTOLines(clusterItems, dataItems);
 				List<LineElement> lineElements = sequencePattern.getLineElement(frequentItem);
 				sequencePattern.patternMining();
-//				setFrequentResults(results, sequencePattern,frequentItem, lineElements,segPatterns);
-				setFrequentResults(results, sequencePattern,frequentItem, lineElements,segPatterns,dpCluster.GAMMA);
+				setFrequentResults(results, sequencePattern,frequentItem, lineElements,segPatterns);
+//				setFrequentResults(results, sequencePattern,frequentItem, lineElements,segPatterns,dpCluster.GAMMA);
 				break;
 			case MiningMethods_PartialCycle:
-				if (results.getRetNode().getRetPM().getHasPeriod()) { // 若有周期性,不挖掘部分周期
+				if (results.getRetNode().getRetPM().getHasPeriod()) { // 若有周期性,不挖掘局部周期
 					minePartialPeriod = false;
 				} else {
 					/*LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
@@ -515,19 +515,29 @@ class NodeTimerTask extends TimerTask{
 				
 			case MiningMethods_PartialPeriod:
 				System.out.println("开始进入部分周期挖掘");
-				if (results.getRetNode().getRetPM().isHasPartialPeriod()||results.getRetNode().getRetPM().getHasPeriod()) { // 若有周期性,不挖掘部分周期			
+				if (results.getRetNode().getRetPartialCycle().isHasPartialCycle()||results.getRetNode().getRetPM().getHasPeriod()) { // 若有周期性或局部周期,不挖掘部分周期
 					minePartialCycle = false;
 				} else {
 					//没有周期和局部周期，才挖掘部分周期			
 					ParamsSM paramsSM2 = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
-//					PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
-					PointSegment segment2=new PointSegment(dataItems, 4);
+					PointSegment segment2=new PointSegment(dataItems, paramsSM2.getSMparam().getSplitLeastLen());
+//					PointSegment segment2=new PointSegment(dataItems, 4);
 //					LinePattern segment = new LinePattern(dataItems, 0.06);
 					List<PatternMent> segPatterns2=segment2.getPatterns();
+
+					//kmeans聚类
+					if(task.getPatternNum()==0){
+						clusterItems=WavCluster.SelfCluster(segPatterns2,dataItems,
+								paramsSM2.getSMparam().getClusterNum(),task.getTaskName());
+					}else{
+						clusterItems=WavCluster.SelfCluster(segPatterns2,dataItems,
+								task.getPatternNum(),task.getTaskName());
+					}
+
 					 //DPC聚类
-			        AssociationRuleLineParams arp2 = ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams();
+			        /*AssociationRuleLineParams arp2 = ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams();
 					TranDPCluster dpCluster2 = new TranDPCluster(dataItems, segPatterns2, arp2,true);
-					clusterItems = dpCluster2.getClusterItems();
+					clusterItems = dpCluster2.getClusterItems();*/
 					
 					sequencePattern=new SequencePatternsDontSplit(paramsSM2);
 					sequencePattern.setDataItems(clusterItems);

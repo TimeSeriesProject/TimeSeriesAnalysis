@@ -205,6 +205,8 @@ class PathTimerTask extends TimerTask{
 							int value=(int)((double)map.get(item)*1000);
 //							double value = (double) map.get(item);
 							seq.add(value+"");
+							if(value == 0)
+								continue;
 							row++;
 						}else if(map.get(item) instanceof Integer){
 							int value = (int) map.get(item);
