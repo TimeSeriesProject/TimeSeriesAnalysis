@@ -311,11 +311,11 @@ class PathTimerTask extends TimerTask{
 						if (task.getMiningAlgo() != null) {
 							switch (task.getMiningAlgo()) {
 								case MiningAlgo_NeuralNetworkTSA:
-									forecast =new NeuralNetwork(dataItems, task,
+									forecast =new NeuralNetwork(newItem, task,
 											ParamsAPI.getInstance().getParamsPrediction().getNnp());
 									break;
 								case MiningAlgo_ARIMATSA:
-									forecast =new ARIMATSA(task, dataItems,
+									forecast =new ARIMATSA(task, newItem,
 											ParamsAPI.getInstance().getParamsPrediction().getAp());
 									break;
 								default:

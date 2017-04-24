@@ -11,21 +11,22 @@ import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPartialPeriod;
 
 /**
  * 根据模式和线段集合，寻找频繁项起始点，开始部分周期挖掘
- * 
+ *
  * @author shun
  *
  */
 public class GetPositionAndMinerPaticalPeriod {
-	List<ArrayList<String>> patterns;
-	List<LineElement> lineElements;
+	List<ArrayList<String>> patterns; //输入：线段模式
+	List<LineElement> lineElements;//输入：
 	Map<String, ArrayList<Pair>> fresult;
 	Map<String, ArrayList<Pair>> positionResult;
 	Map<String, Double> periodResult;
 	double threshold;//距离相似度阈值
-	
+	Map<String,Double> testError;
+	boolean hasParticalPeriod;
 
 	public GetPositionAndMinerPaticalPeriod(List<ArrayList<String>> patterns,
-			List<LineElement> lineElements,double threshold) {
+											List<LineElement> lineElements,double threshold) {
 		fresult = new HashMap<String, ArrayList<Pair>>();
 		positionResult = new HashMap<String, ArrayList<Pair>>();
 		this.patterns = patterns;
@@ -44,7 +45,7 @@ public class GetPositionAndMinerPaticalPeriod {
 		Iterator<ArrayList<String>> itPatterns = patterns.iterator();
 		while (itPatterns.hasNext()) {
 			ArrayList<String> onePattern = itPatterns.next();// 得到频繁项，例如abc
-																// 的a-b-c链
+			// 的a-b-c链
 			getPosition(onePattern, lineElements);
 		}
 		PartialPeriod particalPeriod = new PartialPeriod(fresult,threshold);
@@ -52,16 +53,18 @@ public class GetPositionAndMinerPaticalPeriod {
 		particalPeriod.run();
 		positionResult = particalPeriod.getPositionResult();
 		periodResult=particalPeriod.getPeriodResult();
+		hasParticalPeriod=particalPeriod.getHasParticalPeriod();
+		testError=particalPeriod.GetTestError();
 	}
 
 	/**
-	 * 
+	 *
 	 * @param onePattern
 	 *            123频繁项 1-2-3
 	 * @param lineElements
 	 */
 	private void getPosition(ArrayList<String> onePattern,
-			List<LineElement> lineElements) {
+							 List<LineElement> lineElements) {
 		// TODO Auto-generated method stub
 		// String pattern=onePattern.toString();
 		if (onePattern == null || lineElements == null) {
@@ -116,6 +119,12 @@ public class GetPositionAndMinerPaticalPeriod {
 		MinerResultsPartialPeriod minerResultsPartialPeriod = new MinerResultsPartialPeriod();
 		minerResultsPartialPeriod.setPositionResult(positionResult);
 		minerResultsPartialPeriod.setPeriodResult(periodResult);
+		minerResultsPartialPeriod.setHasPartialPeriod(hasParticalPeriod);
 		return minerResultsPartialPeriod;
+	}
+
+	public Map<String,Double> getTestErrorResult() {
+		return testError;
+
 	}
 }

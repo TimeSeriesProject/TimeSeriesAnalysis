@@ -39,7 +39,7 @@ public class TaskProgressBar extends JPanel
             while (progress < taskNum) {
                 //Sleep for up to one second.
                 try {
-                    Thread.sleep(random.nextInt(1000));
+                    Thread.sleep(random.nextInt(200));
                 } catch (InterruptedException ignore) {}
                 progress = taskProgress.getTaskComplete();
                 setProgress(Math.min(100*progress/taskNum, 100));

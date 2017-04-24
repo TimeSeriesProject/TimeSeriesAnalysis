@@ -474,6 +474,7 @@ public class PathListFrame extends JFrame{
     			}
     		}
     	}
+        min = min==1?0:min;
     	min = Double.parseDouble(String.format("%.3f",min));
     	return min;
     }
