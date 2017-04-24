@@ -106,7 +106,15 @@ public class PathMinerFactoryDis extends MinerFactorySettings{
             Entry<String, DataItems> entry=iterator.next();
             di = entry.getValue();
         }
-
+        int k = 0;
+        for(Map m:di.getNonNumData()) {
+            if (m.size()!=0) {
+                k++;
+            }
+        }
+        if (k < di.getNonNumData().size() * 0.2) { // 判定为稀疏，不生成taskCombination
+            return;
+        }
         TaskCombination taskCombination = new TaskCombination();
         for (MiningMethod methodChecked: this.getMiningMethodsChecked())
             taskCombination.getTasks().add(generateTask(dataFile,TaskRange.NodePairRange, methodChecked));

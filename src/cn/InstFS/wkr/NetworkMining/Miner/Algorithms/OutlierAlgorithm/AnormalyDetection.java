@@ -27,7 +27,7 @@ public class AnormalyDetection implements IMinerOM {
     private static int expWindowSize = 3;
     private static double k=3.0; //高斯距离阈值 (x-u)/sigma > k 则x点是异常点（暂时没用到）
     private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
-    private double threshold; //异常度阈值（非参数）
+    private double threshold = 0.8; //异常度阈值（非参数）
     private DataItems di;
     private DataItems outlies;
     private DataItems outDegree = new DataItems(); //异常度
@@ -66,8 +66,8 @@ public class AnormalyDetection implements IMinerOM {
 //    		slice.put((long)i, Math.round(Double.parseDouble(data.get(i))));
     		slice.put((long)i, Double.parseDouble(data.get(i)));
     	}
-    	detect(slice);
-//    	detect1(slice);
+//    	detect(slice);
+    	detect1(slice);
      	outDegree = mapToDegree(degreeMap);
      	outlies = genOutline(outDegree);
     }
@@ -86,7 +86,7 @@ public class AnormalyDetection implements IMinerOM {
         int index = initWindowSize;
         int nowWindowSize = initWindowSize;
         while(index<=max) {
-            while ((index-nowWindowSize) >= 0 && nowWindowSize <= maxWindowSize) {
+            while ((index-nowWindowSize) >= 0) {
                 data = new double[nowWindowSize];
                 for (int i = index-nowWindowSize; i < index; i++) {
                     if(slice.get((long) i)==null){
@@ -96,7 +96,7 @@ public class AnormalyDetection implements IMinerOM {
                     }
                 }
                 NormalDistributionTest normalDistributionTest = new NormalDistributionTest(data,k);
-                if(!normalDistributionTest.isNormalDistri()){
+                if(!normalDistributionTest.isNormalDistri() && nowWindowSize <= maxWindowSize){
                 	index += expWindowSize;
                 	nowWindowSize+=expWindowSize;
                 }else{
@@ -181,9 +181,9 @@ public class AnormalyDetection implements IMinerOM {
         }
         
         //从后面向前滑动一个窗口
-        data = new double[initWindowSize];
-        for(int i=(int)max-initWindowSize;i<max;i++){        	
-        	data[i+initWindowSize-(int)max] = slice.get((long)i);
+        data = new double[maxWindowSize];
+        for(int i=(int)max-maxWindowSize;i<max;i++){        	
+        	data[i+maxWindowSize-(int)max] = slice.get((long)i);
         }
         NormalDistributionTest normalDistributionTest = new NormalDistributionTest(data,k);
         double mean = normalDistributionTest.getMean();
@@ -193,7 +193,7 @@ public class AnormalyDetection implements IMinerOM {
         }else {
 			stv = normalDistributionTest.getStdeviation();
 		}
-        for(int i=(int)max-initWindowSize;i<max;i++){
+        for(int i=(int)max-maxWindowSize;i<max;i++){
         	double distance =Math.abs(slice.get((long)i) - mean)/stv;
         	distance = distance>5 ? 1 : distance/5;
         	degreeMap.put(i, distance);        	
@@ -255,7 +255,7 @@ public class AnormalyDetection implements IMinerOM {
 		threshold = threshold<0.5 ? 0.5 : threshold;		
 		System.out.println("异常度阈值是："+threshold);
 		for(int i=0;i<len;i++){
-			if(degree.get(i)>threshold){
+			if(degree.get(i)>=threshold){
 				outline.add1Data(di.getElementAt(i));
 			}
 		}

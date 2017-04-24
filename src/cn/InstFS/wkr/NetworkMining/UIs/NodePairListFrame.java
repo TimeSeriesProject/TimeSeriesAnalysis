@@ -438,7 +438,7 @@ public class NodePairListFrame extends JFrame {
 		 return max;
 	 }
 	 public double getMin(DataItems di){
-		 double min = 1;
+		 double min = 100;
 		 for(int i=0;i<di.getData().size();i++){
 			 double data = Double.parseDouble(di.getData().get(i));
 			 if(data<min){

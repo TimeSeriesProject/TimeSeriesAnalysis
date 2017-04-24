@@ -503,6 +503,9 @@ public class SingleNodeListFrame extends JFrame {
 		}
 	 public double getMax(DataItems di){
 		 double max = 0;
+		 if(di.getData().isEmpty()){
+			 return 0;
+		 }
 		 for(int i=0;i<di.getData().size();i++){
 			 double data = Double.parseDouble(di.getData().get(i));
 			 if(data>max){

@@ -32,6 +32,9 @@ public class PcapRouteGen {
             is.get(buffer_2);
             data.setTraffic(byteArrayToShort(buffer_2, 0));
 
+            is.get(buffer_2);
+            data.setIdentification(byteArrayToShort(buffer_2, 0));
+
             is.get(buffer_1);
             data.setTTL(64 - buffer_1[0]);
 
