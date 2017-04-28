@@ -594,7 +594,7 @@ public class WavCluster {
 		if(leninstances.size()==0)
 			return result;
 		xkMeans = Kmeans(leninstances,clusterNum,fileName,true);//长度聚类
-		ykMeans = Kmeans(angleinstances,6,fileName,true);//角度聚类
+		ykMeans = Kmeans(angleinstances,10,fileName,true);//角度聚类
 		try
 		{
 			int xlabels[]=xkMeans.getAssignments();
@@ -609,7 +609,7 @@ public class WavCluster {
 				//	System.out.print("label"+" "+i+" "+xlabels[i]+" "+ylabels[i]);
 				
 				DataItem dataItem =new DataItem();	
-				dataItem.setData(String.valueOf(xlabels[i]*6+ylabels[i]));//表示属于哪一类
+				dataItem.setData(String.valueOf(xlabels[i]*10+ylabels[i]));//表示属于哪一类
 				
 				dataItem.setTime(dataItems.getTime().get(patterns.get(i).getStart()));
 				

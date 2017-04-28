@@ -596,6 +596,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 			MinerNodeResults results = (MinerNodeResults) resultsMap.get(taskCombination);
 			TaskElement periodTask = null;
 			TaskElement partialCycleTask = null;
+			TaskElement partialPeriodTask = null;
 			for (TaskElement task : taskCombination.getTasks()) {
 				switch (task.getMiningMethod()) {
 					case MiningMethods_OutliesMining:
@@ -645,6 +646,7 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						allMiners.put(task, partialCycle);
 						break;
 					case MiningMethods_PartialPeriod:
+						partialPeriodTask = task;
 						NetworkMinerPartialPeriod partialPeriod = new NetworkMinerPartialPeriod(task,null);
 						partialPeriod.getResults().setRetPartialPeriod(results.getRetPartialPeriod());
 						partialPeriod.isOver.setIsover(true);
@@ -662,12 +664,18 @@ public class NetworkMinerFactory implements ITaskElementEventListener{
 						break;
 				}
 			}
-			if (results.getRetPM().getHasPeriod()) { // 有周期，删去局部周期任务
+			if (results.getRetPM().getHasPeriod()) { // 有周期，删去局部周期、部分周期任务
 				taskCombination.getTasks().remove(partialCycleTask);
-			} else if (results.getRetPartialCycle().isHasPartialCycle()) { // 有局部周期，删去周期
+				taskCombination.getTasks().remove(partialPeriodTask);
+			} else if (results.getRetPartialCycle().isHasPartialCycle()) { // 有局部周期，删去周期、部分周期
+				taskCombination.getTasks().remove(periodTask);
+				taskCombination.getTasks().remove(partialPeriodTask);
+			} else if (results.getRetPartialPeriod().isHasPartialPeriod()) { // 有部分周期，删去局部周期和周期
+				taskCombination.getTasks().remove(partialCycleTask);
 				taskCombination.getTasks().remove(periodTask);
 			} else { // 都没有，保留周期任务
 				taskCombination.getTasks().remove(partialCycleTask);
+				taskCombination.getTasks().remove(partialPeriodTask);
 			}
 		} else if (resultsMap.get(taskCombination) instanceof MinerResultsPath){
 			MinerResultsPath results= (MinerResultsPath) resultsMap.get(taskCombination);

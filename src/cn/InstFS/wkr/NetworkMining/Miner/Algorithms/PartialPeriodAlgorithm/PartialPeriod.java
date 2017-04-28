@@ -6,22 +6,20 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-
 /**
- * 
- * @author 顺
- * @功能：根据频繁项挖掘结果，计算频繁项间隔来找出部分周期 重要数据结构说明 Dij 指第i个点和第j个点之间的距离 部分周期信息保存在二叉树中
- *                              SearchTable 搜索表，记录Dij节点是否被使用
  *
+ * @author 顺
+ * @功能：根据频繁项挖掘结果，计算频繁项间隔来找出部分周期
  */
 public class PartialPeriod {
 	Map<String, ArrayList<Pair>> frequentmap;// 输入：频繁项挖掘结果
-	double threshold=0.15;
-	// DataItems data;// 原始序列
+	double threshold=0.15;//距离间隔相似度默认阈值
+	Map<String, ArrayList<Pair>> positionResult;// 统计周期出现的位置，String为(频繁项+前两个数据点，如112113:0:1)
+	Map<String, Double> periodResult;// 统计周期多少
+	Map<String, Double> testError;
+	boolean hasParticalPeriod;
 
-	Map<String, ArrayList<Pair>> positionResult;// 统计周期出现的位置，String为(频繁项+前两个数据点)
-	Map<String, Double> periodResult;// 统计周期
+
 
 	public PartialPeriod(Map<String, ArrayList<Pair>> frequentmap,double threshold) {
 		this.frequentmap = frequentmap;
@@ -34,7 +32,7 @@ public class PartialPeriod {
 	 * @功能：发现潜在的部分周期
 	 */
 	void run2() {
-		
+
 	}
 	/**
 	 * @功能：发现潜在的部分周期
@@ -68,7 +66,7 @@ public class PartialPeriod {
 								- positionIndex[i].getBegin();
 						t[i][j] = 1;
 						int m = j, n = m + 1;
-						boolean hasParticalPeriod = false;
+						boolean localHasParticalPeriod = false;
 						double period = distance1;
 						int count = 1;
 						while (m != len - 1 && n != len) {
@@ -77,16 +75,16 @@ public class PartialPeriod {
 										- positionIndex[m].getBegin();
 								// 比较两个间隔是否相近
 								if (this.IsSimilar(period, distance2,threshold)) {
-									System.out.println("m=" + m + "	n=" + n);
+									//System.out.println("m=" + m + "	n=" + n);
 									t[m][n] = 1;
-									period = (period + distance2) / 2;
+									period = (period*count + distance2) / (count+1);
 									count++;
 									if (count >= 3) {
-										hasParticalPeriod = true;
+										localHasParticalPeriod = true;
 									}
 									// list.add(m);
 									list.add(n);
-									System.out.println("加入" + n);
+									//System.out.println("加入" + n);
 									m = n;
 									n++;
 									// 如果一直都是相等的，全是部分周期
@@ -104,7 +102,7 @@ public class PartialPeriod {
 							}
 						}
 						// 没找到部分周期进行一些处理：跟新搜索表，释放list
-						if (!hasParticalPeriod) {
+						if (!localHasParticalPeriod) {
 							Iterator<Integer> it = list.iterator();
 							it.next();// 跳过第一个点i
 							if (count == 1) {
@@ -121,7 +119,7 @@ public class PartialPeriod {
 							}
 						} else {
 							// 找到了部分周期，记录周期和周期位置，更新搜索表
-							hasParticalPeriod=false;
+							localHasParticalPeriod=false;
 							this.periodResult.put(entry.getKey() + ":" + i
 									+ ":" + j, period);
 							this.positionResult.put(
@@ -131,16 +129,14 @@ public class PartialPeriod {
 							// this.diaplayMap(periodPointRecord);
 							System.out.println("模式 = " + entry.getKey() +" "+i+":"+"j"
 									+ ", 周期 = " + period);
-							
-
-							// 跟新表1 
+							// 跟新表1
 							for (int index1 = 0; index1 < list.size(); index1++) {
 								for (int index2 = index1 + 1; index2 < list
 										.size(); index2++) {
 									t[list.get(index1)][list.get(index2)] = 1;
 								}
 							}
-							list.removeAll(list);// 
+							list.removeAll(list);//
 							// 跟新表：搜索表每行只要有一个为1，其他全为1
 /*							for (int index1 = 0; index1 < list.size(); index1++) {
 								for (int index2 = 0; index2 < list
@@ -151,7 +147,7 @@ public class PartialPeriod {
 							// 打印记录
 /*							for (Entry<String, Double> entry1 : periodResult
 									.entrySet()) {
-								
+
 								System.out.println("模式 = " + entry1.getKey()
 										+ ", 周期 = " + this.periodResult.get(entry1.getKey()));
 								Iterator<Pair> it = this.positionResult.get(
@@ -166,18 +162,25 @@ public class PartialPeriod {
 					}
 				}
 			}
-			// System.out.println();
+		}
+		if(positionResult.isEmpty()){
+			hasParticalPeriod=false;
+		}else{
+			hasParticalPeriod=true;
 		}
 		return positionResult;
 	}
 
+	public boolean getHasParticalPeriod(){
+		return hasParticalPeriod;
+	}
 	public void diaplayMap(Map<String, ArrayList<Pair>> map) {
 		for (Map.Entry<String, ArrayList<Pair>> entry : map.entrySet()) {
 
 			System.out.println("模式 = " + entry.getKey());
-			Iterator it3 = entry.getValue().iterator();
+			Iterator<Pair> it3 = entry.getValue().iterator();
 			while (it3.hasNext()) {
-				Pair p = (Pair) it3.next();
+				Pair p = it3.next();
 
 				System.out.print("--" + "(" + p.getBegin() + "," + p.getEnd()
 						+ ")");
@@ -187,12 +190,11 @@ public class PartialPeriod {
 	}
 
 	private ArrayList<Pair> exchangeIntegerListToPairList(Pair[] positionIndex,
-			ArrayList<Integer> list) {
+														  ArrayList<Integer> list) {
 		// TODO Auto-generated method stub
 		if (positionIndex == null || list == null) {
 			return null;
 		} else {
-			int len = positionIndex.length;
 			ArrayList<Pair> newList = new ArrayList<Pair>();
 			Iterator<Integer> it = list.iterator();
 			while (it.hasNext()) {
@@ -205,10 +207,10 @@ public class PartialPeriod {
 
 	/**
 	 * 比较两个数值是否近似
-	 * 
+	 *
 	 * @param a
 	 * @param b
-	 * @return |a-b|/max(a-b) <0.1 返回true
+	 * @return |a-b|/max(a-b) <threshold 返回true
 	 */
 	public boolean IsSimilar(double a, double b, double threshold) {
 		double t = (double) (a > b ? (a - b) : (b - a));
@@ -216,7 +218,7 @@ public class PartialPeriod {
 		double t2 = t / t1;
 		return t2 > threshold ? false : true;
 	}
-	
+
 	public Map<String, ArrayList<Pair>> getPositionResult() {
 		return positionResult;
 	}
@@ -225,6 +227,32 @@ public class PartialPeriod {
 		return periodResult;
 	}
 
+
+
+	/**
+	 * 计算测试误差
+	 * @return
+	 */
+	public Map<String, Double> GetTestError(){
+		testError=new HashMap<String, Double>();
+		for (Map.Entry<String, Double> entry : this.periodResult.entrySet()) {
+			double period=entry.getValue();
+			ArrayList<Pair> list=this.positionResult.get(entry.getKey());
+			double sumError=0;
+			Iterator<Pair> it=list.iterator();
+			double first=it.hasNext()?it.next().getBegin():0;
+			double second=0;
+			while(it.hasNext()){
+				second=it.next().getBegin();
+				sumError=sumError+(second-first-period)*(second-first-period);
+				first=second;
+			}
+			testError.put(entry.getKey(), Math.sqrt(sumError)/(list.size()-1));
+			System.out.println("模式："+entry.getKey()+"    "+"测试误差:"+ Math.sqrt(sumError)/(list.size()-1));
+		}
+		return testError;
+
+	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 

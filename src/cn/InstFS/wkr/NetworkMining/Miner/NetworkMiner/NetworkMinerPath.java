@@ -206,6 +206,8 @@ class PathTimerTask extends TimerTask{
 							int value=(int)((double)map.get(item)*1000);
 //							double value = (double) map.get(item);
 							seq.add(value+"");
+							if(value == 0)
+								continue;
 							row++;
 						}else if(map.get(item) instanceof Integer){
 							int value = (int) map.get(item);
@@ -315,11 +317,11 @@ class PathTimerTask extends TimerTask{
 						if (task.getMiningAlgo() != null) {
 							switch (task.getMiningAlgo()) {
 								case MiningAlgo_NeuralNetworkTSA:
-									forecast =new NeuralNetwork(dataItems, task,
+									forecast =new NeuralNetwork(newItem, task,
 											ParamsAPI.getInstance().getParamsPrediction().getNnp());
 									break;
 								case MiningAlgo_ARIMATSA:
-									forecast =new ARIMATSA(task, dataItems,
+									forecast =new ARIMATSA(task, newItem,
 											ParamsAPI.getInstance().getParamsPrediction().getAp());
 									break;
 								default:

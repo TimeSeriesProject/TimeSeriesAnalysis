@@ -41,12 +41,12 @@ public class PointSegment {
 	public List<PatternMent> getPatterns(){
 		splitByPointsInDistnce();
 		addtionalPoint();
-		List<Integer> copyPoints=new ArrayList<Integer>();
+		/*List<Integer> copyPoints=new ArrayList<Integer>();
 		for(int point:pointsIndex)
 			copyPoints.add(point);
 		for(int i=0;i<copyPoints.size()-1;i++){
 			splitByPointsInArea(copyPoints.get(i), copyPoints.get(i+1));
-		}
+		}*/
 		genPatterns();
 		return patterns;
 	}
