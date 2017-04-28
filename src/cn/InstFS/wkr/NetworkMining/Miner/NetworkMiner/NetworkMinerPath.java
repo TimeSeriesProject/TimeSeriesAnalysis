@@ -14,6 +14,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.AnormalyDet
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourierOutliesDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.GaussianOutlierDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.MultidimensionalOutlineDetection;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.PeriodBasedOutlierDetection;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.averageEntropyPM;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.SeriesStatisticsAlogorithm.SeriesStatistics;
@@ -230,8 +231,8 @@ class PathTimerTask extends TimerTask{
 				//聚合
 				newItem=DataPretreatment.aggregateData(newItem, task.getGranularity(), task.getAggregateMethod(),dataItems.isAllDataIsDouble());				
 				retPathOriDataItems.put(name,newItem);
-				
-				switch (task.getMiningMethod()){
+			
+				switch (task.getMiningMethod()){					
 					case MiningMethods_Statistics:
 						SeriesStatisticsParam ssp = ParamsAPI.getInstance().getParamsStatistic().getSsp();
 						MinerResultsStatistics retStatistics = new MinerResultsStatistics();
@@ -242,6 +243,7 @@ class PathTimerTask extends TimerTask{
 						break;
 					case MiningMethods_PeriodicityMining:
 						IMinerPM pmMethod = null;
+						MinerResultsPM retPM = new MinerResultsPM();
 						PMparam pMparam = ParamsAPI.getInstance().getParamsPeriodMiner().getPmparam();
 						if (task.getMiningAlgo()!= null ) { // 不为空时，自定义算法，否则自动选择
 							switch (task.getMiningAlgo()) {
@@ -261,7 +263,7 @@ class PathTimerTask extends TimerTask{
 						pmMethod.setDataItems(newItem);
 						pmMethod.setOriginDataItems(newItem);
 						pmMethod.predictPeriod();
-						MinerResultsPM retPM = new MinerResultsPM();
+//						MinerResultsPM retPM = new MinerResultsPM();
 						if(pmMethod.hasPeriod()){
 							System.out.println("period:"+name+":"+pmMethod.getPredictPeriod()+":"+pmMethod.getFirstPossiblePeriod());
 						}
@@ -288,14 +290,18 @@ class PathTimerTask extends TimerTask{
 									break;
 								case MiningAlgo_NodeOutlierDetection:
 									omMethod = new GaussianOutlierDetection(dataItems);
-									retOM.setIslinkDegree(true);
+									retOM.setIslinkDegree(false);
+								case MiningAlgo_PeriodBasedOutlier:
+									omMethod = new PeriodBasedOutlierDetection(newItem, retPathPM.get(name));							
+									retOM.setIslinkDegree(false);
 									break;
 								default:
 									throw new RuntimeException("方法不存在！");
 							}
 						} else {
-							omMethod = new MultidimensionalOutlineDetection(newItem);
-							retOM.setIslinkDegree(true);
+//							omMethod = new MultidimensionalOutlineDetection(newItem);
+							omMethod = new PeriodBasedOutlierDetection(newItem, retPathPM.get(name));							
+							retOM.setIslinkDegree(false);
 						}
 						
 						omMethod.TimeSeriesAnalysis();

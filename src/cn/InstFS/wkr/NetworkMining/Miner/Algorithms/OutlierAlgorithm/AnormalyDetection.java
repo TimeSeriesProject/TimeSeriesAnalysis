@@ -22,12 +22,13 @@ import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
  * Created by xzbang on 2015/3/24.
  */
 public class AnormalyDetection implements IMinerOM {
-    private static int initWindowSize = 60;
-    private static int maxWindowSize = 200;
+    private static int initWindowSize = 100;
+    private static int maxWindowSize = 500;
     private static int expWindowSize = 3;
     private static double k=3.0; //高斯距离阈值 (x-u)/sigma > k 则x点是异常点（暂时没用到）
     private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
     private double threshold = 0.8; //异常度阈值（非参数）
+    private int outNum = 10;
     private DataItems di;
     private DataItems outlies;
     private DataItems outDegree = new DataItems(); //异常度
@@ -71,7 +72,9 @@ public class AnormalyDetection implements IMinerOM {
      	outDegree = mapToDegree(degreeMap);
      	outlies = genOutline(outDegree);
     }
-    
+    /**
+     * 高斯滑动窗口
+     * 窗口重叠*/
     public void detect(HashMap<Long,Double> slice){
         if(slice == null){
             return;
@@ -83,10 +86,11 @@ public class AnormalyDetection implements IMinerOM {
         HashMap<Long,Long> outlier = new HashMap<>();
         long max = getmaxKey(slice);
         double[] data;
-        int index = initWindowSize;
+        int index2 = initWindowSize;
         int nowWindowSize = initWindowSize;
-        while(index<=max) {
-            while ((index-nowWindowSize) >= 0) {
+        while(index2<=max) {
+            int index = index2;
+        	while ((index-nowWindowSize) >= 0) {
                 data = new double[nowWindowSize];
                 for (int i = index-nowWindowSize; i < index; i++) {
                     if(slice.get((long) i)==null){
@@ -104,7 +108,7 @@ public class AnormalyDetection implements IMinerOM {
                         double target = (double)slice.get((long) index);
                         if(!normalDistributionTest.isDawnToThisDistri(target)){
                             //outlier.put((long) index,slice.get((long) index));
-                            slice.put((long)index, normalDistributionTest.getMean());
+//                            slice.put((long)index, normalDistributionTest.getMean());
                         }
                         double mean = normalDistributionTest.getMean();                        
                         double stv;
@@ -120,7 +124,7 @@ public class AnormalyDetection implements IMinerOM {
                     break;
                 }
             }
-            index++;
+            index2++;
             nowWindowSize=initWindowSize;
         }
        
@@ -157,19 +161,15 @@ public class AnormalyDetection implements IMinerOM {
                 nowWindowSize+=expWindowSize;
             }else {               
             	double mean = normalDistributionTest.getMean();
-                double stv;
-            	if(normalDistributionTest.getStdeviation()<=0){
-                	stv = 1e-3;
-                }else {
-					stv = normalDistributionTest.getStdeviation();
-				}
+                double stv = normalDistributionTest.getStdeviation();
+            	
             	for(int i=index-nowWindowSize;i<index;i++){
                 	if (slice.get((long) i)!=null) {						
 						double target = (double)slice.get((long)i);
-	                    if(!normalDistributionTest.isDawnToThisDistri(target)){
+	                    /*if(!normalDistributionTest.isDawnToThisDistri(target)){
 //	                        outlier.put((long)i,slice.get((long)i));
-	                        slice.put((long)i, normalDistributionTest.getMean());
-	                    }
+//	                        slice.put((long)i, normalDistributionTest.getMean());
+	                    }*/
 	                    double distance = Math.abs(data[i-index+nowWindowSize] - mean)/stv;
 	                    distance = distance>5 ? 1 : distance/5;
 	                    degreeMap.put(i, distance);
@@ -181,25 +181,29 @@ public class AnormalyDetection implements IMinerOM {
         }
         
         //从后面向前滑动一个窗口
-        data = new double[maxWindowSize];
-        for(int i=(int)max-maxWindowSize;i<max;i++){        	
-        	data[i+maxWindowSize-(int)max] = slice.get((long)i);
-        }
-        NormalDistributionTest normalDistributionTest = new NormalDistributionTest(data,k);
-        double mean = normalDistributionTest.getMean();
-        double stv;
-        if(normalDistributionTest.getStdeviation()<=0){
-        	stv = 1e-3;
-        }else {
-			stv = normalDistributionTest.getStdeviation();
-		}
-        for(int i=(int)max-maxWindowSize;i<max;i++){
-        	double distance =Math.abs(slice.get((long)i) - mean)/stv;
-        	distance = distance>5 ? 1 : distance/5;
-        	degreeMap.put(i, distance);        	
-        }
-        outDegree = mapToDegree(degreeMap);
-       
+        while(nowWindowSize<max){
+        	int nowwindowSize = initWindowSize;
+            data = new double[nowwindowSize];
+            for(int i=(int)max-nowwindowSize;i<max;i++){        	
+            	data[i+nowwindowSize-(int)max] = slice.get((long)i);
+            }
+            NormalDistributionTest normalDistributionTest = new NormalDistributionTest(data,k);
+            if(!normalDistributionTest.isNormalDistri()&&nowWindowSize<maxWindowSize){                        	
+                nowWindowSize+=expWindowSize;
+            }else{
+            	double mean = normalDistributionTest.getMean();
+                double stv = normalDistributionTest.getStdeviation();
+                
+                for(int i=(int)max-nowWindowSize;i<max;i++){
+                	double distance =Math.abs(slice.get((long)i) - mean)/stv;
+                	distance = distance>5 ? 1 : distance/5;
+                	degreeMap.put(i, distance);        	
+                }
+                outDegree = mapToDegree(degreeMap);
+                break;
+            }
+            
+        }              
     }
     private long getmaxKey(HashMap<Long, Double> slice) {
         Iterator<Long> iterator = slice.keySet().iterator();
@@ -252,7 +256,7 @@ public class AnormalyDetection implements IMinerOM {
 				break;
 			}
 		}
-		threshold = threshold<0.5 ? 0.5 : threshold;		
+		threshold = threshold<0.7 ? 0.7 : threshold;		
 		System.out.println("异常度阈值是："+threshold);
 		for(int i=0;i<len;i++){
 			if(degree.get(i)>=threshold){

@@ -363,7 +363,7 @@ class NodeTimerTask extends TimerTask{
 					}
 					
 				}
-				tsaMethod = new AnormalyDetection(dataItems);		
+//				tsaMethod = new AnormalyDetection(dataItems);		
 				tsaMethod.TimeSeriesAnalysis();
 				setOMResults(results, tsaMethod);
 				break;
