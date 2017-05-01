@@ -20,7 +20,7 @@ public class GetPositionAndMinerPaticalPeriod {
 	List<LineElement> lineElements;//输入：所有初始序列线段化后的集合，每个LineElement包含label,begin,end
 	Map<String, ArrayList<Pair>> fresult;
 	Map<String, ArrayList<Pair>> positionResult;
-	Map<String, Double> periodResult;
+	Map<String, Integer> periodResult;
 	double threshold;//距离相似度阈值
 	Map<String,Double> testError;
 	boolean hasParticalPeriod;

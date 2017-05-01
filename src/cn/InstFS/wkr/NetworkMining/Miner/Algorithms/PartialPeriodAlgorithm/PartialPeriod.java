@@ -15,7 +15,7 @@ public class PartialPeriod {
 	Map<String, ArrayList<Pair>> frequentmap;// 输入：频繁项挖掘结果
 	double threshold=0.15;//距离间隔相似度默认阈值
 	Map<String, ArrayList<Pair>> positionResult;// 统计周期出现的位置，String为(频繁项+前两个数据点，如112113:0:1)
-	Map<String, Double> periodResult;// 统计周期多少
+	Map<String, Integer> periodResult;// 统计周期多少
 	Map<String, Double> testError;
 	boolean hasParticalPeriod;
 
@@ -24,7 +24,7 @@ public class PartialPeriod {
 	public PartialPeriod(Map<String, ArrayList<Pair>> frequentmap,double threshold) {
 		this.frequentmap = frequentmap;
 		this.threshold=threshold;
-		periodResult = new HashMap<String, Double>();
+		periodResult = new HashMap<String, Integer>();
 		positionResult = new HashMap<String, ArrayList<Pair>>();
 	}
 
@@ -121,7 +121,7 @@ public class PartialPeriod {
 							// 找到了部分周期，记录周期和周期位置，更新搜索表
 							localHasParticalPeriod=false;
 							this.periodResult.put(entry.getKey() + ":" + i
-									+ ":" + j, period);
+									+ ":" + j, (int) period);
 							this.positionResult.put(
 									entry.getKey() + ":" + i + ":" + j,
 									exchangeIntegerListToPairList(
@@ -230,7 +230,7 @@ public class PartialPeriod {
 		return positionResult;
 	}
 
-	public Map<String, Double> getPeriodResult() {
+	public Map<String, Integer> getPeriodResult() {
 		return periodResult;
 	}
 
@@ -242,7 +242,7 @@ public class PartialPeriod {
 	 */
 	public Map<String, Double> GetTestError(){
 		testError=new HashMap<String, Double>();
-        for (Map.Entry<String, Double> entry : this.periodResult.entrySet()) { 
+        for (Map.Entry<String, Integer> entry : this.periodResult.entrySet()) { 
             double period=entry.getValue();
             ArrayList<Pair> list=this.positionResult.get(entry.getKey());
             double sumError=0;

@@ -12,10 +12,10 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PartialPeriodAlgorithm.Pair;
 public class MinerResultsPartialPeriod implements Serializable {
 	private static final long serialVersionUID = 151721725783244513L;
 	public Map<String, ArrayList<Pair>> positionResult;
-	public Map<String, Double> periodResult;
+	public Map<String, Integer> periodResult;
 	boolean hasPartialPeriod;
 	
-	public MinerResultsPartialPeriod(Map<String, ArrayList<Pair>> result,Map<String, Double> periodResult) {
+	public MinerResultsPartialPeriod(Map<String, ArrayList<Pair>> result,Map<String, Integer> periodResult) {
 		super();
 		this.positionResult = result;
 		this.periodResult=periodResult;
@@ -34,15 +34,15 @@ public class MinerResultsPartialPeriod implements Serializable {
 		this.positionResult = positionResult;
 	}
 
-	public Map<String, Double> getPeriodResult() {
+	public Map<String, Integer> getPeriodResult() {
 		return periodResult;
 	}
 
-	public void setPeriodResult(Map<String,Double> periodResult) {
+	public void setPeriodResult(Map<String,Integer> periodResult) {
 		this.periodResult = periodResult;
 	}
 
-	public void setResult(Map<String, ArrayList<Pair>> result,Map<String,Double> periodResult) {
+	public void setResult(Map<String, ArrayList<Pair>> result,Map<String,Integer> periodResult) {
 		this.positionResult = result;
 		this.periodResult= periodResult;
 	}
