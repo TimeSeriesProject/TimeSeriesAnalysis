@@ -137,12 +137,18 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 			Iterator<Pair> it = entry.getValue().iterator();
 			while (it.hasNext()) {
 				Pair p = it.next();
-				for (int i = p.getBegin(); i <= p.getEnd(); i++) {
+				//shun 5.1 改动：i <= p.getEnd()  ------i < p.getEnd()
+				for (int i = p.getBegin(); i < p.getEnd(); i++) {
+					xyseries.add(i,
+							Double.parseDouble(data.getElementAt(i).getData()));
+				}
+				xyseries.add(p.getEnd(), null);// 避免部分周期因为在同一个数据集中间连起来
+/*				for (int i = p.getBegin(); i <= p.getEnd(); i++) {
 					xyseries.add(i,
 							Double.parseDouble(data.getElementAt(i).getData()));
 				}
 				xyseries.add(p.getEnd() + 1, null);// 避免部分周期因为在同一个数据集中间连起来
-			}
+*/			}
 			XYSeriesCollection.addSeries(xyseries);
 		}
 		}
