@@ -113,6 +113,7 @@ public class TimeSeriesChart1 extends Composite {
 
 		// 原始序列数据集
 		DataItems d1 = pp.getDataItems1();
+		
 		DataItems d2 = pp.getDataItems2();
 		XYDataset initialDataset = createNormalDataset(d1, d2, protocol1,
 				protocol2);
@@ -184,8 +185,8 @@ public class TimeSeriesChart1 extends Composite {
 		{
 			model[i] = Integer.parseInt("" + s[i]);
 			modelcount[i] = pp.getMapAB().get(s[i]).size();
-			// System.out.println("model:" + Integer.parseInt("" +
-			// s[i])+" count"+modelcount[i]);
+			 System.out.println("model:" + Integer.parseInt("" +
+			 s[i])+" count"+modelcount[i]);
 		}
 
 		/*
@@ -207,6 +208,14 @@ public class TimeSeriesChart1 extends Composite {
 				}
 			}
 		}
+		
+		/*
+		 * 对model按照1，2,3,4...顺序映射，方式，放进map，读取的时候index即为序号，显示时就可以按照模式1，模式2，模式3.。。显示
+		 */
+/*		for(int index=0;index<model.length;index++){
+			
+		}*/
+		
 
 		isModelSelected = new HashMap<String, Integer>();
 		for (int i = 0; i < model.length; i++) {
@@ -214,12 +223,14 @@ public class TimeSeriesChart1 extends Composite {
 		}
 
 		final Button[] button = new Button[modelnum];
+		final int[] finalModel=model.clone();//button[j].addSelectionListener(){} 只能访问final 对象
 		for (int j = 0; j < modelnum; j++) {
 			Color aColor = getColor(color++);
 			modelColor.put("" + model[j], aColor);
 			button[j] = new Button(controller, SWT.CHECK);
 			Label colorLabel = new Label(controller, SWT.NULL);
-			button[j].setText("模式:" + model[j] + "(" + modelcount[j] + ")");
+//			button[j].setText("模式:" + model[j] + "(" + modelcount[j] + ")");
+			button[j].setText("模式:" + (j+1)+" ");//此处空格在下面有用
 			colorLabel.setText("——	");
 			RGB rgb = new RGB(aColor.getRed(), aColor.getGreen(),
 					aColor.getBlue());
@@ -236,8 +247,11 @@ public class TimeSeriesChart1 extends Composite {
 					// System.out.println("model "+.getText()+"is selected!");
 					// 注意：易错点 button文本为"模式:5(10)"
 					// 意思为模式5出现了10次，以下挖出模式key,直接根据“（”会报错，解决办法使用\\(
-					String key = (button[temp].getText().split(":")[1]
-							.split("\\(")[0]);
+//					String key = (button[temp].getText().split(":")[1]
+//							.split("\\(")[0]);
+					int keyIndex = Integer.parseInt(button[temp].getText().split(":")[1]
+							.split(" ")[0]);
+					String key=finalModel[keyIndex-1]+""; //keyIndex-1与前面j+1对应
 					// System.out.println("key ="+key);
 					// System.out.println("model key="+key);
 					if (button[temp].getSelection()) {
@@ -460,8 +474,12 @@ public class TimeSeriesChart1 extends Composite {
 
 		// 获取模式的种类个数、
 		int modelcount = mapAB.keySet().size();
-		if (modelcount == 0)
+		if (modelcount == 0){
+			normalizationDataset=createNormalDataset(dataitems1, dataitems2, protocol1,
+					protocol2);
 			return;
+		}
+			
 
 		long off1 = dataitems1.getElementAt(0).getTime().getTime();
 		long off2 = dataitems2.getElementAt(0).getTime().getTime();
