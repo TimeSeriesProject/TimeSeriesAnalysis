@@ -1598,15 +1598,28 @@ public class nodePairReader implements IReader {
 					if(protocolDataItems.containsKey(proAndTraffic[0])){						
 						
 						DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
+						DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
 						//中间如果没有数据，补零至当前时间，也就是当前时间流量已初始化为0
-						while(dataItems.getLength() <= timeSpan-start)
+						/*while(dataItems.getLength() <= timeSpan-start)
 						{
 							int j = dataItems.getLength();  //j为新增数据点的下标
 							dataItems.add1Data(parseTime((j+start)*3600, startDay), "0");
+						}*/
+
+						Date addtime=DataPretreatment.getDateAfter(dataItem.getTime(),3600*1000);
+						while(!addtime.toString().equals(time.toString())&&addtime.before(time)) {
+							dataItems.add1Data(addtime, "0");
+							addtime = DataPretreatment.getDateAfter(addtime, 3600 * 1000);
 						}
-						
+
+//						dataItems.add1Data(addtime,"0");
 						//合并同一个IP，同一个协议的通信的流量要合并
 						int index = dataItems.getTime().indexOf(time);
+						if (index == -1) {
+							dataItems.add1Data(time, "0");
+							index = dataItems.getTime().indexOf(time);
+						}
+
 						double traffic=Double.parseDouble(dataItems.getData().get(index));
 						double  addTraffic=Double.parseDouble(proAndTraffic[1]);
 						
