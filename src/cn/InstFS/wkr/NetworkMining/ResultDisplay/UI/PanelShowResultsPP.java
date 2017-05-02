@@ -243,7 +243,8 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
             validate();
             count++;
         }else if (count==0 && miningMethod.equals(MiningMethod.MiningMethods_OutliesMining)) {
-            JScrollPane jsp = new JScrollPane();
+            
+        	JScrollPane jsp = new JScrollPane();
             JPanel jp=new JPanel();
             JPanel label = new JPanel();
             JPanel panel = new JPanel(new BorderLayout());
@@ -263,11 +264,13 @@ public class PanelShowResultsPP extends JPanel implements IPanelShowResults {
                 DataItems outliesItems = comItems(outlines); //除以1000后的异常点
                 List<DataItems> outsetItems = new ArrayList<DataItems>();//除以1000后的异常线段
                 DataItems oriData = comItems(oriDataItems);  //除以1000后的原始数据           
-                
-                for(int i = 0;i < outlinesSet.size();i++){
-                    DataItems di = comItems(outlinesSet.get(i));
-                    outsetItems.add(di);
+                if(result.isIslinkDegree()){
+                	for(int i = 0;i < outlinesSet.size();i++){
+                        DataItems di = comItems(outlinesSet.get(i));
+                        outsetItems.add(di);
+                    }
                 }
+                
 
                 /*ChartPanelShowTs chart = new ChartPanelShowTs("路径"+pathName+"原始值", "时间", yName, null);
                 *//*MovingAverage ma = new MovingAverage(oriData);

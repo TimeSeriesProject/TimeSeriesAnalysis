@@ -11,22 +11,22 @@ import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPartialPeriod;
 
 /**
  * 根据模式和线段集合，寻找频繁项起始点，开始部分周期挖掘
- *
+ * 
  * @author shun
  *
  */
 public class GetPositionAndMinerPaticalPeriod {
 	List<ArrayList<String>> patterns; //输入：线段模式
-	List<LineElement> lineElements;//输入：
+	List<LineElement> lineElements;//输入：所有初始序列线段化后的集合，每个LineElement包含label,begin,end
 	Map<String, ArrayList<Pair>> fresult;
 	Map<String, ArrayList<Pair>> positionResult;
-	Map<String, Double> periodResult;
+	Map<String, Integer> periodResult;
 	double threshold;//距离相似度阈值
 	Map<String,Double> testError;
 	boolean hasParticalPeriod;
 
 	public GetPositionAndMinerPaticalPeriod(List<ArrayList<String>> patterns,
-											List<LineElement> lineElements,double threshold) {
+			List<LineElement> lineElements,double threshold) {
 		fresult = new HashMap<String, ArrayList<Pair>>();
 		positionResult = new HashMap<String, ArrayList<Pair>>();
 		this.patterns = patterns;
@@ -45,7 +45,7 @@ public class GetPositionAndMinerPaticalPeriod {
 		Iterator<ArrayList<String>> itPatterns = patterns.iterator();
 		while (itPatterns.hasNext()) {
 			ArrayList<String> onePattern = itPatterns.next();// 得到频繁项，例如abc
-			// 的a-b-c链
+																// 的a-b-c链
 			getPosition(onePattern, lineElements);
 		}
 		PartialPeriod particalPeriod = new PartialPeriod(fresult,threshold);
@@ -58,19 +58,21 @@ public class GetPositionAndMinerPaticalPeriod {
 	}
 
 	/**
-	 *
-	 * @param onePattern
-	 *            123频繁项 1-2-3
+	 * 寻找每个频繁项在原始线段化序列得位置，记录模式的起始点和终点
+	 * @param onePattern [line1,confidence1,line2,confidence2] line1:开始的线段，line2结束的线段
+	 *            123频繁项 1-2-3时，line1=1，line2=3
 	 * @param lineElements
+	 * @返回：fresult :
+	 * 			fresult.put(patternName, position); patternName =line1+line2,position=list<Pair<line1begin,line2end>>,且忽略中间的点
 	 */
 	private void getPosition(ArrayList<String> onePattern,
-							 List<LineElement> lineElements) {
+			List<LineElement> lineElements) {
 		// TODO Auto-generated method stub
 		// String pattern=onePattern.toString();
 		if (onePattern == null || lineElements == null) {
 			return;
 		}
-		String patternName = "";
+		String patternName = "";//line1+line2
 		ArrayList<Pair> position = new ArrayList<Pair>();// 存放位置
 		int[] patterns = new int[onePattern.size()];
 		Iterator<String> it1 = onePattern.iterator();// itOnePattern
@@ -94,11 +96,11 @@ public class GetPositionAndMinerPaticalPeriod {
 			if (patterns[k] == line.getLabel()) {
 
 				if (k > 0 && k < len - 1) {
-					k++;
+					k++;			
 				} else if (k == len - 1) {
 					position.add(new Pair(begin, line.getEnd()));
 					k = 0;
-				} else if (k == 0) {
+				} else if (k == 0) {//记录起点的start坐标
 					begin = line.getStart();
 					k++;
 				}
@@ -122,9 +124,9 @@ public class GetPositionAndMinerPaticalPeriod {
 		minerResultsPartialPeriod.setHasPartialPeriod(hasParticalPeriod);
 		return minerResultsPartialPeriod;
 	}
-
+	
 	public Map<String,Double> getTestErrorResult() {
 		return testError;
-
+		
 	}
 }

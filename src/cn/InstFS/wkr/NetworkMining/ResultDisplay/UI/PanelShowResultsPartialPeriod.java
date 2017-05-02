@@ -48,7 +48,7 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 	XYSeriesCollection selectionSeries = null;
 	JFreeChart jfreechart;
 	Map<String, ArrayList<Pair>> positionMap;
-	Map<String, Double> periodMap;
+	Map<String, Integer> periodMap;
 	XYPlot plot = null;
 
 	boolean displayed = false;
@@ -67,7 +67,7 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 	 * 画标记线分割周期
 	 */
 	private void PaintDomainMarker(DataItems data,
-			Map<String, ArrayList<Pair>> positionMap, Map<String, Double> periodMap,XYPlot plot) {
+			Map<String, ArrayList<Pair>> positionMap, Map<String, Integer> periodMap,XYPlot plot) {
 		// 部分周期序列
 		if (positionMap == null || positionMap == null)
 			return;
@@ -79,9 +79,9 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 			valuemarker.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
 					BasicStroke.JOIN_BEVEL, 0, new float[] { 10, 4 }, 0));
 			plot.addDomainMarker(valuemarker);
-			double period=periodMap.get(entry.getKey());
+			int period=periodMap.get(entry.getKey());
 			int end = (entry.getValue().size() == 0 ? 0 : entry.getValue()
-					.get(entry.getValue().size() - 1).getBegin())+(int)Math.floor(period);
+					.get(entry.getValue().size() - 1).getBegin())+(period);
 			ValueMarker valuemarkerEnd = new ValueMarker(end);
 			valuemarkerEnd.setPaint(new Color(100, 100, 100, 250));
 			valuemarkerEnd.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
@@ -137,12 +137,18 @@ public class PanelShowResultsPartialPeriod extends JPanel implements
 			Iterator<Pair> it = entry.getValue().iterator();
 			while (it.hasNext()) {
 				Pair p = it.next();
-				for (int i = p.getBegin(); i <= p.getEnd(); i++) {
+				//shun 5.1 改动：i <= p.getEnd()  ------i < p.getEnd()
+				for (int i = p.getBegin(); i < p.getEnd(); i++) {
+					xyseries.add(i,
+							Double.parseDouble(data.getElementAt(i).getData()));
+				}
+				xyseries.add(p.getEnd(), null);// 避免部分周期因为在同一个数据集中间连起来
+/*				for (int i = p.getBegin(); i <= p.getEnd(); i++) {
 					xyseries.add(i,
 							Double.parseDouble(data.getElementAt(i).getData()));
 				}
 				xyseries.add(p.getEnd() + 1, null);// 避免部分周期因为在同一个数据集中间连起来
-			}
+*/			}
 			XYSeriesCollection.addSeries(xyseries);
 		}
 		}

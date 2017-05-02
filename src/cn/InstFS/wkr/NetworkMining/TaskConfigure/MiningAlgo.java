@@ -15,6 +15,7 @@ public enum MiningAlgo {
 	MiningAlgo_Muitidimensional("基于混合高斯的异常检测"),
 //	MiningAlgo_TEOTSA("TEO线段异常检测"),
 	MiningAlgo_NodeOutlierDetection("高斯异常检测"), // 对应GaussianOutlierDetection
+	MiningAlgo_PeriodBasedOutlier("基于周期的异常检测"),
 	// 预测
 	MiningAlgo_NeuralNetworkTSA("神经网络预测"),
 	MiningAlgo_ARIMATSA("ARIMA模型预测"),
@@ -52,6 +53,8 @@ public enum MiningAlgo {
 			return MiningAlgo_Muitidimensional;
 		} else if (str.equals(MiningAlgo_NodeOutlierDetection.toString())) {
 			return MiningAlgo_NodeOutlierDetection;
+		}else if(str.equals(MiningAlgo_PeriodBasedOutlier)){
+			return MiningAlgo_PeriodBasedOutlier;
 		}else if(str.equals(MiningAlgo_NeuralNetworkTSA.toString())){ //预测
 			return MiningAlgo_NeuralNetworkTSA;
 		}else if(str.equals(MiningAlgo_ARIMATSA.toString())){
