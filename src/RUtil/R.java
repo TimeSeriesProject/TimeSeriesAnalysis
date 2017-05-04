@@ -142,6 +142,7 @@ public class R {
     		}
 		} catch (Exception e) {
 			e.printStackTrace();
+			interpreteR.close();
 			throw new RuntimeException("ARIMA p和q参数求解出错");
 		}
     	return modelParams;
