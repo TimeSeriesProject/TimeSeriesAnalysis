@@ -2,6 +2,7 @@ package cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -375,95 +376,7 @@ class NodeTimerTask extends TimerTask{
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_PredictionMining:
-			    int testsize=10;//测试数据的长度
-			    MinerResultsPM resultsPM = results.getRetNode().getRetPM();
-				PredictTest predicttest=new PredictTest();
-				DataItems tDataItems=predicttest.getTestpredictData(dataItems);//获得除去后10个数据的实际原始数据段
-				List<String> realtestData=predicttest.getTestRealData(dataItems);//获得原始数据的最后10个数据
-				if (task.getMiningAlgo() != null) {
-					switch (task.getMiningAlgo()) {
-						case MiningAlgo_NeuralNetworkTSA:
-							forecastMethod =new NeuralNetwork(tDataItems, task,
-									ParamsAPI.getInstance().getParamsPrediction().getNnp());
-							
-							
-							//...................................测试开始.............................................//
-							
-							predicttest.resultWrite(forecastMethod.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
-							
-							//...................................测试结束.............................................//
-							break;
-						case MiningAlgo_ARIMATSA:
-							forecastMethod =new ARIMATSA(task, tDataItems,
-							ParamsAPI.getInstance().getParamsPrediction().getAp());
-							
-							//...................................测试开始.............................................//
-							
-							predicttest.resultWrite(forecastMethod.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
-							
-							
-							//...................................测试结束.............................................//
-							
-							break;
-						default:
-							throw new RuntimeException("方法不存在！");
-					}
-					System.out.println(task.getTaskName()+" forecast start");
-					forecastMethod.TimeSeriesAnalysis();
-					System.out.println(task.getTaskName()+" forecast over");
-					setForecastResult(results, forecastMethod);
-				} else {
-					//MinerResultsPM resultsPM = results.getRetNode().getRetPM();
-					if (resultsPM.getHasPeriod()) { // 若有周期性
-						DataItems predictItems = new DataItems();
-						DataItems periodDi = resultsPM.getDistributePeriod();
-						Calendar calendar=Calendar.getInstance();
-						calendar.setTime(tDataItems.getLastTime());
-						int len = tDataItems.getLength();
-						//for(int i = 0; i< periodDi.getLength()/2; i++){//
-						for(int i = 0; i< testsize; i++){
-							int index = (int) ((i+len) % resultsPM.getPeriod());
-							calendar.add(Calendar.SECOND, task.getGranularity());
-							predictItems.add1Data(calendar.getTime(), periodDi.getData().get(index));
-						}
-						
-						//...................................测试开始.............................................//
-						
-						predicttest.resultWrite(predictItems.getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
-						
-						
-						//...................................测试结束.............................................//
-						
-						results.getRetNode().getRetFM().setPredictItems(predictItems);
-					} else{
-						SMForecast forecast=new SMForecast(clusterItems, sequencePattern.getPatterns(),
-								sequencePattern.getPatternsSupDegree(), WavCluster.clusterCentroids,
-								task, tDataItems);
-						System.out.println(task.getTaskName()+" forecast start");
-						forecast.TimeSeriesAnalysis();
-						System.out.println(task.getTaskName()+" forecast over");
-						if(forecast.getPredictItems()==null||forecast.getPredictItems().getLength()<=0){
-							NeuralNetwork workforecast=new NeuralNetwork(tDataItems, task,
-									ParamsAPI.getInstance().getParamsPrediction().getNnp());
-							System.out.println(task.getTaskName()+" forecast start");
-							workforecast.TimeSeriesAnalysis();
-							//....................................测试任务开始...............................................*//
-							
-							predicttest.resultWrite(workforecast.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
-							
-							
-							//..............................测试结束....................................//
-							
-							System.out.println(task.getTaskName());
-							setForecastResult(results, workforecast);
-							
-							
-							
-						}else{
-							setForecastResult(results, forecast);
-						}
-					}
-				}
+				
 				break;
 			case MiningMethods_SequenceMining:
 				
@@ -519,6 +432,7 @@ class NodeTimerTask extends TimerTask{
 				
 			case MiningMethods_PartialPeriod:
 				System.out.println("开始进入部分周期挖掘");
+				long start = System.currentTimeMillis();
 				if (results.getRetNode().getRetPartialCycle().isHasPartialCycle()||results.getRetNode().getRetPM().getHasPeriod()) { // 若有周期性或局部周期,不挖掘部分周期
 					minePartialCycle = false;
 				} else {
@@ -554,6 +468,7 @@ class NodeTimerTask extends TimerTask{
 
 					//setFrequentResults(results, sequencePattern,frequentItem2, lineElements2,segPatterns2,dpCluster2.GAMMA);
 					List<ArrayList<String>> patterns=sequencePattern.getPatterns();
+					long mid = System.currentTimeMillis();
 					GetPositionAndMinerPaticalPeriod gpampp=new GetPositionAndMinerPaticalPeriod(patterns,lineElements2,0.15);
 					//写入结果
 					//gpampp.setPaticalPeriodResult(results);
@@ -561,6 +476,59 @@ class NodeTimerTask extends TimerTask{
 						System.out.println("部分周期挖掘结果为空");
 					}
 					results.getRetNode().setRetPartialPeriod(gpampp.getResult());
+					
+					
+					// ************************部分周期测试************************"
+					long end = System.currentTimeMillis();
+					System.out
+							.println("************************部分周期测试************************");
+					File testFile = new File(
+							"E:\\Project\\java\\TimeSeriesAnalysis\\result\\testParticalPeriod.txt");
+					try {
+						//FileOutputStream in = new FileOutputStream(testFile);
+						BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+								new FileOutputStream(testFile, true)));
+								
+						try {
+							out.write("************************部分周期测试************************\t\r");
+							float pointcount=results.getInputData().getLength();
+							out.write("消耗时间：" + (end - start)+" 平均消耗时间/每1000个点 ："+((end-start)/pointcount)*1000+"\t\r");
+							Map<String, Double> testError = gpampp
+									.getTestErrorResult();
+							if (testError != null) {
+								double modelErrorSum=0;//记录每个model的误差和
+								for (Map.Entry<String, Double> entry : testError
+										.entrySet()) {
+									modelErrorSum=modelErrorSum+entry.getValue();
+									out.write("模式：" + entry.getKey()+ "    " +"周期："+gpampp.getResult().periodResult.get(entry.getKey())
+											+ "    " +"点数："+results.getInputData().getLength()+ "    " + "测试误差:"
+											+ entry.getValue()+"\t\r");
+									
+									
+									//out.write("起始位置：");
+								/*	System.out.println("模式：" + entry.getKey()
+											+ "    " + "测试误差:"
+											+ entry.getValue());*/
+								}
+								out.write("总误差："+modelErrorSum/testError.size());
+							}
+							out.close();
+
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						System.out.println("消耗时间：" + (end - start));
+						// System.out.println("消耗时间："+(end-start));
+
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					
+					
+					
 				}
 				System.out.println("部分周期挖掘结束");
 				break;
