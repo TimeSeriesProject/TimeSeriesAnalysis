@@ -96,8 +96,8 @@
             <centerLine>-1.0</centerLine>
             <way>2</way>
             <gaosi>2</gaosi>
-	    <alpha>0.2</alpha>
-	    <maxCluster>5</maxCluster>
+	        <alpha>0.2</alpha>
+	        <maxCluster>5</maxCluster>
             <multiOrMin>true</multiOrMin>
         </associationRuleLineParams>
         <!-- 相似度 -->

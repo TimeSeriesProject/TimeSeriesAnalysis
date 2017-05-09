@@ -594,7 +594,7 @@ public class WavCluster {
 		if(leninstances.size()==0)
 			return result;
 		xkMeans = Kmeans(leninstances,clusterNum,fileName,true);//长度聚类
-		ykMeans = Kmeans(angleinstances,10,fileName,true);//角度聚类
+		ykMeans = Kmeans(angleinstances,9,fileName,true);//角度聚类
 		try
 		{
 			int xlabels[]=xkMeans.getAssignments();
