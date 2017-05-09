@@ -22,8 +22,8 @@ import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
  * Created by xzbang on 2015/3/24.
  */
 public class AnormalyDetection implements IMinerOM {
-    private static int initWindowSize = 100;
-    private static int maxWindowSize = 500;
+    private static int initWindowSize = 200;
+    private static int maxWindowSize = 300;
     private static int expWindowSize = 3;
     private static double k=3.0; //高斯距离阈值 (x-u)/sigma > k 则x点是异常点（暂时没用到）
     private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是

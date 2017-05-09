@@ -222,6 +222,7 @@ public class PeriodBasedOutlierDetection implements IMinerOM{
 			double val = (disList1.get(i)-mean)/stdeviation;
 			val = val < 0 ? 0.0 : val/6;
 			degree = Math.min(val, disList2.get(i)*0.6);
+			degree = degree<1 ? degree : 1.0;
 			outDegree.add1Data(time, String.valueOf(degree));			
 		}	
 	}

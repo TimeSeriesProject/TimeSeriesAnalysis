@@ -376,12 +376,12 @@ class NodeTimerTask extends TimerTask{
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_PredictionMining:
-				  int testsize=10;//测试数据的长度
-				    MinerResultsPM resultsPM = results.getRetNode().getRetPM();
-					PredictTest predicttest=new PredictTest();
-					DataItems tDataItems=predicttest.getTestpredictData(dataItems);//获得除去后10个数据的实际原始数据段
-					List<String> realtestData=predicttest.getTestRealData(dataItems);//获得原始数据的最后10个数据
-					if (task.getMiningAlgo() != null) {
+				 int testsize=10;//测试数据的长度
+				 MinerResultsPM resultsPM = results.getRetNode().getRetPM();
+				 PredictTest predicttest=new PredictTest();
+				 DataItems tDataItems=predicttest.getTestpredictData(dataItems);//获得除去后10个数据的实际原始数据段
+				 List<String> realtestData=predicttest.getTestRealData(dataItems);//获得原始数据的最后10个数据
+				 if (task.getMiningAlgo() != null) {
 						switch (task.getMiningAlgo()) {
 							case MiningAlgo_NeuralNetworkTSA:
 								forecastMethod =new NeuralNetwork(tDataItems, task,
