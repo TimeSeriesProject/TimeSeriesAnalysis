@@ -301,9 +301,14 @@ class PathTimerTask extends TimerTask{
 									throw new RuntimeException("方法不存在！");
 							}
 						} else {
-//							omMethod = new MultidimensionalOutlineDetection(newItem);
-							omMethod = new PeriodBasedOutlierDetection(newItem, retPathPM.get(name));							
-							retOM.setIslinkDegree(false);
+							if(retPathPM.get(name).getHasPeriod()){
+								omMethod = new PeriodBasedOutlierDetection(newItem, retPathPM.get(name));							
+								retOM.setIslinkDegree(false);
+							}else{
+								omMethod = new AnormalyDetection(newItem);
+								retOM.setIslinkDegree(false);
+							}
+							
 						}
 						
 						omMethod.TimeSeriesAnalysis();

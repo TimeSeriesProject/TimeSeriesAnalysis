@@ -5,7 +5,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+
+import oracle.net.aso.i;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.DTW;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.NormalDistributionTest;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPM;
@@ -13,8 +18,11 @@ import ec.tstoolkit.utilities.Id;
 
 public class PeriodBasedOutlierDetection implements IMinerOM{
 	DataItems di = new DataItems();
+	DataItems PMdi = new DataItems();
 	MinerResultsPM RetPM = new MinerResultsPM();
 	DataItems disItems = new DataItems();
+	HashMap<Integer, Double> dtwDis1 = new HashMap<Integer,Double>();//存储dtw绝对距离
+	HashMap<Integer, Double> dtwDis2 = new HashMap<Integer,Double>();//存储dtw相对距离
 	List<Double> disList = new ArrayList<Double>();
 	List<Double> disList1 = new ArrayList<Double>();
 	List<Double> disList2 = new ArrayList<Double>();
@@ -25,14 +33,117 @@ public class PeriodBasedOutlierDetection implements IMinerOM{
 	public PeriodBasedOutlierDetection(DataItems di,MinerResultsPM RetPM){
 		this.di = di;
 		this.RetPM = RetPM;
+		PMdi = RetPM.getDistributePeriod();
 	}
 	@Override
 	public void TimeSeriesAnalysis() {
-		comDistance();
+		comDTWdistance();
+//		comDistance();
 		comDegree();
-//		comDistance2();
-//		comDegree2();
 		genOutliers();		
+	}
+	public void comDTWdistance(){
+		comDTWdismap();
+		for(int i=0;i<dtwDis1.size();i++){
+			disList1.add(dtwDis1.get(i));
+			disList2.add(dtwDis2.get(i));
+		}
+	}
+	/**
+	 * 计算动态弯曲距离
+	 * 填充 HashMap<Integer, Double> dtwDis
+	 * */
+	public void comDTWdismap(){
+		HashMap<Integer, DataItems> diMap = new HashMap<Integer, DataItems>();
+		
+		int period = PMdi.getLength();
+		int perNum = di.getLength()/period;
+		for(int i=0;i<perNum;i++){
+			DataItems item = new DataItems();
+			for(int j=0;j<period;j++){
+				item.add1Data(di.getElementAt(i*period+j));
+			}
+			diMap.put(i, item);
+			DTW dtw = new DTW(item, PMdi);
+			int[][] warpingPath = dtw.getWarpingPath();
+			List<Double> disList1 = comDTWPathDis1(warpingPath, item, PMdi);
+			List<Double> disList2 = comDTWPathDis1(warpingPath, item, PMdi);
+			for(int j=0;j<disList1.size();j++){
+				dtwDis1.put(i*period+j, disList1.get(j));
+				dtwDis2.put(i*period+j, disList2.get(j));
+			}
+		}
+		//最后一个不满一个周期的数据
+		DataItems item = new DataItems();
+		DataItems PMitem = new DataItems();
+		int j=0;
+		for(int i=period*perNum;i<di.getLength();i++){
+			item.add1Data(di.getElementAt(i));
+			PMitem.add1Data(PMdi.getElementAt(j));
+			j++;
+		}
+		diMap.put(perNum+1, item);
+		DTW dtw = new DTW(item, PMitem);
+		int[][] warpingPath = dtw.getWarpingPath();	
+		List<Double> disList1 = comDTWPathDis1(warpingPath, item, PMdi);
+		List<Double> disList2 = comDTWPathDis1(warpingPath, item, PMdi);
+		for(int k=0;k<disList1.size();k++){
+			dtwDis1.put(perNum*period+k, disList1.get(k));
+			dtwDis2.put(perNum*period+k, disList2.get(k));
+		}
+	}
+	/**
+	 * 计算dtw对应路径
+	 * */
+	public HashMap<Integer, List<Integer>> comDTWPath(int[][] warpingPath){
+		HashMap<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>();//记录点的对应关系				
+		for(int i=0;i<warpingPath.length;i++){
+			int index1 = warpingPath[i][0];
+			int index2 = warpingPath[i][1];
+			List<Integer> list;
+			if(map.containsKey(index1)){
+				list = map.get(index1);
+			}else{
+				list = new ArrayList<Integer>();
+			}
+			list.add(index2);
+			map.put(index1, list);
+		}
+		
+		
+		return map;
+	}
+	/**计算dtw的绝对距离*/
+	public List<Double> comDTWPathDis1(int[][] warpingPath,DataItems item,DataItems PMdi){
+		HashMap<Integer, List<Integer>> map = comDTWPath(warpingPath);
+		List<Double> disList = new ArrayList<Double>();
+		for(int i=0;i<map.size();i++){
+			double dis = 0;
+			double val = Double.parseDouble(item.getData().get(i));
+			for(int j=0;j<map.get(i).size();j++){
+				double val2 = Double.parseDouble(PMdi.getData().get(j));
+				dis += Math.abs(val2-val);
+			}
+			dis = dis/map.get(i).size();
+			disList.add(dis);
+		}	
+		return disList;
+	}
+	/**计算dtw的相对距离*/
+	public List<Double> comDTWPathDis2(int[][] warpingPath,DataItems item,DataItems PMdi){
+		HashMap<Integer, List<Integer>> map = comDTWPath(warpingPath);
+		List<Double> disList = new ArrayList<Double>();
+		for(int i=0;i<map.size();i++){
+			double dis = 0;
+			double val = Double.parseDouble(item.getData().get(i));
+			for(int j=0;j<map.get(i).size();j++){
+				double val2 = Double.parseDouble(PMdi.getData().get(j));
+				dis += Math.abs(val2-val)/val2;
+			}
+			dis = dis/map.get(i).size();
+			disList.add(dis);
+		}	
+		return disList;
 	}
 	/**
 	 * 计算垂直距离的相对距离dis1和绝对距离dis2
@@ -42,7 +153,7 @@ public class PeriodBasedOutlierDetection implements IMinerOM{
 		for(int i=0;i<di.getLength();i++){
 			Date time =  di.getTime().get(i);
 			double data = Double.parseDouble(di.getData().get(i));			
-			double perioddata = Double.parseDouble(RetPM.getDistributePeriod().getData().get((int) (i%RetPM.getPeriod())));
+			double perioddata = Double.parseDouble(PMdi.getData().get((int) (i%RetPM.getPeriod())));
 			double dis1 = Math.abs(data-perioddata);
 			double dis2;
 			if(data==0 || perioddata==0){
@@ -54,6 +165,9 @@ public class PeriodBasedOutlierDetection implements IMinerOM{
 			disList2.add(dis2);
 		}			
 	}
+	/**
+	 * 计算曲线之间的动态弯曲距离*/
+	
 	/**
 	 * 计算垂直的高斯距离
 	 * */
