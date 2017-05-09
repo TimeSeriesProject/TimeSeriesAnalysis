@@ -27,7 +27,7 @@ public class LocalPeriod{
 	HashMap<Integer,ArrayList<NodeSection>> partialCyclePos = new HashMap<Integer,ArrayList<NodeSection>>();//
 	boolean hasPartialCycle = false;
 	private double threshold;
-	private int longestPeriod;
+	//	private int longestPeriod;
 	private int minWindowSize = 30;
 	private int minPeriod=20;
 	private int maxPeriod=300;
@@ -36,18 +36,19 @@ public class LocalPeriod{
 	private double mean;
 	private Set<Integer> cycleCandidate =new TreeSet<Integer>();
 	public LocalPeriod(){}
-	public LocalPeriod(DataItems di,double threshold,int longestPeriod){
+	public LocalPeriod(DataItems di,double threshold,int maxPeriod){
 		this();
 		this.dataItems = di;
 		this.threshold = threshold;
-		this.longestPeriod = longestPeriod;
+		this.maxPeriod = maxPeriod;
+//		this.longestPeriod = longestPeriod;
 		//FourierFilter();
 		run();
 	}
 
 	public void FourierFilter()
 	{
-		
+
 		List<String> data =dataItems.getData();
 		int oldSize =data.size();
 		//oldSize =3200;
@@ -57,7 +58,7 @@ public class LocalPeriod{
 		if(newSize<oldSize)
 			newSize*=2;
 		System.out.println(oldSize+" "+newSize);
-		
+
 		double original[] = new double[newSize];
 		for(int i=0;i<newSize;i++)
 		{
@@ -68,22 +69,22 @@ public class LocalPeriod{
 			else
 				original[i]=0;
 		}
-		 FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
-		 Complex[] result = fft.transform(original, TransformType.FORWARD);
+		FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
+		Complex[] result = fft.transform(original, TransformType.FORWARD);
 //		 for(int i=(int)(result.length*0.2);i<result.length;i++)
 //		 {
 //			 result[i]=new Complex(0,0);
 //			// result[i+result.length/2]=new Complex(0,0);
 //		 }
-		 class Node implements Comparable<Node>
-		 {
-			 int i;
-			 double v;
-			 Node(int i,double v)
-			 {
-				 this.i=i;
-				 this.v=v;
-			 }
+		class Node implements Comparable<Node>
+		{
+			int i;
+			double v;
+			Node(int i,double v)
+			{
+				this.i=i;
+				this.v=v;
+			}
 			@Override
 			public int compareTo(Node arg0) {
 				// TODO Auto-generated method stub
@@ -92,37 +93,37 @@ public class LocalPeriod{
 				else if(v==arg0.v)
 					return 0;
 				else return 1;
-				
+
 			}
-			 
-		 }
-		 ArrayList<Node> list =new ArrayList<Node>();
-		 for(int i=0;i<oldSize;i++)
-		 {
-			 Node node =new Node(i,result[i].abs());
-			 list.add(node);
-			 //System.out.println("i "+i+" "+result[i].abs());
-			 
-		 }
-		 Collections.sort(list);
-		 int num=(int)(list.size()*0.03);
-		 if(num<minPeriod)
-			 num=minPeriod;
-		 if(num>list.size())
-			 num=list.size();
-		 for(int i=oldSize-num;i<oldSize;i++)  //获得候选周期
-		 {
-			 //System.out.println("i "+list.get(i).i+" "+list.get(i).v);
-			 if(list.get(i).i==0)
-				 continue;
-			 int tmp = result.length/list.get(i).i;
-			 if(tmp-1>=minPeriod)
-				 cycleCandidate.add(tmp-1);
-			 if(tmp>=minPeriod)
-				 cycleCandidate.add(tmp);
-			 if(tmp+1>=minPeriod)
-				 cycleCandidate.add(tmp+1);	
-		 }
+
+		}
+		ArrayList<Node> list =new ArrayList<Node>();
+		for(int i=0;i<oldSize;i++)
+		{
+			Node node =new Node(i,result[i].abs());
+			list.add(node);
+			//System.out.println("i "+i+" "+result[i].abs());
+
+		}
+		Collections.sort(list);
+		int num=(int)(list.size()*0.03);
+		if(num<minPeriod)
+			num=minPeriod;
+		if(num>list.size())
+			num=list.size();
+		for(int i=oldSize-num;i<oldSize;i++)  //获得候选周期
+		{
+			//System.out.println("i "+list.get(i).i+" "+list.get(i).v);
+			if(list.get(i).i==0)
+				continue;
+			int tmp = result.length/list.get(i).i;
+			if(tmp-1>=minPeriod)
+				cycleCandidate.add(tmp-1);
+			if(tmp>=minPeriod)
+				cycleCandidate.add(tmp);
+			if(tmp+1>=minPeriod)
+				cycleCandidate.add(tmp+1);
+		}
 //		 System.out.println("result "+result.length);
 //		 Complex [] denoised = fft.transform(result, TransformType.INVERSE);
 //		 List<String> newData =new ArrayList<String>();
@@ -142,9 +143,9 @@ public class LocalPeriod{
 		}
 		partialAvg =sum/(2*len)+0.000000001;
 		int simBestNum=0;
-		int simSubNum=0;
-		int simSubSubNum=0;
+//		int simSubNum=0;
 		int firstSimNum=0;
+//		int firstSimSubNum=0;
 		if(preSimNum==-1)
 		{
 			for(int i=start;i<start+len;i++)
@@ -154,18 +155,19 @@ public class LocalPeriod{
 				double dif = Math.abs((array[i]-array[i+len]));
 				double  relativeError = 2*dif/(array[i]+array[i+len]+0.000001);
 				double stderror= dif/(stdev+0.000001);
-				if((relativeError<0.20 &&stderror<1)/*&&dif/avg<0.8*/)
+				if((relativeError<threshold &&stderror<1)/*&&dif/avg<0.8*/)
 				{
 					simBestNum++;
 					if(i==start)
 						firstSimNum=1;
 				}
-				if((relativeError<0.5 ))
-				{
-					simSubNum++;
-				}
-				if(relativeError<0.5)
-					simSubSubNum++;
+//				if((relativeError<0.8 ))
+//				{
+//					simSubNum++;
+//					if(i==start)
+//						firstSimSubNum=1;
+//				}
+
 			}
 		}
 		else
@@ -178,18 +180,26 @@ public class LocalPeriod{
 				double dif = Math.abs((array[i]-array[i+len]));
 				double  relativeError = 2*dif/(array[i]+array[i+len]+0.000001);
 				double stderror= dif/(stdev+0.000001);
-				if(relativeError<0.15 &&stderror<1/*&&dif/avg<0.8*/)
+				if(relativeError<threshold &&stderror<1/*&&dif/avg<0.8*/)
 				{
-					
+
 					if(i==start)
 						firstSimNum=1;
 					if(i==start+len-1)
 						simBestNum++;
 				}
+//				if((relativeError<0.8 ))
+//				{
+//
+//					if(i==start)
+//						firstSimSubNum=1;
+//					if(i==start+len-1)
+//						simSubNum++;
+//				}
 			}
-			
+
 			simBestNum+=preSimNum;
-			
+
 		}
 		preSimNum=simBestNum-firstSimNum;
 		int headSimNum=0;
@@ -204,9 +214,9 @@ public class LocalPeriod{
 //		}
 		if(1.0*simBestNum/len>0.85 )
 		{
-			
+
 			return true;
-		}	
+		}
 		return false;
 	}
 	private void calPeriod(double array[],int st,int ed,int len,boolean flag[])
@@ -224,7 +234,7 @@ public class LocalPeriod{
 				i+=len;
 				continue;
 			}
-			
+
 			if(num==1)
 			{
 				pre=i+1;
@@ -232,9 +242,9 @@ public class LocalPeriod{
 				i++;
 				continue;
 			}
-			
+
 			preSimNum=-1;
-			
+
 			if(num<3)
 			{
 				pre=i+len;
@@ -284,8 +294,8 @@ public class LocalPeriod{
 	}
 	public void run(){
 		double array[]= new double [dataItems.getLength()];
-		
-		
+
+
 		//归一化
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
 		for(int i=0;i<dataItems.getLength();i++)
@@ -294,24 +304,24 @@ public class LocalPeriod{
 		}
 		stdev=statistics.getStandardDeviation();
 		mean=statistics.getMean();
-		
+
 		for(int i=0;i<dataItems.getLength();i++)
 		{
 			array[i]=(Double.parseDouble(dataItems.getElementAt(i).getData()));
 		}
-		
+
 		ArrayList<NodeSection> sectionList = new ArrayList<NodeSection>();
-	//	ArrayList<NodeSection> newSectionList = new ArrayList<NodeSection>();
+		//	ArrayList<NodeSection> newSectionList = new ArrayList<NodeSection>();
 		boolean [] flag = new boolean[dataItems.getLength()];
 		for(int i=0;i<dataItems.getLength();i++)
 			flag[i]=false;
-		
+
 		sectionList.add(new NodeSection(0,dataItems.getLength()-1));
-		
+
 		//Iterator<Integer> iter = cycleCandidate.iterator();
 		for(int len=minPeriod;len<=maxPeriod;len++)
 		{
-			
+
 //			newSectionList.clear();
 			for(int i=0;i<sectionList.size();i++)
 			{
@@ -336,7 +346,7 @@ public class LocalPeriod{
 			if(pre!=-1)
 				sectionList.add(new NodeSection(pre,i-1));
 		}
-		
+
 	}
 	public MinerResultsPartialCycle getResult() {
 		result.setPartialCyclePos(partialCyclePos);
@@ -350,5 +360,5 @@ public class LocalPeriod{
 	public void setMinWindowSize(int minWindowSize) {
 		this.minWindowSize = minWindowSize;
 	}
-	
+
 }

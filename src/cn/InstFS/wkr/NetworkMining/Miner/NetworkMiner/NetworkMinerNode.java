@@ -418,7 +418,7 @@ class NodeTimerTask extends TimerTask{
 					/*LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
 					results.getRetNode().setRetPartialCycle(dtw.getResult());*/
 //					LocalPeriodMinerERP localPeriodMinerERP = new LocalPeriodMinerERP(dataItems,0.15,300);
-					LocalPeriod localPeriod = new LocalPeriod(dataItems,0.15,300);
+					LocalPeriod localPeriod = new LocalPeriod(dataItems,0.2,300);
 //					results.getRetNode().setRetPartialCycle(localPeriodMinerERP.getResult());
 					results.getRetNode().setRetPartialCycle(localPeriod.getResult());
 				}				
