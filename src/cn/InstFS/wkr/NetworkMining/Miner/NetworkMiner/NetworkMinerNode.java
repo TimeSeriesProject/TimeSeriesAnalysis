@@ -2,6 +2,7 @@ package cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -464,6 +465,7 @@ class NodeTimerTask extends TimerTask{
 							}
 						}
 					}
+
 				break;
 			case MiningMethods_SequenceMining:
 				
@@ -505,7 +507,7 @@ class NodeTimerTask extends TimerTask{
 					/*LocalPeriodDetectionWitnDTW dtw=new LocalPeriodDetectionWitnDTW(dataItems,0.9,0.9,3);
 					results.getRetNode().setRetPartialCycle(dtw.getResult());*/
 //					LocalPeriodMinerERP localPeriodMinerERP = new LocalPeriodMinerERP(dataItems,0.15,300);
-					LocalPeriod localPeriod = new LocalPeriod(dataItems,0.15,300);
+					LocalPeriod localPeriod = new LocalPeriod(dataItems,0.2,300);
 //					results.getRetNode().setRetPartialCycle(localPeriodMinerERP.getResult());
 					results.getRetNode().setRetPartialCycle(localPeriod.getResult());
 				}				
@@ -519,6 +521,7 @@ class NodeTimerTask extends TimerTask{
 				
 			case MiningMethods_PartialPeriod:
 				System.out.println("开始进入部分周期挖掘");
+				long start = System.currentTimeMillis();
 				if (results.getRetNode().getRetPartialCycle().isHasPartialCycle()||results.getRetNode().getRetPM().getHasPeriod()) { // 若有周期性或局部周期,不挖掘部分周期
 					minePartialCycle = false;
 				} else {
@@ -554,6 +557,7 @@ class NodeTimerTask extends TimerTask{
 
 					//setFrequentResults(results, sequencePattern,frequentItem2, lineElements2,segPatterns2,dpCluster2.GAMMA);
 					List<ArrayList<String>> patterns=sequencePattern.getPatterns();
+					long mid = System.currentTimeMillis();
 					GetPositionAndMinerPaticalPeriod gpampp=new GetPositionAndMinerPaticalPeriod(patterns,lineElements2,0.15);
 					//写入结果
 					//gpampp.setPaticalPeriodResult(results);
@@ -561,6 +565,59 @@ class NodeTimerTask extends TimerTask{
 						System.out.println("部分周期挖掘结果为空");
 					}
 					results.getRetNode().setRetPartialPeriod(gpampp.getResult());
+					
+					
+					// ************************部分周期测试************************"
+					long end = System.currentTimeMillis();
+					System.out
+							.println("************************部分周期测试************************");
+					File testFile = new File(
+							"E:\\Project\\java\\TimeSeriesAnalysis\\result\\testParticalPeriod.txt");
+					try {
+						//FileOutputStream in = new FileOutputStream(testFile);
+						BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+								new FileOutputStream(testFile, true)));
+								
+						try {
+							out.write("************************部分周期测试************************\t\r");
+							float pointcount=results.getInputData().getLength();
+							out.write("消耗时间：" + (end - start)+" 平均消耗时间/每1000个点 ："+((end-start)/pointcount)*1000+"\t\r");
+							Map<String, Double> testError = gpampp
+									.getTestErrorResult();
+							if (testError != null) {
+								double modelErrorSum=0;//记录每个model的误差和
+								for (Map.Entry<String, Double> entry : testError
+										.entrySet()) {
+									modelErrorSum=modelErrorSum+entry.getValue();
+									out.write("模式：" + entry.getKey()+ "    " +"周期："+gpampp.getResult().periodResult.get(entry.getKey())
+											+ "    " +"点数："+results.getInputData().getLength()+ "    " + "测试误差:"
+											+ entry.getValue()+"\t\r");
+									
+									
+									//out.write("起始位置：");
+								/*	System.out.println("模式：" + entry.getKey()
+											+ "    " + "测试误差:"
+											+ entry.getValue());*/
+								}
+								out.write("总误差："+modelErrorSum/testError.size());
+							}
+							out.close();
+
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						System.out.println("消耗时间：" + (end - start));
+						// System.out.println("消耗时间："+(end-start));
+
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					
+					
+					
 				}
 				System.out.println("部分周期挖掘结束");
 				break;
