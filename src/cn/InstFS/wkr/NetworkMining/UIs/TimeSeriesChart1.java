@@ -681,7 +681,7 @@ public class TimeSeriesChart1 extends Composite {
 		LinePos t1;
 		LinePos t2;
 		LinePos mergeLinPos = new LinePos();
-		int IsMergeLinPosNull = 1;
+		int IsMergeLinPosNull = 1;//用于判断前一个mergeLinPos是否为null，有数据下一个LinPos判断是否与他合并
 
 		// 对ArrayList<LinePos> olds进行排序：根据linPos.A_start
 		Comparator<LinePos> comparator = new Comparator<LinePos>() {
@@ -705,6 +705,11 @@ public class TimeSeriesChart1 extends Composite {
 		int index = 0;
 		while (oldit.hasNext()) {
 			t1 = (LinePos) oldit.next();
+			
+			
+			
+			
+			
 			if (IsMergeLinPosNull != 1) {
 
 				if ((mergeLinPos.A_end == t1.A_start)
@@ -718,7 +723,8 @@ public class TimeSeriesChart1 extends Composite {
 					temp.B_start = mergeLinPos.B_start;
 					temp.B_end = mergeLinPos.B_end;
 					news.add(temp);
-					IsMergeLinPosNull = 1;
+					mergeLinPos=t1;
+				/*	IsMergeLinPosNull = 1;*/
 				}
 			} else {
 				mergeLinPos.A_start = t1.A_start;
@@ -726,6 +732,10 @@ public class TimeSeriesChart1 extends Composite {
 				mergeLinPos.B_start = t1.B_start;
 				mergeLinPos.B_end = t1.B_end;
 				IsMergeLinPosNull = 0;
+			}
+			//如果没有下一个Linpos,则把当前的
+			if((!oldit.hasNext())&&(IsMergeLinPosNull == 0)){
+				news.add(t1);
 			}
 
 		}// 功能：结束
