@@ -206,9 +206,9 @@ public class NodePairListFrame extends JFrame {
 					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
 						System.out.println(o1.getValue().getRetPM().getConfidence());
 						System.out.println(o2.getValue().getRetPM().getConfidence());
-						if(o1.getValue().getRetOM().getConfidence()>o2.getValue().getRetOM().getConfidence())
+						if(getMax(o1.getValue().getRetOM().getOutDegree()) > getMax(o2.getValue().getRetOM().getOutDegree()))
 							return -1;
-						else if(o1.getValue().getRetOM().getConfidence()<o2.getValue().getRetOM().getConfidence())
+						else if(getMax(o1.getValue().getRetOM().getOutDegree()) <getMax(o2.getValue().getRetOM().getOutDegree()))
 							return 1;
 						return 0;
 					}

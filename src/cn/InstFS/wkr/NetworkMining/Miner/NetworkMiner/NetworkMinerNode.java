@@ -572,7 +572,7 @@ class NodeTimerTask extends TimerTask{
 					System.out
 							.println("************************部分周期测试************************");
 					File testFile = new File(
-							"E:\\Project\\java\\TimeSeriesAnalysis\\result\\testParticalPeriod.txt");
+							"result\\testParticalPeriod.txt");
 					try {
 						//FileOutputStream in = new FileOutputStream(testFile);
 						BufferedWriter out = new BufferedWriter(new OutputStreamWriter(

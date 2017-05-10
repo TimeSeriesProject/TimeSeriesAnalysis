@@ -54,6 +54,7 @@ public class TaskProgressBar extends JPanel
         public void done() {
             Toolkit.getDefaultToolkit().beep();
             //startButton.setEnabled(true);
+            setProgress(100);
             setCursor(null); //turn off the wait cursor
             if (taskProgress.getErrTaskList().size()!=0) {
                 for (String errTask: taskProgress.getErrTaskList()) {
