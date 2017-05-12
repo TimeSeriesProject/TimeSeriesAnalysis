@@ -83,7 +83,7 @@ public class OutliersTest {
 	}
 	//获取labels标签
 	public void genLabels(){
-		String srclabelpath = "F:/异常检测/yahoo网络时间序列异常数据/data/real_"+ ip +".csv";
+		String srclabelpath = "D:/57Data/outlierTest/data/real_"+ ip +".csv";
 		BufferedReader br = null;
 		try{
 			InputStream in = new FileInputStream(srclabelpath);
@@ -216,9 +216,9 @@ public class OutliersTest {
 		/*String rootPath = "F:/异常检测/yahoo网络时间序列异常数据/data";
 		File fileDir = new File(rootPath);
 		File[] fileList = fileDir.listFiles();*/
-		for(int i=1;i<=25;i++){
-			String srcPath = "F:/异常检测/yahoo网络时间序列异常数据/data/real_"+i+".csv";
-			String testDataPath = "D:/57Data/testdata/"+i+"/1462032000000.txt"; 
+		for(int i=1;i<=70;i++){
+			String srcPath = "D:/57Data/outlierTest/data/real_"+i+".csv";
+			String testDataPath = "D:/57Data/outlierTest/traffic/"+i+"/1462032000000.txt"; 
 			OutliersTest outlinesTest = new OutliersTest(srcPath, testDataPath);
 			outlinesTest.genTestData();
 		}

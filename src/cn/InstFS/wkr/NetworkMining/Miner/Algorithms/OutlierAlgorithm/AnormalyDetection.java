@@ -27,22 +27,23 @@ public class AnormalyDetection implements IMinerOM {
     private static int expWindowSize = 3;
     private static double k=3.0; //高斯距离阈值 (x-u)/sigma > k 则x点是异常点（暂时没用到）
     private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
-    private double threshold = 0.8; //异常度阈值（非参数）
+    private double threshold = 0.6; //异常度阈值（非参数）
     private int outNum = 10;
     private DataItems di;
     private DataItems outlies;
     private DataItems outDegree = new DataItems(); //异常度
     private Map<Integer, Double> degreeMap = new HashMap<Integer, Double>();
 	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
+	private int outway = 1; //生成异常的方式，取值为1,2;对应的分别为genOutlier和genOutlier2
     public AnormalyDetection(){}
     public AnormalyDetection(DataItems di){
     	this.di=di;
     }
-    public AnormalyDetection(int initWindowSize,int maxWindowSize,int expWindowSize,double k,DataItems di){
+    public AnormalyDetection(int initWindowSize,int maxWindowSize,int expWindowSize,int outway,DataItems di){
     	this.initWindowSize = initWindowSize;
     	this.maxWindowSize=maxWindowSize;
     	this.expWindowSize = expWindowSize;
-    	this.k = k;
+    	this.outway = outway;
     	this.di=di;
     }
     public AnormalyDetection(OMGuassianParams omGuassianParams,DataItems di){
@@ -70,7 +71,11 @@ public class AnormalyDetection implements IMinerOM {
 //    	detect(slice);
     	detect1(slice);
      	outDegree = mapToDegree(degreeMap);
-     	outlies = genOutline(outDegree);
+     	if(outway==1){
+     		outlies = genOutlier(outDegree);
+     	}else{
+     		outlies = genOutlier2(outDegree);
+     	}     	     	
     }
     /**
      * 高斯滑动窗口
@@ -232,7 +237,7 @@ public class AnormalyDetection implements IMinerOM {
     	return degree;
     }
     //获取异常点
-    public DataItems genOutline(DataItems degreeItems){
+    public DataItems genOutlier(DataItems degreeItems){
     	List<Double> degree = new ArrayList<Double>();
     	for(int i=0;i<degreeItems.getLength();i++){
     		degree.add(Double.parseDouble(degreeItems.getData().get(i)));
@@ -266,6 +271,20 @@ public class AnormalyDetection implements IMinerOM {
 		
 		return outline;
 	}
+    public DataItems genOutlier2(DataItems degreeItems){
+    	DataItems outline = new DataItems();
+    	List<Double> degree = new ArrayList<Double>();
+    	for(int i=0;i<degreeItems.getLength();i++){
+    		degree.add(Double.parseDouble(degreeItems.getData().get(i)));
+    	}
+    	for(int i=0;i<degree.size();i++){
+			if(degree.get(i)>=threshold){
+				outline.add1Data(di.getElementAt(i));
+			}
+		}
+		
+		return outline;
+    }
     @Override
     public DataItems getOutlies() {
     	return outlies;
