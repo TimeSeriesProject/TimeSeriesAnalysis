@@ -86,6 +86,11 @@ public class FindRules {
                         isymbol.remove(j);
                     }
                     delete.add(symbolNode);
+                }else if(childtree.support_num < 3){
+                	for(int j : childtree.node_time_list){
+                        isymbol.remove(j);
+                    }
+                    delete.add(symbolNode);
                 }else{
                     symbolNodeSup.put(symbolNode,childtree.support_num);   //可能后面的symbolNode会跟前面的SymbolNode重复
                     SymbolNodeSupCount++;
@@ -162,7 +167,11 @@ public class FindRules {
                     TreeNode jchTree = ichildTree.children_list.get(jsymbolNode);
                     if((jchTree.support_num*1.0/tnum)<minsup){   //针对不同的频繁项，应该利用不同的计算公式
                         delete.add(jsymbolNode);
-                    }else{
+                    }
+                    else if(jchTree.support_num < 2){
+                    	delete.add(jsymbolNode);
+                    }
+                    else{
                         double con = jchTree.support_num*1.0/ichildTree.support_num;
 //                        if(con < mincon)delete.add(jsymbolNode);//不能基于置信度进行剪枝
                         if(con >= mincon){

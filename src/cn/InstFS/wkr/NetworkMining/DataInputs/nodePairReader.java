@@ -1931,14 +1931,25 @@ public class nodePairReader implements IReader {
 							
 							DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
 							//中间如果没有数据，补零至当前时间，也就是当前时间流量已初始化为0
-							while(dataItems.getLength()<=timeSpan-start)
+							/*while(dataItems.getLength()<=timeSpan-start)
 							{
 								int j=dataItems.getLength();  //j为新增数据点的下标
 								dataItems.add1Data(parseTime((j+start)*3600, startDay), "0");
-							}
+							}*/
 							
 							DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
-							int traffic=Integer.parseInt(dataItem.getData());
+							Date addtime=DataPretreatment.getDateAfter(dataItem.getTime(),3600*1000);
+							while(!addtime.toString().equals(time.toString())&&addtime.before(time)) {
+								dataItems.add1Data(addtime, "0");
+								addtime = DataPretreatment.getDateAfter(addtime, 3600 * 1000);
+							}
+							int index = dataItems.getTime().indexOf(time);
+							if (index == -1) {
+								dataItems.add1Data(time, "0");
+								index = dataItems.getTime().indexOf(time);
+							}
+
+							int traffic=Integer.parseInt(dataItems.getData().get(index));
 							int addTraffic=Integer.parseInt(proAndTraffic[1]);
 							dataItems.getData().set(dataItems.getLength()-1,(traffic+addTraffic)+"");
 							
@@ -2087,14 +2098,25 @@ public class nodePairReader implements IReader {
 							
 							
 							DataItems dataItems=protocolDataItems.get(proAndTraffic[0]);
-							while(dataItems.getLength()<=timeSpan-start)
+							DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
+							/*while(dataItems.getLength()<=timeSpan-start)
 							{
 								int j=dataItems.getLength();  //j为新增数据点的下标
 								dataItems.add1Data(parseTime((j+start)*3600, startDay), "0");
+							}*/
+
+							Date addtime=DataPretreatment.getDateAfter(dataItem.getTime(),3600*1000);
+							while(!addtime.toString().equals(time.toString())&&addtime.before(time)) {
+								dataItems.add1Data(addtime, "0");
+								addtime = DataPretreatment.getDateAfter(addtime, 3600 * 1000);
 							}
-							DataItem dataItem=dataItems.getElementAt(dataItems.getLength()-1);
-							
-							int times=Integer.parseInt(dataItem.getData());
+							int index = dataItems.getTime().indexOf(time);
+							if (index == -1) {
+								dataItems.add1Data(time, "0");
+								index = dataItems.getTime().indexOf(time);
+							}
+
+							int times=Integer.parseInt(dataItems.getData().get(index));
 							int addTimes=Integer.parseInt(proAndTraffic[2]);
 							dataItems.getData().set(dataItems.getLength()-1,(times+addTimes)+"");
 						

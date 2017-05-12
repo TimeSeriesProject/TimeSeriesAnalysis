@@ -242,9 +242,9 @@ public class SingleNodeListFrame extends JFrame {
 					@Override
 					public int compare(Map.Entry<TaskCombination,MinerNodeResults> o1, Map.Entry<TaskCombination,MinerNodeResults> o2) {  
 					
-						if(o1.getValue().getRetOM().getConfidence()>o2.getValue().getRetOM().getConfidence())
+						if(getMax(o1.getValue().getRetOM().getOutDegree()) > getMax(o2.getValue().getRetOM().getOutDegree()))
 							return -1;
-						else if(o1.getValue().getRetOM().getConfidence()<o2.getValue().getRetOM().getConfidence())
+						else if(getMax(o1.getValue().getRetOM().getOutDegree()) < getMax(o2.getValue().getRetOM().getOutDegree()))
 							return 1;
 						return 0;
 					}

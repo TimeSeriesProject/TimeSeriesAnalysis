@@ -251,19 +251,45 @@ public class ProtocolAssociationLine {
 	}
 	private TreeMap<Integer, SymbolNode> getSymbols(Map<Integer, Integer> map,int series) {
 
+		HashMap<Integer, Integer> removedCenter = filterCenter(map);
+		
 		TreeMap<Integer, SymbolNode> symbolMap = new TreeMap<Integer, SymbolNode>();
 		for(int i:map.keySet())
 		{
            int center = map.get(i);
-           if(center==-2)     //异常点跳过
+           if(center==-2) {    //异常点跳过
             	continue;
-            else if(center==-1)
+           }else if(removedCenter.containsKey(center)) {
+        	   continue;
+           }
+           else if(center==-1)
             	center = i;
             SymbolNode symbolNode = new SymbolNode(center,series);
             symbolMap.put(i,symbolNode);  //哪个样本点归属那个中心，中心代表类别
             
 		}
 		return symbolMap;
+	}
+	private HashMap<Integer, Integer> filterCenter(Map<Integer, Integer> map) {
+		
+		HashMap<Integer, Integer> centerNumMap = new HashMap<Integer, Integer>();
+		for(int i:map.keySet()) {
+			 int center = map.get(i);
+			 if(centerNumMap.containsKey(center)) {
+				 centerNumMap.put(center, centerNumMap.get(center)+1);
+			 } else {
+				 centerNumMap.put(center, 1);
+			 }
+		}
+		Iterator<Integer> iter = centerNumMap.keySet().iterator();
+		int key = 0;
+		while(iter.hasNext()) {
+			key = iter.next();
+			if(centerNumMap.get(key) > 2) {
+				iter.remove();
+			}
+		}
+		return centerNumMap;
 	}
 	/**
 	 * 将map<ip,map<protocol,DataItems>>数据格式 转化为map<ip,List<class>>数据格式，方便处理
@@ -331,7 +357,7 @@ public class ProtocolAssociationLine {
 //						trafficSum += Integer.parseInt(pdi.dataItems.data.get(k));
 						trafficSum += Double.parseDouble(pdi.dataItems.data.get(k));
 					}
-					newData.add1Data(pdi.dataItems.time.get(j), (trafficSum*1.0/len)+"");
+					newData.add1Data(pdi.dataItems.time.get(j), (trafficSum*1.0/(size-j))+"");
 				}
 				ProtocolDataItems new_pdi = new ProtocolDataItems(pdi.protocolName,newData);
 				compressData.add(new_pdi);
