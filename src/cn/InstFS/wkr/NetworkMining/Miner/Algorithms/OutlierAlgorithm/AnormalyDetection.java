@@ -27,8 +27,9 @@ public class AnormalyDetection implements IMinerOM {
     private static int expWindowSize = 3;
     private static double k=3.0; //高斯距离阈值 (x-u)/sigma > k 则x点是异常点（暂时没用到）
     private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
-    private double threshold = 0.6; //异常度阈值（非参数）
-    private int outNum = 10;
+    private double threshold; //异常度阈值（非参数）
+    private double minthreshod = 0.7;
+
     private DataItems di;
     private DataItems outlies;
     private DataItems outDegree = new DataItems(); //异常度
@@ -39,11 +40,17 @@ public class AnormalyDetection implements IMinerOM {
     public AnormalyDetection(DataItems di){
     	this.di=di;
     }
-    public AnormalyDetection(int initWindowSize,int maxWindowSize,int expWindowSize,int outway,DataItems di){
+    public AnormalyDetection(DataItems di,double threshold){
+    	this.di = di;
+    	this.threshold = threshold;
+    	this.outway = 2;
+    }
+    public AnormalyDetection(int initWindowSize,int maxWindowSize,int expWindowSize,int outway,double minthreshod ,DataItems di){
     	this.initWindowSize = initWindowSize;
     	this.maxWindowSize=maxWindowSize;
     	this.expWindowSize = expWindowSize;
     	this.outway = outway;
+    	this.minthreshod = minthreshod;
     	this.di=di;
     }
     public AnormalyDetection(OMGuassianParams omGuassianParams,DataItems di){
@@ -69,13 +76,14 @@ public class AnormalyDetection implements IMinerOM {
     		slice.put((long)i, Double.parseDouble(data.get(i)));
     	}
 //    	detect(slice);
-    	detect1(slice);
-     	outDegree = mapToDegree(degreeMap);
-     	if(outway==1){
-     		outlies = genOutlier(outDegree);
-     	}else{
-     		outlies = genOutlier2(outDegree);
-     	}     	     	
+    	if(outway == 1){
+    		detect1(slice);
+    	}else{
+    		detect(slice);
+    	}
+//    	detect1(slice);
+     	outDegree = mapToDegree(degreeMap);     	
+     	outlies = genOutlier(outDegree);
     }
     /**
      * 高斯滑动窗口
@@ -91,11 +99,10 @@ public class AnormalyDetection implements IMinerOM {
         HashMap<Long,Long> outlier = new HashMap<>();
         long max = getmaxKey(slice);
         double[] data;
-        int index2 = initWindowSize;
+        int index = initWindowSize;
         int nowWindowSize = initWindowSize;
-        while(index2<=max) {
-            int index = index2;
-        	while ((index-nowWindowSize) >= 0) {
+        while(index<=max) {
+            while ((index-nowWindowSize) >= 0 && nowWindowSize <= maxWindowSize) {
                 data = new double[nowWindowSize];
                 for (int i = index-nowWindowSize; i < index; i++) {
                     if(slice.get((long) i)==null){
@@ -105,7 +112,7 @@ public class AnormalyDetection implements IMinerOM {
                     }
                 }
                 NormalDistributionTest normalDistributionTest = new NormalDistributionTest(data,k);
-                if(!normalDistributionTest.isNormalDistri() && nowWindowSize <= maxWindowSize){
+                if(!normalDistributionTest.isNormalDistri()){
                 	index += expWindowSize;
                 	nowWindowSize+=expWindowSize;
                 }else{
@@ -113,7 +120,7 @@ public class AnormalyDetection implements IMinerOM {
                         double target = (double)slice.get((long) index);
                         if(!normalDistributionTest.isDawnToThisDistri(target)){
                             //outlier.put((long) index,slice.get((long) index));
-//                            slice.put((long)index, normalDistributionTest.getMean());
+                            slice.put((long)index, normalDistributionTest.getMean());
                         }
                         double mean = normalDistributionTest.getMean();                        
                         double stv;
@@ -129,7 +136,7 @@ public class AnormalyDetection implements IMinerOM {
                     break;
                 }
             }
-            index2++;
+            index++;
             nowWindowSize=initWindowSize;
         }
        
@@ -261,10 +268,10 @@ public class AnormalyDetection implements IMinerOM {
 				break;
 			}
 		}
-		threshold = threshold<0.7 ? 0.7 : threshold;		
+		threshold = threshold<minthreshod ? minthreshod : threshold;		
 		System.out.println("异常度阈值是："+threshold);
 		for(int i=0;i<len;i++){
-			if(degree.get(i)>=threshold){
+			if(degree.get(i)>threshold){
 				outline.add1Data(di.getElementAt(i));
 			}
 		}

@@ -71,8 +71,8 @@ public class OutliersTest {
 				labels.add(Integer.parseInt(label));
 				bw.write(time+",");
 				bw.write("10.0.1.2,10.0.2.2,");
-				bw.write("9:"+value+":1;");
-				bw.write("sum:"+value+":1");
+				bw.write("9:"+value+":1");
+//				bw.write("sum:"+value+":1");
 //				bw.write(label);
 				bw.newLine();
 			}
@@ -109,7 +109,7 @@ public class OutliersTest {
 		for(int i=0;i<outliers.getLength();i++){
 			long diff = outliers.getTime().get(i).getTime()-startDate.getTime();
 			long index = diff/(3600*1000);
-			outlierIndex.add((int)index+1);
+			outlierIndex.add((int)index);
 		}
 		for(int i=0;i<labels.size();i++){
 			if(labels.get(i)==1)
@@ -144,7 +144,7 @@ public class OutliersTest {
 			for(int j=0;j<outliers.getLength();j++){
 				long diff = outliers.getTime().get(j).getTime()-startDate.getTime();
 				long index = diff/(3600*1000);
-				aline.add((int)index+1);
+				aline.add((int)index);
 			}
 			outIndexSet.add(aline);
 		}
