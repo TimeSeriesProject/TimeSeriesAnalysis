@@ -130,9 +130,9 @@ public class ProtocolAssociationLine {
 					FindRules findRules = new FindRules(symbolSeries);
 					findRules.run();
 					
-					ProtoclPair pp = new ProtoclPair(proDataList.get(i).getProtocolName(),
-							proDataList.get(j).getProtocolName(),
-							proDataList.get(i).getDataItems(),proDataList.get(j).getDataItems());
+					ProtoclPair pp = new ProtoclPair(proDataList.get(j).getProtocolName(),
+							proDataList.get(i).getProtocolName(),
+							proDataList.get(j).getDataItems(),proDataList.get(i).getDataItems());
 					
 					
 					int son = 0,father_len = 0,son_len = 0;
