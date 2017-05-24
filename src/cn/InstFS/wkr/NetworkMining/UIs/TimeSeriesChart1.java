@@ -21,6 +21,8 @@ import javax.swing.JScrollBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import oracle.net.aso.d;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -113,13 +115,13 @@ public class TimeSeriesChart1 extends Composite {
 
 		// 原始序列数据集
 		DataItems d1 = pp.getDataItems1();
-		
+
 		DataItems d2 = pp.getDataItems2();
 		XYDataset initialDataset = createNormalDataset(d1, d2, protocol1,
 				protocol2);
 		// 创建关联挖掘图表的数据集，包含两条原始序列和模式序列数据
-		createLineDataset(dataitems1, dataitems2, pp.getLineDataItems2(),
-				pp.getLineDataItems1(), protocol1, protocol2, pp.getMapAB());
+		createLineDataset(dataitems1, dataitems2, pp.getLineDataItems1(),
+				pp.getLineDataItems2(), protocol1, protocol2, pp.getMapAB());
 
 		// 创建原始图
 		String chartname = "时间序列";
@@ -185,8 +187,8 @@ public class TimeSeriesChart1 extends Composite {
 		{
 			model[i] = Integer.parseInt("" + s[i]);
 			modelcount[i] = pp.getMapAB().get(s[i]).size();
-			 System.out.println("model:" + Integer.parseInt("" +
-			 s[i])+" count"+modelcount[i]);
+			System.out.println("model:" + Integer.parseInt("" + s[i])
+					+ " count" + modelcount[i]);
 		}
 
 		/*
@@ -208,14 +210,15 @@ public class TimeSeriesChart1 extends Composite {
 				}
 			}
 		}
-		
+
 		/*
 		 * 对model按照1，2,3,4...顺序映射，方式，放进map，读取的时候index即为序号，显示时就可以按照模式1，模式2，模式3.。。显示
 		 */
-/*		for(int index=0;index<model.length;index++){
-			
-		}*/
-		
+		/*
+		 * for(int index=0;index<model.length;index++){
+		 * 
+		 * }
+		 */
 
 		isModelSelected = new HashMap<String, Integer>();
 		for (int i = 0; i < model.length; i++) {
@@ -223,14 +226,15 @@ public class TimeSeriesChart1 extends Composite {
 		}
 
 		final Button[] button = new Button[modelnum];
-		final int[] finalModel=model.clone();//button[j].addSelectionListener(){} 只能访问final 对象
+		final int[] finalModel = model.clone();// button[j].addSelectionListener(){}
+												// 只能访问final 对象
 		for (int j = 0; j < modelnum; j++) {
 			Color aColor = getColor(color++);
 			modelColor.put("" + model[j], aColor);
 			button[j] = new Button(controller, SWT.CHECK);
 			Label colorLabel = new Label(controller, SWT.NULL);
-//			button[j].setText("模式:" + model[j] + "(" + modelcount[j] + ")");
-			button[j].setText("模式:" + (j+1)+" ");//此处空格在下面有用
+			// button[j].setText("模式:" + model[j] + "(" + modelcount[j] + ")");
+			button[j].setText("模式:" + (j + 1) + " ");// 此处空格在下面有用
 			colorLabel.setText("——	");
 			RGB rgb = new RGB(aColor.getRed(), aColor.getGreen(),
 					aColor.getBlue());
@@ -247,11 +251,11 @@ public class TimeSeriesChart1 extends Composite {
 					// System.out.println("model "+.getText()+"is selected!");
 					// 注意：易错点 button文本为"模式:5(10)"
 					// 意思为模式5出现了10次，以下挖出模式key,直接根据“（”会报错，解决办法使用\\(
-//					String key = (button[temp].getText().split(":")[1]
-//							.split("\\(")[0]);
-					int keyIndex = Integer.parseInt(button[temp].getText().split(":")[1]
-							.split(" ")[0]);
-					String key=finalModel[keyIndex-1]+""; //keyIndex-1与前面j+1对应
+					// String key = (button[temp].getText().split(":")[1]
+					// .split("\\(")[0]);
+					int keyIndex = Integer.parseInt(button[temp].getText()
+							.split(":")[1].split(" ")[0]);
+					String key = finalModel[keyIndex - 1] + ""; // keyIndex-1与前面j+1对应
 					// System.out.println("key ="+key);
 					// System.out.println("model key="+key);
 					if (button[temp].getSelection()) {
@@ -474,12 +478,11 @@ public class TimeSeriesChart1 extends Composite {
 
 		// 获取模式的种类个数、
 		int modelcount = mapAB.keySet().size();
-		if (modelcount == 0){
-			normalizationDataset=createNormalDataset(dataitems1, dataitems2, protocol1,
-					protocol2);
+		if (modelcount == 0) {
+			normalizationDataset = createNormalDataset(dataitems1, dataitems2,
+					protocol1, protocol2);
 			return;
 		}
-			
 
 		long off1 = dataitems1.getElementAt(0).getTime().getTime();
 		long off2 = dataitems2.getElementAt(0).getTime().getTime();
@@ -521,7 +524,7 @@ public class TimeSeriesChart1 extends Composite {
 			String se = (String) e.getKey();
 			ArrayList<double[]> aModelIndex = new ArrayList<double[]>();
 			ArrayList<LinePos> s = SegmentDataMerging(mapAB.get(se));//
-			mapit.remove();// 
+			mapit.remove();//
 			CopyMapAB.put(se, s);
 
 			Iterator it = s.iterator();
@@ -599,9 +602,30 @@ public class TimeSeriesChart1 extends Composite {
 				.next())) : -1;
 		initseries2start = (indexit2.hasNext()) ? (Integer.parseInt(indexit2
 				.next())) : -1;
-		while (itall.hasNext() && (initseries1start >= 0)
-				&& (initseries2start >= 0)) {
-			LinePos linpos = (LinePos) itall.next();
+
+		LinePos linpos = new LinePos();
+		while ((initseries1start >= 0) && (initseries2start >= 0)) {
+			if (itall.hasNext()) {
+				linpos = (LinePos) itall.next();
+			} else {//后面没有模式线段，则遍历完其他数据点
+				while (initseries1start > 0) {
+					initseries1.add(initseries1start,
+							Double.parseDouble(dataitems1.getElementAt(
+									initseries1start).getData()));
+					initseries1start = (indexit1.hasNext()) ? (Integer
+							.parseInt(indexit1.next())) : -1;
+				}
+				while (initseries2start > 0) {
+					initseries2.add(initseries2start,
+							Double.parseDouble(dataitems2.getElementAt(
+									initseries2start).getData()));
+					initseries2start = (indexit2.hasNext()) ? (Integer
+							.parseInt(indexit2.next())) : -1;
+				}
+				break;
+
+			}
+
 			// 遍历曲线1 的 模式线段前的原始线段，保存进initseries1
 
 			while (initseries1start < linpos.A_start) {
@@ -612,8 +636,8 @@ public class TimeSeriesChart1 extends Composite {
 				initseries1start = (indexit1.hasNext()) ? (Integer
 						.parseInt(indexit1.next())) : -1;
 			}
-			initseries1.add(linpos.A_start, Double.parseDouble(dataitems1
-					.getElementAt(linpos.A_start).getData()));
+			initseries1.add(initseries1start, Double.parseDouble(dataitems1
+					.getElementAt(initseries1start).getData()));
 			// 保存模式线段 initseries1
 			// 此时initseries1start=linpos.A_start+1
 			while (initseries1start < linpos.A_end) {
@@ -624,24 +648,25 @@ public class TimeSeriesChart1 extends Composite {
 			 * initseries1.add(linpos.A_start, Double.parseDouble(dataitems1
 			 * .getElementAt(linpos.A_start).getData()));
 			 */
-			
-			initseries1.add(linpos.A_end, Double.parseDouble(dataitems1
-					.getElementAt(linpos.A_end).getData()));
-			
-			//initseries1start = linpos.A_end;
+
+			initseries1.add(initseries1start, Double.parseDouble(dataitems1
+					.getElementAt(initseries1start).getData()));// 模式线段剩余的点会加进数据集两次，但是对画图不影响，只是initseries1.size不可信
+			initseries1start = (indexit1.hasNext()) ? (Integer
+					.parseInt(indexit1.next())) : -1;
+
+			// initseries1start = linpos.A_end;
 			;// 此时initseriesstart=linpos.A_end+1
-			// 遍历曲线2 的 模式线段前的原始线段，保存进initseries2
+				// 遍历曲线2 的 模式线段前的原始线段，保存进initseries2
 			while (initseries2start < linpos.B_start) {
 				initseries2.add(
 						initseries2start,
 						Double.parseDouble(dataitems2.getElementAt(
 								initseries2start).getData()));
-				// initseries2start++;
 				initseries2start = (indexit2.hasNext()) ? (Integer
 						.parseInt(indexit2.next())) : -1;//
 			}
-			initseries2.add(linpos.B_start, Double.parseDouble(dataitems2
-					.getElementAt(linpos.B_start).getData()));
+			initseries2.add(initseries2start, Double.parseDouble(dataitems2
+					.getElementAt(initseries2start).getData()));
 			// 保存模式线段 initseries2
 			while (initseries2start < linpos.B_end) {
 				initseries2start = (indexit2.hasNext()) ? (Integer
@@ -650,10 +675,12 @@ public class TimeSeriesChart1 extends Composite {
 
 			// initseries2start=(indexit2.hasNext())?
 			// (Integer.parseInt(indexit2.next())):-1;//此时initseriesstart就是linpos.B_start
-			initseries2.add(linpos.B_end, Double.parseDouble(dataitems2
-					.getElementAt(linpos.B_end).getData()));
+			initseries2.add(initseries2start, Double.parseDouble(dataitems2
+					.getElementAt(initseries2start).getData()));
+			initseries2start = (indexit2.hasNext()) ? (Integer
+					.parseInt(indexit2.next())) : -1;
 			// initseries2start = linpos.B_end;
-			//initseries2start =linpos.B_end;// 此时initseriesstart就是linpos.B_end
+			// initseries2start =linpos.B_end;// 此时initseriesstart就是linpos.B_end
 		}
 
 		// 功能：结束
@@ -681,7 +708,7 @@ public class TimeSeriesChart1 extends Composite {
 		LinePos t1;
 		LinePos t2;
 		LinePos mergeLinPos = new LinePos();
-		int IsMergeLinPosNull = 1;//用于判断前一个mergeLinPos是否为null，有数据下一个LinPos判断是否与他合并
+		int IsMergeLinPosNull = 1;// 用于判断前一个mergeLinPos是否为null，有数据下一个LinPos判断是否与他合并
 
 		// 对ArrayList<LinePos> olds进行排序：根据linPos.A_start
 		Comparator<LinePos> comparator = new Comparator<LinePos>() {
@@ -705,11 +732,7 @@ public class TimeSeriesChart1 extends Composite {
 		int index = 0;
 		while (oldit.hasNext()) {
 			t1 = (LinePos) oldit.next();
-			
-			
-			
-			
-			
+
 			if (IsMergeLinPosNull != 1) {
 
 				if ((mergeLinPos.A_end == t1.A_start)
@@ -723,8 +746,8 @@ public class TimeSeriesChart1 extends Composite {
 					temp.B_start = mergeLinPos.B_start;
 					temp.B_end = mergeLinPos.B_end;
 					news.add(temp);
-					mergeLinPos=t1;
-				/*	IsMergeLinPosNull = 1;*/
+					mergeLinPos = t1;
+					/* IsMergeLinPosNull = 1; */
 				}
 			} else {
 				mergeLinPos.A_start = t1.A_start;
@@ -733,8 +756,8 @@ public class TimeSeriesChart1 extends Composite {
 				mergeLinPos.B_end = t1.B_end;
 				IsMergeLinPosNull = 0;
 			}
-			//如果没有下一个Linpos,则把当前的
-			if((!oldit.hasNext())&&(IsMergeLinPosNull == 0)){
+			// 如果没有下一个Linpos,则把当前的
+			if ((!oldit.hasNext()) && (IsMergeLinPosNull == 0)) {
 				news.add(t1);
 			}
 
