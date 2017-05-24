@@ -11,7 +11,6 @@ import javax.print.attribute.HashAttributeSet;
 import lineAssociation.BottomUpLinear;
 import lineAssociation.Linear;
 import oracle.net.aso.d;
-import oracle.sql.ARRAY;
 import WaveletUtil.VectorDistance;
 import ca.pfv.spmf.algorithms.sort.Sort;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
@@ -42,11 +41,11 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	private DataItems dataItems = new DataItems();
 	private DataItems newItems = new DataItems(); //滑动平均后的数据
 	private DataItems outlines = new DataItems(); //异常点
-	private DataItems outDegree = new DataItems(); //异常度	
-	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段	
+	private DataItems outDegree = new DataItems(); //异常度
+	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
+	
 	private List<PatternMent> patterns = new ArrayList<PatternMent>();   //线段模式
-	private HashMap<Integer,Integer> clusterMap = new HashMap<Integer, Integer>();//线段的聚类结果
-	private static int dataDimen = 3; //线段属性个数
+	private static int dataDimen = 4; //线段属性个数
 	private static int GuassK = 4; //混合高斯中高斯个数
 	private static double diff = 0.2; //判断是否为异常的异常度差值,如果阈值一侧的数据与前一个数据的差值小于diff,则阈值向前移,直到差值大于diff
 	private int piontK = 3; //滑动平均参数，滑动窗口大小	
@@ -54,8 +53,9 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	private static double patternThreshold = 0.1; //PointSegment线段化参数
 	private double mergerPrice = 0.05; //LinePattern线段化参数
 	private double threshold; //异常度阈值
-	private double alpa = 0.05;
+	
 	ArrayList<ArrayList<Double>> dataSet = new ArrayList<ArrayList<Double>>(); //数据集
+	//ArrayList<ArrayList<Double>> outlinSet = new ArrayList<ArrayList<Double>>(); //异常度矩阵
 	GMMParameter gmmParameter = new GMMParameter(); //高斯混合模型参数:pMiu,pPi,pSigma
 	double[] priors = new double[GuassK];
 	List<Integer> OutPriodsIndex = new ArrayList<Integer>();//概率小于0.1的先验下标
@@ -75,13 +75,11 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	}
 	@Override
 	public void TimeSeriesAnalysis(){
-		MovingAverage movingAverage = new MovingAverage(dataItems,piontK);
+//		MovingAverage movingAverage = new MovingAverage(dataItems,piontK);
 //		newItems = movingAverage.getNewItems();
-//		PointSegment segment=new PointSegment(newItems, densityK,patternThreshold); //线段化模式
-//		patterns = segment.getTEOPattern();
-		/*LinePattern linePattern = new LinePattern(newItems,mergerPrice);
-		patterns=linePattern.getPatterns();*/
-		PointSegment segment = new PointSegment(dataItems, 4);
+		
+		PointSegment segment = new PointSegment(dataItems, 3); //极大极小值点线段化
+//		LinePattern segment = new LinePattern(dataItems, 0.25);
 		patterns = segment.getPatterns();
 		for(int i=0;i<patterns.size();i++){
 			System.out.print(" " + patterns.get(i).getSpan());
@@ -99,6 +97,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		for(int i=0;i<patterns.size();i++){
 			ArrayList<Double> data = new ArrayList<Double>();
 			data.add((double)patterns.get(i).getSpan()); //线段时间跨度
+			data.add((double)patterns.get(i).getHspan());
 			data.add(patterns.get(i).getAverage()); //线段均值
 			data.add(patterns.get(i).getSlope()); //倾斜角
 //			data.add(patterns.get(i).getAngle()); //与前一条线段的夹角
@@ -106,29 +105,16 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		}
 		//混合高斯建模
 		//gmmParameter = GMMmode();
-		EM em = EMGMM(dataSet, GuassK, dataDimen, "EMGMMCluster");		
+		EM em = EMGMM(dataSet, GuassK, dataDimen, "EMGMMCluster");
 		gmmParameter = getGmmParameter(em);
 		priors = getPriors(em);
-		
-		//把数据点分类到各个类中
-		OutPriodsIndex = getOutPriorsIndex(priors, alpa);
-		clusterMap = genCluster(dataSet, gmmParameter);
-		List<Integer> outpatternIndex = new ArrayList<Integer>();
-		for(int i=0;i<clusterMap.size();i++){
-			for(int j=0;j<OutPriodsIndex.size();j++){
-				if(clusterMap.get(i)==OutPriodsIndex.get(j)){
-					outpatternIndex.add(i);
-				}
-			}
-		}
-		outlinesSet = genOutlierSet(outpatternIndex);
+		OutPriodsIndex = getOutPriorsIndex(priors, 0.1);
 		//计算没点的高斯距离并归一化
-		/*ArrayList<Double> distance = computeDistance(dataSet, gmmParameter); //最小高斯距离(1范数距离)
+		ArrayList<Double> distance = computeDistance(dataSet, gmmParameter); //最小高斯距离(1范数距离)
 		ArrayList<Double> degree = genDegree(distance, patterns); //异常度(补全distance)
 		outDegree = genOutDegree(degree); //把degree转换为DataItems格式  (取值范围0~1)
-//		outlines = genOutline(degree); //根据异常度，获得异常点(前2%的线段)
-//		outlinesSet = genOutlinesSet(distance); //线段模式异常,每条线段异常为一个DataItems
-		outlinesSet = genOutlierSet(OutPriodsIndex);*/
+		outlines = genOutline(degree); //根据异常度，获得异常点(前2%的线段)
+		outlinesSet = genOutlinesSet(distance); //线段模式异常,每条线段异常为一个DataItems						
 	}
 
 	/**
@@ -155,7 +141,6 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 			em.setMinStdDev(1e-3);
 			em.setDisplayModelInOldFormat(false);
 			em.buildClusterer(dataset);
-			
 			String s = em.toString();
 			System.out.println("混合高斯建模结果显示:"+s);
 		}catch(Exception e){
@@ -289,11 +274,11 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 				break;
 			}
 		}
-//		threshold = threshold<0.6 ? 0.6 : threshold;
-		threshold = 0.6;
+		threshold = threshold<0.6 ? 0.6 : threshold;
+//		threshold = 0.7;
 		System.out.println("基于混合高斯模型，异常度阈值是："+threshold);
 		for(int i=0;i<len;i++){
-			if(degree.get(i)>=threshold){
+			if(degree.get(i)>threshold){
 				outline.add1Data(dataItems.getElementAt(i));
 			}
 		}
@@ -326,24 +311,6 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 			}
 			outSet.add(di);
 			System.out.println("异常为线段"+indexList.get(i)+"的时间跨度为:"+patterns.get(indexList.get(i)).getSpan());
-		}
-		return outSet;
-	}
-	
-	public List<DataItems> genOutlierSet(List<Integer> OutPriodsIndex){
-		List<DataItems> outSet = new ArrayList<DataItems>();
-		for(int i=0;i<OutPriodsIndex.size();i++){
-			DataItems di = new DataItems();
-			List<Date> time = dataItems.getTime();
-			List<String> data = dataItems.getData();
-			int start = patterns.get(OutPriodsIndex.get(i)).getStart();
-			int end = patterns.get(OutPriodsIndex.get(i)).getEnd();
-			for(int j=start;j<=end;j++){				
-				di.add1Data(time.get(j),data.get(j));
-				outlines.add1Data(time.get(j),data.get(j));
-			}
-			outSet.add(di);
-			System.out.println("异常为线段"+OutPriodsIndex.get(i)+"的时间跨度为:"+patterns.get(OutPriodsIndex.get(i)).getSpan());
 		}
 		return outSet;
 	}
@@ -380,12 +347,12 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
  					double diff = dataSet.get(i).get(k) - parameter.getpMiu().get(j).get(k);
  					double sigma = parameter.getpSigma().get(j).get(k);
  					double d = Math.abs(diff)/sigma;
-// 					d1 += d;
- 					dimenList.add(d); 					
+ 					d1 += d;
+// 					dimenList.add(d); 					
  				}
-				d1 = getMaxDis(dimenList);
-				eveDis.add(d1);
-//				eveDis.add(d1/dataDimen);
+//				d1 = getMaxDis(dimenList);
+//				eveDis.add(d1);
+				eveDis.add(d1/dataDimen);
 			}
 			double dmin = getMinDis(eveDis);			
 			distance.add(dmin);
@@ -393,30 +360,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		}
 		return distance;
 	}
-	/**
-	 * @Title
-	 * @description 对线段进行聚类
-	 * @return HashMap<Integer, Integer>*/
-	public HashMap<Integer, Integer> genCluster(ArrayList<ArrayList<Double>> dataSet,GMMParameter parameter){
-		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
-		for(int i=0;i<dataSet.size();i++){
-			ArrayList<Double> eveDis = new ArrayList<Double>();
-			for(int j=0;j<GuassK;j++){
-				double d1 = 0;
-				ArrayList<Double> dimenList = new ArrayList<Double>();
-				for(int k=0;k<dataDimen;k++){
- 					double diff = dataSet.get(i).get(k) - parameter.getpMiu().get(j).get(k);
- 					double sigma = parameter.getpSigma().get(j).get(k);
- 					double d = Math.abs(diff)/sigma;
- 					dimenList.add(d); 					
- 				}
-				d1 = getMaxDis(dimenList);
-				eveDis.add(d1);
-			}
-			map.put(i, getMinDisCluster(eveDis));
-		}
-		return map;
-	}
+
 	/**
 	 *@Title genDegree
 	 *@Description 生成异常度,即补全distance,对同一线段的点的异常度设为该线段的高斯距离
@@ -437,7 +381,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		degree.add(d);
 		return degree;
 	}
-	
+
 	
 	
 	/**
@@ -624,21 +568,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 		}
 		return min;
 	}
-	/**
-	 *@title getMinDisCluster
-	 *@description 得到距离最近的高斯模型的index
-	 *@return int */
-	public int getMinDisCluster(List<Double> list){
-		int index = 0;
-		double max = Double.MAX_VALUE;
-		for(int i=0;i<list.size();i++){
-			if(list.get(i)<max){
-				max = list.get(i);
-				index = i;
-			}
-		}
-		return index;
-	}
+	
 	/**
 	 *@Title getMaxDis
 	 *@Description 得到数据点到混合高斯模型的最小距离

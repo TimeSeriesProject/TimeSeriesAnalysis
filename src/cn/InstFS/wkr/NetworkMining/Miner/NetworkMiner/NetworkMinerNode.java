@@ -350,15 +350,14 @@ class NodeTimerTask extends TimerTask{
 							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
 							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
 							/*****************************测试结束************************/
-						}else{
-
+						}
+						else if(results.getRetNode().getRetPartialPeriod().isHasPartialPeriod() || results.getRetNode().getRetPartialCycle().isHasPartialCycle()){//部分周期
 							tsaMethod = new AnormalyDetection(dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(false);
-
 							/*************************异常算法测试结果输出**********************/
 //							tsaMethod = new FastFourierOutliesDetection(dataItems);
-							/*tsaMethod = new AnormalyDetection(60,200,3,2,0.6,dataItems);
-							results.getRetNode().getRetOM().setIslinkDegree(false);
+//							tsaMethod = new AnormalyDetection(60,200,3,2,0.6,dataItems);
+							/*results.getRetNode().getRetOM().setIslinkDegree(false);
 							tsaMethod.TimeSeriesAnalysis();
 							setOMResults(results, tsaMethod);
 							String retPath = "result/outlierTest.txt";
@@ -367,12 +366,27 @@ class NodeTimerTask extends TimerTask{
 							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
 							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
 							/*****************************测试结束************************/
+						}					
+						else{
+							tsaMethod = new PointPatternDetection(dataItems);						
+							results.getRetNode().getRetOM().setIslinkDegree(true);
+							
+							/*************************异常算法测试结果输出**********************/
+//							tsaMethod = new PointPatternDetection(dataItems);
+							/*results.getRetNode().getRetOM().setIslinkDegree(true);
+							tsaMethod.TimeSeriesAnalysis();
+							setOMResults(results, tsaMethod);
+							String retPath = "result/outlierTest3.txt";
+							OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
+							outliersTest.evaluatIndicator2();
+							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
+							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
+							/*****************************测试结束************************/
 						}
 
 					}
 					
-				}
-				tsaMethod = new AnormalyDetection(dataItems);		
+				}				
 				tsaMethod.TimeSeriesAnalysis();
 				setOMResults(results, tsaMethod);
 				break;
@@ -384,103 +398,102 @@ class NodeTimerTask extends TimerTask{
 				setStatisticResults(results,seriesStatistics);
 				break;
 			case MiningMethods_PredictionMining:
-//				 int testsize=10;//测试数据的长度
-//				 MinerResultsPM resultsPM = results.getRetNode().getRetPM();
-//				 PredictTest predicttest=new PredictTest();
-//				 DataItems tDataItems=predicttest.getTestpredictData(dataItems);//获得除去后10个数据的实际原始数据段
-//				 List<String> realtestData=predicttest.getTestRealData(dataItems);//获得原始数据的最后10个数据
-//				 if (task.getMiningAlgo() != null) {
-//						switch (task.getMiningAlgo()) {
-//							case MiningAlgo_NeuralNetworkTSA:
-//								forecastMethod =new NeuralNetwork(tDataItems, task,
-//										ParamsAPI.getInstance().getParamsPrediction().getNnp());
-//								
-//								
-//								/*...................................测试开始.............................................*/
-//								
-//								predicttest.resultWrite(forecastMethod.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
-//								
-//								/*...................................测试结束.............................................*/
-//								break;
-//							case MiningAlgo_ARIMATSA:
-//								forecastMethod =new ARIMATSA(task, tDataItems,
-//								ParamsAPI.getInstance().getParamsPrediction().getAp());
-//								
-//								/*...................................测试开始.............................................*/
-//								
-//								predicttest.resultWrite(forecastMethod.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
-//								
-//								
-//								/*...................................测试结束.............................................*/
-//								
-//								break;
-//							default:
-//								throw new RuntimeException("方法不存在！");
-//						}
-//						System.out.println(task.getTaskName()+" forecast start");
-//						forecastMethod.TimeSeriesAnalysis();
-//						System.out.println(task.getTaskName()+" forecast over");
-//						setForecastResult(results, forecastMethod);
-//					} else {
-//						//MinerResultsPM resultsPM = results.getRetNode().getRetPM();
-//						if (resultsPM.getHasPeriod()) { // 若有周期性
-//							DataItems predictItems = new DataItems();
-//							DataItems periodDi = resultsPM.getDistributePeriod();
-//							Calendar calendar=Calendar.getInstance();
-//							calendar.setTime(tDataItems.getLastTime());
-//							int len = tDataItems.getLength();
-//							//for(int i = 0; i< periodDi.getLength()/2; i++){//
-//							for(int i = 0; i< testsize; i++){
-//								int index = (int) ((i+len) % resultsPM.getPeriod());
-//								calendar.add(Calendar.SECOND, task.getGranularity());
-//								predictItems.add1Data(calendar.getTime(), periodDi.getData().get(index));
-//							}
-//							
-//							/*...................................测试开始.............................................*/
-//							
-//							predicttest.resultWrite(predictItems.getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
-//							
-//							
-//							/*...................................测试结束.............................................*/
-//							
-//							results.getRetNode().getRetFM().setPredictItems(predictItems);
-//						} else{
-//							SMForecast forecast=new SMForecast(clusterItems, sequencePattern.getPatterns(),
-//									sequencePattern.getPatternsSupDegree(), WavCluster.clusterCentroids,
-//									task, tDataItems);
-//							System.out.println(task.getTaskName()+" forecast start");
-//							forecast.TimeSeriesAnalysis();
-//							System.out.println(task.getTaskName()+" forecast over");
-//							if(forecast.getPredictItems()==null||forecast.getPredictItems().getLength()<=0){
-//								NeuralNetwork workforecast=new NeuralNetwork(tDataItems, task,
-//										ParamsAPI.getInstance().getParamsPrediction().getNnp());
-//								System.out.println(task.getTaskName()+" forecast start");
-//								workforecast.TimeSeriesAnalysis();
-//								/*....................................测试任务开始...............................................*/
-//								
-//								predicttest.resultWrite(workforecast.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
-//								
-//								
-//								/*..............................测试结束....................................*/
-//								
-//								System.out.println(task.getTaskName());
-//								setForecastResult(results, workforecast);
-//								
-//								
-//								
-//							}else{
-//								setForecastResult(results, forecast);
-//							}
-//						}
-//					}
-
+				  int testsize=10;//测试数据的长度
+				    MinerResultsPM resultsPM = results.getRetNode().getRetPM();
+					PredictTest predicttest=new PredictTest();
+					DataItems tDataItems=predicttest.getTestpredictData(dataItems);//获得除去后10个数据的实际原始数据段
+					List<String> realtestData=predicttest.getTestRealData(dataItems);//获得原始数据的最后10个数据
+					if (task.getMiningAlgo() != null) {
+						switch (task.getMiningAlgo()) {
+							case MiningAlgo_NeuralNetworkTSA:
+								forecastMethod =new NeuralNetwork(tDataItems, task,
+										ParamsAPI.getInstance().getParamsPrediction().getNnp());
+								
+								
+								//...................................测试开始.............................................//
+								
+								predicttest.resultWrite(forecastMethod.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
+								
+								//...................................测试结束.............................................//
+								break;
+							case MiningAlgo_ARIMATSA:
+								forecastMethod =new ARIMATSA(task, tDataItems,
+								ParamsAPI.getInstance().getParamsPrediction().getAp());
+								
+								//...................................测试开始.............................................//
+								
+								predicttest.resultWrite(forecastMethod.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
+								
+								
+								//...................................测试结束.............................................//
+								
+								break;
+							default:
+								throw new RuntimeException("方法不存在！");
+						}
+						System.out.println(task.getTaskName()+" forecast start");
+						forecastMethod.TimeSeriesAnalysis();
+						System.out.println(task.getTaskName()+" forecast over");
+						setForecastResult(results, forecastMethod);
+					} else {
+						//MinerResultsPM resultsPM = results.getRetNode().getRetPM();
+						if (resultsPM.getHasPeriod()) { // 若有周期性
+							DataItems predictItems = new DataItems();
+							DataItems periodDi = resultsPM.getDistributePeriod();
+							Calendar calendar=Calendar.getInstance();
+							calendar.setTime(tDataItems.getLastTime());
+							int len = tDataItems.getLength();
+							//for(int i = 0; i< periodDi.getLength()/2; i++){//
+							for(int i = 0; i< testsize; i++){
+								int index = (int) ((i+len) % resultsPM.getPeriod());
+								calendar.add(Calendar.SECOND, task.getGranularity());
+								predictItems.add1Data(calendar.getTime(), periodDi.getData().get(index));
+							}
+							
+							//...................................测试开始.............................................//
+							
+							predicttest.resultWrite(predictItems.getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
+							
+							
+							//...................................测试结束.............................................//
+							
+							results.getRetNode().getRetFM().setPredictItems(predictItems);
+						} else{
+							SMForecast forecast=new SMForecast(clusterItems, sequencePattern.getPatterns(),
+									sequencePattern.getPatternsSupDegree(), WavCluster.clusterCentroids,
+									task, tDataItems);
+							System.out.println(task.getTaskName()+" forecast start");
+							forecast.TimeSeriesAnalysis();
+							System.out.println(task.getTaskName()+" forecast over");
+							if(forecast.getPredictItems()==null||forecast.getPredictItems().getLength()<=0){
+								NeuralNetwork workforecast=new NeuralNetwork(tDataItems, task,
+										ParamsAPI.getInstance().getParamsPrediction().getNnp());
+								System.out.println(task.getTaskName()+" forecast start");
+								workforecast.TimeSeriesAnalysis();
+								//....................................测试任务开始...............................................*//
+								
+								predicttest.resultWrite(workforecast.getPredictItems().getData(), realtestData, task.getRange(),task.getProtocol(),task.getMiningObject(),resultsPM.getHasPeriod());
+								
+								
+								//..............................测试结束....................................//
+								
+								System.out.println(task.getTaskName());
+								setForecastResult(results, workforecast);
+								
+								
+								
+							}else{
+								setForecastResult(results, forecast);
+							}
+						}
+					}
 				break;
 			case MiningMethods_SequenceMining:
 				
 				ParamsSM paramsSM = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
-				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
-//				PointSegment segment=new PointSegment(dataItems, 4);
-//				LinePattern segment = new LinePattern(dataItems, 0.06);
+//				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
+				PointSegment segment=new PointSegment(dataItems, 3);
+//				LinePattern segment = new LinePattern(dataItems, 0.25);
 				List<PatternMent> segPatterns=segment.getPatterns();
 				
 				//kmeans聚类
