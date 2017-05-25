@@ -38,6 +38,7 @@ public class OutliersTest {
 	String retPath = null;
 	private double precision = 0;
 	private double recall = 0;
+	private double fscore = 0;
 	public OutliersTest(String srcPath,String testDataPath){
 		this.srcPath = srcPath;
 		this.testDataPath = testDataPath;
@@ -131,7 +132,10 @@ public class OutliersTest {
 		}
 		if(outlierIndex.size()>0){
 			recall = TP/labelsIndex.size();
-		}		
+		}
+		if(precision>0||recall>0){
+			fscore = (precision*recall*2)/(precision+recall);
+		}
 	}
 	//计算异常检测的评价指标，准确率和召回率   线段异常
 	public void evaluatIndicator2(){
@@ -182,10 +186,12 @@ public class OutliersTest {
 			double a=TP.size();
 			double b=labelsIndex.size();
 			recall = a/b;
-//			recall = TP.size()/labelsIndex.size();
-		}		
+		}	
+		if(precision>0||recall>0){
+			fscore = (precision*recall*2)/(precision+recall);
+		}
 	}
-	 public static void appendWriteRet(String retPath,String ip,double precision,double recall) {
+	 public void appendWriteRet(String retPath,String ip,double precision,double recall) {
 	       
 	        BufferedWriter bw = null;
 	        try {
@@ -193,7 +199,8 @@ public class OutliersTest {
 	        			new FileOutputStream(new File(retPath), true)));
 	        	bw.write("数据"+ip+"--");
 	        	bw.write("准确率:"+precision+",");
-	        	bw.write("召回率:"+recall);
+	        	bw.write("召回率:"+recall+",");
+	        	bw.write("F值:"+fscore+"");
 	        	bw.newLine();
 	        	bw.flush();
 	        } catch (IOException e) {
@@ -218,7 +225,7 @@ public class OutliersTest {
 		File[] fileList = fileDir.listFiles();*/
 		for(int i=1;i<=70;i++){
 			String srcPath = "D:/57Data/outlierTest/data/real_"+i+".csv";
-			String testDataPath = "D:/57Data/outlierTest/traffic/"+i+"/1462032000000.txt"; 
+			String testDataPath = "D:/57Data/outlierTest/traffic/"+i+"/1487865600000.txt"; 
 			OutliersTest outlinesTest = new OutliersTest(srcPath, testDataPath);
 			outlinesTest.genTestData();
 		}

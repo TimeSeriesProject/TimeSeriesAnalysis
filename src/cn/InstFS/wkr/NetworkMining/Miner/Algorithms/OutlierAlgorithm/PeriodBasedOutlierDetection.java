@@ -216,7 +216,7 @@ public class PeriodBasedOutlierDetection implements IMinerOM{
 		double mean = normalDistributionTest.getMean();
 		double stdeviation = normalDistributionTest.getStdeviation();
 		//计算异常度
-		for(int i=0;i<disList1.size();i++){			
+		for(int i=0;i<di.getLength();i++){			
 			Date time = di.getTime().get(i);
 			double degree;
 			double val = (disList1.get(i)-mean)/stdeviation;

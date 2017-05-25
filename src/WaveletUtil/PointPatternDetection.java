@@ -21,7 +21,7 @@ public class PointPatternDetection implements IMinerOM{
 	private int densityK = 3;//序列线段化时，找极值点的参数
 	private double patternThreshold = 0.1;
 	private int neighborK = 20;//计算模式P的K-邻域中的k
-	private double threshold;
+	private double threshold = 0.7;
 	private double diff = 0.1;
 	private DataItems outlies = new DataItems();
 	private DataItems outDegree = new DataItems(); //异常度
@@ -379,7 +379,7 @@ public class PointPatternDetection implements IMinerOM{
 	 * @return 模式间的距离
 	 */
 	public void genOutPionts(HashMap<Integer, Double> map){
-		ArrayList<Double> list = new ArrayList<Double>();
+		/*ArrayList<Double> list = new ArrayList<Double>();
 		int len = map.size();
 		for(int i=0;i<map.size();i++){
 			list.add(map.get(i));
@@ -397,9 +397,9 @@ public class PointPatternDetection implements IMinerOM{
 		}
 
 		threshold = threshold < 0.7 ?  0.7 :threshold;
-		System.out.println("异常度阈值是："+threshold);
+		System.out.println("异常度阈值是："+threshold);*/
 		
-		for(int i=0;i<len;i++){
+		for(int i=0;i<map.size();i++){
 			if(map.get(i)>=threshold){
 				int start = patterns.get(i).getStart();
 				int end = patterns.get(i).getEnd();
