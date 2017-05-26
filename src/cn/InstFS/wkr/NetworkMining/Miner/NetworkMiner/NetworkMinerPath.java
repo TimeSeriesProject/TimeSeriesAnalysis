@@ -316,7 +316,7 @@ class PathTimerTask extends TimerTask{
 						retPathOM.put(name, retOM);
 						break;
 					case MiningMethods_PredictionMining:
-						/*IMinerFM forecast = null;
+						IMinerFM forecast = null;
 						MinerResultsFM retFM = new MinerResultsFM();
 
 						if (task.getMiningAlgo() != null) {
@@ -340,7 +340,7 @@ class PathTimerTask extends TimerTask{
 						forecast.TimeSeriesAnalysis();
 						System.out.println(task.getTaskName()+" forecast over");
 						retFM.setPredictItems(forecast.getPredictItems());
-						retPathFM.put(name, retFM);*/
+						retPathFM.put(name, retFM);
 					default:
 						break;
 				}
