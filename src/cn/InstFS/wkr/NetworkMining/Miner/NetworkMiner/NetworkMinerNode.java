@@ -327,10 +327,14 @@ class NodeTimerTask extends TimerTask{
 						default:
 							throw new RuntimeException("方法不存在！");
 					}
+					tsaMethod.TimeSeriesAnalysis();
+					setOMResults(results, tsaMethod);
 				} else { // 异常检测默认
 					if(task.getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())){
 						tsaMethod = new GaussianOutlierDetection(dataItems);
 						results.getRetNode().getRetOM().setIslinkDegree(true);
+						tsaMethod.TimeSeriesAnalysis();
+						setOMResults(results, tsaMethod);
 					}else {
 						if(results.getRetNode().getRetPM().getHasPeriod()){
 //							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
