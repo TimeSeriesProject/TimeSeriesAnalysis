@@ -14,7 +14,7 @@ public class FindRules {
     public HashMap<SymbolNode,Integer> symbolNodeSup = new HashMap<SymbolNode, Integer>();    //
     public ArrayList<TreeNode> current = new ArrayList<TreeNode>();
 
-    public int T = 1;//时间约束值
+    public int T = 2;//时间约束值
     public int tnum = 148;//原始时间序列长度
     public int minsupnum = 8;//支持度计数阈值
     public double minsup = minsupnum*1.0/tnum;//支持度阈值

@@ -116,8 +116,8 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
                 if(rawDataList.get(ip_j).data.size() == 0)
                     continue;
                 TaskCombination taskCombination = new TaskCombination();
-                taskCombination.getTasks().add(
-                        generateIpPairTask(granularity,MiningMethod.MiningMethods_SimilarityMining,ip_i,ip_j));
+//                taskCombination.getTasks().add(
+//                        generateIpPairTask(granularity,MiningMethod.MiningMethods_SimilarityMining,ip_i,ip_j));
                 taskCombination.getTasks().add(
                         generateIpPairTask(granularity,MiningMethod.MiningMethods_FrequenceItemMining,ip_i,ip_j));
 
@@ -174,8 +174,8 @@ public class ProtocolAssMinerFactoryDis extends MinerFactorySettings {
         System.out.println("ip:"+ip);
         parseFile(file.getAbsoluteFile(),reader);
         TaskCombination taskCombination=new TaskCombination();
-        taskCombination.getTasks().add(
-                generateTask(file,granularity,MiningMethod.MiningMethods_SimilarityMining));
+//        taskCombination.getTasks().add(
+//                generateTask(file,granularity,MiningMethod.MiningMethods_SimilarityMining));
         taskCombination.getTasks().add(
                 generateTask(file,granularity,MiningMethod.MiningMethods_FrequenceItemMining));
         HashMap<String, HashMap<String, DataItems>> ipProtocolItems=null;

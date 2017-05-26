@@ -113,7 +113,16 @@ public class ProtocolAssociationLine {
 //		        DPCluster dpCluster_i = clusterWrapper_i.run();
 //		        Map<Integer,Integer> map_i = dpCluster_i.getBelongClusterCenter();
 		        Map<Integer,Integer> map_i = clusterWrapper_i.run();
-		        TreeMap<Integer,SymbolNode> symbols_i = getSymbols(map_i,i); 
+		        TreeMap<Integer,SymbolNode> symbols_i = getSymbols(map_i,i);
+
+
+				System.out.println("符号化序列----------------------------------------------------------------------------------------");
+				for (Map.Entry<Integer, SymbolNode> entry: symbols_i.entrySet()) {
+					Integer index = entry.getKey();
+					SymbolNode node = entry.getValue();
+					System.out.print(index+ ":" + node.node_name +", ");
+				}
+
 		        linesList.add(symbols_i);
 		        System.out.println("DPCluster聚类算法计算完毕！");
 		        System.out.println("***************************************************");
@@ -148,12 +157,13 @@ public class ProtocolAssociationLine {
 					double sum_inf = 0.0;
 					for(Rule rule : findRules.rulesSet){
 						
-						symbol++;
-						sum_confidence += rule.con;
-						sum_inf += rule.inf;
+
 						ArrayList<LinePos> alp = new ArrayList<LinePos>();
 						if(rule.after.belong_series == i)   //子节点
 						{
+							symbol++;
+							sum_confidence += rule.con;
+							sum_inf += rule.inf;
 //							System.out.println(rule.parent_node_time_map);
 							for(int father :rule.parent_node_time_map.keySet()){
 								
@@ -196,8 +206,8 @@ public class ProtocolAssociationLine {
 						}
 						
 					}
-					pp.setInf(sum_inf/findRules.rulesSet.size());
-					pp.setConfidence(sum_confidence/(symbol-1));
+					pp.setInf(findRules.rulesSet.size() == 0 ? 0 : sum_inf/symbol);
+					pp.setConfidence( (symbol -1)== 0 ? 0 :sum_confidence/(symbol-1));
 					pp.setMapAB(mapAB);
 					pp.setMapBA(mapBA);
 					pp.setLineDataItems1(lineList.get(j));
