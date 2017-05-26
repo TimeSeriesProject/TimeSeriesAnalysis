@@ -338,43 +338,51 @@ class NodeTimerTask extends TimerTask{
 							
 							tsaMethod = new PeriodBasedOutlierDetection(dataItems, results.getRetNode().getRetPM());
 							results.getRetNode().getRetOM().setIslinkDegree(false);
-
-							/*************************异常算法测试结果输出**********************/
-							/*tsaMethod = new PeriodBasedOutlierDetection(dataItems, results.getRetNode().getRetPM());
-							results.getRetNode().getRetOM().setIslinkDegree(false);
 							tsaMethod.TimeSeriesAnalysis();
 							setOMResults(results, tsaMethod);
-							String retPath = "result/outlierTest2.txt";
-							OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
-							outliersTest.evaluatIndicator();
-							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
-							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
-							/*****************************测试结束************************/
-						}else{
-
-							tsaMethod = new AnormalyDetection(dataItems);
-							results.getRetNode().getRetOM().setIslinkDegree(false);
-
 							/*************************异常算法测试结果输出**********************/
-//							tsaMethod = new FastFourierOutliesDetection(dataItems);
-							/*tsaMethod = new AnormalyDetection(60,200,3,2,0.6,dataItems);
-							results.getRetNode().getRetOM().setIslinkDegree(false);
-							tsaMethod.TimeSeriesAnalysis();
-							setOMResults(results, tsaMethod);
-							String retPath = "result/outlierTest.txt";
+							/*String retPath = "result/outlierTest(基于周期的异常检测).txt";
 							OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
 							outliersTest.evaluatIndicator();
 							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
 							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
 							/*****************************测试结束************************/
 						}
+						else if(results.getRetNode().getRetPartialPeriod().isHasPartialPeriod() || results.getRetNode().getRetPartialCycle().isHasPartialCycle()){//部分周期
+//							tsaMethod = new FastFourierOutliesDetection(dataItems);
+							tsaMethod = new AnormalyDetection(dataItems);
+//							tsaMethod = new AnormalyDetection(200,300,3,0.6,dataItems);//测试数据参数
+							results.getRetNode().getRetOM().setIslinkDegree(false);
+							tsaMethod.TimeSeriesAnalysis();
+							setOMResults(results, tsaMethod);
+							/*************************异常算法测试结果输出**********************/
+							/*String retPath = "result/outlierTest(点异常).txt";
+							OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
+							outliersTest.evaluatIndicator();
+							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
+							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
+							/*****************************测试结束************************/
+						}
+						else{
+							tsaMethod = new PointPatternDetection(dataItems);
+							results.getRetNode().getRetOM().setIslinkDegree(true);
+							tsaMethod.TimeSeriesAnalysis();
+							setOMResults(results, tsaMethod);
+
+							/*************************异常算法测试结果输出**********************/
+							/*String retPath = "result/outlierTest(线段异常).txt";
+							OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
+							outliersTest.evaluatIndicator2();
+							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
+							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
+							/*****************************测试结束************************/
+						}
 
 					}
-					
+
 				}
-				tsaMethod = new AnormalyDetection(dataItems);		
-				tsaMethod.TimeSeriesAnalysis();
-				setOMResults(results, tsaMethod);
+//				tsaMethod.TimeSeriesAnalysis();
+//				setOMResults(results, tsaMethod);
 				break;
 			case MiningMethods_Statistics:
 

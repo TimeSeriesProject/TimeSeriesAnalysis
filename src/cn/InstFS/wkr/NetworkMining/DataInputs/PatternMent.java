@@ -1,7 +1,7 @@
 package cn.InstFS.wkr.NetworkMining.DataInputs;
 
 import java.io.Serializable;
-
+/**线段数据结构*/
 public class PatternMent implements Serializable{
 	private static final long serialVersionUID = 5504002640673318726L;
 	private int start;

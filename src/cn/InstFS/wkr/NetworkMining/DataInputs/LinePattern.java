@@ -7,7 +7,7 @@ import java.util.TreeMap;
 
 import oracle.net.aso.p;
 
-
+/**自底向上的最小代价合并的线段化*/
 public class LinePattern {
 	private DataItems dataItems = new DataItems();     //时间序列 
 	private TreeMap<Integer,Double> datas = new TreeMap<Integer, Double>();//原始数据
@@ -106,16 +106,16 @@ public class LinePattern {
         double endValue = datas.get(end);
         double slope = (endValue-startValue)/(end-start);
         double b = startValue - slope*start;
-        double dis = (endValue-startValue)*(endValue-startValue)*100+Math.log(((end-start)*4+1))*Math.log(((end-start)*4+1));
+        double dis = (endValue-startValue)*(endValue-startValue)*100+Math.log(((end-start)/10+1))*Math.log(((end-start)/10+1));
         double cost = 0;
         for(int i = start;i <= end;i++){
         	double midleValue  = datas.get(i);
-        	cost+=Math.abs(startValue+slope*(i-start)-datas.get(i));
-//        	cost+=Math.abs(slope*i+b-midleValue)/Math.sqrt(slope*slope+1);//点到直线的垂直距离
+//        	cost+=Math.abs(startValue+slope*(i-start)-datas.get(i));
+        	cost+=Math.abs(slope*i+b-midleValue)/Math.sqrt(slope*slope+1);//点到直线的垂直距离
         }
 //        cost = cost/Math.sqrt(dis);
-//        return cost;
-        return cost/(end-start);
+        return cost;
+//        return cost/(end-start);
     }
 
 

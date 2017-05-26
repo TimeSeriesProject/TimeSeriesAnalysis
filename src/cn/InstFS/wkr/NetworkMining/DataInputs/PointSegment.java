@@ -9,7 +9,7 @@ import java.util.List;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.poi.ss.formula.functions.Slope;
 import org.omg.CORBA.INTERNAL;
-
+/**极大极小值点线段化*/
 public class PointSegment {
 
 	private DataItems dataItems;
@@ -26,7 +26,7 @@ public class PointSegment {
 		length=dataItems.getLength();
 		pointsIndex=new ArrayList<Integer>();
 		patterns=new ArrayList<PatternMent>();
-		setItemStd(dataItems);
+//		setItemStd(dataItems);
 	}
 	public PointSegment(DataItems dataItems,int ratio,double patternThreshold){
 		this.dataItems=dataItems;
@@ -35,7 +35,7 @@ public class PointSegment {
 		length=dataItems.getLength();
 		pointsIndex=new ArrayList<Integer>();
 		patterns=new ArrayList<PatternMent>();
-		setItemStd(dataItems);
+//		setItemStd(dataItems);
 	}
 	
 	public List<PatternMent> getPatterns(){
@@ -100,7 +100,7 @@ public class PointSegment {
 			double angle = (endData-startData)/(end - start);
 			//double height = getItem(end)-getItem(start);
 									
-			for(int pos=start;pos<end;pos++){
+			for(int pos=start;pos<=end;pos++){
 				statistics.addValue(getItem(pos));
 			}
 			double mean = statistics.getMean();
