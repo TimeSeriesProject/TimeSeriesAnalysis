@@ -33,6 +33,10 @@ public class PredictTest {
 	public PredictTest(){
 	
 	}
+
+	public PredictTest(int size) {
+		testsize = size;
+	}
 	
 	public DataItems getTestpredictData(DataItems dataItems){
 		List<Date> time = dataItems.getTime();
