@@ -253,6 +253,10 @@ public class SingleNodeOrNodePairMinerFactory extends MinerFactorySettings {
 						taskCombination.getTasks().add(generateTask(taskRange, granularity,
 								dataFile, protocol, ipPair, MiningMethod.MiningMethods_PeriodicityMining));
 						taskCombination.getTasks().add(generateTask(taskRange, granularity,
+								dataFile,protocol, ipPair,MiningMethod.MiningMethods_PartialCycle));
+						taskCombination.getTasks().add(generateTask(taskRange, granularity,
+								dataFile, protocol, ipPair, MiningMethod.MiningMethods_PartialPeriod));
+						taskCombination.getTasks().add(generateTask(taskRange, granularity,
 								dataFile, protocol, ipPair, MiningMethod.MiningMethods_OutliesMining));
 						taskCombination.getTasks().add(generateTask(taskRange, granularity,
 								dataFile, protocol, ipPair, MiningMethod.MiningMethods_SequenceMining));

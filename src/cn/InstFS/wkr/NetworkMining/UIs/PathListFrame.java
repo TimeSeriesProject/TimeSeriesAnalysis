@@ -208,9 +208,9 @@ public class PathListFrame extends JFrame{
             @Override
             public int compare(Map.Entry<TaskCombination,MinerResultsPath> o1, Map.Entry<TaskCombination,MinerResultsPath> o2) {
 
-                if(o1.getValue().getMaxOutliesConfidence()>o2.getValue().getMaxOutliesConfidence())
+                if(getMax(o1.getValue().getRetOM())>getMax(o2.getValue().getRetOM()))
                     return -1;
-                else if(o1.getValue().getMaxOutliesConfidence()<o2.getValue().getMaxOutliesConfidence())
+                else if(getMax(o1.getValue().getRetOM())<getMax(o2.getValue().getRetOM()))
                     return 1;
                 return 0;
             }
