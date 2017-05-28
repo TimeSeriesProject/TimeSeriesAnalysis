@@ -192,6 +192,8 @@ public class ParamsAPI {
 			OMMultidimensionalParams multi = new OMMultidimensionalParams(multiDimensionalParams);
 			Element saxPatternParams = outlierParams.getChild("saxPatternParams");
 			OMSAXPartternParams sax = new OMSAXPartternParams(saxPatternParams);
+			Element periodBasedParams = outlierParams.getChild("periodBasedParams");
+			OMperiodBasedParams period = new OMperiodBasedParams(periodBasedParams);
 
 			paramsOutlierMiner.setOmFastFourierParams(fastFourier);
 			paramsOutlierMiner.setOmGuassianParams(gaussian);
@@ -199,6 +201,7 @@ public class ParamsAPI {
 			paramsOutlierMiner.setOmteoParams(teo);
 			paramsOutlierMiner.setOmMultidimensionalParams(multi);
 			paramsOutlierMiner.setOmSaxPartternParams(sax);
+			paramsOutlierMiner.setOMperiodBasedParams(period);
 		}
 		return paramsOutlierMiner;
 	}

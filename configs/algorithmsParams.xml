@@ -15,21 +15,26 @@
         <!-- 傅立叶变换 -->
         <fastFourierParams>
             <sizeK>8</sizeK>
-            <amplitudeRatio>0.9</amplitudeRatio>
+            <amplitudeRatio>0.8</amplitudeRatio>
             <varK>3.0</varK>
+	    <diff>0.2</diff>
         </fastFourierParams>
         <!-- 高斯滑动窗口 -->
         <gaussianParams>
-            <initWindowSize>30</initWindowSize>
-            <maxWindowSize>90</maxWindowSize>
+            <initWindowSize>200</initWindowSize>
+            <maxWindowSize>300</maxWindowSize>
             <expWindowSize>3</expWindowSize>
             <windowVarK>3.0</windowVarK>
+	    <diff>0.2</diff>
+            <minthreshod>0.6</minthreshod>
         </gaussianParams>
         <!-- 线段模式异常检测 -->
         <pointPatternParams>
-            <densityK>4</densityK>
-            <patternThreshold>0.2</patternThreshold>
-            <neighborK>10</neighborK>
+            <densityK>3</densityK>
+            <patternThreshold>0.1</patternThreshold>
+            <neighborK>20</neighborK>
+	    <diff>0.1</diff>
+	    <threshold>0.7</threshold>
         </pointPatternParams>
         <TEOParams>
             <mergeThreshold>0.025</mergeThreshold>
@@ -47,6 +52,11 @@
             <patternLen>24</patternLen>
             <patternAlphaNum>5</patternAlphaNum>
         </saxPatternParams>
+	<!-- 基于周期 -->
+	<periodBasedParams>
+	     <GuassK>3.0</GuassK>
+	     <threshold>0.8</threshold>
+	</periodBasedParams>
     </outlierMinerParam>
 
     <!-- 统计参数 -->

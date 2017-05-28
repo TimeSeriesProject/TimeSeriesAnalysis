@@ -59,6 +59,7 @@ public class AnormalyDetection implements IMinerOM {
     	this.expWindowSize = omGuassianParams.getExpWindowSize();
     	this.k = omGuassianParams.getWindowVarK();
     	this.diff = omGuassianParams.getDiff();
+    	this.minthreshod = omGuassianParams.getMinthreshod();
     	this.di=di;
     }
     @Override
@@ -75,11 +76,8 @@ public class AnormalyDetection implements IMinerOM {
 //    		slice.put((long)i, Math.round(Double.parseDouble(data.get(i))));
     		slice.put((long)i, Double.parseDouble(data.get(i)));
     	}
-    	if(outway==1){
-    		detect1(slice);
-    	}else{
-    		detect2(slice);
-    	}   	   	
+    	
+    	detect1(slice);    	   	   	
      	outDegree = mapToDegree(degreeMap);     	
      	outlies = genOutlier(outDegree);
     }

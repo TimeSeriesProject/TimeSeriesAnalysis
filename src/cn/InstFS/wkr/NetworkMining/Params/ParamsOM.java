@@ -14,6 +14,7 @@ import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMMultidimensionalParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMPiontPatternParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMSAXPartternParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMTEOParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMperiodBasedParams;
 
 public class ParamsOM extends IParamsNetworkMining implements Serializable {
 
@@ -25,6 +26,7 @@ public class ParamsOM extends IParamsNetworkMining implements Serializable {
     OMSAXPartternParams omSaxPartternParams = null;
     OMMultidimensionalParams omMultidimensionalParams = null;
     OMGaussianNodeParams omGaussianNodeParams = null;
+    OMperiodBasedParams oMperiodBasedParams = null;
     public ParamsOM() {}
     public OMGuassianParams getOmGuassianParams() {
 		return omGuassianParams;
@@ -77,6 +79,13 @@ public class ParamsOM extends IParamsNetworkMining implements Serializable {
 	}
 	public void setOmGaussianNodeParams(OMGaussianNodeParams omGaussianNodeParams) {
 		this.omGaussianNodeParams = omGaussianNodeParams;
+	}
+	
+	public OMperiodBasedParams getOMperiodBasedParams() {
+		return oMperiodBasedParams;
+	}
+	public void setOMperiodBasedParams(OMperiodBasedParams oMperiodBasedParams) {
+		this.oMperiodBasedParams = oMperiodBasedParams;
 	}
 	@Override
     public boolean equals(IParamsNetworkMining params) {

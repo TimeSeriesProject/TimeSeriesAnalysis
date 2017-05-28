@@ -34,7 +34,7 @@ public class GaussianOutlierDetection implements IMinerOM{
     public GaussianOutlierDetection(DataItems di){
     	this.dataItems = di;
     }
-    public GaussianOutlierDetection(DataItems di,OMGaussianNodeParams omGaussianNodeParams){
+    public GaussianOutlierDetection(OMGaussianNodeParams omGaussianNodeParams,DataItems di){
     	this.dataItems = di;
     	this.diff = omGaussianNodeParams.getDiff();
     }
