@@ -268,7 +268,7 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
                         taskCombination.setRange(ipPair);
                         taskCombination.setName();
                         taskCombination.setMinerType(MinerType.MiningType_SinglenodeOrNodePair);
-                        TaskElement.add1Task(taskCombination, false);
+                        TaskCombinationList.addTaskOnly(taskCombination, false);
                         Logger.log("添加TaskCombination", taskCombination.getName());
                     }
                 }
