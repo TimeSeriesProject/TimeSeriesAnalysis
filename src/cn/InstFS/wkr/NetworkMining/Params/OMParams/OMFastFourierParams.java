@@ -8,7 +8,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.OutlierAlgorithm.FastFourier
 public class OMFastFourierParams {
 	//傅里叶变换算法参数
 	private static double sizeK = 8; //对数据进行分段处理时，每段数据的长度len = 2^sizeK
-    private static double amplitudeRatio = 0.9;//频域内振幅接收比例，剩下的高频过滤为0
+    private static double amplitudeRatio = 0.8;//频域内振幅接收比例，剩下的高频过滤为0
     private static double varK = 3.0;//Xi = (si-si')服从高斯分布，异常标准差倍数阈值   |Xi - mean|/std < varK
     private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
     public OMFastFourierParams(Element paramsConfig){

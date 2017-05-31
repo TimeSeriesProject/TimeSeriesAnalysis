@@ -14,6 +14,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.DTW;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.common.NormalDistributionTest;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPM;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMperiodBasedParams;
 import ec.tstoolkit.utilities.Id;
 
 public class PeriodBasedOutlierDetection implements IMinerOM{
@@ -34,6 +35,13 @@ public class PeriodBasedOutlierDetection implements IMinerOM{
 		this.di = di;
 		this.RetPM = RetPM;
 		PMdi = RetPM.getDistributePeriod();
+	}
+	public PeriodBasedOutlierDetection(OMperiodBasedParams oMperiodBasedParams,DataItems di,MinerResultsPM RetPM){
+		this.di = di;
+		this.RetPM = RetPM;
+		PMdi = RetPM.getDistributePeriod();
+		this.GuassK = oMperiodBasedParams.getGuassK();
+		this.threshold = oMperiodBasedParams.getThreshold();
 	}
 	@Override
 	public void TimeSeriesAnalysis() {

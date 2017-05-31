@@ -64,7 +64,7 @@ public class MultidimensionalOutlineDetection implements IMinerOM{
 	public MultidimensionalOutlineDetection(DataItems di){
 		this.dataItems = di;
 	}
-	public MultidimensionalOutlineDetection(DataItems di,OMMultidimensionalParams omMultidimensionalParams){
+	public MultidimensionalOutlineDetection(OMMultidimensionalParams omMultidimensionalParams,DataItems di){
 		this.dataItems = di;
 		this.GuassK = omMultidimensionalParams.getGuassK();
 		this.piontK = omMultidimensionalParams.getPiontK();

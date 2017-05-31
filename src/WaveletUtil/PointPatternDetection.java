@@ -41,7 +41,7 @@ public class PointPatternDetection implements IMinerOM{
 	public  PointPatternDetection(OMPiontPatternParams omPiontPatternParams,DataItems di) {
 		this.dataItems=di;
 		this.densityK=omPiontPatternParams.getDensityK();
-		this.neighborK=omPiontPatternParams.getDensityK();
+		this.neighborK=omPiontPatternParams.getNeighborK();
 		this.patternThreshold = omPiontPatternParams.getPatternThreshold();	
 		this.diff = omPiontPatternParams.getDiff();
 	}

@@ -66,6 +66,12 @@ import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPM;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import cn.InstFS.wkr.NetworkMining.Params.AssociationRuleParams.AssociationRuleLineParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMFastFourierParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGaussianNodeParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMMultidimensionalParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMPiontPatternParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMperiodBasedParams;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgress;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
@@ -306,22 +312,27 @@ class NodeTimerTask extends TimerTask{
 				setPMResults(results, pmMethod);
 				break;
 			case MiningMethods_OutliesMining:
+				String retPath = new String();//存储测试结果的文件路径
 				if (task.getMiningAlgo()!= null ) { // 不为空时，自定义算法，否则自动选择
 					switch (task.getMiningAlgo()) {
 						case MiningAlgo_GaussDetection:
-							tsaMethod = new AnormalyDetection(dataItems);
+							OMGuassianParams omGuassianParams = ParamsAPI.getInstance().getPom().getOmGuassianParams();
+							tsaMethod = new AnormalyDetection(omGuassianParams,dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(false);
 							break;
 						case MiningAlgo_FastFourier:
-							tsaMethod=new FastFourierOutliesDetection(dataItems);
+							OMFastFourierParams omFourierParams = ParamsAPI.getInstance().getPom().getOmFastFourierParams();
+							tsaMethod=new FastFourierOutliesDetection(omFourierParams,dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(false);
 							break;
 						case MiningAlgo_Muitidimensional:
-							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
+							OMMultidimensionalParams omMultiParams = ParamsAPI.getInstance().getPom().getOmMultidimensionalParams();
+							tsaMethod = new MultidimensionalOutlineDetection(omMultiParams,dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(true);
 							break;
 						case MiningAlgo_NodeOutlierDetection:
-							tsaMethod = new GaussianOutlierDetection(dataItems);
+							OMGaussianNodeParams omGaussianNodeParams = ParamsAPI.getInstance().getPom().getOmGaussianNodeParams();
+							tsaMethod = new GaussianOutlierDetection(omGaussianNodeParams,dataItems);
 							results.getRetNode().getRetOM().setIslinkDegree(true);
 							break;
 						default:
@@ -331,62 +342,52 @@ class NodeTimerTask extends TimerTask{
 					setOMResults(results, tsaMethod);
 				} else { // 异常检测默认
 					if(task.getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())){
-						tsaMethod = new GaussianOutlierDetection(dataItems);
+						OMGaussianNodeParams omGaussianNodeParams = ParamsAPI.getInstance().getPom().getOmGaussianNodeParams();
+						tsaMethod = new GaussianOutlierDetection(omGaussianNodeParams,dataItems);
 						results.getRetNode().getRetOM().setIslinkDegree(true);
 						tsaMethod.TimeSeriesAnalysis();
 						setOMResults(results, tsaMethod);
 					}else {
 						if(results.getRetNode().getRetPM().getHasPeriod()){
-//							tsaMethod = new MultidimensionalOutlineDetection(dataItems);
-//							tsaMethod = new PointPatternDetection(dataItems);
-							
-							tsaMethod = new PeriodBasedOutlierDetection(dataItems, results.getRetNode().getRetPM());
+							OMperiodBasedParams omPeriodParams = ParamsAPI.getInstance().getPom().getOMperiodBasedParams();
+							tsaMethod = new PeriodBasedOutlierDetection(omPeriodParams,dataItems, results.getRetNode().getRetPM());
 							results.getRetNode().getRetOM().setIslinkDegree(false);
-							tsaMethod.TimeSeriesAnalysis();
-							setOMResults(results, tsaMethod);
-							/*************************异常算法测试结果输出**********************/
-							/*String retPath = "result/outlierTest(基于周期的异常检测).txt";
-							OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
-							outliersTest.evaluatIndicator();
-							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
-							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
-							/*****************************测试结束************************/
+							retPath = "result/outlierTest(基于周期的异常检测).txt";														
 						}
 						else if(results.getRetNode().getRetPartialPeriod().isHasPartialPeriod() || results.getRetNode().getRetPartialCycle().isHasPartialCycle()){//部分周期
-//							tsaMethod = new FastFourierOutliesDetection(dataItems);
-							tsaMethod = new AnormalyDetection(dataItems);
-//							tsaMethod = new AnormalyDetection(200,300,3,0.6,dataItems);//测试数据参数
-							results.getRetNode().getRetOM().setIslinkDegree(false);
-							tsaMethod.TimeSeriesAnalysis();
-							setOMResults(results, tsaMethod);
-							/*************************异常算法测试结果输出**********************/
-							/*String retPath = "result/outlierTest(点异常).txt";
-							OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
-							outliersTest.evaluatIndicator();
-							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
-							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
-							/*****************************测试结束************************/
-						}
-						else{
-							tsaMethod = new PointPatternDetection(dataItems);
-							results.getRetNode().getRetOM().setIslinkDegree(true);
-							tsaMethod.TimeSeriesAnalysis();
-							setOMResults(results, tsaMethod);
 
-							/*************************异常算法测试结果输出**********************/
-							/*String retPath = "result/outlierTest(线段异常).txt";
-							OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
-							outliersTest.evaluatIndicator2();
-							outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
-							System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
-							/*****************************测试结束************************/
+
+//							OMFastFourierParams omFourierParams = ParamsAPI.getInstance().getPom().getOmFastFourierParams();
+//							tsaMethod=new FastFourierOutliesDetection(omFourierParams,dataItems);
+							
+							OMGuassianParams omgParams = ParamsAPI.getInstance().getPom().getOmGuassianParams();
+							tsaMethod = new AnormalyDetection(omgParams,dataItems);							
+							results.getRetNode().getRetOM().setIslinkDegree(false);
+							retPath = "result/outlierTest(点异常).txt";							
+						}					
+						else{
+							OMPiontPatternParams omPointParams = ParamsAPI.getInstance().getPom().getOmPiontPatternParams();
+							tsaMethod = new PointPatternDetection(omPointParams,dataItems);						
+							results.getRetNode().getRetOM().setIslinkDegree(true);
+							retPath = "result/outlierTest(线段异常).txt";																					
 						}
 
 					}
-
-				}
-//				tsaMethod.TimeSeriesAnalysis();
-//				setOMResults(results, tsaMethod);
+					
+				}				
+				tsaMethod.TimeSeriesAnalysis();
+				setOMResults(results, tsaMethod);
+				/*************************异常算法测试结果输出**********************/																		
+				/*OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
+				if(results.getRetNode().getRetOM().isIslinkDegree()){
+					outliersTest.evaluatIndicator2();
+				}else{
+					outliersTest.evaluatIndicator();
+				}				
+				outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
+				System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
+				/*****************************测试结束************************/											
+												
 				break;
 			case MiningMethods_Statistics:
 
@@ -499,8 +500,13 @@ class NodeTimerTask extends TimerTask{
 				
 				ParamsSM paramsSM = ParamsAPI.getInstance().getParamsSequencePattern();     //获取参数
 				PointSegment segment=new PointSegment(dataItems, paramsSM.getSMparam().getSplitLeastLen());
+
+//				PointSegment segment=new PointSegment(dataItems, 3);
+//				LinePattern segment = new LinePattern(dataItems, 0.25);
+
 //				PointSegment segment=new PointSegment(dataItems, 4);
 //				LinePattern segment = new LinePattern(dataItems, 0.06);
+
 				List<PatternMent> segPatterns=segment.getPatterns();
 				
 				//kmeans聚类
@@ -513,7 +519,7 @@ class NodeTimerTask extends TimerTask{
 				}
 		        
 		        //DPC聚类
-		       /* AssociationRuleLineParams arp = ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams();
+		       /*AssociationRuleLineParams arp = ParamsAPI.getInstance().getAssociationRuleParams().getAssociationRuleLineParams();
 				TranDPCluster dpCluster = new TranDPCluster(dataItems, segPatterns, arp);
 				clusterItems = dpCluster.getClusterItems();*/
 				

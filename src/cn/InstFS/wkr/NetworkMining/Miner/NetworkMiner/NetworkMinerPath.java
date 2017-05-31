@@ -24,6 +24,10 @@ import cn.InstFS.wkr.NetworkMining.Miner.Factory.ProtocolAssMinerFactory;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.IsOver;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMFastFourierParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGaussianNodeParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMMultidimensionalParams;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsOM;
@@ -279,19 +283,23 @@ class PathTimerTask extends TimerTask{
 						if (task.getMiningAlgo()!= null ) { // 不为空时，自定义算法，否则自动选择
 							switch (task.getMiningAlgo()) {
 								case MiningAlgo_GaussDetection:
-									omMethod = new AnormalyDetection(dataItems);
+									OMGuassianParams omGuassianParams = ParamsAPI.getInstance().getPom().getOmGuassianParams();
+									omMethod = new AnormalyDetection(omGuassianParams,dataItems);
 									retOM.setIslinkDegree(false);
 									break;
 								case MiningAlgo_FastFourier:
-									omMethod=new FastFourierOutliesDetection(dataItems);
+									OMFastFourierParams omFourierParams = ParamsAPI.getInstance().getPom().getOmFastFourierParams();
+									omMethod=new FastFourierOutliesDetection(omFourierParams,dataItems);
 									retOM.setIslinkDegree(false);
 									break;
 								case MiningAlgo_Muitidimensional:
-									omMethod = new MultidimensionalOutlineDetection(dataItems);
+									OMMultidimensionalParams omMultiParams = ParamsAPI.getInstance().getPom().getOmMultidimensionalParams();
+									omMethod = new MultidimensionalOutlineDetection(omMultiParams,dataItems);
 									retOM.setIslinkDegree(true);
 									break;
 								case MiningAlgo_NodeOutlierDetection:
-									omMethod = new GaussianOutlierDetection(dataItems);
+									OMGaussianNodeParams omGaussianNodeParams = ParamsAPI.getInstance().getPom().getOmGaussianNodeParams();
+									omMethod = new GaussianOutlierDetection(omGaussianNodeParams,dataItems);
 									retOM.setIslinkDegree(false);
 								case MiningAlgo_PeriodBasedOutlier:
 									omMethod = new PeriodBasedOutlierDetection(newItem, retPathPM.get(name));							
