@@ -364,7 +364,7 @@ public class SingleNodeOrNodePairMinerFactoryDis extends MinerFactorySettings {
         File dataDirectory = null;
         if(MiningObject.MiningObject_NodeDisapearEmerge.toString().equals(miningObject.toString()))
         {
-            dataDirectory = new File(rootPath + "\\node");
+            dataDirectory = new File(dataPath + "\\node");
         }
         else{
             dataDirectory = new File(dataPath + "\\traffic");
