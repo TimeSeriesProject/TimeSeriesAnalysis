@@ -1630,10 +1630,10 @@ public class nodePairReader implements IReader {
 						
 						DataItems dataItems=new DataItems();
 						//补第一个数据之前的0
-						/*for(int i=start;i<timeSpan;i++)
+						for(int i=start;i<timeSpan;i++)
 						{
 							dataItems.add1Data(parseTime(i*3600, startDay), "0");
-						}*/
+						}
 						dataItems.add1Data(time, proAndTraffic[1]);
 						protocolDataItems.put(proAndTraffic[0], dataItems);
 					}

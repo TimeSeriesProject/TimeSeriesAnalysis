@@ -112,7 +112,7 @@ public class ProtocolAssociationLine {
 		        ClusterWrapper clusterWrapper_i = new ClusterWrapper(linears,arp);
 //		        DPCluster dpCluster_i = clusterWrapper_i.run();
 //		        Map<Integer,Integer> map_i = dpCluster_i.getBelongClusterCenter();
-		        Map<Integer,Integer> map_i = clusterWrapper_i.run();
+		        Map<Integer,Integer> map_i = clusterWrapper_i.run2();
 		        TreeMap<Integer,SymbolNode> symbols_i = getSymbols(map_i,i);
 
 

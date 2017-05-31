@@ -33,9 +33,11 @@ public class Similarity {
     	return getLenghtMahattanDistance(l1,l2);
     }
     private static double getThetaMahattanDistance(Linear l1,Linear l2){
-    	if(l1.normTheta*l2.normTheta>=0){
+    	if(l1.normTheta*l2.normTheta>0){
     		return Math.abs(l1.normTheta-l2.normTheta);
-    	}
+    	} else if(l1.normTheta == 0 && l2.normTheta == 0) {
+            return 0;
+        }
     	else{
     		return 1.0;
     	}
@@ -111,11 +113,15 @@ public class Similarity {
      * @return
      */
     private static double getMaxDistance(Linear l1,Linear l2){
-    	 if(l1.normTheta*l2.normTheta>=0) {
+    	 if(l1.normTheta*l2.normTheta>0) {
     		 double normLenght1 = Math.sqrt(Math.pow(l1.normSpan, 2)+Math.pow(l1.normHspan, 2));
     		 double normLenght2 = Math.sqrt(Math.pow(l2.normSpan, 2)+Math.pow(l2.normHspan, 2));
     		 return Math.max(Math.abs(l1.normTheta-l2.normTheta), Math.abs(normLenght1-normLenght2));
-         }else{
+         } else if (l1.normTheta == 0 && l2.normTheta == 0) {
+             double normLenght1 = Math.sqrt(Math.pow(l1.normSpan, 2)+Math.pow(l1.normHspan, 2));
+             double normLenght2 = Math.sqrt(Math.pow(l2.normSpan, 2)+Math.pow(l2.normHspan, 2));
+             return Math.abs(normLenght1-normLenght2);
+         } else{
              return 1.0;
          }
     }

@@ -320,8 +320,10 @@ public class WavCluster {
 			kMeans.buildClusterer(dataset);
 			kMeans.clusterInstance(dataset.get(0));
 			
-			SerializationHelper.write(fileName+".model", kMeans);
-			
+//			SerializationHelper.write(fileName+".model", kMeans);
+
+			new File(fileName+".arff").delete();
+
 			
 		}
 		catch(Exception e)
