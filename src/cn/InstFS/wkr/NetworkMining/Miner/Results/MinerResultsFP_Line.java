@@ -18,6 +18,7 @@ public class MinerResultsFP_Line implements Serializable {
 	String ip = "";
 	double confidence = 0.0;
 	double inf = 0.0;
+	int count = 0;
 	
 	public List<ProtoclPair> protocolPairList = null;
 	List<TreeMap<Integer,Linear>> linesList = new ArrayList<TreeMap<Integer,Linear>>();
@@ -52,5 +53,12 @@ public class MinerResultsFP_Line implements Serializable {
 	public void setLinesList(List<TreeMap<Integer, Linear>> linesList) {
 		this.linesList = linesList;
 	}
-	
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
 }

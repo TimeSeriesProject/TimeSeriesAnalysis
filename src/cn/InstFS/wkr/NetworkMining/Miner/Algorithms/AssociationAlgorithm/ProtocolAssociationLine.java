@@ -128,6 +128,7 @@ public class ProtocolAssociationLine {
 		        System.out.println("***************************************************");
 			}
 			double max_confidence = 0.0,max_inf = 0.0;
+			int max_count = 0;
 			List<ProtoclPair> resultList = new ArrayList<ProtoclPair>();
 			for(int i = 0;i < linesList.size();i++)
 			{
@@ -155,6 +156,7 @@ public class ProtocolAssociationLine {
 					int symbol = 1;
 					double sum_confidence = 0;
 					double sum_inf = 0.0;
+					int sum_count = 0;
 					for(Rule rule : findRules.rulesSet){
 						
 
@@ -184,7 +186,7 @@ public class ProtocolAssociationLine {
 //								assj.add(String.valueOf(son)+","+String.valueOf(son+son_len));
 							}
 							mapAB.put(String.valueOf(symbol),alp);
-							
+							sum_count += alp.size();
 						}
 						else if(rule.after.belong_series == j){ 
 							
@@ -206,8 +208,9 @@ public class ProtocolAssociationLine {
 						}
 						
 					}
-					pp.setInf(findRules.rulesSet.size() == 0 ? 0 : sum_inf/symbol);
+					pp.setInf((symbol -1) == 0 ? 0 : sum_inf/(symbol-1));
 					pp.setConfidence( (symbol -1)== 0 ? 0 :sum_confidence/(symbol-1));
+					pp.count = sum_count; // 总关联线段个数
 					pp.setMapAB(mapAB);
 					pp.setMapBA(mapBA);
 					pp.setLineDataItems1(lineList.get(j));
@@ -220,6 +223,9 @@ public class ProtocolAssociationLine {
 					if(max_inf < pp.inf) {
 						max_inf = pp.inf;
 					}
+					if (max_count < pp.count)
+						max_count = pp.count;
+
 					symbolSeries.remove(j);
 					
 					System.out.println("*********************一轮结束****************************");
@@ -227,6 +233,7 @@ public class ProtocolAssociationLine {
 			}
 			mr_fp_l.setConfidence(max_confidence);
 			mr_fp_l.setInf(max_inf);
+			mr_fp_l.setCount(max_count);
 			mr_fp_l.protocolPairList = resultList;
 			mr_fp_l.setLinesList(linesPosList);
 			//找序列的关联信息

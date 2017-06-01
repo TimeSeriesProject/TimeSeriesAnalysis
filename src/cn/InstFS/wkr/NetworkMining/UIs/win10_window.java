@@ -254,6 +254,8 @@ public class win10_window extends JFrame {
     {
         long a = System.currentTimeMillis();
         ArrayList<String> list = new ArrayList<String>();//统计任务总个数singleNoderesultMaps.clear();
+        singleNoderesultMaps.clear();
+
         NetworkMinerFactory.getInstance().allCombinationMiners.clear();
 
         SingleNodeOrNodePairMinerFactoryDis singleNodeOrNodePairMinerFactoryDis = SingleNodeOrNodePairMinerFactoryDis.getInstance();

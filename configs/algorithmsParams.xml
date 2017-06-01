@@ -102,7 +102,7 @@
             <mergerPrice>0.085</mergerPrice>
             <compressionRatio>0.65</compressionRatio>
             <!-- 线段聚类参数 -->
-            <t>0.05</t>
+            <t>0.07</t>
             <centerLine>-1.0</centerLine>
             <way>2</way>
             <gaosi>2</gaosi>

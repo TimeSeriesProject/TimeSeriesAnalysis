@@ -206,7 +206,7 @@ public class AssociationIpListFrame extends JFrame {
     
 	private void createTable()
 	{
-		String data[][]=new String[resultList.size()][4];
+		String data[][]=new String[resultList.size()][5];
 		for(int i=0;i<resultList.size();i++)
 		{
 			TaskCombination taskCom = resultList.get(i).getKey();
@@ -220,9 +220,10 @@ public class AssociationIpListFrame extends JFrame {
 			data[i][1]= String.format("%5.3f",results.getConfidence());
 			data[i][2]= String.format("%5.3f",results.getInf());
 			data[i][3]=String.format("%5d",results.protocolPairList.size());
+			data[i][4]= String.format("%5d", results.getCount());
 			
 		}
-	    String colNames[]={"ip","最大置信度","最大兴趣度","关联协议对数目"};
+	    String colNames[]={"ip","最大置信度","最大兴趣度","关联协议对数目","关联计数"};
 	   
 	 
 	    DefaultTableModel model=new DefaultTableModel(data,colNames){
@@ -320,9 +321,10 @@ public class AssociationIpListFrame extends JFrame {
 		JLabel sortLabel= new JLabel("选择排序方式");
 		sortTypeComboBox = new JComboBox<String>();
 		sortTypeComboBox.addItem(AssociationSortType.IPPartConfidence.toString());
-		sortTypeComboBox.addItem(AssociationSortType.IPIntegerMing.toString());
+//		sortTypeComboBox.addItem(AssociationSortType.IPIntegerMing.toString());
+		sortTypeComboBox.addItem(AssociationSortType.IPCount.toString());
 		sortTypeComboBox.addItem(AssociationSortType.IPIP.toString());
-		sortTypeComboBox.setSelectedIndex(1);
+		sortTypeComboBox.setSelectedIndex(0);
 		sortTypeComboBox.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent event)
@@ -412,6 +414,9 @@ public class AssociationIpListFrame extends JFrame {
 			case "按ip端口整体置信度排序":
 				sortByWholeProtocolConfidence();
 				break;
+				case "按关联计数排序":
+					sortByCount();
+					break;
 			case "按ip排序":
 				sortByIP();
 				break;
@@ -468,4 +473,19 @@ public class AssociationIpListFrame extends JFrame {
 						}
 					});
 		}
+
+	private void sortByCount() {
+		Collections.sort(resultList,new Comparator<Map.Entry<TaskCombination, MinerProtocolResults> >()
+		{
+			@Override
+			public int compare(Map.Entry<TaskCombination,MinerProtocolResults> o1, Map.Entry<TaskCombination,MinerProtocolResults> o2) {
+				if(o1.getValue().getRetFP().getCount() > o2.getValue().getRetFP().getCount())
+					return -1;
+				else if(o1.getValue().getRetFP().getCount() < o2.getValue().getRetFP().getCount())
+					return 1;
+				else
+					return 0;
+			}
+		});
+	}
 }
