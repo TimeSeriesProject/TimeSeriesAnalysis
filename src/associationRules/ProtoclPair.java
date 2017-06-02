@@ -13,6 +13,7 @@ public class ProtoclPair implements Serializable{
 	String protocol2 = "";
 	public double confidence = 0.0;
 	public double inf = 0.0;
+	public int count = 0;
 
 	DataItems dataItems1 = null;  //包括协议1和协议2的原始序列
 	DataItems dataItems2 = null;  //包括协议1和协议2的原始序列

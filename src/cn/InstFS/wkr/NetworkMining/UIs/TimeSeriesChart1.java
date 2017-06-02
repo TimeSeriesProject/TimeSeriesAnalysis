@@ -628,6 +628,11 @@ public class TimeSeriesChart1 extends Composite {
 
 			// 遍历曲线1 的 模式线段前的原始线段，保存进initseries1
 
+			if(initseries1start>=303 && initseries1start<=316){
+				System.out.println();
+				
+			}
+			
 			while (initseries1start < linpos.A_start) {
 				initseries1.add(
 						initseries1start,
@@ -637,7 +642,7 @@ public class TimeSeriesChart1 extends Composite {
 						.parseInt(indexit1.next())) : -1;
 			}
 			initseries1.add(initseries1start, Double.parseDouble(dataitems1
-					.getElementAt(initseries1start).getData()));
+					.getElementAt(initseries1start).getData()));  //linpos.A_start加入数据集
 			// 保存模式线段 initseries1
 			// 此时initseries1start=linpos.A_start+1
 			while (initseries1start < linpos.A_end) {
@@ -651,8 +656,8 @@ public class TimeSeriesChart1 extends Composite {
 
 			initseries1.add(initseries1start, Double.parseDouble(dataitems1
 					.getElementAt(initseries1start).getData()));// 模式线段剩余的点会加进数据集两次，但是对画图不影响，只是initseries1.size不可信
-			initseries1start = (indexit1.hasNext()) ? (Integer
-					.parseInt(indexit1.next())) : -1;
+/*			initseries1start = (indexit1.hasNext()) ? (Integer
+					.parseInt(indexit1.next())) : -1;*/
 
 			// initseries1start = linpos.A_end;
 			;// 此时initseriesstart=linpos.A_end+1
@@ -677,8 +682,8 @@ public class TimeSeriesChart1 extends Composite {
 			// (Integer.parseInt(indexit2.next())):-1;//此时initseriesstart就是linpos.B_start
 			initseries2.add(initseries2start, Double.parseDouble(dataitems2
 					.getElementAt(initseries2start).getData()));
-			initseries2start = (indexit2.hasNext()) ? (Integer
-					.parseInt(indexit2.next())) : -1;
+/*			initseries2start = (indexit2.hasNext()) ? (Integer
+					.parseInt(indexit2.next())) : -1;*/
 			// initseries2start = linpos.B_end;
 			// initseries2start =linpos.B_end;// 此时initseriesstart就是linpos.B_end
 		}
