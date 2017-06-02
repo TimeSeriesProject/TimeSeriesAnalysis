@@ -82,7 +82,9 @@ public class PeriodBasedOutlierDetection implements IMinerOM{
 			}
 		}
 		//最后一个不满一个周期的数据
+
 		if(period*perNum<di.getLength()){
+
 			DataItems item = new DataItems();
 			DataItems PMitem = new DataItems();
 			int j=0;

@@ -345,8 +345,8 @@ class NodeTimerTask extends TimerTask{
 						OMGaussianNodeParams omGaussianNodeParams = ParamsAPI.getInstance().getPom().getOmGaussianNodeParams();
 						tsaMethod = new GaussianOutlierDetection(omGaussianNodeParams,dataItems);
 						results.getRetNode().getRetOM().setIslinkDegree(true);
-						tsaMethod.TimeSeriesAnalysis();
-						setOMResults(results, tsaMethod);
+						/*tsaMethod.TimeSeriesAnalysis();
+						setOMResults(results, tsaMethod);*/
 					}else {
 						if(results.getRetNode().getRetPM().getHasPeriod()){
 							OMperiodBasedParams omPeriodParams = ParamsAPI.getInstance().getPom().getOMperiodBasedParams();
