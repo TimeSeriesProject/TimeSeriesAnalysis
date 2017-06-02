@@ -28,6 +28,7 @@ import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMFastFourierParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGaussianNodeParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMMultidimensionalParams;
+import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMperiodBasedParams;
 import cn.InstFS.wkr.NetworkMining.Params.PMParams.PMparam;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsOM;
@@ -302,7 +303,8 @@ class PathTimerTask extends TimerTask{
 									omMethod = new GaussianOutlierDetection(omGaussianNodeParams,dataItems);
 									retOM.setIslinkDegree(false);
 								case MiningAlgo_PeriodBasedOutlier:
-									omMethod = new PeriodBasedOutlierDetection(newItem, retPathPM.get(name));							
+									OMperiodBasedParams omPeriodParams = ParamsAPI.getInstance().getPom().getOMperiodBasedParams();
+									omMethod = new PeriodBasedOutlierDetection(omPeriodParams,newItem, retPathPM.get(name));							
 									retOM.setIslinkDegree(false);
 									break;
 								default:
