@@ -82,23 +82,26 @@ public class PeriodBasedOutlierDetection implements IMinerOM{
 			}
 		}
 		//最后一个不满一个周期的数据
-		DataItems item = new DataItems();
-		DataItems PMitem = new DataItems();
-		int j=0;
-		for(int i=period*perNum;i<di.getLength();i++){
-			item.add1Data(di.getElementAt(i));
-			PMitem.add1Data(PMdi.getElementAt(j));
-			j++;
+		if(period*perNum<di.getLength()){
+			DataItems item = new DataItems();
+			DataItems PMitem = new DataItems();
+			int j=0;
+			for(int i=period*perNum;i<di.getLength();i++){
+				item.add1Data(di.getElementAt(i));
+				PMitem.add1Data(PMdi.getElementAt(j));
+				j++;
+			}
+			diMap.put(perNum+1, item);
+			DTW dtw = new DTW(item, PMitem);
+			int[][] warpingPath = dtw.getWarpingPath();	
+			List<Double> disList1 = comDTWPathDis1(warpingPath, item, PMdi);
+			List<Double> disList2 = comDTWPathDis1(warpingPath, item, PMdi);
+			for(int k=0;k<disList1.size();k++){
+				dtwDis1.put(perNum*period+k, disList1.get(k));
+				dtwDis2.put(perNum*period+k, disList2.get(k));
+			}
 		}
-		diMap.put(perNum+1, item);
-		DTW dtw = new DTW(item, PMitem);
-		int[][] warpingPath = dtw.getWarpingPath();	
-		List<Double> disList1 = comDTWPathDis1(warpingPath, item, PMdi);
-		List<Double> disList2 = comDTWPathDis1(warpingPath, item, PMdi);
-		for(int k=0;k<disList1.size();k++){
-			dtwDis1.put(perNum*period+k, disList1.get(k));
-			dtwDis2.put(perNum*period+k, disList2.get(k));
-		}
+		
 	}
 	/**
 	 * 计算dtw对应路径

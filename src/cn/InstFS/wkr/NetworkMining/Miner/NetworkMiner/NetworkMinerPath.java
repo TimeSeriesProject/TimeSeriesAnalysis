@@ -312,10 +312,12 @@ class PathTimerTask extends TimerTask{
 							}
 						} else {
 							if(retPathPM.get(name).getHasPeriod()){
-								omMethod = new PeriodBasedOutlierDetection(newItem, retPathPM.get(name));							
+								OMperiodBasedParams omPeriodParams = ParamsAPI.getInstance().getPom().getOMperiodBasedParams();
+								omMethod = new PeriodBasedOutlierDetection(omPeriodParams,newItem, retPathPM.get(name));							
 								retOM.setIslinkDegree(false);
 							}else{
-								omMethod = new AnormalyDetection(newItem);
+								OMGuassianParams omGuassianParams = ParamsAPI.getInstance().getPom().getOmGuassianParams();
+								omMethod = new AnormalyDetection(omGuassianParams,newItem);
 								retOM.setIslinkDegree(false);
 							}
 							
