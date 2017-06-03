@@ -1508,7 +1508,7 @@ public class Server {
                                     }
 
                                     if (taskCombinationResult.getMiningObject().equals(MiningObject.MiningObject_Traffic)) {
-                                        if (singleNodeTraffic.size() < allCombinationTasks.size()) {
+                                        if (nodePairTraffic.size() < allCombinationTasks.size()) {
                                             nodePairTrafficFlag = true;
                                             for (int i = 0; i < tempList.size(); i++) {
                                                 if (tempList.get(i).getName().equals(taskCombinationResult.getName())) {
