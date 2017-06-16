@@ -25,7 +25,7 @@
             <maxWindowSize>300</maxWindowSize>
             <expWindowSize>3</expWindowSize>
             <windowVarK>3.0</windowVarK>
-	    <diff>0.2</diff>
+	        <diff>0.2</diff>
             <minthreshod>0.7</minthreshod>
         </gaussianParams>
         <!-- 线段模式异常检测 -->
@@ -33,8 +33,8 @@
             <densityK>3</densityK>
             <patternThreshold>0.1</patternThreshold>
             <neighborK>20</neighborK>
-	    <diff>0.1</diff>
-	    <threshold>0.7</threshold>
+            <diff>0.1</diff>
+            <threshold>0.7</threshold>
         </pointPatternParams>
         <TEOParams>
             <mergeThreshold>0.025</mergeThreshold>
@@ -52,11 +52,11 @@
             <patternLen>24</patternLen>
             <patternAlphaNum>5</patternAlphaNum>
         </saxPatternParams>
-	<!-- 基于周期 -->
-	<periodBasedParams>
-	     <GuassK>3.0</GuassK>
-	     <threshold>0.8</threshold>
-	</periodBasedParams>
+        <!-- 基于周期 -->
+        <periodBasedParams>
+             <GuassK>3.0</GuassK>
+             <threshold>0.8</threshold>
+        </periodBasedParams>
     </outlierMinerParam>
 
     <!-- 统计参数 -->
