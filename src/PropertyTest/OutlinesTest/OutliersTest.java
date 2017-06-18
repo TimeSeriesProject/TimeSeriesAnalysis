@@ -84,7 +84,7 @@ public class OutliersTest {
 	}
 	//获取labels标签
 	public void genLabels(){
-		String srclabelpath = "D:/57Data/outlierTest/data/real_"+ ip +".csv";
+		String srclabelpath = "test/outlier/data/real_"+ ip +".csv";
 		BufferedReader br = null;
 		try{
 			InputStream in = new FileInputStream(srclabelpath);

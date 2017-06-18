@@ -352,7 +352,7 @@ class NodeTimerTask extends TimerTask{
 							OMperiodBasedParams omPeriodParams = ParamsAPI.getInstance().getPom().getOMperiodBasedParams();
 							tsaMethod = new PeriodBasedOutlierDetection(omPeriodParams,dataItems, results.getRetNode().getRetPM());
 							results.getRetNode().getRetOM().setIslinkDegree(false);
-							retPath = "result/outlierTest(基于周期的异常检测).txt";														
+							retPath = "testResult/outlierTest(基于周期的异常检测).txt";
 						}
 						else if(results.getRetNode().getRetPartialPeriod().isHasPartialPeriod() || results.getRetNode().getRetPartialCycle().isHasPartialCycle()){//部分周期
 
@@ -363,13 +363,13 @@ class NodeTimerTask extends TimerTask{
 							OMGuassianParams omgParams = ParamsAPI.getInstance().getPom().getOmGuassianParams();
 							tsaMethod = new AnormalyDetection(omgParams,dataItems);							
 							results.getRetNode().getRetOM().setIslinkDegree(false);
-							retPath = "result/outlierTest(点异常).txt";							
+							retPath = "testResult/outlierTest(点异常).txt";
 						}					
 						else{
 							OMPiontPatternParams omPointParams = ParamsAPI.getInstance().getPom().getOmPiontPatternParams();
 							tsaMethod = new PointPatternDetection(omPointParams,dataItems);						
 							results.getRetNode().getRetOM().setIslinkDegree(true);
-							retPath = "result/outlierTest(线段异常).txt";																					
+							retPath = "testResult/outlierTest(线段异常).txt";
 						}
 
 					}
@@ -378,14 +378,14 @@ class NodeTimerTask extends TimerTask{
 				tsaMethod.TimeSeriesAnalysis();
 				setOMResults(results, tsaMethod);
 				/*************************异常算法测试结果输出**********************/																		
-				/*OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
+				OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
 				if(results.getRetNode().getRetOM().isIslinkDegree()){
 					outliersTest.evaluatIndicator2();
 				}else{
 					outliersTest.evaluatIndicator();
 				}				
 				outliersTest.appendWriteRet(retPath, task.getRange(), outliersTest.getPrecision(), outliersTest.getRecall());
-				System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());*/
+				System.out.println("任务"+task.getRange()+"异常检测结果--准确率:"+outliersTest.getPrecision()+",召回率:"+outliersTest.getRecall());
 				/*****************************测试结束************************/											
 												
 				break;
@@ -399,9 +399,9 @@ class NodeTimerTask extends TimerTask{
 			case MiningMethods_PredictionMining:
 				int testsize = 10;//测试数据的长度
 				MinerResultsPM resultsPM = results.getRetNode().getRetPM();
-				PredictTest predicttest = new PredictTest(testsize);;
+				PredictTest predicttest = new PredictTest(testsize);
 				DataItems tDataItems = predicttest.getTestpredictData(dataItems);//获得除去后10个数据的实际原始数据段
-				List<String> realtestData = predicttest.getTestRealData(dataItems);;//获得原始数据的最后10个数据
+				List<String> realtestData = predicttest.getTestRealData(dataItems);//获得原始数据的最后10个数据
 				if (task.getMiningAlgo() != null) {
 					switch (task.getMiningAlgo()) {
 						case MiningAlgo_NeuralNetworkTSA:
@@ -606,7 +606,7 @@ class NodeTimerTask extends TimerTask{
 					System.out
 							.println("************************部分周期测试************************");
 					File testFile = new File(
-							"result\\testParticalPeriod.txt");
+							"testResult/部分周期测试.txt");
 					try {
 						//FileOutputStream in = new FileOutputStream(testFile);
 						BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
@@ -633,7 +633,7 @@ class NodeTimerTask extends TimerTask{
 											+ "    " + "测试误差:"
 											+ entry.getValue());*/
 								}
-								out.write("总误差："+modelErrorSum/testError.size());
+								out.write("总误差："+modelErrorSum/testError.size() + "\n");
 							}
 							out.close();
 

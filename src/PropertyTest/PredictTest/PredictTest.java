@@ -129,7 +129,7 @@ public class PredictTest {
 	 public static void resultWrite(List<String> pdata,List<String> ttData,
 			                        String taskRange,String taskProtocol,String taskMiningObject,boolean isHasPeriod){
 		 
-		    String retPath = "IP间predictTest-default.cvs";
+		    String retPath = "testResult/预测测试.csv";
 		    double forcastresult1=0.0;
 		    double forcastresult2=0.0;
 			forcastresult1=predictTestMAPE(pdata, ttData);//相对误差绝对值平均值-测试开始并返回测试结果

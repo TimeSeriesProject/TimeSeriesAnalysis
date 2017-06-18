@@ -10,6 +10,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -154,6 +155,48 @@ public class AssociationIpListFrame extends JFrame {
 			
 		}
 		resultList.clear();
+
+		evaluate(resultMaps);
+	}
+
+	private void evaluate(HashMap<String, HashMap<TaskCombination, MinerProtocolResults>> resultMaps) {
+		double confidenceAvg = 0.0;
+		int confidenceCount = 0;
+		double infAvg = 0.0;
+		int infCount = 0;
+		for (HashMap<TaskCombination, MinerProtocolResults> results:resultMaps.values()) {
+			for (MinerProtocolResults proResult :results.values()) {
+				double confidence = proResult.getRetFP().getConfidence();
+				double inf = proResult.getRetFP().getInf();
+
+				if (confidence!= 0) {
+					confidenceCount++;
+					confidenceAvg += confidence;
+				}
+				if (inf !=0) {
+					infCount++;
+					infAvg += inf;
+				}
+			}
+		}
+		confidenceAvg /= confidenceCount;
+		infAvg /= infCount;
+		OutputStreamWriter ow = null;
+		try {
+			ow = new OutputStreamWriter(
+					new FileOutputStream("testResult/关联规则测试.txt",true), "UTF-8");
+			BufferedWriter bw = new BufferedWriter(ow);
+			bw.write("平均最大置信度: "+ confidenceAvg);
+			bw.newLine();
+			bw.write("平均最大兴趣度: "+ infAvg);
+			bw.close();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	private void updateMingObject() {
 

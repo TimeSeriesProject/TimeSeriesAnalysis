@@ -11,12 +11,8 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -33,7 +29,11 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
+import cn.InstFS.wkr.NetworkMining.DataInputs.DataItem;
+import cn.InstFS.wkr.NetworkMining.DataInputs.PatternMent;
+import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
 import common.Logger;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.border.StandardBorderPainter;
 import org.jvnet.substance.painter.StandardGradientPainter;
@@ -162,6 +162,66 @@ public class SingleNodeListFrame extends JFrame {
 //		MiningMethod method = MiningMethod.MiningMethods_PeriodicityMining;
 //		miningMethods.add(method);
 		resultList=new ArrayList<Map.Entry<TaskCombination, MinerNodeResults>>(resultMap.entrySet());
+
+		DescriptiveStatistics statistics=new DescriptiveStatistics();
+		for (MinerNodeResults rslt: resultMap.values()) {
+			if (rslt.getRetSM().isHasFreItems()) {
+				DataItems freqPatterns = rslt.getRetSM().getPatterns();    // 频繁模式
+				List<LineElement> lineElements = rslt.getRetSM().getLineElements();
+				final HashMap<Integer, List<List<LineElement>>> modeList = new HashMap<>();
+				DataItems freqResult = new DataItems();
+
+				List<String> freqPatternsListTemp = new ArrayList<>(freqPatterns.getData());
+				int len = freqPatternsListTemp.size() - 1;
+				for (; len >= 0; len--) {
+					String tempString = freqPatternsListTemp.get(len);
+					List<String> deletedPatterns = new ArrayList<>();
+					for (int j = 0; j < len; j++) {
+						String tempStringDelete = freqPatternsListTemp.get(j);
+
+						// 判断是否包含在其他模式之中
+						if (tempString.contains("," + tempStringDelete + ",")) { // 子串在中间位置
+							deletedPatterns.add(tempStringDelete);
+						} else if ((tempString.indexOf(tempStringDelete) + tempStringDelete.length()) == tempString.length()  // 子串在末位
+								&& tempString.contains("," + tempStringDelete)) {
+							deletedPatterns.add(tempStringDelete);
+						} else if (tempString.indexOf(tempStringDelete) == 0 && tempString.contains(tempStringDelete + ",")) { // 子串在起始位
+							deletedPatterns.add(tempStringDelete);
+						}
+					}
+					DataItem di = new DataItem();
+					di.setData(tempString);
+					int index = freqPatterns.getData().indexOf(tempString);
+					di.setProb(freqPatterns.getProb().get(index));
+					freqResult.add1Data(di);
+
+					freqPatternsListTemp.removeAll(deletedPatterns);
+					freqPatternsListTemp.remove(tempString);
+					len = freqPatternsListTemp.size();
+
+				}
+				freqPatterns = freqResult;
+				for (double data : freqPatterns.getProb()) {
+					statistics.addValue(data);
+				}
+			}
+		}
+		double mean = statistics.getMean();
+		OutputStreamWriter ow = null;
+		try {
+			ow = new OutputStreamWriter(
+					new FileOutputStream("testResult/频繁模式测试.txt",true), "UTF-8");
+			BufferedWriter bw = new BufferedWriter(ow);
+			bw.newLine();
+			bw.write("平均置信度: "+ mean);
+			bw.close();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	private void sort()
 	{

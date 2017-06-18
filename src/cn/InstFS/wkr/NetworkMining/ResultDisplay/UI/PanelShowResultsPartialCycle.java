@@ -429,7 +429,7 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 		{
 
 			OutputStreamWriter ow = new OutputStreamWriter(
-					new FileOutputStream("result/局部周期测试结果.txt",true), "UTF-8");
+					new FileOutputStream("testResult/局部周期测试结果.txt",true), "UTF-8");
 
 			BufferedWriter bw = new BufferedWriter(ow);
 

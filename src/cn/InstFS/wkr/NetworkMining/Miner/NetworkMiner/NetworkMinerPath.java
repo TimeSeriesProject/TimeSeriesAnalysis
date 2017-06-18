@@ -344,15 +344,38 @@ class PathTimerTask extends TimerTask{
 								default:
 									throw new RuntimeException("方法不存在！");
 							}
+							System.out.println(task.getTaskName()+" forecast start");
+							forecast.TimeSeriesAnalysis();
+							System.out.println(task.getTaskName()+" forecast over");
+							retFM.setPredictItems(forecast.getPredictItems());
+							retPathFM.put(name, retFM);
 						} else {
-							forecast=new NeuralNetwork(newItem, task,
-									ParamsAPI.getInstance().getParamsPrediction().getNnp());
+							if (retPathPM.get(name).getHasPeriod()) { // 若有周期性
+								DataItems predictItems = new DataItems();
+								DataItems periodDi = retPathPM.get(name).getDistributePeriod();
+								Calendar calendar = Calendar.getInstance();
+								calendar.setTime(newItem.getLastTime());
+								int len = newItem.getLength();
+								//for(int i = 0; i< periodDi.getLength()/2; i++){//
+								for (int i = 0; i < 10; i++) {
+									int index = (int) ((i + len) % retPathPM.get(name).getPeriod());
+									calendar.add(Calendar.SECOND, task.getGranularity());
+									predictItems.add1Data(calendar.getTime(), periodDi.getData().get(index));
+								}
+
+								retFM.setPredictItems(predictItems);
+								retPathFM.put(name,retFM);
+							} else {
+								forecast = new NeuralNetwork(newItem, task,
+										ParamsAPI.getInstance().getParamsPrediction().getNnp());
+								System.out.println(task.getTaskName()+" forecast start");
+								forecast.TimeSeriesAnalysis();
+								System.out.println(task.getTaskName()+" forecast over");
+								retFM.setPredictItems(forecast.getPredictItems());
+								retPathFM.put(name, retFM);
+							}
 						}
-						System.out.println(task.getTaskName()+" forecast start");
-						forecast.TimeSeriesAnalysis();
-						System.out.println(task.getTaskName()+" forecast over");
-						retFM.setPredictItems(forecast.getPredictItems());
-						retPathFM.put(name, retFM);
+						break;
 					default:
 						break;
 				}
