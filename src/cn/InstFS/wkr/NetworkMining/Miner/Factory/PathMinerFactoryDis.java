@@ -7,6 +7,7 @@ import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsChooser;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
+import common.Logger;
 
 
 import java.io.File;
@@ -250,6 +251,34 @@ public class PathMinerFactoryDis extends MinerFactorySettings{
     }
 
     private void parseFile2(File dataFile, nodePairReader reader, ArrayList<String> list){
+        Map<String, DataItems> dataMap = new HashMap<String, DataItems>();
+        DataItems di = new DataItems();
+        switch(miningObject){
+            case MiningObject_Traffic:
+            case MiningObject_Times:
+//			dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString());
+                Logger.log("源数据读取子目录", dataFile.getPath());
+                dataMap = reader.readPath(dataFile.getAbsolutePath(), miningObject.toString(), true, getStartDate(), getEndDate());
+                break;
+            default:
+                break;
+        }
+
+        Iterator<Entry<String, DataItems>> iterator=dataMap.entrySet().iterator();
+        while(iterator.hasNext()){
+            Entry<String, DataItems> entry=iterator.next();
+            di = entry.getValue();
+        }
+
+        int k = 0;
+        for(Map m:di.getNonNumData()) {
+            if (m.size()!=0) {
+                k++;
+            }
+        }
+        if (k < di.getNonNumData().size() * 0.2) { // 判定为稀疏，不生成taskCombination
+            return;
+        }
         list.add("");
     }
 }
