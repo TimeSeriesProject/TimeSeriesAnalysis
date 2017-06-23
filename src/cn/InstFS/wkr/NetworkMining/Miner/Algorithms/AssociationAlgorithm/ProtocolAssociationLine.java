@@ -19,6 +19,7 @@ import lineAssociation.DPCluster;
 import lineAssociation.FindRules;
 import lineAssociation.Linear;
 import lineAssociation.Rule;
+import lineAssociation.SlopLenCluster;
 import lineAssociation.SymbolNode;
 import associationRules.LinePos;
 import associationRules.ProtoclPair;
@@ -108,11 +109,18 @@ public class ProtocolAssociationLine {
 //		        System.out.println("过滤后线段条数："+linears.size());
 		        linesPosList.add(linears);  
 		        System.out.println("**"+linears);
-		        System.out.println("开始运行DPCluster聚类算法！");
-		        ClusterWrapper clusterWrapper_i = new ClusterWrapper(linears,arp);
-//		        DPCluster dpCluster_i = clusterWrapper_i.run();
-//		        Map<Integer,Integer> map_i = dpCluster_i.getBelongClusterCenter();
-		        Map<Integer,Integer> map_i = clusterWrapper_i.run2();
+		        
+//		        System.out.println("开始运行DPCluster聚类算法！");
+//		        ClusterWrapper clusterWrapper_i = new ClusterWrapper(linears,arp);
+////		        DPCluster dpCluster_i = clusterWrapper_i.run();
+////		        Map<Integer,Integer> map_i = dpCluster_i.getBelongClusterCenter();
+//		        Map<Integer,Integer> map_i = clusterWrapper_i.run2();
+		        
+		        System.out.println("开始运行SlopeLenCluster聚类算法！");
+		        SlopLenCluster slopeLenCluster_i = new SlopLenCluster(linears);
+		        Map<Integer,Integer> map_i = slopeLenCluster_i.run();
+		        
+		        
 		        TreeMap<Integer,SymbolNode> symbols_i = getSymbols(map_i,i);
 
 
