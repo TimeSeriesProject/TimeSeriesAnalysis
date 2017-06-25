@@ -2,6 +2,7 @@ package cn.InstFS.wkr.NetworkMining.Miner.Results;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsTSA;
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.MiningAlgo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class MinerResultsOM implements Serializable{
 	private boolean islinkDegree=false;
 	private boolean hasOutlies;
 	private int confidence;
+	private MiningAlgo outlierAlgo;
 	
 	public DataItems getOutlies() {
 		return outliers;
@@ -60,5 +62,12 @@ public class MinerResultsOM implements Serializable{
 	public void setOutlinesSet(List<DataItems> outlinesSet) {
 		this.outlinesSet = outlinesSet;
 	}
-	
+
+	public MiningAlgo getOutlierAlgo() {
+		return outlierAlgo;
+	}
+
+	public void setOutlierAlgo(MiningAlgo outlierAlgo) {
+		this.outlierAlgo = outlierAlgo;
+	}
 }

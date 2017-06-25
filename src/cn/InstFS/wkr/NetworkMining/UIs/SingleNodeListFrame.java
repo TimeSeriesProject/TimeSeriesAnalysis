@@ -348,7 +348,7 @@ public class SingleNodeListFrame extends JFrame {
     
 	private void createTable()
 	{
-		String data[][]=new String[resultList.size()][11];
+		String data[][]=new String[resultList.size()][12];
 		for(int i=0;i<resultList.size();i++)
 		{
 			TaskCombination taskCom =resultList.get(i).getKey();
@@ -366,9 +366,10 @@ public class SingleNodeListFrame extends JFrame {
 			data[i][8]=String.format("%5.3f",getMax(results.getRetOM().getOutDegree()));
 			data[i][9]=String.format("%5.3f",getMin(results.getRetOM().getOutDegree()));
 			data[i][10]=String.valueOf(results.getRetSM().isHasFreItems()==true?"是":"否");//是否有频繁项
+			data[i][11] = String.valueOf(results.getRetOM().getOutlierAlgo()); // 使用的异常算法
 			
 		}
-	    String colNames[]={"时间序列","平均值","标准差","样本熵","复杂度","周期","周期置信度","是否有异常","最大异常度","最小异常度","是否存在频繁项"};
+	    String colNames[]={"时间序列","平均值","标准差","样本熵","复杂度","周期","周期置信度","是否有异常","最大异常度","最小异常度","是否存在频繁项","异常算法"};
 	   
 	 
 	    DefaultTableModel model=new DefaultTableModel(data,colNames){

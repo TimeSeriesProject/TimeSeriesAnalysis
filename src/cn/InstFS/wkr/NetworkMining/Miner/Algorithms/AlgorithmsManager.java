@@ -145,6 +145,14 @@ public class AlgorithmsManager {
         }
     }
 
+    public void resetAlgorithmsChooser() {
+        singleNodeAlgoChooser = null;
+        nodePairAlgoChooser = null;
+        proAssAlgoChooser = null;
+        networkAlgoChooser = null;
+        pathAlgoChooser = null;
+    }
+
     public static void main(String args[]) {
         AlgorithmsChooser chooser = AlgorithmsManager.getInstance().getAlgoChooserFromManager(MinerType.MiningType_SinglenodeOrNodePair, TaskRange.SingleNodeRange);
         chooser.getPmAlgo();

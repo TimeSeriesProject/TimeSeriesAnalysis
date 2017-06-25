@@ -1,11 +1,13 @@
 package cn.InstFS.wkr.NetworkMining.UIs;
 
 import Distributed.*;
+import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.AlgorithmsManager;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.TaskCombination;
 import cn.InstFS.wkr.NetworkMining.Miner.Factory.*;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerNodeResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPath;
+import cn.InstFS.wkr.NetworkMining.Params.ParamsAPI;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgressBar;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgress;
 import cn.InstFS.wkr.NetworkMining.ResultDisplay.UI.TaskProgressDis;
@@ -939,6 +941,8 @@ public class win10_window extends JFrame {
         bMinMultiServer.setBounds(520,650,200,200);
         setIcon("img\\dig_mul_server_Icon.png",bMinMultiServer);
 
+        final JButton bReloadParams = new JButton("重加载算法参数");
+        bReloadParams.setBounds(940,230,410,200);
 //        bgp=new BackgroundPanel((new ImageIcon("img\\background.png")).getImage());
 //        bgp.setBounds(0,0,1920,1080);
         ct.add(bNetwork);
@@ -955,6 +959,7 @@ public class win10_window extends JFrame {
         ct.add(bPcap);
         ct.add(bDis);
         ct.add(bSingle);
+        ct.add(bReloadParams);
 //        ct.add(bgp);
         ct.setBackground(new Color(0,90,171));
 
@@ -976,6 +981,25 @@ public class win10_window extends JFrame {
 //        bNetwork.setMargin(new Insets(0, 0, 0, 0));
 
 
+        bReloadParams.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                isNetworkStructureMined=false;
+                isSingleNodeMined=false;
+                isNodePairMined = false;
+                isPathMined = false;
+                isProtocolAssMined = false;
+                isDisNetworkStructureMined=false;
+                isDisSingleNodeMined=false;
+                isDisNodePairMined = false;
+                isDisPathMined = false;
+                isDisProtocolAssMined = false;
+                isDistributed = false;
+
+                ParamsAPI.getInstance().resetAllParams();
+                AlgorithmsManager.getInstance().resetAlgorithmsChooser();
+            }
+        });
         //单机版按钮响应
         bSingle.addActionListener(new ActionListener() {
             @Override

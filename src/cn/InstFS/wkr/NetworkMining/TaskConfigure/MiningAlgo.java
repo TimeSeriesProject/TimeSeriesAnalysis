@@ -14,6 +14,7 @@ public enum MiningAlgo {
 	MiningAlgo_GaussDetection("高斯滑动窗口异常检测"), // 对应AnormalyDetection算法
 	MiningAlgo_Muitidimensional("基于混合高斯的异常检测"),
 //	MiningAlgo_TEOTSA("TEO线段异常检测"),
+	MiningAlgo_PointPattern("基于密度的线段模式异常检测"), // 对应PointPatternDetection
 	MiningAlgo_NodeOutlierDetection("高斯异常检测"), // 对应GaussianOutlierDetection
 	MiningAlgo_PeriodBasedOutlier("基于周期的异常检测"),
 	// 预测

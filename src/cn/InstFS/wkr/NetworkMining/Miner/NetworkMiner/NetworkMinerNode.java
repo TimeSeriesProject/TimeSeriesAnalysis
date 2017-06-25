@@ -342,6 +342,7 @@ class NodeTimerTask extends TimerTask{
 					setOMResults(results, tsaMethod);
 				} else { // 异常检测默认
 					if(task.getMiningObject().equals(MiningObject.MiningObject_NodeDisapearEmerge.toString())){
+						task.setMiningAlgo(MiningAlgo.MiningAlgo_NodeOutlierDetection);
 						OMGaussianNodeParams omGaussianNodeParams = ParamsAPI.getInstance().getPom().getOmGaussianNodeParams();
 						tsaMethod = new GaussianOutlierDetection(omGaussianNodeParams,dataItems);
 						results.getRetNode().getRetOM().setIslinkDegree(true);
@@ -349,6 +350,7 @@ class NodeTimerTask extends TimerTask{
 						setOMResults(results, tsaMethod);*/
 					}else {
 						if(results.getRetNode().getRetPM().getHasPeriod()){
+							task.setMiningAlgo(MiningAlgo.MiningAlgo_PeriodBasedOutlier);
 							OMperiodBasedParams omPeriodParams = ParamsAPI.getInstance().getPom().getOMperiodBasedParams();
 							tsaMethod = new PeriodBasedOutlierDetection(omPeriodParams,dataItems, results.getRetNode().getRetPM());
 							results.getRetNode().getRetOM().setIslinkDegree(false);
@@ -356,7 +358,7 @@ class NodeTimerTask extends TimerTask{
 						}
 						else if(results.getRetNode().getRetPartialPeriod().isHasPartialPeriod() || results.getRetNode().getRetPartialCycle().isHasPartialCycle()){//部分周期
 
-
+							task.setMiningAlgo(MiningAlgo.MiningAlgo_GaussDetection);
 //							OMFastFourierParams omFourierParams = ParamsAPI.getInstance().getPom().getOmFastFourierParams();
 //							tsaMethod=new FastFourierOutliesDetection(omFourierParams,dataItems);
 							
@@ -366,6 +368,7 @@ class NodeTimerTask extends TimerTask{
 							retPath = "testResult/outlierTest(点异常).txt";
 						}					
 						else{
+							task.setMiningAlgo(MiningAlgo.MiningAlgo_PointPattern);
 							OMPiontPatternParams omPointParams = ParamsAPI.getInstance().getPom().getOmPiontPatternParams();
 							tsaMethod = new PointPatternDetection(omPointParams,dataItems);						
 							results.getRetNode().getRetOM().setIslinkDegree(true);
@@ -377,6 +380,7 @@ class NodeTimerTask extends TimerTask{
 				}				
 				tsaMethod.TimeSeriesAnalysis();
 				setOMResults(results, tsaMethod);
+				results.getRetNode().getRetOM().setOutlierAlgo(task.getMiningAlgo());
 				/*************************异常算法测试结果输出**********************/																		
 				OutliersTest outliersTest = new OutliersTest(results.getRetNode().getRetOM(), task.getRange(),dataItems.getTime().get(0));
 				if(results.getRetNode().getRetOM().isIslinkDegree()){

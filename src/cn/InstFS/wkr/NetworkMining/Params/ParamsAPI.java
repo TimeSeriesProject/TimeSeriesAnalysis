@@ -284,6 +284,23 @@ public class ParamsAPI {
 		this.paramsSequencePattern = paramsSequencePattern;
 	}
 
+	public void resetAllParams() {
+		paramsAssocitionRule = null;
+        pcapParseParams = null;
+		pcapParseDisParams = null;
+		serverParams = null;
+		clientParams = null;
+		portParams = null;
+		paramsOutlierMiner = null;
+
+		paramsPeriodMiner = null; // 周期检测参数
+
+		paramsPrediction = null;  // 预测参数
+
+		paramsStatistic = null; // 统计参数
+		paramsSequencePattern = null; // 频繁项参数
+	}
+
 	public static void main(String[] args) {
 		ParamsAssocitionRule ar = ParamsAPI.getInstance().getAssociationRuleParams();
 		System.out.println(ar.toString());
