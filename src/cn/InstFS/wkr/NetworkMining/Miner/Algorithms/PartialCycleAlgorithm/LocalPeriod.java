@@ -212,7 +212,7 @@ public class LocalPeriod{
 //			if(relativeError<0.2)
 //				headSimNum++;
 //		}
-		if(1.0*simBestNum/len>0.85 )
+		if(1.0*simBestNum/len>0.80 )
 		{
 
 			return true;
@@ -272,7 +272,7 @@ public class LocalPeriod{
 			num=1;
 			i+=len;
 		}
-		if(num>=3)
+		if(num>=2)
 		{
 			for(int j=pre;j<=i+len-1;j++)
 				flag[j]=true;
