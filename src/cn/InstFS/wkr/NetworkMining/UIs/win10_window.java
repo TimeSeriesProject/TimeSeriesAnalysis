@@ -904,8 +904,8 @@ public class win10_window extends JFrame {
 
         final JButton bAll=new JButton("挖掘全部");
         bAll.setBackground(Color.YELLOW);
-        bAll.setBounds(310,230,410,200);
-        setIcon("img\\MinAll.png",bAll);
+        bAll.setBounds(310,230,200,200);
+        setIcon("img\\MinAll_small.png",bAll);
 //        final JButton bSetting=new JButton("设置");
 //        bSetting.setBackground(Color.orange);
 //        bSetting.setBounds(138,824,200,100);
@@ -942,7 +942,8 @@ public class win10_window extends JFrame {
         setIcon("img\\dig_mul_server_Icon.png",bMinMultiServer);
 
         final JButton bReloadParams = new JButton("重加载算法参数");
-        bReloadParams.setBounds(940,230,410,200);
+        bReloadParams.setBounds(520,230,200,200);
+        setIcon("img\\reload.png", bReloadParams);
 //        bgp=new BackgroundPanel((new ImageIcon("img\\background.png")).getImage());
 //        bgp.setBounds(0,0,1920,1080);
         ct.add(bNetwork);
