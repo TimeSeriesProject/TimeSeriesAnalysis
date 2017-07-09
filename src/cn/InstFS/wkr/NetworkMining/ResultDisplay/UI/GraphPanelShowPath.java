@@ -21,6 +21,7 @@ import edu.uci.ics.jung.visualization.renderers.Renderer;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,22 +73,9 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
 
         NetworkVertex[] nullNodes = new NetworkVertex[100]; //未检测的节点数
 
-
-        /*pathList = new ArrayList<String>(){{
-            add("1,0,13,14,4,5");
-            add("1,0,10,12,4,6");
-            add("2,0,8,9,4,5");
-            add("3,0,8,4,6");
-            add("1,0,13,14,4,5");
-            add("1,0,10,12,4,6");
-            add("2,0,8,9,4,5");
-            add("3,0,8,4,6");
-            add("1,0,13,14,4,5");
-            add("1,0,10,12,4,6");
-            add("2,0,8,9,4,5");
-            add("3,0,8,4,6");
-        }};*/
         HashMap<String, Integer> ip2Vertice = new HashMap<String, Integer>();
+
+        HashMap<Integer, String> vertice2ip = new HashMap<>();
 
         File file = new File("configs/ip2Vertice.txt");
         BufferedReader reader = null;
@@ -102,6 +90,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
                 String node = list[0];
                 for (int i = 1; i < list.length; i ++) {
                     ip2Vertice.put(list[i], Integer.parseInt(node));
+                    vertice2ip.put(Integer.parseInt(node), list[i]);
                 }
                 line++;
             }
@@ -148,7 +137,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
                     startId = Integer.parseInt(vertice[i]);
                     if (nodes[startId]==null) {
                         NetworkVertex n;
-                        n = new NetworkVertex(startId);
+                        n = new NetworkVertex(startId, vertice2ip.get(startId));
                         nodes[startId] = n;
                         g.addVertex(n);
                     }
@@ -171,7 +160,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
                     endId = Integer.parseInt(vertice[i+1]);
                     if (nodes[endId]==null) {
                         NetworkVertex n;
-                        n = new NetworkVertex(endId);
+                        n = new NetworkVertex(endId, vertice2ip.get(endId));
                         nodes[endId] = n;
                         g.addVertex(n);
                     }
@@ -203,7 +192,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
                 return Color.YELLOW;
             }
         });
-        vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
+        vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.AUTO);
 
 //        vv.getRenderContext().setEdgeShapeTransformer(EdgeShape.quadCurve(g));
 
@@ -343,6 +332,30 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
         minus.setAlignmentX(Component.CENTER_ALIGNMENT);
         zoomPanel.add(minus);
 
+        JPanel show_ip_panel = new JPanel();
+        show_ip_panel.setLayout(new BorderLayout());
+        JCheckBox e_show_ip = new JCheckBox("show ip");
+        e_show_ip.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e_show_ip.isSelected()) {
+                    vv.getRenderContext().setVertexLabelTransformer(new Function<NetworkVertex, String>() {
+                        @Nullable
+                        @Override
+                        public String apply(@Nullable NetworkVertex networkVertex) {
+                            return networkVertex.getId() + " " + networkVertex.getIp();
+                        }
+                    });
+                } else
+                    vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
+                vv.repaint();
+
+            }
+        });
+        e_show_ip.setSelected(false);
+        show_ip_panel.add(e_show_ip,BorderLayout.CENTER);
+        show_ip_panel.add(gm.getModeComboBox(), BorderLayout.NORTH);
+
         // add path checkBox
         JPanel show_edge_panel = new JPanel(new GridLayout(0,2));
         show_edge_panel.setBorder(BorderFactory.createTitledBorder("Show path"));
@@ -364,7 +377,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
 
         control_panel.add(zoomPanel, BorderLayout.SOUTH);
         control_panel.add(show_edge_panel, BorderLayout.CENTER);
-        control_panel.add(gm.getModeComboBox(), BorderLayout.NORTH);
+        control_panel.add(show_ip_panel, BorderLayout.NORTH);
     }
 
     @Override
@@ -438,6 +451,11 @@ class NetworkVertex {
         this.id = id;
     }
 
+    public NetworkVertex(int id, String ip) {
+        this.id = id;
+        this.ip = ip;
+    }
+
     @Override
     public String toString() {
         if (id < 0)
@@ -445,6 +463,13 @@ class NetworkVertex {
         return id+"";
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public String getIp() {
+        return ip;
+    }
 }
 
 class NetworkEdge {
