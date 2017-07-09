@@ -23,13 +23,15 @@ public class ChangeCompositeToSwingPanel extends Panel {
 	int CompositeCreateSymbol;
 	MinerResultsFP_Line minerresults;
 	HashMap<String, List<TreeMap<Integer, Linear>>> allLiners = new HashMap<String, List<TreeMap<Integer,Linear>>>();
+	String mingObj;
 
 	public ChangeCompositeToSwingPanel(TaskCombination taskCombination2,
-			HashMap<TaskCombination, MinerProtocolResults> resultMaps2) {
+			HashMap<TaskCombination, MinerProtocolResults> resultMaps2,String mingObj) {
 		minerresults = resultMaps2.get(taskCombination2).getRetFP();
 		displayThread = new DisplayThread();
 		displayThread.start();
 		canvas = new Canvas();
+		this.mingObj = mingObj;
 		//allLiners = minerresults.getAllLiners();
 		setLayout(new BorderLayout());
 		add(canvas, BorderLayout.CENTER);
@@ -47,7 +49,7 @@ public class ChangeCompositeToSwingPanel extends Panel {
 				shell.setLayout(new FillLayout());
 
 				CompositeMainProtocolConfidence ui = new CompositeMainProtocolConfidence(
-						shell, SWT.NONE, minerresults);
+						shell, SWT.NONE, minerresults, mingObj);
 
 			}
 

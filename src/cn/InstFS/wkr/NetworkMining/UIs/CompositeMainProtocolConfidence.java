@@ -15,7 +15,7 @@ public class CompositeMainProtocolConfidence extends Composite {
 	String ip = null;
 
 	public CompositeMainProtocolConfidence(Composite parent, int style,
-			MinerResultsFP_Line minerresults) {
+			MinerResultsFP_Line minerresults,String mingObj) {
 		super(parent, style);
 		ip = minerresults.getIp();
 
@@ -34,7 +34,7 @@ public class CompositeMainProtocolConfidence extends Composite {
 
 		CompositeTable table = new CompositeTable(win1,
 				SWT.BORDER | SWT.SINGLE, ip, minerresults.protocolPairList,
-				tab, this);
+				tab, this,mingObj);
 		tableIndex = new int[table.getTableIndexCount()];
 
 	}

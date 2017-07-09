@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.association.AssociationMingObject;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 //import org.eclipse.jface.viewers.ViewerComparator;
@@ -46,9 +47,10 @@ public class CompositeTable extends Composite {
 	int[] index = null;
 	CompositeMainProtocolConfidence compositeMainProtocolConfidence=null;
 	Map<Integer, CTabItem> maptabitem;
+	String mingObj;
 
 	public CompositeTable(Composite parent, int style, String ip,
-			List<ProtoclPair> protocolPairList, CTabFolderChart tab, CompositeMainProtocolConfidence compositeMainProtocolConfidence) {
+			List<ProtoclPair> protocolPairList, CTabFolderChart tab, CompositeMainProtocolConfidence compositeMainProtocolConfidence,String mingObj) {
 		super(parent, style);
 		this.tab = tab;
 		this.compositeMainProtocolConfidence=compositeMainProtocolConfidence;
@@ -59,6 +61,7 @@ public class CompositeTable extends Composite {
 		iplabel = new Label(this, SWT.NULL);
 		iplabel.setText(ip);
 		maptabitem = new HashMap<Integer, CTabItem>();
+		this.mingObj = mingObj;
 		createTable(this, SWT.NULL, protocolPairList);
 
 	}
@@ -120,7 +123,12 @@ public class CompositeTable extends Composite {
 
 		});
 		// ������ͷ�ַ�
-		final String[] tableheader = { "序号", "协议名", "协议名", "置信度","兴趣度" };
+		final String[] tableheader;
+		if (mingObj.equals(AssociationMingObject.IPInnerPortMing.toString())) {
+			tableheader = new String[]{"序号", "协议名", "协议名", "置信度", "兴趣度"};
+		} else {
+			tableheader = new String[] {"序号", "IP地址", "IP地址", "置信度", "兴趣度"};
+		}
 		// TableSorter tablesorter=new TableSorter();
 		for (int i = 0; i < tableheader.length; i++) {
 			final TableColumn c1 = new TableColumn(table, SWT.None);

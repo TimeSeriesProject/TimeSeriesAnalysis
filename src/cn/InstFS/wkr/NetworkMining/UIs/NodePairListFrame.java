@@ -240,9 +240,17 @@ public class NodePairListFrame extends JFrame {
 			data[i][2]=String.format("%5.3f",results.getRetStatistics().getStd());
 			data[i][3]=String.format("%5.3f",results.getRetStatistics().getSampleENtropy());
 			data[i][4]=String.format("%5.3f",results.getRetStatistics().getComplex());
-			data[i][5]=String.format("%d",results.getRetPM().getPeriod());
-			if(results.getRetPM().getPeriod()<=0)
-				data[i][5]="无";
+			data[i][5]=new StringBuilder().append("有周期：").append(String.format("%d",results.getRetPM().getPeriod())).toString();
+			if(results.getRetPM().getPeriod()<=0){
+				if(results.getRetPartialCycle().isHasPartialCycle()){
+					data[i][5]="有局部周期";
+				} else if (results.getRetPartialPeriod().isHasPartialPeriod()) {
+					data[i][5] = "有部分周期";
+				} else {
+					data[i][5] = "无";
+				}
+
+			}
 			data[i][6]=String.format("%5.3f",results.getRetPM().getConfidence());
 			data[i][7]=String.valueOf(results.getRetOM().isHasOutlies()==true?"是":"否");
 			data[i][8]=String.format("%5.3f",getMax(results.getRetOM().getOutDegree()));

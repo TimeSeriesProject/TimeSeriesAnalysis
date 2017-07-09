@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
 
+import cn.InstFS.wkr.NetworkMining.TaskConfigure.association.AssociationMingObject;
 import lineAssociation.Linear;
 import associationRules.ProtoclPair;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerProtocolResults;
@@ -30,7 +31,7 @@ public class SingleIpProtocolAssFrame extends JFrame {
 		MinerProtocolResults minerProtocolResults=new MinerProtocolResults();
 		HashMap<TaskCombination, MinerProtocolResults> resultMaps=new HashMap<TaskCombination, MinerProtocolResults>();
 		resultMaps.put(taskCombination, minerProtocolResults);
-		SingleIpProtocolAssFrame frame = new SingleIpProtocolAssFrame( taskCombination, resultMaps);
+		SingleIpProtocolAssFrame frame = new SingleIpProtocolAssFrame( taskCombination, resultMaps, AssociationMingObject.IPInnerPortMing.toString());
 		//SingleIpProtocolAssFrame frame = new SingleIpProtocolAssFrame(); 
 		// 设置frame的大小为300x200，且可见默认是不可见的
 		frame.setSize(9, 200);
@@ -51,7 +52,7 @@ public class SingleIpProtocolAssFrame extends JFrame {
 	JList listTasks;
 	//System.out.println("rtyuio");
 	public SingleIpProtocolAssFrame(TaskCombination taskCombination,
-			HashMap<TaskCombination, MinerProtocolResults> resultMaps) {
+			HashMap<TaskCombination, MinerProtocolResults> resultMaps,String mingObj) {
 
 				
 		this.setBounds(100,100,1500,900);
@@ -82,7 +83,7 @@ public class SingleIpProtocolAssFrame extends JFrame {
 		 */
 		// 从这里开始
 	 ccts = new ChangeCompositeToSwingPanel(
-				taskCombination, resultMaps);
+				taskCombination, resultMaps,mingObj);
 		this.add(ccts);
 		
 		//这里结束
