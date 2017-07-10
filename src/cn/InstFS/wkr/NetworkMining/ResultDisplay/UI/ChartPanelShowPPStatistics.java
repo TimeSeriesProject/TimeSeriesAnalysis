@@ -2,6 +2,9 @@ package cn.InstFS.wkr.NetworkMining.ResultDisplay.UI;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GradientPaint;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -36,7 +39,7 @@ public class ChartPanelShowPPStatistics extends JPanel{
 	}
 	public static JFreeChart createChart(HashMap<String, String> map){
 		CategoryDataset dataSet=createDataset(map) ;
-		JFreeChart jFreeChart = ChartFactory.createBarChart("各路径概率分布", "路径", "概率", dataSet, PlotOrientation.VERTICAL, false, false, false);
+		JFreeChart jFreeChart = ChartFactory.createBarChart("各路径概率分布", "路径序列序号", "概率", dataSet, PlotOrientation.VERTICAL, false, false, false);
 		CategoryPlot plot = jFreeChart.getCategoryPlot();
 		plot.setBackgroundPaint(Color.LIGHT_GRAY); //设置背景颜色
 		plot.setDomainAxisLocation(AxisLocation.BOTTOM_OR_LEFT);//横轴显示在下端(柱子竖直)或左侧(柱子水平)
@@ -77,10 +80,20 @@ public class ChartPanelShowPPStatistics extends JPanel{
 	}
 	public static  CategoryDataset createDataset(HashMap<String, String> map){
 		DefaultCategoryDataset dataSet=new DefaultCategoryDataset();
-		java.util.Iterator<Entry<String, String>> iter = map.entrySet().iterator();
+		ArrayList<Entry<String, String>> pathProbList = new ArrayList<>(map.entrySet());
+		Collections.sort(pathProbList,new Comparator<Entry<String, String> >()
+		{
+			@Override
+			public int compare(java.util.Map.Entry<String,String> o1, java.util.Map.Entry<String,String> o2) {
+				return new Double(o2.getValue()).compareTo(new Double(o1.getValue()));
+			}
+		});
+		java.util.Iterator<Entry<String, String>> iter = pathProbList.iterator();
+		Integer i = 1;
 		while(iter.hasNext()){
 			Entry entry = (Entry)  iter.next();
-			dataSet.addValue(Double.parseDouble((String)entry.getValue()),"",(String)entry.getKey());
+			dataSet.addValue(Double.parseDouble((String)entry.getValue()),"",i);
+			i++;
 		}
 		return dataSet;
 	}
