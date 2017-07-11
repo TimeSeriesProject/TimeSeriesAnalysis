@@ -94,8 +94,8 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 		InitMiner(task);
 		MinerResults rets = miner.getResults();
 		map=rets.getRetPartialCycle().getPartialCyclePos();
-		if(miner.getTask().getTaskRange().equals(TaskRange.SingleNodeRange))
-			evaluate();
+		/*if(miner.getTask().getTaskRange().equals(TaskRange.SingleNodeRange))
+			evaluate();*/
 	}
 	public static void main(String args[])
 	{
@@ -539,13 +539,13 @@ public class PanelShowResultsPartialCycle extends JPanel implements IPanelShowRe
 		PaintPeriodLine();
 		PaintDomainMarker();
 
-		JPanel jp1 = new JPanel();
+		/*JPanel jp1 = new JPanel();
 		//jp1.setPreferredSize(new Dimension(500,100));
 		JLabel evaluate = new JLabel();
 		evaluate.setText("准确率："+precision+"  "+"召回率： "+recall);
 		jp1.add(evaluate);
 //        setLayout(Layout);
-		this.add(jp1,BorderLayout.SOUTH);
+		this.add(jp1,BorderLayout.SOUTH);*/
 
 		ChartPanel chartpanel = new ChartPanel(jfreechart);
 		//1
