@@ -334,7 +334,7 @@ public class GraphPanelShowPath extends JApplet implements ActionListener{
 
         JPanel show_ip_panel = new JPanel();
         show_ip_panel.setLayout(new BorderLayout());
-        JCheckBox e_show_ip = new JCheckBox("show ip");
+        final JCheckBox e_show_ip = new JCheckBox("show ip");
         e_show_ip.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
