@@ -34,17 +34,30 @@ public class LocalPeriod{
 	 */
 	private MinerResultsPartialCycle result = new MinerResultsPartialCycle();//挖掘结果
 	HashMap<Integer,ArrayList<NodeSection>> partialCyclePos = new HashMap<Integer,ArrayList<NodeSection>>();//
+	/**
+	 * 是否有局部周期
+	 */
 	boolean hasPartialCycle = false;
+	/**
+	 * 阈值
+	 */
 	private double threshold;
 	//	private int longestPeriod;
 	private int minWindowSize = 30;
+	/**
+	 * 最小周期
+	 */
 	private int minPeriod=20;
+	/**
+	 * 最大周期
+	 */
 	private int maxPeriod=300;
 	private int preSimNum=-1;
 	private double stdev;  //序列标准差
 	private double mean;
 	private Set<Integer> cycleCandidate =new TreeSet<Integer>();
 	public LocalPeriod(){}
+
 	public LocalPeriod(DataItems di,double threshold,int maxPeriod){
 		this();
 		this.dataItems = di;
