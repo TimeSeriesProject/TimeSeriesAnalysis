@@ -20,22 +20,44 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.Algorithms.PeriodAlgorithm.ERPDistencePM;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPartialCycle;
 
+/**
+ * 生成局部周期，存储到MinerResultsPartialCycle中
+ */
 
 public class LocalPeriod{
+	/**
+	 * 待预测时序数据
+	 */
 	DataItems dataItems = new DataItems();//原始数据
+	/**
+	 * 挖掘结果
+	 */
 	private MinerResultsPartialCycle result = new MinerResultsPartialCycle();//挖掘结果
 	HashMap<Integer,ArrayList<NodeSection>> partialCyclePos = new HashMap<Integer,ArrayList<NodeSection>>();//
+	/**
+	 * 是否有局部周期
+	 */
 	boolean hasPartialCycle = false;
+	/**
+	 * 阈值
+	 */
 	private double threshold;
 	//	private int longestPeriod;
 	private int minWindowSize = 30;
+	/**
+	 * 最小周期
+	 */
 	private int minPeriod=20;
+	/**
+	 * 最大周期
+	 */
 	private int maxPeriod=300;
 	private int preSimNum=-1;
 	private double stdev;  //序列标准差
 	private double mean;
 	private Set<Integer> cycleCandidate =new TreeSet<Integer>();
 	public LocalPeriod(){}
+
 	public LocalPeriod(DataItems di,double threshold,int maxPeriod){
 		this();
 		this.dataItems = di;
@@ -133,6 +155,14 @@ public class LocalPeriod{
 //		 }
 //		 dataItems.setData(newData);
 	}
+	/**
+	 * 计算两段线段是否具有相似性，若相似，则认为该长度len可能为一个局部周期长度
+	 * @param array 时间序列数据
+	 * @param pre 需要判断的第一条线段的起始点
+	 * @param start 需要判断的第二条线段的起始点
+	 * @param len 周期长度
+	 * @return 若两段线段是周期的，返回true，否则返回false
+	 */
 	private boolean isSimilar(double array[],int pre,int start,int len)
 	{
 		double partialAvg =0;
@@ -219,6 +249,15 @@ public class LocalPeriod{
 		}
 		return false;
 	}
+
+	/**
+	 * 计算长度len是否为一个局部周期
+	 * @param array 时间序列数据
+	 * @param st 线段起始点
+	 * @param ed 线段终止点
+	 * @param len 周期长度
+     * @param flag 是否在周期序列上
+     */
 	private void calPeriod(double array[],int st,int ed,int len,boolean flag[])
 	{
 		int pre=st;
@@ -292,6 +331,10 @@ public class LocalPeriod{
 			}
 		}
 	}
+
+	/**
+	 * 生成局部周期序列，存储序列的位置和线段（起始点和终止点）
+	 */
 	public void run(){
 		double array[]= new double [dataItems.getLength()];
 
