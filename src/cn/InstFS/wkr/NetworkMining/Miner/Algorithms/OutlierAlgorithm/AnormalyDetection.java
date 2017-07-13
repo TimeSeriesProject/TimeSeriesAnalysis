@@ -19,19 +19,57 @@ import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMGuassianParams;
 
 /**
- * Created by xzbang on 2015/3/24.
+ * 滑动高斯异常检测
  */
 public class AnormalyDetection implements IMinerOM {
+    /**
+     * 初始窗口大小
+     */
     private static int initWindowSize = 200;
+
+    /**
+     * 最大窗口大小
+     */
     private static int maxWindowSize = 300;
+
+    /**
+     * 每次窗口扩展步长
+     */
     private static int expWindowSize = 3;
+
+    /**
+     * 高斯距离阈值 (x-u)/sigma > k， 即k倍标准差
+     */
     private static double k=3.0; //高斯距离阈值 (x-u)/sigma > k 则x点是异常点（暂时没用到）
+
+    /**
+     * 计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
+     */
     private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
+
+    /**
+     * 异常度阈值（非参数, 系统自计算）
+     */
     private double threshold; //异常度阈值（非参数）
+
+    /**
+     * 最小异常度阈值
+     */
     private double minthreshod = 0.7;
 
+    /**
+     * 待检测数据
+     */
     private DataItems di;
+
+    /**
+     * 检测出异常点结果数据
+     */
     private DataItems outlies;
+
+    /**
+     * 各数据点对应异常度
+     */
     private DataItems outDegree = new DataItems(); //异常度
     private Map<Integer, Double> degreeMap = new HashMap<Integer, Double>();
 	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
@@ -53,6 +91,12 @@ public class AnormalyDetection implements IMinerOM {
     	this.di=di;
 //    	this.outway = 2;
     }
+
+    /**
+     * 滑动高斯异常检测构造函数
+     * @param omGuassianParams 算法配置参数
+     * @param di 待检测的数据
+     */
     public AnormalyDetection(OMGuassianParams omGuassianParams,DataItems di){
     	this.initWindowSize = omGuassianParams.getInitWindowSize();
     	this.maxWindowSize=omGuassianParams.getMaxWindowSize();
@@ -62,6 +106,11 @@ public class AnormalyDetection implements IMinerOM {
     	this.minthreshod = omGuassianParams.getMinthreshod();
     	this.di=di;
     }
+
+
+    /**
+     * 启动算法检测异常，记录各点异常度，依照异常度阈值判定异常点
+     */
     @Override
     public void TimeSeriesAnalysis() {
     	if(di==null){
@@ -137,10 +186,11 @@ public class AnormalyDetection implements IMinerOM {
         }
        
     }
-    /**@author LYH
-     * 滑动高斯检测，滑动窗口不重叠
-     * 
-     * */
+
+    /**
+     * 具体的检测算法，滑动窗口不重叠,记录各点异常度
+     * @param slice 待检测数据
+     */
     public void  detect1(HashMap<Long,Double> slice){
         if(slice == null){
             return ;
@@ -213,6 +263,7 @@ public class AnormalyDetection implements IMinerOM {
             
         }              
     }
+
     private long getmaxKey(HashMap<Long, Double> slice) {
         Iterator<Long> iterator = slice.keySet().iterator();
         long max = 0;
@@ -224,6 +275,7 @@ public class AnormalyDetection implements IMinerOM {
         }
         return max;
     }
+
     //获取异常度
     private DataItems mapToDegree(Map<Integer, Double> map){
     	DataItems degree = new DataItems();
@@ -239,7 +291,12 @@ public class AnormalyDetection implements IMinerOM {
     	
     	return degree;
     }
-    //获取异常点
+
+    /**
+     * 获取异常点
+     * @param degreeItems 各点异常度数据
+     * @return 异常点dataItems，包含异常点时间及该点对应值
+     */
     public DataItems genOutlier(DataItems degreeItems){
     	List<Double> degree = new ArrayList<Double>();
     	for(int i=0;i<degreeItems.getLength();i++){

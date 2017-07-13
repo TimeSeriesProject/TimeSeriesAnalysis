@@ -27,29 +27,34 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskRange;
 import cn.InstFS.wkr.NetworkMining.Miner.Common.LineElement;
 import cn.InstFS.wkr.NetworkMining.Params.ParamsSM;
 import ec.tstoolkit.utilities.Comparator;
+
 /**
- * 
- * @author 艾长青 
- * @time 2016/04/13
- *
+ * 频繁项挖掘算法,挖掘序列中频繁出现的模式
  */
 public class SequencePatternsDontSplit {
-	
+
+	/**
+	 * 线段符号化处理后的数据
+	 */
 	private DataItems dataItems;
+
 	private TaskElement task;
 	private List<ArrayList<String>> patterns;
 	//模式的支持度
 	private HashMap<ArrayList<String>, Integer> patternsSupDegree;
-	private int winSize = 100; // 单位为秒
 	private int stepSize = 10;
 	private Date minDate = null;
 	private double threshold;
 	private boolean hasFreItems=false;
 
 	HashMap<String, Double> itemRatio;  //记录每个项的支持度 2016/12/21 添加
+
+	/**
+	 * 频繁项挖掘构造函数
+	 * @param paramsSM 算法配置参数
+	 */
 	public SequencePatternsDontSplit(ParamsSM paramsSM) {
-		
-		this.winSize=paramsSM.getSMparam().getSizeWindow();
+
 		this.stepSize=paramsSM.getSMparam().getStepWindow();
 		this.threshold=paramsSM.getSMparam().getMinSupport();
 		patternsSupDegree=new HashMap<ArrayList<String>, Integer>();
@@ -62,17 +67,15 @@ public class SequencePatternsDontSplit {
 		this.patterns = patterns;
 		patternsSupDegree=new HashMap<ArrayList<String>, Integer>();
 		itemRatio = new HashMap<String, Double>();
-		
-		this.winSize=paramsSM.getSMparam().getSizeWindow();
+
 		this.stepSize=paramsSM.getSMparam().getStepWindow();
 		this.threshold=paramsSM.getSMparam().getMinSupport();
 	}
 	
 	/**
-	 * 外部使用本类的功能事，需要根据构造函数传递对应的参数，然后代用该函数,即可返回频繁项的结果
-	 * 注意1：在划分序列时，我们采用默认windSize = 100，若需改变其大小，请在调用本函数之前调用setWindSize(int)函数
-	 * 注意2：在调用本方法之前通过构造函数传递的参数DataItems，需要根据date从小到大排序
-	 * @return 
+	 * 启动挖掘
+	 * 注意：在调用本方法之前通过构造函数传递的参数DataItems，需要根据date从小到大排序
+	 * @return patterns频繁模式
 	 */
 	public List<ArrayList<String>> patternMining() {
 		HashSet<String> clusterLabel = getClusterNum(); // 得到序列聚类的个数
@@ -82,11 +85,11 @@ public class SequencePatternsDontSplit {
 		return patterns;
 	}
 	/**
-	 * 该函数功能是找频繁项
+	 * 以初始频繁项作为储备项集，挖掘频繁项
 	 * @param sliceSequence  原始的时间序列
 	 * @param BasicSequence  时间序列的基本元素
 	 * @param thresh         频繁项的阈值
-	 * @return 频繁项 LIst<List<String>>类型
+	 * @return 频繁项列表，每项ArrayList<String>为频繁序列符号及对应支持度
 	 */
 	private ArrayList<ArrayList<String>> getFrequentItemSet(String sliceSequence,
 			ArrayList<String> BasicSequence, double thresh) {
@@ -110,10 +113,12 @@ public class SequencePatternsDontSplit {
 		ArrayList<ArrayList<String>> patternResult = convertToStandard(sequenceResult,supportDegree);
 		return patternResult;
 	}
+
 	/**
-	 * 该函数功能是将找出的频繁项转化为用户需要的格式（返回值格式）
-	 * @param sequenceResult
-	 * @return
+	 * 将找出的频繁项转化为用户需要的格式（返回值格式）
+	 * @param sequenceResult 频繁项结果
+	 * @param supportDegree 频繁项对应支持度
+	 * @return 转化后格式
 	 */
 	private ArrayList<ArrayList<String>> convertToStandard(
 			ArrayList<String> sequenceResult,HashMap<String, Integer> supportDegree) {
@@ -138,14 +143,16 @@ public class SequencePatternsDontSplit {
 		}
 		return patternResult;
 	}
+
 	/**
-	 * 产生新的序列，并判断是否为频繁项，返回的结果为满足条件的频繁项
-	 * @param basicSequence  所有频繁单项集
+	 * 产生新的序列，并判断是否为频繁项
+	 * @param basicSequence 所有频繁单项集
 	 * @param newestSequence 新增的频繁项集
-	 * @param sliceSequence  原始时间序列
-	 * @param position   频繁项集在原始时间序列位置
-	 * @param thresh     频繁项集的阈值
-	 * @return  所有新增的频繁项集
+	 * @param sliceSequence 原始时间序列
+	 * @param position 频繁项集在原始时间序列位置
+	 * @param supportDegree 频繁项对应支持度
+	 * @param thresh 频繁项集的阈值
+	 * @return 满足阈值的新增频繁项
 	 */
 	private ArrayList<String> getNewFrequentItemsAndJudge(
 			ArrayList<String> basicSequence,ArrayList<String> newestSequence,
@@ -172,14 +179,17 @@ public class SequencePatternsDontSplit {
 		}
 		return new_sequence;
 	}
+
 	/**
+	 *
 	 * 判断某个具体的序列是否为频繁项，是返回true，否则返回false
 	 * @param first_item 已检测的频繁项
 	 * @param last_item  first_item+last_item为储备频繁项
 	 * @param sliceSequence   原始时间序列
 	 * @param position 频繁项在原始时间序列中的存储位置
-	 * @param thresh  频繁项阈值
-	 * @return  所有满足阈值的储备频繁项
+	 * @param supportDegree 频繁项支持度
+	 * @param thresh 频繁项阈值
+	 * @return 满足为true, 否则false
 	 */
 	private boolean isSatisfied(String first_item, String last_item,
 			String sliceSequence,HashMap<String, ArrayList<Integer>> position,
@@ -332,10 +342,8 @@ public class SequencePatternsDontSplit {
 	}
 
 	/**
-	 * 为了计算的方便，将每个样例转化为字符串处理
-	 * @param sample_num
-	 * @param stepSize 
-	 * @return
+	 * 获取符号化后字符串，将时间序列数据线段化转为字符串表示
+	 * @return 序列符号化字符串
 	 */
 	private String getSliceSequence() {
 
@@ -398,12 +406,6 @@ public class SequencePatternsDontSplit {
 		this.patterns = patterns;
 	}
 
-	public int getWinSize() {
-		return winSize;
-	}
-	public void setWinSize(int winSize) {
-		this.winSize = winSize;
-	}
 	
 	public double getThreshold() {
 		return threshold;

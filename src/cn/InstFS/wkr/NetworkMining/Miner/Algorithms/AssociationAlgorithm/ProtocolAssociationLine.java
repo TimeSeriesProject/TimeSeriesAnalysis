@@ -24,17 +24,19 @@ import lineAssociation.SymbolNode;
 import associationRules.LinePos;
 import associationRules.ProtoclPair;
 
+/**
+ * 多业务关联规则挖掘
+ */
 public class ProtocolAssociationLine {
 
-	AssociationRuleLineParams arp = null;
 	/**
-	public static void main(String[] args)
-	{
-		String path = "D:\\Java&Android\\workspace_aa\\TimeSeriesAnalysis\\DiplomaProject\\data\\rawDataInput";
-		ProtocolAssociationLine pal = new ProtocolAssociationLine(ProtocolAssociationTest.getData(path));
-		pal.miningAssociation();
-	}
-	*/
+	 * 关联规则挖掘算法配置参数
+	 */
+	AssociationRuleLineParams arp = null;
+
+	/**
+	 * 不同ip，不同协议的时间序列数据
+	 */
 	HashMap<String,ArrayList<ProtocolDataItems>> ip_proData ;
 	List<TreeMap<Integer,Linear>> linesPosList = new ArrayList<TreeMap<Integer,Linear>>();
 	public ProtocolAssociationLine(HashMap<String,ArrayList<ProtocolDataItems>> pdi,AssociationRuleLineParams arp){
@@ -42,11 +44,11 @@ public class ProtocolAssociationLine {
 		ip_proData = new HashMap<String,ArrayList<ProtocolDataItems>>();
 		this.arp = arp;
 	}
+
 	/**
-	 * 传递ip_protocol_dataItems的数据格式。
-	 * @param data
-	 * @param thresh
-	 * @param flag
+	 * 关联规则算法构造函数
+	 * @param data 不同ip、协议的时间序列数据
+	 * @param arp 关联规则算法配置参数
 	 */
 	public ProtocolAssociationLine(Map<String,HashMap<String,DataItems>> data,AssociationRuleLineParams arp)
 	{
@@ -55,8 +57,11 @@ public class ProtocolAssociationLine {
 		convertData(data);
 		
 	}
+
 	/**
-	 * 挖掘ip下协议之间的关联
+	 * 挖掘同ip下，不同协议之间的关联规则
+	 * 对两条时间序列数据进行线段化，然后通过聚类算法进行符号化
+	 * 依照各自频繁模式，挖掘一定时间跨度内两条序列中同时出现的频繁模式
 	 */
 	public MinerResultsFP_Line miningAssociation()
 	{
@@ -95,27 +100,11 @@ public class ProtocolAssociationLine {
 		        TreeMap<Integer, Linear> linears = bottomUpLinear_i.getLinears();  //linears的格式为:key:线段起始位置，Linear：span表示该线段的长度
 		        DataItems lineData = getLineData(linears);
 		        lineList.add(lineData);
-		        //过滤短线段
-//		        Iterator<Map.Entry<Integer, Linear>> it = linears.entrySet().iterator();
-////		        System.out.println("过滤前线段条数："+linears.size());
-//		        while(it.hasNext())
-//		        {
-//		        	Map.Entry<Integer, Linear> entry =it.next();
-//		        	Linear linear =entry.getValue();
-//		        	if(linear.span<=1)
-//		        		it.remove();
-//		        		
-//		        }
-//		        System.out.println("过滤后线段条数："+linears.size());
+
 		        linesPosList.add(linears);  
 		        System.out.println("**"+linears);
 		        
-//		        System.out.println("开始运行DPCluster聚类算法！");
-//		        ClusterWrapper clusterWrapper_i = new ClusterWrapper(linears,arp);
-////		        DPCluster dpCluster_i = clusterWrapper_i.run();
-////		        Map<Integer,Integer> map_i = dpCluster_i.getBelongClusterCenter();
-//		        Map<Integer,Integer> map_i = clusterWrapper_i.run2();
-		        
+
 		        System.out.println("开始运行SlopeLenCluster聚类算法！");
 		        SlopLenCluster slopeLenCluster_i = new SlopLenCluster(linears);
 		        Map<Integer,Integer> map_i = slopeLenCluster_i.run();
@@ -249,7 +238,12 @@ public class ProtocolAssociationLine {
 		}
 		return mr_fp_l;
 	}
-	
+
+	/**
+	 * 数据格式转换
+	 * @param linears 序列线段化后存储在TreeMap中，Integer对应该线段起始点，Linear为线段类，包含线段斜率、长高等属性
+	 * @return 仅含各条线段起点位置的DataItems数据
+	 */
 	private DataItems getLineData(TreeMap<Integer, Linear> linears) {
 		
 		DataItems lineData = new DataItems();
@@ -274,6 +268,13 @@ public class ProtocolAssociationLine {
 		}
 		return sourceData;
 	}
+
+	/**
+	 * 对类中心进行过滤除去异常点，获取符号化序列各线段对应的有效类中心（标签）
+	 * @param map 过滤前各线段对应类中心
+	 * @param series 代表关联规则挖掘中序列号，如第1条序列
+	 * @return 过滤后的线段与类中心对应map
+	 */
 	private TreeMap<Integer, SymbolNode> getSymbols(Map<Integer, Integer> map,int series) {
 
 		HashMap<Integer, Integer> removedCenter = filterCenter(map);
