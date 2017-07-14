@@ -162,6 +162,7 @@ public class ERPDistencePM implements IMinerPM {
 	 * 计算每个时间段的ERP值，以ERP的时间段作为周期值
 	 * @param seq 时间序列
 	 * @param numItems 时间序列内iterm的个数
+	 *
 	 */
 	private void generateEntroy(List<String> seq,int numItems){
 		double[][] ErpDistMatrix;
