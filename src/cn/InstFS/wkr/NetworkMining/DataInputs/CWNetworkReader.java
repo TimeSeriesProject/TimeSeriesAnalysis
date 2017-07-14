@@ -71,6 +71,10 @@ class Link implements Comparable
 		return result;
 	}
 }
+
+/**
+ * 节点对，表示当前节点和与当前节点连接的下一个节点
+ */
 class Pair implements Comparable<Pair>
 {
 	String first;
@@ -103,6 +107,9 @@ class Pair implements Comparable<Pair>
 	}
 }
 
+/**
+ * 读文件辅助类
+ */
 class TextReader
 {
 	private String path="";
@@ -143,6 +150,9 @@ public class CWNetworkReader  implements IReader{
    
     private ArrayList<Link> linkList = new ArrayList<Link> ();
     //private Set<String> nodesSet	= new HashSet<String>();
+	/**
+	 * 节点对列表
+	 */
     private ArrayList<Set<Pair>> matrixList = new ArrayList<Set<Pair>> ();
     private TaskElement task = null;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -317,6 +327,13 @@ public class CWNetworkReader  implements IReader{
 			System.exit(0);
 		}
 	}
+
+	/**
+	 * 生成节点对列表
+	 * @param isReadBetween 是否只读自定义时间段内的数据
+	 * @param startDate 自定义起始时间
+	 * @param endDate 自定义结束时间
+     */
 	private void getMatrixList(boolean isReadBetween,Date startDate,Date endDate)
 	{
 	
@@ -405,7 +422,7 @@ public class CWNetworkReader  implements IReader{
 	}
 	/**
 	 * 计算簇系数
-	 * @return
+	 * @return 网络簇系数
 	 */
 	private double calCluster(Set<Pair> matrix)
 	{
@@ -472,8 +489,8 @@ public class CWNetworkReader  implements IReader{
 	}
 	/**
 	 * 计算直径
-	 * @param matrix
-	 * @return
+	 * @param matrix 节点对
+	 * @return 平均直径
 	 */
 	private double calDiameter(Set<Pair> matrix)
 	{
@@ -623,6 +640,14 @@ public class CWNetworkReader  implements IReader{
 //		}
 //		return dataItems;
 //	}
+
+	/**
+	 * 从文件中读取数据，计算簇系数并保存
+	 * @param isReadBetween 是否只读自定义时间段内的数据
+	 * @param startDate 自定义起始时间
+	 * @param endDate 自定义结束时间
+     * @return 存储了簇系数的DataItems
+     */
 	private DataItems readClusterByText(boolean isReadBetween,Date startDate,Date endDate)
 	{
 		String path=task.getSourcePath();
@@ -713,6 +738,14 @@ public class CWNetworkReader  implements IReader{
 //		}
 //		return dataItems;
 //	}
+
+	/**
+	 * 从文件中读取数据，计算网络直径并保存
+	 * @param isReadBetween 是否只读自定义时间段内的数据
+	 * @param startDate 自定义起始时间
+	 * @param endDate 自定义结束时间
+	 * @return 存储了网络直径的DataItems
+	 */
 	private DataItems readDiameterByText(boolean isReadBetween,Date startDate,Date endDate)
 	{
 
