@@ -12,6 +12,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 
+/**
+ * 生成node文件辅助类
+ * node文件夹中的文件存储的是每小时内，通过某一个节点的流量
+ */
 class Node implements Callable {
     private Map.Entry<String, ArrayList<PcapNode>> entry;
     private String outPath;
@@ -37,6 +41,10 @@ class Node implements Callable {
     }
 }
 
+/**
+ * 生成routesrc临时文件辅助类
+ * routesrc文件夹中的文件存储的是将原始pcap文件中属于同一源IP地址和目的IP地址的记录提取出来并存储的文件，用于解析生成traffic文件和route文件
+ */
 class Parser implements Callable {
     private File file = null;
     private long length;
@@ -171,6 +179,10 @@ class Parser implements Callable {
     }
 }
 
+/**
+ * 生成route文件辅助类
+ * route文件夹中的文件存储的是数据从源IP地址到目的IP地址经过的路径
+ */
 class RouteGen implements Callable {
     private long length;
     private long pLength;
@@ -759,19 +771,30 @@ class RouteGen implements Callable {
 /**
  * pcap文件操作类
  *
- * @author wsc
  */
 public class PcapUtils {
     private boolean SessionLevel = true;   //判断读取的数据是否是业务层数据
     private ConcurrentHashMap<RecordKey, Integer> trafficRecords = new ConcurrentHashMap<RecordKey, Integer>();//记录流量
     private ConcurrentHashMap<RecordKey, Integer> comRecords = new ConcurrentHashMap<RecordKey, Integer>();
     private TreeMap<RecordKey, Integer> sortedtrafficRecords = new TreeMap<RecordKey, Integer>();
+    /**
+     * 待解析的pcap文件列表
+     */
     private ArrayList<File> fileList;
+    /**
+     * 按时间将文件聚合
+     */
     private HashMap<Long, ArrayList<File>> tasks = new HashMap<Long, ArrayList<File>>();//日期，filelist 得到对应时间的文件列表
     private HashMap<String, BufferedWriter> bws = new HashMap<String, BufferedWriter>();
     private ConcurrentHashMap<String, BufferedOutputStream> bos = new ConcurrentHashMap<String, BufferedOutputStream>();
+    /**
+     * 按文件保存node信息
+     */
     private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap = new ConcurrentHashMap<String, ArrayList<PcapNode>>();//0-0，对应文件里的所有pcapnode信息
     private String date;//函数中初始化
+    /**
+     * 将解析后的文件按天分割
+     */
     private ParseByDay parseByDay;//readInput中初始化
 
     public enum Status {
@@ -899,6 +922,11 @@ public class PcapUtils {
 
     }
 
+    /**
+     * 生成route文件
+     * @param fpath 输入pcap文件路径
+     * @param outPath 存储路径
+     */
     private void generateRoute(String fpath, String outPath) {
 //		System.out.println("ggg");
         fileList.clear();
@@ -952,6 +980,10 @@ public class PcapUtils {
 //        }
     }
 
+    /**
+     * 生成routesrc文件
+     * @param outpath 结果存储路径
+     */
     private void parsePcap(String outpath) throws IOException, FileNotFoundException {
 //        getFileList(fpath, "pcap");
         parseSum = fileList.size();
@@ -1037,6 +1069,10 @@ public class PcapUtils {
         }
     }
 
+    /**
+     * 生成node文件
+     * @param outpath 结果存储路径
+     */
     private void generateNode(String outpath) {
         System.out.println("genNode");
         //key = 文件名第一个字符，将0-0,0-1,0-2合并为0，存入tResult
@@ -1074,6 +1110,11 @@ public class PcapUtils {
         System.gc();
     }
 
+    /**
+     * 生成traffic文件
+     * traffic文件夹中存储的是每小时内通过源IP地址或目的IP地址各个端口的流量和以及总的流量和
+     * @param outpath 结果存储路径
+     */
     private void generateTraffic(String outpath) {
 
         for (Map.Entry<RecordKey, Integer> entry : trafficRecords.entrySet()) {
@@ -1197,6 +1238,12 @@ public class PcapUtils {
         generateTraffic(outpath);
     }
 
+    /**
+     * 解析pcap文件
+     * @param fpath pcap文件路径
+     * @param outpath 结果存储路径
+     * @param parseAll 是否解析pcap文件路径下的全部pcap文件
+     */
     public void startParse(String fpath, String outpath, boolean parseAll) throws IOException{
         getTaskNum(fpath, parseAll);
         taskSum = tasks.size();

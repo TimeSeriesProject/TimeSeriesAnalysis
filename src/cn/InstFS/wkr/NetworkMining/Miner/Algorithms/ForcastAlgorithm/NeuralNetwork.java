@@ -22,17 +22,41 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 @SuppressWarnings("deprecation")
 public class NeuralNetwork implements IMinerFM{
+	/**
+	 * 待预测序列
+	 */
 	private DataItems dataItems;
+	/**
+	 * 预测结果
+	 */
 	private DataItems predictItems;
-
+	/**
+	 *  原始数据结束时间
+	 */
 	private Date originDataEndTime;
+	
 	private TaskElement task;
 	//参数列表
-	private int predictPeriod;	//预测周期
-	double momentum; //当更新weights时设置的动量 
-	double learnRate; //学习速率
-	int seed;	//Seed用于初始化随机数的生成。随机数被用于设定节点之间连接的初始weights，并且用于shuffling训练集 
-	int trianTime;	//训练的迭代次数。
+	/**
+	 *  预测周期
+	 */
+	private int predictPeriod;	//
+	/**
+	 *  当更新weights时设置的动量 
+	 */
+	double momentum; //
+	/**
+	 *  学习速率
+	 */
+	double learnRate; //
+	/**
+	 *  Seed用于初始化随机数的生成。
+	 */
+	int seed;	//随机数被用于设定节点之间连接的初始weights，并且用于shuffling训练集 
+	/**
+	 *  训练的迭代次数
+	 */
+	int trianTime;	//
 	
 	public NeuralNetwork(DataItems dataItems,TaskElement task,NeuralNetworkParams p){
 		this.dataItems=dataItems;
@@ -49,6 +73,9 @@ public class NeuralNetwork implements IMinerFM{
 	
 	public NeuralNetwork(){}
 	
+	/**
+	 *  神经网络预测
+	 */
 	public void TimeSeriesAnalysis(){
 		try {
 			generateFeatures features=new generateFeatures(dataItems,task.getName());
@@ -151,6 +178,11 @@ public class NeuralNetwork implements IMinerFM{
 		
 	}
 	
+	/**
+	 * 属性初始化
+	 * @param attributes 
+	 * @return
+	 */
 	private Instances initializeAttribute(Attribute[] attributes){
 		for(int i=0;i<attributes.length-1;i++){
 			String name="attr"+i;
