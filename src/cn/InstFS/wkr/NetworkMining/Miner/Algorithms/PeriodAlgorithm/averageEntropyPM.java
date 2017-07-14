@@ -14,25 +14,59 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Exception.NotFoundDicreseValueException;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
+/**
+ *
+ * 用平均熵算法进行离散时间序列周期检测
+ */
 public class averageEntropyPM implements IMinerPM {
+	/**
+	离散的维度
+	 */
 	private final int dimension;//离散的维度
 	private TaskElement task;
+	/**
+	 * 是否有周期
+	 */
 	private Boolean hasPeriod; //是否有周期
+	/**
+	 * 周期长度
+	 */
 	private int predictPeriod;   //周期长度
+	/**
+	 * 存放存在的周期
+	 */
 	private List<Integer> existPeriod;
+	/**
+	 * 当前时间区间的数据集
+	 */
 	private DataItems di; //当前时间区间的数据集
 	private DataItems oriDi;
+	/**
+	 *序列中的起始时间
+	 */
 	private Date startTime;    //序列中的起始时间
+	/**
+	 * 一个周期内的iterm
+	 */
 	private DataItems itemsInPeriod;  //一个周期内的items
 	private DataItems minItemsInPeriod;
 	private DataItems maxItemsInPeriod;
-	private Double minEntropy = Double.MAX_VALUE;  
+	private Double minEntropy = Double.MAX_VALUE;
+	/**
+	 * 存储每个可能周期的平均熵
+	 */
     private Double []entropies;   //存储每个可能周期的平均熵或平均ERP距离
     private HashMap<Integer, Double[]> predictValuesMap;
     private HashMap<Integer, Double[]> minPredictValuesMap;
     private HashMap<Integer, Double[]> maxPredictValuesMap;
+	/**
+	 * 是否具有周期的阈值
+	 */
 	private double threshold;  //是否具有周期的阈值
 	private int longestPeriod;
+	/**
+	 * 最后一个数在周期中的位置
+	 */
 	private int lastNumIndexInPeriod;//最后一个数在周期中的位置
 	private double confidence;
 	
@@ -41,7 +75,13 @@ public class averageEntropyPM implements IMinerPM {
 	private Map<String, Integer> predictPeriodOfNonNumDataItems;
 	private Map<String, Map<Integer, Double[]>> predictValuesMapOfNonNumDataItems;
 	private Map<String, DataItems> itemsInperiodMapOfNonNumDataitems;
-	
+
+
+	/**
+	 *
+	 * @param taskElement 任务
+	 * @param dimension 离散维度
+     */
 	public averageEntropyPM(TaskElement taskElement,int dimension){
 		this.dimension=dimension;
 		this.task=taskElement;
@@ -53,7 +93,13 @@ public class averageEntropyPM implements IMinerPM {
 		maxPredictValuesMap= new HashMap<>();
 		existPeriod=new ArrayList<Integer>();
 	}
-	
+
+	/**
+	 *
+	 * @param task 任务
+	 * @param dimension  离散维度
+	 * @param threshold  周期阈值
+     */
 	public averageEntropyPM(TaskElement task,int dimension,Double threshold){
 		this.dimension=dimension;
 		this.task=task;
@@ -144,6 +190,13 @@ public class averageEntropyPM implements IMinerPM {
 		}
 		
 	}
+
+	/**
+	 *计算时间序列的平均信息熵
+	 * @param times  时间序列
+	 * @param values 时间序列对应的值序列
+	 * @param numItems 当前时间序列内的iterm个数
+     */
 	
 	private void generateEntroy(List<Date> times,List<String> values,int numItems){
 		
@@ -316,7 +369,15 @@ public class averageEntropyPM implements IMinerPM {
 			predictValuesMapOfNonNumDataItems.put(item, predictValuesMap);
 		}
 	}
-	
+
+	/**
+	 *判断输入的索引号的信息熵是否比相邻索引号的信息熵大
+	 * @param Entropies 信息熵列表
+	 * @param index 信息熵列表的索引，即第几个信息熵
+	 * @param isnext index的下一个是否存在
+	 * @param origin 起始索引
+     * @return
+     */
 	private boolean maxThanNeighbor(Double[] Entropies,int index,boolean isnext,int origin){
 		boolean isMaxThanNeighbor=false;
 		
@@ -344,6 +405,13 @@ public class averageEntropyPM implements IMinerPM {
 		}
 		return isMaxThanNeighbor;
 	}
+
+	/**
+	 * 判断是否是周期
+	 * @param Entropies 信息熵列表
+	 * @param index  索引
+     * @return
+     */
 	private boolean isPeriod(Double[] Entropies,int index){
 		if(maxThanNeighbor(Entropies, index,false,index)){
 			if(nextPeriod(Entropies, index)){
@@ -355,7 +423,14 @@ public class averageEntropyPM implements IMinerPM {
 			return false;
 		}
 	}
-	
+
+
+	/**
+	 * 判断下一个周期是否存在
+	 * @param Entropies 信息熵列表
+	 * @param index 索引
+	 * @return
+     */
 	private boolean nextPeriod(Double[] Entropies,int index){
 		int i=index;
 		boolean period=true;

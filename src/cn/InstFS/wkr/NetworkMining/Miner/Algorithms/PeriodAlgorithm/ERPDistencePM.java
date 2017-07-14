@@ -13,21 +13,42 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 
+/**
+ * 用ERP距离进行连续时间序列周期检测
+ */
 public class ERPDistencePM implements IMinerPM {
+	/**
+	 * 存放距离
+	 */
 	private int[][] distMatrix;
+	/**
+	 * 当前时间区间的数据集
+	 */
 	private DataItems di; //当前时间区间的数据集
 	private DataItems oriDi;
-	private Double minEntropy = Double.MAX_VALUE;  
+	private Double minEntropy = Double.MAX_VALUE;
+	/**
+	 * 存储每个可能周期的平均ERP距离
+	 */
     private Double []entropies;   //存储每个可能周期的平均熵或平均ERP距离
     private HashMap<Integer, Double[]> predictValuesMap;
     private HashMap<Integer, Double[]> minPredictValuesMap;
     private HashMap<Integer, Double[]> maxPredictValuesMap;
    	private double threshold;  //是否具有周期的阈值
    	private int longestPeriod;
+	/**
+	 * 最后一个数在周期中的位置
+	 */
    	private int lastNumIndexInPeriod;//最后一个数在周期中的位置
    	private Boolean hasPeriod; //是否有周期
+	/**
+	 * 周期长度
+	 */
 	private int predictPeriod;   //周期长度
 	private List<Integer> existPeriod;
+	/**
+	 * 一个周期内的items
+	 */
 	private DataItems itemsInPeriod;  //一个周期内的items
 	private DataItems minItemsInPeriod;
 	private DataItems maxItemsInPeriod;
@@ -91,6 +112,10 @@ public class ERPDistencePM implements IMinerPM {
 		this.threshold = threshold;
 		this.longestPeriod = longestPeriod;
 	}
+
+	/**
+	 * 预测周期
+	 */
 	public void predictPeriod(){
 		int numItems=di.getLength();
 		if(numItems==0){
@@ -134,9 +159,9 @@ public class ERPDistencePM implements IMinerPM {
 		}
 	}
 	/**
-	 * 计算没个时间段的ERP值，以ERP的时间段作为周期值
-	 * @param seq 
-	 * @param numItems
+	 * 计算每个时间段的ERP值，以ERP的时间段作为周期值
+	 * @param seq 时间序列
+	 * @param numItems 时间序列内iterm的个数
 	 */
 	private void generateEntroy(List<String> seq,int numItems){
 		double[][] ErpDistMatrix;
@@ -172,9 +197,9 @@ public class ERPDistencePM implements IMinerPM {
 	}
 	
 	/**
-	 * 计算没个时间段的曼哈顿值
-	 * @param seq 
-	 * @param numItems
+	 * 计算每个时间段的曼哈顿值
+	 * @param seq 时间序列
+	 * @param numItems 时间序列内的iterm个数
 	 */
 	private void generateManHatonEntroy(List<String> seq,int numItems){
 		int maxPeriod = (numItems/2>longestPeriod)?longestPeriod:(numItems/2);
@@ -210,7 +235,12 @@ public class ERPDistencePM implements IMinerPM {
 		}
 		return distance;
 	}
-	
+
+	/**
+	 * 计算list的标准偏差
+	 * @param
+	 * @return 返回list的标准偏差
+     */
 	private double VarianceOfList(List<String> list){
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
 		for(String item:list){
@@ -276,7 +306,12 @@ public class ERPDistencePM implements IMinerPM {
 			standardList.add(statistics.getMean()+"");
 		}
 	}
-	
+
+	/**
+	 * 确定周期是否存在，如果存在计算周期内的分布
+	 * 确定最小熵
+	 * @param maxPeriod 尝试的周期个数
+	 */
 	private void isPeriodExist(int maxPeriod,String item,List<String>seq){
 		itemsInPeriod=new DataItems();
 		existPeriod=new ArrayList<Integer>();
@@ -402,7 +437,14 @@ public class ERPDistencePM implements IMinerPM {
 			predictValuesMapOfNonNumDataItems.put(item, predictValuesMap);
 		}
 	}
-	
+	/**
+	 *判断输入的索引号的信息熵是否比相邻索引号信息熵大
+	 * @param Entropies 信息熵列表
+	 * @param index 信息熵列表的索引，即第几个信息熵
+	 * @param isnext index的下一个是否存在
+	 * @param origin 起始索引
+	 * @return
+	 */
 	private boolean maxThanNeighbor(Double[] Entropies,int index,boolean isnext,int origin){
 		boolean isMaxThanNeighbor=false;
 		
@@ -431,7 +473,12 @@ public class ERPDistencePM implements IMinerPM {
 		}
 		return isMaxThanNeighbor;
 	}
-	
+	/**
+	 * 判断是否是周期
+	 * @param Entropies 信息熵列表
+	 * @param index  索引
+	 * @return
+	 */
 	private boolean isPeriod(Double[] Entropies,int index){
 
 		if(maxThanNeighbor(Entropies, index,false,index)){
@@ -444,7 +491,12 @@ public class ERPDistencePM implements IMinerPM {
 			return false;
 		}
 	}
-	
+	/**
+	 * 判断下一个周期是否存在
+	 * @param Entropies 信息熵列表
+	 * @param index 索引
+	 * @return
+	 */
 	private boolean nextPeriod(Double[] Entropies,int index){
 		int i=index;
 		boolean period=true;
