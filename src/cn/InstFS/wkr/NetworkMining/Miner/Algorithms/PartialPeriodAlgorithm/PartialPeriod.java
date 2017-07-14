@@ -12,15 +12,35 @@ import java.util.Map.Entry;
  * @功能：根据频繁项挖掘结果，计算频繁项间隔来找出部分周期
  */
 public class PartialPeriod {
-	Map<String, ArrayList<Pair>> frequentmap;// 输入：频繁项挖掘结果
-	double threshold=0.15;//距离间隔相似度默认阈值
+	/**
+	 * 输入：频繁项挖掘结果
+	 */
+	Map<String, ArrayList<Pair>> frequentmap;// 
+	/**
+	 * 距离间隔相似度默认阈值
+	 */
+	double threshold=0.15;
+	/**
+	 * 结果1：统计周期出现的位置 
+	 */
 	Map<String, ArrayList<Pair>> positionResult;// 统计周期出现的位置，String为(频繁项+前两个数据点，如112113:0:1)
-	Map<String, Integer> periodResult;// 统计周期多少
+	/**
+	 * 结果2：统计周期
+	 */
+	Map<String, Integer> periodResult;// 
+	/**
+	 * 误差
+	 */
 	Map<String, Double> testError;
+	/**
+	 * 是否有部分周期
+	 */
 	boolean hasParticalPeriod;
 
 
-
+	/**
+	 * 构造函数
+	 */
 	public PartialPeriod(Map<String, ArrayList<Pair>> frequentmap,double threshold) {
 		this.frequentmap = frequentmap;
 		this.threshold=threshold;
@@ -28,12 +48,7 @@ public class PartialPeriod {
 		positionResult = new HashMap<String, ArrayList<Pair>>();
 	}
 
-	/**
-	 * @功能：发现潜在的部分周期
-	 */
-	void run2() {
-		
-	}
+
 	/**
 	 * @功能：发现潜在的部分周期
 	 */
@@ -124,7 +139,7 @@ public class PartialPeriod {
 									+ ":" + j, (int) period);
 							this.positionResult.put(
 									entry.getKey() + ":" + i + ":" + j,
-									exchangeIntegerListToPairList(
+									getPartialPeriodPairList(
 											positionIndex, list));
 							// this.diaplayMap(periodPointRecord);
 							System.out.println("***************************************");
@@ -178,9 +193,14 @@ public class PartialPeriod {
 		return positionResult;
 	}
 
+	
 	public boolean getHasParticalPeriod(){
 		return hasParticalPeriod;
 	}
+	/**
+	 * 打印到控制台
+	 * @param map
+	 */
 	public void diaplayMap(Map<String, ArrayList<Pair>> map) {
 		for (Map.Entry<String, ArrayList<Pair>> entry : map.entrySet()) {
 
@@ -196,7 +216,13 @@ public class PartialPeriod {
 		}
 	}
 
-	private ArrayList<Pair> exchangeIntegerListToPairList(Pair[] positionIndex,
+	/**
+	 * 取出具有部分周期的项
+	 * @param positionIndex  每个频繁项的起始和末尾位置
+	 * @param list
+	 * @return
+	 */
+	private ArrayList<Pair> getPartialPeriodPairList(Pair[] positionIndex,
 			ArrayList<Integer> list) {
 		// TODO Auto-generated method stub
 		if (positionIndex == null || list == null) {
@@ -260,7 +286,7 @@ public class PartialPeriod {
 		return testError;
 
 	}
-	public static void main(String[] args) {
+/*	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 		Map<String, ArrayList<Pair>> frequentmap = new HashMap<String, ArrayList<Pair>>();
@@ -280,5 +306,5 @@ public class PartialPeriod {
 		// pp.run();
 		pp.diaplayMap(pp.run());
 		System.out.println("*********");
-	}
+	}*/
 }
