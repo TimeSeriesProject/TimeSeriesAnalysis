@@ -13,18 +13,46 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.PointSegment;
 import cn.InstFS.wkr.NetworkMining.DataInputs.SegPattern;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMPiontPatternParams;
-
+/**
+ * 基于密度的异常检测算法，生成结果DataItems outlies 异常点集合，DataItems outDegree 异常度序列，outlinesSet 异常线段集合
+ */
 public class PointPatternDetection implements IMinerOM{
-
-	private DataItems dataItems;     //时间序列 
+	/**
+	 * 待预测时序数据
+	 */
+	private DataItems dataItems;     //时间序列
+	/**
+	 * 待预测时序数据线段化后的线段模式
+	 */
 	private List<PatternMent> patterns;   //TEO 线段模式
+	/**
+	 * 序列线段化时，找极值点的参数1，表示最小邻域的个数
+	 */
 	private int densityK = 3;//序列线段化时，找极值点的参数
+	/**
+	 * 序列线段化时，找极值点的参数2，表示极值点要和邻域内的点的差值比例
+	 */
 	private double patternThreshold = 0.1;
+	/**
+	 * 基于密度聚类时参数，表示：邻域个数
+	 */
 	private int neighborK = 20;//计算模式P的K-邻域中的k
+	/**
+	 * 异常阈值，当异常度大于阈值时，则为异常点
+	 */
 	private double threshold = 0.7;
 	private double diff = 0.1;
+	/**
+	 * 存储结果：异常点集合
+	 */
 	private DataItems outlies = new DataItems();
+	/**
+	 * 存储结果，异常度时间序列
+	 */
 	private DataItems outDegree = new DataItems(); //异常度
+	/**
+	 * 存储结果，异常线段集合
+	 */
 	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
 	
 	
@@ -55,7 +83,10 @@ public class PointPatternDetection implements IMinerOM{
 		outliesDectation2();		
 	}
 	/**
-	 * 计算局部偏离指数
+	 * 实现基于密度的异常检测算法
+	 * 计算每个模式的K最近邻
+	 * 计算每一个pattern的k_dist距离
+	 * 生成异常度时间序列outDegree 和异常点集合outlies
 	 * */
 	public void outliesDectation2(){
 		//计算每个模式的K最近邻
@@ -199,10 +230,7 @@ public class PointPatternDetection implements IMinerOM{
 		//获取异常点和异常线段
 		genOutPionts(degreeMap);
 	}
-	/**
-	 * 检测异常
-	 * @return
-	 */
+
 	public void outliesDectation(){
 		
 		//模式奇异度map
@@ -336,7 +364,10 @@ public class PointPatternDetection implements IMinerOM{
 		}
 	}
 	/**
-	 * 获取对象p的k邻域的对象
+	 * 更新模式的K最近邻，替换掉当前模式最远的近邻
+	 * @param NK 每个点的K邻域内的点的map
+	 * @param newDist 新的近邻距离
+	 * @param index 新的近邻点的下标
 	 * */
 	private void addNeighbor2(HashMap<Integer, Double> NK,double newDist,int index){
 		if(NK.size()<neighborK){
@@ -361,8 +392,8 @@ public class PointPatternDetection implements IMinerOM{
 	
 	/**
 	 * 两个模式之间的距离
-	 * @param patternsA 
-	 * @param patternsB 
+	 * @param patternsA 模式A
+	 * @param patternsB 模式B
 	 * @return 模式间的距离
 	 */
 	private double distanceOfPatterns(PatternMent patternsA,PatternMent patternsB){
@@ -373,10 +404,10 @@ public class PointPatternDetection implements IMinerOM{
 //		double stdDist=Math.abs(patternsA.getStd()-patternsB.getStd());
 		return Math.sqrt(heightDist*heightDist+lengthDist*lengthDist+meanDist*meanDist);
 	}
+
 	/**
-	 * 有异常度获取异常点
-	 * 根据线段异常度获取一查点和异常线段
-	 * @return 模式间的距离
+	 * 根据线段异常度获取异常点和异常线段
+	 * @param map 各点异常度Map
 	 */
 	public void genOutPionts(HashMap<Integer, Double> map){
 		/*ArrayList<Double> list = new ArrayList<Double>();

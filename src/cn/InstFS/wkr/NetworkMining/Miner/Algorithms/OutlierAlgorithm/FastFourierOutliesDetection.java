@@ -18,32 +18,65 @@ import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
 
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
-
+/**
+ * 基于快速傅里叶变换的异常检测算法，生成结果DataItems outlies 异常点集合，DataItems outDegree 异常度序列，outlinesSet 异常线段集合
+ */
 public class FastFourierOutliesDetection implements IMinerOM {
 
     private static FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
+    /**
+     * 待预测时序数据
+     */
     private static double[] original; //原始数据（非参数）
+    /**
+     * 滤波后的数据
+     */
     private static double[] denoisedslicezz; //滤波后的数据（非参数）
-    
+    /**
+     * 高斯距离阈值 (x-u)/sigma > varK 则x点是异常点
+     */
     private static double varK = 3.0; //高斯距离阈值 (x-u)/sigma > varK 则x点是异常点（暂时没用到）
+    /**
+     * 滤波参数，傅里叶变换以后，保留amplitudeRatio的低频，过滤高频
+     */
     private static double amplitudeRatio = 0.8; //滤波参数，傅里叶变换以后，保留amplitudeRatio的低频，过滤高频
+    /**
+     * 傅里叶快速变换参数，每段数据的长度len = 2^sizeK
+     */
     private static double sizeK = 8; //每段数据的长度len = 2^sizeK
+    /**
+     * 计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
+     */
     private static double diff = 0.2; //计算异常度阈值时的参数，判断前后2个差值是否满足(d1-d2)/d2 > diff，满足则d1是异常度阈值，否则不是
-    
+    /**
+     * 固定异常度阈值
+     */
     private double threshold; //异常度阈值（非参数）
+    /**
+     * 待检测的时间序列
+     */
     private DataItems di = new DataItems();
+    /**
+     * 异常检测结果，异常点集合
+     */
     private DataItems outlies = new DataItems();//异常点
+    /**
+     * 异常检测结果，异常度序列
+     */
     private DataItems outDegree = new DataItems(); //异常度
     private Map<Date, Double> degreeMap = new HashMap<Date, Double>();
-	private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
-    
+    /**
+     * 异常检测结果，线段异常集合
+     */
+    private List<DataItems> outlinesSet = new ArrayList<DataItems>(); //异常线段
+
     public FastFourierOutliesDetection(DataItems di){
-    	this.di=di;
-    	outlies=new DataItems();
+        this.di=di;
+        outlies=new DataItems();
     }
-    
+
     public FastFourierOutliesDetection(){
-    	outlies=new DataItems();
+        outlies=new DataItems();
     }
     public FastFourierOutliesDetection(OMFastFourierParams omFastFourierParams){
     	this.varK = omFastFourierParams.getVarK();
@@ -58,7 +91,11 @@ public class FastFourierOutliesDetection implements IMinerOM {
     	this.diff = omFastFourierParams.getDiff();
     	this.di = di;
     }
-
+    /**
+     * 傅里叶变换，由时域变换到频域
+     * @param data 要变换的数据
+     * @return 傅里叶变换后的结果
+     */
     public Complex[] FFT(List<String> data) {
     	int size = data.size();
         size = (int)Math.pow(2,(int)(Math.log10(size)/Math.log10(2)));
@@ -71,7 +108,11 @@ public class FastFourierOutliesDetection implements IMinerOM {
         return result;
     }
 
-    //反傅里叶变换
+    /**
+     * 反傅里叶变换，由频域变换到时域
+     * @param importantCoefficiants 待变换的频域数据
+     * @return 反傅里叶变换后的结果
+     */
     public Complex[] IFFT(Complex[] importantCoefficiants) {
         Complex [] denoised = fft.transform(importantCoefficiants, TransformType.INVERSE);
         return denoised;
@@ -98,7 +139,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
             double mean = nbt.getMean();
             double stv;
             if(nbt.getStdeviation()<=0){
-            	stv = 1e-3;
+                stv = 1e-3;
             }else{
             	stv = nbt.getStdeviation();
             }
@@ -148,14 +189,14 @@ public class FastFourierOutliesDetection implements IMinerOM {
     
     @Override
     public DataItems getOutlies() {
-    	return outlies;
+        return outlies;
     }
 
     /**
-     * 傅里叶滤波
-     * @param silce
-     * @param threshold
-     * @return
+     * 傅里叶滤波，过滤掉频率比较大的数据
+     * @param silce 分段快速傅立叶变换时一段序列
+     * @param threshold 过滤掉的频率的阈值
+     * @return 滤波后序列
      */
     public List<String> FFTfilter(List<String> silce,double threshold) {
         Complex[] result = FFT(silce);

@@ -16,11 +16,26 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
 public class ARIMATSA implements IMinerFM{
 	private TaskElement task;
+	/**
+	 * 预测的序列
+	 */
 	private DataItems di;
-	private int predictPeriod;           //预测的长度
+	/**
+	 * 预测的长度
+	 */
+	private int predictPeriod;    
+	/**
+	 * 预测的结果
+	 */
 	private DataItems predictItems;
-	private Date endDate;                //序列中最后值的日期
+	/**
+	 * 序列中最后值的日期
+	 */
+	private Date endDate;                //
 	
+	/**
+	 * 构造函数：不指定预测长度
+	 */
 	public ARIMATSA(TaskElement task,DataItems dataItems,ARIMAParams p){
 		this.task=task;
 		this.di=dataItems;
@@ -29,6 +44,9 @@ public class ARIMATSA implements IMinerFM{
 		endDate=di.getLastTime();
 		
 	}
+	/**
+	 * 构造函数：指定预测长度
+	 */
 	public ARIMATSA(TaskElement task,DataItems dataItems,int predictPeriod){
 		this.task=task;
 		this.di=dataItems;
@@ -38,6 +56,9 @@ public class ARIMATSA implements IMinerFM{
 		
 	}
 	
+	/**
+	 * ARIMA算法预测
+	 */
 	@Override
 	public void TimeSeriesAnalysis() {
 		List<Double> seq=new ArrayList<Double>();
