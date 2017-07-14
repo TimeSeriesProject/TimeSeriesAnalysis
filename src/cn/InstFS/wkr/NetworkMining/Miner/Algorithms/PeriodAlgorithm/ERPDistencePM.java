@@ -17,9 +17,6 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
  * 用ERP距离进行连续时间序列周期检测
  */
 public class ERPDistencePM implements IMinerPM {
-	/**
-	 * 存放距离
-	 */
 	private int[][] distMatrix;
 	/**
 	 * 当前时间区间的数据集
@@ -34,12 +31,18 @@ public class ERPDistencePM implements IMinerPM {
     private HashMap<Integer, Double[]> predictValuesMap;
     private HashMap<Integer, Double[]> minPredictValuesMap;
     private HashMap<Integer, Double[]> maxPredictValuesMap;
+	/**
+	 * 是否具有周期的阈值
+	 */
    	private double threshold;  //是否具有周期的阈值
    	private int longestPeriod;
 	/**
 	 * 最后一个数在周期中的位置
 	 */
    	private int lastNumIndexInPeriod;//最后一个数在周期中的位置
+	/**
+	 * 是否有周期
+	 */
    	private Boolean hasPeriod; //是否有周期
 	/**
 	 * 周期长度
@@ -239,8 +242,8 @@ public class ERPDistencePM implements IMinerPM {
 
 	/**
 	 * 计算list的标准偏差
-	 * @param
-	 * @return 返回list的标准偏差
+	 * @param list 时间序列
+	 * @return 返回标准偏差
      */
 	private double VarianceOfList(List<String> list){
 		DescriptiveStatistics statistics=new DescriptiveStatistics();
@@ -439,12 +442,12 @@ public class ERPDistencePM implements IMinerPM {
 		}
 	}
 	/**
-	 *判断输入的索引号的信息熵是否比相邻索引号信息熵大
+	 * 判断输入的索引号的信息熵是否比相邻索引号信息熵大
 	 * @param Entropies 信息熵列表
 	 * @param index 信息熵列表的索引，即第几个信息熵
 	 * @param isnext index的下一个是否存在
 	 * @param origin 起始索引
-	 * @return
+	 * @return 若输入的索引号的信息熵是否比相邻索引号信息熵大，返回ture，否则返回false
 	 */
 	private boolean maxThanNeighbor(Double[] Entropies,int index,boolean isnext,int origin){
 		boolean isMaxThanNeighbor=false;
@@ -478,7 +481,7 @@ public class ERPDistencePM implements IMinerPM {
 	 * 判断是否是周期
 	 * @param Entropies 信息熵列表
 	 * @param index  索引
-	 * @return
+	 * @return 若有周期，返回true，否则返回false
 	 */
 	private boolean isPeriod(Double[] Entropies,int index){
 
@@ -496,7 +499,7 @@ public class ERPDistencePM implements IMinerPM {
 	 * 判断下一个周期是否存在
 	 * @param Entropies 信息熵列表
 	 * @param index 索引
-	 * @return
+	 * @return 若存在，返回true，否则返回false
 	 */
 	private boolean nextPeriod(Double[] Entropies,int index){
 		int i=index;

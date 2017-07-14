@@ -20,7 +20,7 @@ import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
  */
 public class averageEntropyPM implements IMinerPM {
 	/**
-	离散的维度
+	 * 离散的维度
 	 */
 	private final int dimension;//离散的维度
 	private TaskElement task;
@@ -192,7 +192,7 @@ public class averageEntropyPM implements IMinerPM {
 	}
 
 	/**
-	 *计算时间序列的平均信息熵
+	 * 计算时间序列的平均信息熵
 	 * @param times  时间序列
 	 * @param values 时间序列对应的值序列
 	 * @param numItems 当前时间序列内的iterm个数
@@ -371,12 +371,12 @@ public class averageEntropyPM implements IMinerPM {
 	}
 
 	/**
-	 *判断输入的索引号的信息熵是否比相邻索引号的信息熵大
+	 * 判断输入的索引号的信息熵是否比相邻索引号的信息熵大
 	 * @param Entropies 信息熵列表
 	 * @param index 信息熵列表的索引，即第几个信息熵
 	 * @param isnext index的下一个是否存在
 	 * @param origin 起始索引
-     * @return
+     * @return 若输入的索引号的信息熵是否比相邻索引号信息熵大，返回ture，否则返回false
      */
 	private boolean maxThanNeighbor(Double[] Entropies,int index,boolean isnext,int origin){
 		boolean isMaxThanNeighbor=false;
@@ -410,7 +410,7 @@ public class averageEntropyPM implements IMinerPM {
 	 * 判断是否是周期
 	 * @param Entropies 信息熵列表
 	 * @param index  索引
-     * @return
+     * @return 若有周期，返回true，否则返回false
      */
 	private boolean isPeriod(Double[] Entropies,int index){
 		if(maxThanNeighbor(Entropies, index,false,index)){
@@ -429,7 +429,7 @@ public class averageEntropyPM implements IMinerPM {
 	 * 判断下一个周期是否存在
 	 * @param Entropies 信息熵列表
 	 * @param index 索引
-	 * @return
+	 * @return 若存在，返回true，否则返回false
      */
 	private boolean nextPeriod(Double[] Entropies,int index){
 		int i=index;
