@@ -16,26 +16,56 @@ import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerOM;
 import cn.InstFS.wkr.NetworkMining.Miner.Results.MinerResultsPM;
 import cn.InstFS.wkr.NetworkMining.Params.OMParams.OMperiodBasedParams;
 import ec.tstoolkit.utilities.Id;
-
+/**
+ * 基于周期的异常检测算法，生成结果DataItems outlies 异常点集合，DataItems outDegree 异常度序列
+ */
 public class PeriodBasedOutlierDetection implements IMinerOM{
+	/**
+	 * 待检测的原始数据
+	 */
 	DataItems di = new DataItems();
 	DataItems PMdi = new DataItems();
+	/**
+	 * 原始数据的平均周期时间序列
+	 */
 	MinerResultsPM RetPM = new MinerResultsPM();
 	DataItems disItems = new DataItems();
+	/**
+	 * 存储dtw绝对距离
+	 */
 	HashMap<Integer, Double> dtwDis1 = new HashMap<Integer,Double>();//存储dtw绝对距离
+	/**
+	 * 存储dtw相对距离
+	 */
 	HashMap<Integer, Double> dtwDis2 = new HashMap<Integer,Double>();//存储dtw相对距离
 	List<Double> disList = new ArrayList<Double>();
 	List<Double> disList1 = new ArrayList<Double>();
 	List<Double> disList2 = new ArrayList<Double>();
+	/**
+	 * 异常检测结果，存储异常点集合
+	 */
 	private DataItems outlines = new DataItems(); //异常点
+	/**
+	 * 异常检测结果，存储异常度时间序列
+	 */
 	private DataItems outDegree = new DataItems(); //异常度
 	private double GuassK = 3.0;
+	/**
+	 * 异常度阈值
+	 */
 	private double threshold = 0.8;
 	public PeriodBasedOutlierDetection(DataItems di,MinerResultsPM RetPM){
 		this.di = di;
 		this.RetPM = RetPM;
 		PMdi = RetPM.getDistributePeriod();
 	}
+
+	/**
+	 * 基于周期异常检测算法构造函数
+	 * @param oMperiodBasedParams 周期异常检测算法配置参数
+	 * @param di 待检测数据
+	 * @param RetPM 周期挖掘结果
+	 */
 	public PeriodBasedOutlierDetection(OMperiodBasedParams oMperiodBasedParams,DataItems di,MinerResultsPM RetPM){
 		this.di = di;
 		this.RetPM = RetPM;
@@ -106,10 +136,12 @@ public class PeriodBasedOutlierDetection implements IMinerOM{
 		
 	}
 	/**
-	 * 计算dtw对应路径
+	 * 改变dtw路径的存储方式
+	 * @param warpingPath 动态弯曲路径pair的存储方式
+	 * @return 动态弯曲距离的路径，对应到点的存储方式
 	 * */
 	public HashMap<Integer, List<Integer>> comDTWPath(int[][] warpingPath){
-		HashMap<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>();//记录点的对应关系				
+		HashMap<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>();//记录点的对应关系
 		for(int i=0;i<warpingPath.length;i++){
 			int index1 = warpingPath[i][0];
 			int index2 = warpingPath[i][1];
@@ -126,7 +158,13 @@ public class PeriodBasedOutlierDetection implements IMinerOM{
 		
 		return map;
 	}
-	/**计算dtw的绝对距离*/
+	/**
+	 * 计算dtw的绝对距离
+	 * @param warpingPath 动态弯曲路径pair的存储方式
+	 * @parameter item 原始数据一个周期的数据
+	 * @parameter PMdi 平均周期数据
+	 * @return 动态弯曲距离的路径，对应到点的存储方式
+	 * */
 	public List<Double> comDTWPathDis1(int[][] warpingPath,DataItems item,DataItems PMdi){
 		HashMap<Integer, List<Integer>> map = comDTWPath(warpingPath);
 		List<Double> disList = new ArrayList<Double>();
@@ -142,7 +180,13 @@ public class PeriodBasedOutlierDetection implements IMinerOM{
 		}	
 		return disList;
 	}
-	/**计算dtw的相对距离*/
+	/**
+	 * 计算dtw的相对距离
+	 * @param warpingPath 动态弯曲路径pair的存储方式
+	 * @parameter item 原始数据一个周期的数据
+	 * @parameter PMdi 平均周期数据
+	 * @return 动态弯曲距离的路径，对应到点的存储方式
+	 * */
 	public List<Double> comDTWPathDis2(int[][] warpingPath,DataItems item,DataItems PMdi){
 		HashMap<Integer, List<Integer>> map = comDTWPath(warpingPath);
 		List<Double> disList = new ArrayList<Double>();
@@ -178,8 +222,6 @@ public class PeriodBasedOutlierDetection implements IMinerOM{
 			disList2.add(dis2);
 		}			
 	}
-	/**
-	 * 计算曲线之间的动态弯曲距离*/
 	
 	/**
 	 * 计算垂直的高斯距离

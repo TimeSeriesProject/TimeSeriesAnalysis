@@ -188,7 +188,7 @@ public class AnormalyDetection implements IMinerOM {
     }
 
     /**
-     * 具体的检测算法，滑动窗口不重叠,记录各点异常度
+     * 具体的滑动窗口检测算法，窗口不重叠,记录各点异常度
      * @param slice 待检测数据
      */
     public void  detect1(HashMap<Long,Double> slice){
