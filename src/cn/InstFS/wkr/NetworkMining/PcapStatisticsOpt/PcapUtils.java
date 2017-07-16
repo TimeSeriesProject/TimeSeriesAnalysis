@@ -17,7 +17,13 @@ import java.util.concurrent.*;
  * node文件夹中的文件存储的是每小时内，通过某一个节点的流量
  */
 class Node implements Callable {
+    /**
+     * 文件名以及对应的节点流量数据
+     */
     private Map.Entry<String, ArrayList<PcapNode>> entry;
+    /**
+     * 存储地址
+     */
     private String outPath;
 
     Node(Map.Entry<String, ArrayList<PcapNode>> entry, String outPath) {
@@ -46,15 +52,33 @@ class Node implements Callable {
  * routesrc文件夹中的文件存储的是将原始pcap文件中属于同一源IP地址和目的IP地址的记录提取出来并存储的文件，用于解析生成traffic文件和route文件
  */
 class Parser implements Callable {
+    /**
+     * 带解析文件
+     */
     private File file = null;
+    /**
+     * 文件长度
+     */
     private long length;
+    /**
+     * 文件切分后的长度
+     */
     private long pLength;
+    /**
+     * 遍历文件的指针位置
+     */
     private long position;
+    /**
+     * 文件切分后的个数
+     */
     private long part;
     ConcurrentHashMap<RecordKey, Integer> trafficRecords;
     private HashMap<String, BufferedWriter> bws;
     private ConcurrentHashMap<String, BufferedOutputStream> bos;
     private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap;
+    /**
+     * 存储地址
+     */
     String path;
     PcapUtils pcapUtils;
 
@@ -84,6 +108,10 @@ class Parser implements Callable {
         this.position = position;
     }
 
+    /**
+     * 释放MappedByteBuffer
+     * @param buffer 待释放的MappedByteBuffer
+     */
     public void unmap(final MappedByteBuffer buffer) {
         if (buffer == null) {
             return;
@@ -184,17 +212,44 @@ class Parser implements Callable {
  * route文件夹中的文件存储的是数据从源IP地址到目的IP地址经过的路径
  */
 class RouteGen implements Callable {
+    /**
+     * 文件长度
+     */
     private long length;
+    /**
+     * 文件切分后的长度
+     */
     private long pLength;
+    /**
+     * 遍历文件的指针位置
+     */
     private long position;
+    /**
+     * 文件切分后的个数
+     */
     private long part;
     private String fileName;
     private HashSet<Integer> ports = ParamsAPI.getInstance().getPortParams().getPorts();
 
+    /**
+     * 输入文件地址
+     */
     String path;
+    /**
+     * 存储地址
+     */
     String outpath;
+    /**
+     * 协议及对应的总流量
+     */
     ConcurrentHashMap<RecordKey, Integer> trafficRecords;//总流量
+    /**
+     * 协议及对应的总次数
+     */
     ConcurrentHashMap<RecordKey, Integer> comRecords;//总次数
+    /**
+     * pcap文件记录
+     */
     ArrayList<PcapData> datas = new ArrayList<PcapData>();
     PcapUtils pcapUtils;
 
@@ -207,6 +262,10 @@ class RouteGen implements Callable {
         this.comRecords = comRecords;
     }
 
+    /**
+     * 记录协议的流量
+     * @param pre 该协议的当前记录数据
+     */
     private void updateRecords(PcapData pre) {
         //直接判断发送和接收端口是否有一个符合要求
         int port;
@@ -255,6 +314,9 @@ class RouteGen implements Callable {
 //        TCPComRecords.put(tmpKey2, TCPComRecords.get(tmpKey2) + 1);
 //    }
 
+    /**
+     * 若是UDP协议，执行此函数
+     */
     private void genUDP() throws IOException {
         System.out.println("进入genUDP...");
         File f = new File(path);
@@ -356,6 +418,9 @@ class RouteGen implements Callable {
 
 
     //遍历重写
+    /**
+     * 若是TCP协议，执行此函数
+     */
     private void genTCP() throws IOException {
         System.out.println("进入genTCP...");
         File f = new File(path);
@@ -630,6 +695,10 @@ class RouteGen implements Callable {
 //        return true;
 //    }
 
+    /**
+     * 释放MappedByteBuffer
+     * @param buffer 待释放的MappedByteBuffer
+     */
     public void unmap(final MappedByteBuffer buffer) {
         if (buffer == null) {
             return;
@@ -774,8 +843,17 @@ class RouteGen implements Callable {
  */
 public class PcapUtils {
     private boolean SessionLevel = true;   //判断读取的数据是否是业务层数据
+    /**
+     * 协议及对应的总流量
+     */
     private ConcurrentHashMap<RecordKey, Integer> trafficRecords = new ConcurrentHashMap<RecordKey, Integer>();//记录流量
+    /**
+     * 协议及对应的总次数
+     */
     private ConcurrentHashMap<RecordKey, Integer> comRecords = new ConcurrentHashMap<RecordKey, Integer>();
+    /**
+     * 排序后的协议及对应的总流量
+     */
     private TreeMap<RecordKey, Integer> sortedtrafficRecords = new TreeMap<RecordKey, Integer>();
     /**
      * 待解析的pcap文件列表
@@ -791,6 +869,9 @@ public class PcapUtils {
      * 按文件保存node信息
      */
     private ConcurrentHashMap<String, ArrayList<PcapNode>> nodeMap = new ConcurrentHashMap<String, ArrayList<PcapNode>>();//0-0，对应文件里的所有pcapnode信息
+    /**
+     * 带解析文件的日期
+     */
     private String date;//函数中初始化
     /**
      * 将解析后的文件按天分割
