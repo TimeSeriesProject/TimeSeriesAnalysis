@@ -75,8 +75,9 @@ public class R {
     
     /**
      * 求解序列的自回归参数和偏回归参数，以确定ARIMA模型p和q
+     * @param seq 序列 
      * @param stationOrder 序列的平稳阶数
-     * @return int[p,q]
+     * @return int[p,q] 自回归项数p，滑动平均项数q
      */
     public int[] autoCoeAndPartAutoCoe(List<Double>seq,int stationOrder){
     	int[] modelParams=new int[2]; 

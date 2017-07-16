@@ -51,6 +51,7 @@ public class PartialPeriod {
 
 	/**
 	 * @功能：发现潜在的部分周期
+	 * @return 部分周期挖掘结果1
 	 */
 	Map<String, ArrayList<Pair>> run() {
 
@@ -198,7 +199,7 @@ public class PartialPeriod {
 		return hasParticalPeriod;
 	}
 	/**
-	 * 打印到控制台
+	 * 打印一个map
 	 * @param map
 	 */
 	public void diaplayMap(Map<String, ArrayList<Pair>> map) {
@@ -219,8 +220,8 @@ public class PartialPeriod {
 	/**
 	 * 取出具有部分周期的项
 	 * @param positionIndex  每个频繁项的起始和末尾位置
-	 * @param list
-	 * @return
+	 * @param list 含有部分周期的索引
+	 * @return 部分周期项列表
 	 */
 	private ArrayList<Pair> getPartialPeriodPairList(Pair[] positionIndex,
 			ArrayList<Integer> list) {
@@ -241,15 +242,15 @@ public class PartialPeriod {
 	/**
 	 * 比较两个数值是否近似
 	 * 
-	 * @param a
-	 * @param b
-	 * @return |a-b|/max(a-b) <threshold 返回true
+	 * @param a 第一个数
+	 * @param b 第二个数
+	 * @return 距离是否小于阈值 
 	 */
 	public boolean IsSimilar(double a, double b, double threshold) {
 		double t = (double) (a > b ? (a - b) : (b - a));
 		double t1 = a > b ? a : b;
 		double t2 = t / t1;
-		return t2 > threshold ? false : true;
+		return t2 > threshold ? false : true;//|a-b|/max(a-b) <threshold 返回true
 	}
 	
 	public Map<String, ArrayList<Pair>> getPositionResult() {
@@ -264,7 +265,7 @@ public class PartialPeriod {
 
 	/**
 	 * 计算测试误差
-	 * @return
+	 * @return 不同模式下部分周期的误差
 	 */
 	public Map<String, Double> GetTestError(){
 		testError=new HashMap<String, Double>();

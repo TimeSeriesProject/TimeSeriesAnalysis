@@ -20,6 +20,10 @@ import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerFM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
 
+/**
+ * 利用BP神经网络预测,利用自相关系数确定输入窗口大小k,利用前k个数据点预测未来数据
+ *
+ */
 @SuppressWarnings("deprecation")
 public class NeuralNetwork implements IMinerFM{
 	/**
@@ -34,7 +38,6 @@ public class NeuralNetwork implements IMinerFM{
 	 *  原始数据结束时间
 	 */
 	private Date originDataEndTime;
-	
 	private TaskElement task;
 	//参数列表
 	/**
@@ -75,6 +78,13 @@ public class NeuralNetwork implements IMinerFM{
 	
 	/**
 	 *  神经网络预测
+	 *  1）	计算长度为N的时间序列S自相关系数，获取自相关数大于阈值（0.3:不可改动）的最大阶k
+	 *  2）	初始化一个BP神经网络，输入层神经元个数设为k，初始化权值w和阈值θ为较小的随机值
+	 *	3）	生成N-k个训练样本，每个样本预测值为S[i](i>k)，属性值为{S[i-1],S[i-2],…,S[i-k]}
+	 *	4）	取样本对，分别计算隐含层和输出层各神经元的输出值
+	 *	5）	计算输出层的输出值和样本预测值的误差，当误差大于阈值时，调准各层神经元的w和θ值
+	 *	6）	返回步骤4重复计算，直至误差符合要求为止或训练次数超过设定值为止（误差：曼哈顿距离）
+	 *	7）	将训练后的BP神经网络预测序列未来值
 	 */
 	public void TimeSeriesAnalysis(){
 		try {
@@ -179,9 +189,9 @@ public class NeuralNetwork implements IMinerFM{
 	}
 	
 	/**
-	 * 属性初始化
-	 * @param attributes 
-	 * @return
+	 * 属性的初始化，生成Instances对象用于存储数据
+	 * @param attributes 数据存储属性，用于instances属性初始化
+	 * @return instances 数据存储对象
 	 */
 	private Instances initializeAttribute(Attribute[] attributes){
 		for(int i=0;i<attributes.length-1;i++){

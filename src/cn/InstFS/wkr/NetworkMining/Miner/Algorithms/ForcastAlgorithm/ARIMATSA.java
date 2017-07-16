@@ -13,8 +13,17 @@ import RUtil.R;
 import cn.InstFS.wkr.NetworkMining.DataInputs.DataItems;
 import cn.InstFS.wkr.NetworkMining.Miner.NetworkMiner.IMinerFM;
 import cn.InstFS.wkr.NetworkMining.TaskConfigure.TaskElement;
-
+/**
+ *  ARIMA（p，d，q）算法预测：
+ *  1、差分平稳化,通过adf单根检验确定差分阶数d 
+ *  2、通过 自相关函数和偏自相关函数确定自回归项数p，滑动平均项数q 
+ *  3、确定ARIMA参数（p，d，q），建立模型 
+ *  4、序列预测 
+ * @author  
+ *
+ */
 public class ARIMATSA implements IMinerFM{
+	
 	private TaskElement task;
 	/**
 	 * 预测的序列
@@ -57,7 +66,7 @@ public class ARIMATSA implements IMinerFM{
 	}
 	
 	/**
-	 * ARIMA算法预测
+	 * ARIMA（p，d，q）算法预测：1、差分平稳化,通过adf单根检验确定差分阶数d 2、通过 自相关函数和偏自相关函数确定自回归项数p，滑动平均项数q 3、确定ARIMA参数（p，d，q），建立模型 4、模型预测
 	 */
 	@Override
 	public void TimeSeriesAnalysis() {
