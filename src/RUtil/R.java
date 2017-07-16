@@ -5,6 +5,9 @@ import java.util.List;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 
+/**
+ * 求解ARIMA的参数，建立模型
+ */
 public class R {
 	private RConnection interpreteR;
 	
