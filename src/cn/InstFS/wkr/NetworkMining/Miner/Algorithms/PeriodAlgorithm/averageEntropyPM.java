@@ -128,8 +128,8 @@ public class averageEntropyPM implements IMinerPM {
 	}
 	
 	/**
-	 * 获取value值在dimension中的维度序号
-	 * @param value
+	 * 获取记录在dimension中的维度序号
+	 * @param value 记录
 	 * @return 序号
 	 * @throws NotFoundDicreseValueException
 	 */

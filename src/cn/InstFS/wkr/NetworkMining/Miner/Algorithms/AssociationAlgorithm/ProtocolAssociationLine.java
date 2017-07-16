@@ -319,7 +319,7 @@ public class ProtocolAssociationLine {
 	}
 	/**
 	 * 将map<ip,map<protocol,DataItems>>数据格式 转化为map<ip,List<class>>数据格式，方便处理
-	 * @param data
+	 * @param data 不同ip、协议的时间序列数据
 	 */
 	public void convertData(Map<String,HashMap<String,DataItems>> data)
 	{
@@ -359,8 +359,8 @@ public class ProtocolAssociationLine {
 	}
 	/**
 	 * 功能：将数据的常数进行压缩，保证数据点在400以内
-	 * @param proDataList
-	 * @return
+	 * @param proDataList 压缩前的数据
+	 * @return 压缩后的数据
 	 */
 	private List<ProtocolDataItems> compressData(
 			List<ProtocolDataItems> proDataList) {

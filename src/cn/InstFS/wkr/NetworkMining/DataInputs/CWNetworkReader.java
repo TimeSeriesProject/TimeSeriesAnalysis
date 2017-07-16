@@ -77,7 +77,13 @@ class Link implements Comparable
  */
 class Pair implements Comparable<Pair>
 {
+	/**
+	 * 前一个节点
+	 */
 	String first;
+	/**
+	 * 后一个节点
+	 */
 	String second;
 	public Pair(String first,String second)
 	{
@@ -116,6 +122,9 @@ class TextReader
 	private InputStreamReader fr= null;//new InputStreamReader(new FileInputStream(path+"/"+fileName),encoding);
 	private BufferedReader bfr=null;//new BufferedReader(fr);
 	private String curLine = null;
+	/**
+	 * 编码格式
+	 */
 	private String encoding = "UTF-8";
 	public TextReader(String path)
 	{
@@ -130,6 +139,11 @@ class TextReader
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * 读取行
+	 * @return 返回读取到的行
+     */
 	public String readLine()
 	{
 		try
@@ -146,6 +160,9 @@ class TextReader
 		return curLine;
 	}
 }
+/**
+ * 生成网络簇系数和平均直径
+ */
 public class CWNetworkReader  implements IReader{
    
     private ArrayList<Link> linkList = new ArrayList<Link> ();

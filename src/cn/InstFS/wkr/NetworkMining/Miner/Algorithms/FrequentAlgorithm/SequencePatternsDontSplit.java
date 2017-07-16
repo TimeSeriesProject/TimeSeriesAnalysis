@@ -283,8 +283,8 @@ public class SequencePatternsDontSplit {
 	}
 	/**
 	 * 为了计算的方便，将基本的频繁项由Set格式转化为ArrayList格式
-	 * @param clusterLabel
-	 * @return
+	 * @param clusterLabel 频繁项
+	 * @return 格式转换后的频繁项
 	 */
 	private ArrayList<String> convertHashSetToArray(
 			HashSet<String> clusterLabel) {
@@ -300,7 +300,7 @@ public class SequencePatternsDontSplit {
 	}
 	/**
 	 * 找出待找频繁项样例的最小时间
-	 * @return
+	 * @return 频繁项样例的最小时间
 	 */
 	private Date getMinDate() {
 
@@ -329,7 +329,7 @@ public class SequencePatternsDontSplit {
 	}
 	/**
 	 * 得到给出样例中包含多少个类
-	 * @return
+	 * @return 样例中包含类的个数
 	 */
 	private HashSet<String> getClusterNum() {
 
@@ -361,8 +361,8 @@ public class SequencePatternsDontSplit {
 	}
 	/**
 	 * 计算当前产生该类的时间与所有样例中最小时间的差
-	 * @param date
-	 * @return
+	 * @param date 时间
+	 * @return 最小时间差
 	 */
 	private Long sparseTime(Date date) {
 

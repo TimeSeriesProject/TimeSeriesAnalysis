@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * 
- * @author 顺
- * @功能：根据频繁项挖掘结果，计算频繁项间隔来找出部分周期
+ * 根据频繁项挖掘结果，计算频繁项间隔来找出部分周期
  */
 public class PartialPeriod {
 	/**
@@ -50,7 +48,7 @@ public class PartialPeriod {
 
 
 	/**
-	 * @功能：发现潜在的部分周期
+	 * 发现潜在的部分周期
 	 * @return 部分周期挖掘结果1
 	 */
 	Map<String, ArrayList<Pair>> run() {

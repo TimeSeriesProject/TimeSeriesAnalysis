@@ -154,7 +154,7 @@ public class FastFourierOutliesDetection implements IMinerOM {
 
     /**
      * 傅里叶变换
-     * @param silce
+     * @param silce 要变换的数据
      * @param k 取傅里叶变换之后的前K个分量
      * @return 傅里叶变换之后的序列
      */

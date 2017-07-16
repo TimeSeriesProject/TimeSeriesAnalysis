@@ -53,7 +53,7 @@ class Node implements Callable {
  */
 class Parser implements Callable {
     /**
-     * 带解析文件
+     * 待解析文件
      */
     private File file = null;
     /**
@@ -228,7 +228,13 @@ class RouteGen implements Callable {
      * 文件切分后的个数
      */
     private long part;
+    /**
+     * 文件名
+     */
     private String fileName;
+    /**
+     * 端口列表
+     */
     private HashSet<Integer> ports = ParamsAPI.getInstance().getPortParams().getPorts();
 
     /**
